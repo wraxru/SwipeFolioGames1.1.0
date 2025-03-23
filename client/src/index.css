@@ -26,8 +26,8 @@
   @apply bg-[#1d1d31] border-none text-white placeholder:text-gray-400;
 }
 
-.stack-card-dark {
-  @apply bg-[#242438] rounded-xl overflow-hidden border border-[#2d2d42];
+.stack-card {
+  @apply bg-[#242438] rounded-xl overflow-hidden border border-[#2d2d42] cursor-pointer transition-all duration-200 hover:border-cyan-500/30 hover:shadow-lg hover:shadow-cyan-500/10;
 }
 
 .stack-thumbnail {
@@ -51,11 +51,11 @@
 }
 
 .see-all {
-  @apply text-cyan-400 text-sm;
+  @apply text-cyan-400 text-sm hover:text-cyan-300 transition-colors;
 }
 
 .category-chip {
-  @apply bg-[#242438] text-white rounded-full px-4 py-1 text-sm border border-[#2d2d42];
+  @apply bg-[#242438] text-white rounded-full px-4 py-1 text-sm border border-[#2d2d42] transition-all duration-200;
 }
 
 .category-chip.active {
@@ -63,5 +63,39 @@
 }
 
 .main-content {
-  @apply pb-20 pt-20;
+  @apply pb-24 pt-20 px-4;
+}
+
+.badge {
+  @apply text-xs rounded-full px-2 py-0.5 inline-flex items-center justify-center;
+}
+
+.badge-beginner {
+  @apply bg-green-500/20 text-green-400;
+}
+
+.badge-intermediate {
+  @apply bg-yellow-500/20 text-yellow-400;
+}
+
+.badge-advanced {
+  @apply bg-red-500/20 text-red-400;
+}
+
+.badge-cards {
+  @apply bg-blue-500/20 text-blue-400;
+}
+
+/* Hide scrollbar but keep functionality */
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari, Opera */
+}
+
+.grid-cols-stacks {
+  @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4;
 }

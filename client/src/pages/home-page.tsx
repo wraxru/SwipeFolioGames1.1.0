@@ -1,107 +1,78 @@
 import { useQuery } from "@tanstack/react-query";
-import { useAuth } from "@/hooks/use-auth";
+import { Loader2 } from "lucide-react";
 import { Stack } from "@shared/schema";
+import AppHeader from "@/components/app-header";
 import AppNavigation from "@/components/app-navigation";
-import ProgressHeader from "@/components/progress-header";
 import UserWelcome from "@/components/user-welcome";
-import DailyGoal from "@/components/daily-goal";
-import CurrentLesson from "@/components/current-lesson";
+import SearchBar from "@/components/search-bar";
+import CategoryChips from "@/components/category-chips";
+import SectionHeader from "@/components/section-header";
 import StacksExplorer from "@/components/stacks-explorer";
-import { Skeleton } from "@/components/ui/skeleton";
+import DailyGoal from "@/components/daily-goal";
+import ProgressHeader from "@/components/progress-header";
+import { useAuth } from "@/hooks/use-auth";
+import { useState } from "react";
 
 export default function HomePage() {
   const { user } = useAuth();
+  const [selectedCategory, setSelectedCategory] = useState("Trending");
   
   const { data: stacks, isLoading: isLoadingStacks } = useQuery<Stack[]>({
     queryKey: ["/api/stacks"],
   });
   
-  const { data: userProgress, isLoading: isLoadingProgress } = useQuery({
-    queryKey: ["/api/user-progress"],
-    enabled: !!user,
-  });
+  const filterStacksByCategory = (stacks: Stack[], category: string) => {
+    if (category === "Trending") {
+      return stacks;
+    }
+    return stacks.filter(stack => stack.industry.includes(category));
+  };
   
-  const { data: dailyProgress, isLoading: isLoadingDailyProgress } = useQuery({
-    queryKey: ["/api/user-daily-progress"],
-    enabled: !!user,
-  });
-
-  const isLoading = isLoadingStacks || isLoadingProgress || isLoadingDailyProgress;
-  
-  // Find current lesson (first incomplete stack)
-  const currentLesson = !isLoading && stacks && userProgress 
-    ? stacks.find(stack => 
-        !userProgress.some(progress => 
-          progress.stackId === stack.id && progress.completed
-        )
-      )
-    : null;
-  
-  const currentLessonProgress = currentLesson && userProgress
-    ? userProgress.find(progress => progress.stackId === currentLesson.id)
-    : null;
-
   return (
-    <div className="min-h-screen bg-gray-50 pb-16">
-      <ProgressHeader 
-        streakCount={user?.streakCount || 0} 
-        xp={user?.xp || 0} 
-        isLoading={isLoading}
-      />
+    <>
+      <AppHeader />
       
-      <main className="container mx-auto px-4 pt-16 pb-4">
-        <UserWelcome name={user?.displayName || ''} />
+      <main className="main-content">
+        <UserWelcome name={user?.displayName || "Guest"} />
         
-        <DailyGoal 
-          dailyGoal={user?.dailyGoal || 3}
-          completed={dailyProgress?.lessonsCompleted || 0}
-          isLoading={isLoadingDailyProgress}
+        <SearchBar />
+        
+        <ProgressHeader 
+          streakCount={user?.streakCount || 0} 
+          xp={user?.xp || 0}
+          isLoading={false}
         />
         
-        {isLoading ? (
-          <div className="mt-8">
-            <div className="flex justify-between items-center mb-4">
-              <Skeleton className="h-6 w-40" />
-              <Skeleton className="h-4 w-16" />
-            </div>
-            <Skeleton className="h-64 w-full rounded-xl" />
-          </div>
-        ) : currentLesson ? (
-          <CurrentLesson 
-            stack={currentLesson} 
-            progress={currentLessonProgress}
-          />
-        ) : (
-          <div className="mt-8 bg-white rounded-xl shadow-md p-6 text-center">
-            <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg className="w-8 h-8 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
-            <h3 className="text-xl font-medium text-gray-800 mb-2">All caught up!</h3>
-            <p className="text-gray-600 mb-4">You've completed all the available lessons.</p>
-          </div>
-        )}
+        <DailyGoal
+          dailyGoal={user?.dailyGoal || 3}
+          completed={1}
+          isLoading={false}
+        />
+        
+        <CategoryChips 
+          onCategoryChange={setSelectedCategory}
+        />
+        
+        <SectionHeader 
+          title="Popular Stacks" 
+        />
         
         {isLoadingStacks ? (
-          <div className="mt-8">
-            <div className="flex justify-between items-center mb-4">
-              <Skeleton className="h-6 w-40" />
-              <Skeleton className="h-4 w-16" />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <Skeleton className="h-40 w-full rounded-xl" />
-              <Skeleton className="h-40 w-full rounded-xl" />
-              <Skeleton className="h-40 w-full rounded-xl" />
-              <Skeleton className="h-40 w-full rounded-xl" />
-            </div>
+          <div className="flex justify-center items-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin text-cyan-400" />
           </div>
+        ) : stacks ? (
+          <StacksExplorer 
+            stacks={filterStacksByCategory(stacks, selectedCategory)}
+          />
         ) : (
-          <StacksExplorer stacks={stacks || []} />
+          <div className="text-center py-12 text-gray-400">
+            No stacks available
+          </div>
         )}
       </main>
       
       <AppNavigation />
-    </div>
+    </>
   );
 }

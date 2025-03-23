@@ -8,7 +8,6 @@ import AuthPage from "@/pages/auth-page";
 import LessonPage from "@/pages/lesson-page";
 import OnboardingPage from "@/pages/onboarding-page";
 import { AuthProvider } from "@/hooks/use-auth";
-import { ProtectedRoute } from "@/lib/protected-route";
 import { UserProgressProvider } from "@/contexts/user-progress-context";
 
 function Router() {
@@ -16,6 +15,10 @@ function Router() {
     <Switch>
       <Route path="/" component={HomePage} />
       <Route path="/lesson/:stackId" component={LessonPage} />
+      <Route path="/learn" component={HomePage} />
+      <Route path="/market" component={HomePage} />
+      <Route path="/achievements" component={HomePage} />
+      <Route path="/profile" component={HomePage} />
       <Route path="/onboarding" component={OnboardingPage} />
       <Route path="/auth" component={AuthPage} />
       <Route component={NotFound} />

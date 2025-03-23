@@ -1,6 +1,6 @@
-import { CalendarCheck } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Progress } from "@/components/ui/progress";
+import { CalendarClock } from "lucide-react";
+import { Progress } from "./ui/progress";
+import { Skeleton } from "./ui/skeleton";
 
 interface DailyGoalProps {
   dailyGoal: number;
@@ -9,39 +9,38 @@ interface DailyGoalProps {
 }
 
 export default function DailyGoal({ dailyGoal, completed, isLoading = false }: DailyGoalProps) {
-  const progressPercentage = (completed / dailyGoal) * 100;
+  const progress = Math.min(Math.round((completed / dailyGoal) * 100), 100);
   
   if (isLoading) {
     return (
-      <div className="mt-6">
-        <Skeleton className="h-24 w-full rounded-xl" />
+      <div className="daily-goal bg-[#242438] rounded-xl p-4 mb-6">
+        <div className="flex items-center justify-between mb-3">
+          <Skeleton className="h-5 w-24" />
+          <Skeleton className="h-8 w-8 rounded-full" />
+        </div>
+        <Skeleton className="h-3 w-full mb-2" />
+        <Skeleton className="h-4 w-16" />
       </div>
     );
   }
   
   return (
-    <div className="mt-6 bg-gradient-to-r from-primary-500 to-primary-600 rounded-xl shadow-md p-4">
-      <div className="flex items-center">
-        <div className="rounded-full bg-white bg-opacity-20 p-3 mr-3">
-          <CalendarCheck className="text-white" size={20} />
-        </div>
-        <div>
-          <h3 className="text-white font-medium">Daily Goal</h3>
-          <p className="text-primary-100 text-sm">
-            {completed >= dailyGoal 
-              ? 'Goal completed! Well done!' 
-              : `Complete ${dailyGoal - completed} more lesson${dailyGoal - completed !== 1 ? 's' : ''} today`
-            }
-          </p>
+    <div className="daily-goal bg-[#242438] rounded-xl p-4 mb-6">
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="text-white font-medium">Daily Goal</h3>
+        <div className="h-8 w-8 rounded-full bg-cyan-500/20 flex items-center justify-center">
+          <CalendarClock className="h-4 w-4 text-cyan-500" />
         </div>
       </div>
-      <div className="mt-3">
-        <Progress value={progressPercentage} className="h-1 bg-white bg-opacity-20" />
-        <div className="flex justify-between text-primary-100 text-xs mt-1">
-          <span>{completed}/{dailyGoal} completed</span>
-          <span>{progressPercentage.toFixed(0)}%</span>
-        </div>
-      </div>
+      
+      <Progress 
+        value={progress} 
+        className="h-2 mb-2" 
+      />
+      
+      <p className="text-gray-400 text-sm">
+        {completed}/{dailyGoal} lessons completed
+      </p>
     </div>
   );
 }

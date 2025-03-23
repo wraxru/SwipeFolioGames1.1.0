@@ -1,39 +1,49 @@
+import { BookOpen, Home, TrendingUp, Trophy, User } from "lucide-react";
 import { useLocation } from "wouter";
-import { Home, Search, BarChart2, Settings } from "lucide-react";
 
 export default function AppNavigation() {
-  const [location] = useLocation();
+  const [location, setLocation] = useLocation();
   
+  const isActive = (path: string) => {
+    return location === path;
+  };
+
   return (
-    <div className="fixed bottom-0 left-0 right-0 app-navigation z-30">
-      <div className="flex justify-around items-center h-16">
+    <div className="app-navigation fixed bottom-0 left-0 right-0 z-20">
+      <div className="flex items-center justify-around px-4 py-3">
         <NavItem 
           icon={<Home className="w-5 h-5" />} 
           label="Home" 
-          isActive={location === "/"} 
+          isActive={isActive("/")}
           href="/"
         />
+        
         <NavItem 
-          icon={<Search className="w-5 h-5" />} 
-          label="Search" 
-          isActive={location === "/search"} 
-          href="/search"
+          icon={<BookOpen className="w-5 h-5" />} 
+          label="Learn" 
+          isActive={isActive("/learn")}
+          href="/learn"
         />
+        
         <NavItem 
-          icon={
-            <div className="bg-primary-400 rounded-full w-12 h-12 flex items-center justify-center -mt-5">
-              <BarChart2 className="w-6 h-6 text-background" />
-            </div>
-          } 
-          label="" 
-          isActive={false} 
-          href="/stats"
+          icon={<TrendingUp className="w-5 h-5" />} 
+          label="Market" 
+          isActive={isActive("/market")}
+          href="/market"
         />
+        
         <NavItem 
-          icon={<Settings className="w-5 h-5" />} 
-          label="Settings" 
-          isActive={location === "/settings"} 
-          href="/settings"
+          icon={<Trophy className="w-5 h-5" />} 
+          label="Achievements" 
+          isActive={isActive("/achievements")}
+          href="/achievements"
+        />
+        
+        <NavItem 
+          icon={<User className="w-5 h-5" />} 
+          label="Profile" 
+          isActive={isActive("/profile")}
+          href="/profile"
         />
       </div>
     </div>
@@ -50,19 +60,21 @@ interface NavItemProps {
 function NavItem({ icon, label, isActive, href }: NavItemProps) {
   const [_, setLocation] = useLocation();
   
+  const handleClick = () => {
+    setLocation(href);
+  };
+  
   return (
-    <a 
-      href={href}
-      onClick={(e) => {
-        e.preventDefault();
-        setLocation(href);
-      }}
-      className={`flex flex-col items-center justify-center w-1/4 h-full transition-colors ${
-        isActive ? "text-cyan-400" : "text-gray-400 hover:text-cyan-400"
-      }`}
+    <button 
+      className="flex flex-col items-center justify-center"
+      onClick={handleClick}
     >
-      {icon}
-      {label && <span className="text-xs mt-1">{label}</span>}
-    </a>
+      <div className={`${isActive ? 'text-cyan-400' : 'text-gray-500'}`}>
+        {icon}
+      </div>
+      <span className={`text-xs mt-1 ${isActive ? 'text-cyan-400' : 'text-gray-500'}`}>
+        {label}
+      </span>
+    </button>
   );
 }

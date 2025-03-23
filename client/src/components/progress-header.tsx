@@ -1,6 +1,5 @@
-import ProgressRing from "@/components/ui/progress-ring";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Flame } from "lucide-react";
+import { Award, Flame } from "lucide-react";
+import { Skeleton } from "./ui/skeleton";
 
 interface ProgressHeaderProps {
   streakCount: number;
@@ -9,42 +8,48 @@ interface ProgressHeaderProps {
 }
 
 export default function ProgressHeader({ streakCount, xp, isLoading = false }: ProgressHeaderProps) {
-  return (
-    <header className="fixed top-0 left-0 right-0 bg-white shadow-sm z-20">
-      <div className="container mx-auto px-4 py-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center">
-            {isLoading ? (
-              <div className="flex items-center">
-                <Skeleton className="h-8 w-8 rounded-full" />
-                <div className="ml-2">
-                  <Skeleton className="h-4 w-16" />
-                </div>
-              </div>
-            ) : (
-              <div className="flex items-center">
-                <ProgressRing progress={50} size={32}>
-                  <div className="text-xs font-semibold">{streakCount}</div>
-                </ProgressRing>
-                <div className="ml-2">
-                  <div className="text-sm font-medium">Day Streak</div>
-                </div>
-              </div>
-            )}
+  if (isLoading) {
+    return (
+      <div className="progress-stats flex space-x-4 my-5">
+        <div className="flex-1 bg-[#242438] rounded-xl p-3 flex items-center space-x-3">
+          <Skeleton className="h-10 w-10 rounded-full" />
+          <div className="flex-1">
+            <Skeleton className="h-4 w-24 mb-1" />
+            <Skeleton className="h-3 w-16" />
           </div>
-          
-          <div className="flex items-center">
-            {isLoading ? (
-              <Skeleton className="h-8 w-20 rounded-full" />
-            ) : (
-              <div className="flex items-center bg-primary-50 rounded-full px-3 py-1">
-                <Flame className="text-accent-500 mr-1" size={16} />
-                <span className="text-primary-800 font-medium text-sm">{xp} XP</span>
-              </div>
-            )}
+        </div>
+        <div className="flex-1 bg-[#242438] rounded-xl p-3 flex items-center space-x-3">
+          <Skeleton className="h-10 w-10 rounded-full" />
+          <div className="flex-1">
+            <Skeleton className="h-4 w-24 mb-1" />
+            <Skeleton className="h-3 w-16" />
           </div>
         </div>
       </div>
-    </header>
+    );
+  }
+
+  return (
+    <div className="progress-stats flex space-x-4 my-5">
+      <div className="flex-1 bg-[#242438] rounded-xl p-3 flex items-center space-x-3">
+        <div className="h-10 w-10 rounded-full bg-amber-500/20 flex items-center justify-center">
+          <Flame className="h-5 w-5 text-amber-500" />
+        </div>
+        <div>
+          <p className="text-sm text-gray-400">Current Streak</p>
+          <p className="text-lg font-semibold text-white">{streakCount} days</p>
+        </div>
+      </div>
+      
+      <div className="flex-1 bg-[#242438] rounded-xl p-3 flex items-center space-x-3">
+        <div className="h-10 w-10 rounded-full bg-cyan-500/20 flex items-center justify-center">
+          <Award className="h-5 w-5 text-cyan-500" />
+        </div>
+        <div>
+          <p className="text-sm text-gray-400">Total XP</p>
+          <p className="text-lg font-semibold text-white">{xp} XP</p>
+        </div>
+      </div>
+    </div>
   );
 }
