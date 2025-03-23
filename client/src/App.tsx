@@ -7,6 +7,7 @@ import HomePage from "@/pages/home-page";
 import AuthPage from "@/pages/auth-page";
 import LessonPage from "@/pages/lesson-page";
 import OnboardingPage from "@/pages/onboarding-page";
+import StockDetailPage from "@/pages/stock-detail-page";
 import { AuthProvider } from "@/hooks/use-auth";
 import { UserProgressProvider } from "@/contexts/user-progress-context";
 
@@ -14,6 +15,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={HomePage} />
+      <Route path="/stock/:stackId" component={StockDetailPage} />
       <Route path="/lesson/:stackId" component={LessonPage} />
       <Route path="/learn" component={HomePage} />
       <Route path="/market" component={HomePage} />

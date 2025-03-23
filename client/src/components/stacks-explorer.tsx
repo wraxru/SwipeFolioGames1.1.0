@@ -10,32 +10,79 @@ export default function StacksExplorer({ stacks }: StacksExplorerProps) {
   const [_, setLocation] = useLocation();
 
   const handleStackClick = (stackId: number) => {
-    setLocation(`/lesson/${stackId}`);
+    setLocation(`/stock/${stackId}`);
   };
 
-  // Mapping of financial industry categories to relevant image URLs
-  const industryImages: Record<string, string> = {
-    "Stocks": "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?q=80&w=580&auto=format&fit=crop",
-    "Crypto": "https://images.unsplash.com/photo-1621761191319-c6fb62004040?q=80&w=580&auto=format&fit=crop",
-    "Bonds": "https://images.unsplash.com/photo-1621155346337-1d19476ba7d6?q=80&w=580&auto=format&fit=crop",
-    "ETFs": "https://images.unsplash.com/photo-1642543348745-743f5cc87740?q=80&w=580&auto=format&fit=crop",
-    "Real Estate": "https://images.unsplash.com/photo-1582407947304-fd86f028f716?q=80&w=580&auto=format&fit=crop",
-    "Financial Planning": "https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=580&auto=format&fit=crop",
-    "Tech": "https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=580&auto=format&fit=crop"
+  // Industry names and images
+  const industryDetails: Record<string, { name: string, image: string }> = {
+    "Tech": { 
+      name: "Tech Titans", 
+      image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=580&auto=format&fit=crop" 
+    },
+    "Crypto": { 
+      name: "Digital Assets", 
+      image: "https://images.unsplash.com/photo-1621761191319-c6fb62004040?q=80&w=580&auto=format&fit=crop" 
+    },
+    "Stocks": { 
+      name: "Blue Chip Leaders", 
+      image: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?q=80&w=580&auto=format&fit=crop" 
+    },
+    "Bonds": { 
+      name: "Steady Yields", 
+      image: "https://images.unsplash.com/photo-1621155346337-1d19476ba7d6?q=80&w=580&auto=format&fit=crop" 
+    },
+    "ETFs": { 
+      name: "Diversified Baskets", 
+      image: "https://images.unsplash.com/photo-1642543348745-743f5cc87740?q=80&w=580&auto=format&fit=crop" 
+    },
+    "Real Estate": { 
+      name: "Property Players", 
+      image: "https://images.unsplash.com/photo-1582407947304-fd86f028f716?q=80&w=580&auto=format&fit=crop" 
+    },
+    "ESG": { 
+      name: "Green Giants", 
+      image: "https://images.unsplash.com/photo-1464380573004-8ca85a08751a?q=80&w=580&auto=format&fit=crop" 
+    },
+    "Financial Planning": { 
+      name: "Wealth Builders", 
+      image: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=580&auto=format&fit=crop" 
+    },
+    "Healthcare": { 
+      name: "Med-Tech Innovators", 
+      image: "https://images.unsplash.com/photo-1584036561566-baf8f5f1b144?q=80&w=580&auto=format&fit=crop" 
+    },
+    "Consumer": { 
+      name: "Retail Champions", 
+      image: "https://images.unsplash.com/photo-1472851294608-062f824d29cc?q=80&w=580&auto=format&fit=crop" 
+    }
   };
 
-  const getImageUrl = (industry: string) => {
-    return industryImages[industry] || undefined;
+  // Get details for a given industry
+  const getIndustryDetails = (industry: string) => {
+    return industryDetails[industry] || { 
+      name: industry, 
+      image: "https://images.unsplash.com/photo-1579532537598-459ecdaf39cc?q=80&w=580&auto=format&fit=crop" 
+    };
   };
+
+  // Enhance stack data with industry details
+  const enhancedStacks = stacks.map(stack => {
+    const details = getIndustryDetails(stack.industry);
+    return {
+      ...stack,
+      title: details.name, // Replace title with industry-specific name
+      imageUrl: details.image
+    };
+  });
 
   return (
     <div className="grid-cols-stacks">
-      {stacks.map((stack) => (
+      {enhancedStacks.map((stack) => (
         <StackCard
           key={stack.id}
           stack={stack}
           onClick={handleStackClick}
-          imageUrl={getImageUrl(stack.industry)}
+          imageUrl={stack.imageUrl}
           category={stack.industry}
         />
       ))}

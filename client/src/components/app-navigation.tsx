@@ -1,4 +1,4 @@
-import { BookOpen, Home, TrendingUp, Trophy, User } from "lucide-react";
+import { Home, BarChart3, Search, Briefcase, User, BellRing } from "lucide-react";
 import { useLocation } from "wouter";
 
 export default function AppNavigation() {
@@ -9,7 +9,7 @@ export default function AppNavigation() {
   };
 
   return (
-    <div className="app-navigation fixed bottom-0 left-0 right-0 z-20">
+    <div className="app-navigation fixed bottom-0 left-0 right-0 z-20 bg-gray-900 border-t border-gray-800">
       <div className="flex items-center justify-around px-4 py-3">
         <NavItem 
           icon={<Home className="w-5 h-5" />} 
@@ -19,24 +19,24 @@ export default function AppNavigation() {
         />
         
         <NavItem 
-          icon={<BookOpen className="w-5 h-5" />} 
-          label="Learn" 
-          isActive={isActive("/learn")}
-          href="/learn"
+          icon={<Search className="w-5 h-5" />} 
+          label="Discover" 
+          isActive={isActive("/discover")}
+          href="/discover"
         />
         
         <NavItem 
-          icon={<TrendingUp className="w-5 h-5" />} 
-          label="Market" 
-          isActive={isActive("/market")}
-          href="/market"
+          icon={<BarChart3 className="w-5 h-5" />} 
+          label="Markets" 
+          isActive={isActive("/markets")}
+          href="/markets"
         />
         
         <NavItem 
-          icon={<Trophy className="w-5 h-5" />} 
-          label="Achievements" 
-          isActive={isActive("/achievements")}
-          href="/achievements"
+          icon={<Briefcase className="w-5 h-5" />} 
+          label="Portfolio" 
+          isActive={isActive("/portfolio")}
+          href="/portfolio"
         />
         
         <NavItem 

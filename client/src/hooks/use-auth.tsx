@@ -30,13 +30,32 @@ export const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const { toast } = useToast();
+  
+  // Mock user for testing purposes
+  const mockUser: SelectUser = {
+    id: 1,
+    username: "investorpro",
+    password: "",
+    displayName: "Alex Investor",
+    xp: 750,
+    streakCount: 5,
+    lastActive: new Date(),
+    level: 3,
+    dailyGoal: 5,
+    interests: ["Tech", "Crypto", "ETFs"],
+    experienceLevel: "intermediate",
+    onboarded: true
+  };
+  
+  // Use mock user instead of API call
   const {
     data: user,
     error,
     isLoading,
   } = useQuery<SelectUser | null, Error>({
     queryKey: ["/api/user"],
-    queryFn: getQueryFn({ on401: "returnNull" }),
+    queryFn: () => Promise.resolve(mockUser),
+    // queryFn: getQueryFn({ on401: "returnNull" }), // Original API call
   });
 
   const loginMutation = useMutation({
