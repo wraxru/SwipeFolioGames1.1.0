@@ -9,5 +9,59 @@
 
   body {
     @apply font-sans antialiased bg-background text-foreground;
+    background-color: #181829;
   }
+}
+
+/* Custom styles for Swipefolio dark theme */
+.app-header {
+  @apply bg-[#242438] border-b border-[#2d2d42] text-white; 
+}
+
+.app-navigation {
+  @apply bg-[#242438] border-t border-[#2d2d42] text-white;
+}
+
+.search-bar {
+  @apply bg-[#1d1d31] border-none text-white placeholder:text-gray-400;
+}
+
+.stack-card-dark {
+  @apply bg-[#242438] rounded-xl overflow-hidden border border-[#2d2d42];
+}
+
+.stack-thumbnail {
+  @apply h-32 rounded-t-xl overflow-hidden relative;
+}
+
+.stack-category {
+  @apply text-xs uppercase tracking-wide text-cyan-400 mb-1;
+}
+
+.stack-title {
+  @apply text-white font-medium text-sm;
+}
+
+.stack-stats {
+  @apply text-[#7c7c8d] text-xs;
+}
+
+.section-header {
+  @apply text-white font-semibold text-xl;
+}
+
+.see-all {
+  @apply text-cyan-400 text-sm;
+}
+
+.category-chip {
+  @apply bg-[#242438] text-white rounded-full px-4 py-1 text-sm border border-[#2d2d42];
+}
+
+.category-chip.active {
+  @apply bg-cyan-400 text-[#181829] border-cyan-400;
+}
+
+.main-content {
+  @apply pb-20 pt-20;
 }

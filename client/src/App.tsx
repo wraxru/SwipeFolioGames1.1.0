@@ -14,9 +14,9 @@ import { UserProgressProvider } from "@/contexts/user-progress-context";
 function Router() {
   return (
     <Switch>
-      <ProtectedRoute path="/" component={HomePage} />
-      <ProtectedRoute path="/lesson/:stackId" component={LessonPage} />
-      <ProtectedRoute path="/onboarding" component={OnboardingPage} />
+      <Route path="/" component={HomePage} />
+      <Route path="/lesson/:stackId" component={LessonPage} />
+      <Route path="/onboarding" component={OnboardingPage} />
       <Route path="/auth" component={AuthPage} />
       <Route component={NotFound} />
     </Switch>
