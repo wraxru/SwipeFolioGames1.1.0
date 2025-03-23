@@ -1,6 +1,5 @@
-import { motion } from "framer-motion";
-import { Stack } from "@shared/schema";
-import { ArrowUpRight } from "lucide-react";
+import { Clock, Star } from "lucide-react";
+import type { Stack } from "@shared/schema";
 
 interface StackCardProps {
   stack: Stack;
@@ -10,46 +9,52 @@ interface StackCardProps {
 }
 
 export default function StackCard({ stack, onClick, imageUrl, category }: StackCardProps) {
-  // Default image URLs based on industry types
-  const defaultImages = {
-    "Technology": "https://images.unsplash.com/photo-1526378722484-bd91ca387e72?q=80&w=300&auto=format",
-    "Finance": "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?q=80&w=300&auto=format",
-    "Investing": "https://images.unsplash.com/photo-1534951009808-766178b47a4f?q=80&w=300&auto=format",
-    "Cryptocurrency": "https://images.unsplash.com/photo-1516245834210-c4c142787335?q=80&w=300&auto=format",
-    "Healthcare": "https://images.unsplash.com/photo-1584982751601-97dcc096659c?q=80&w=300&auto=format",
-    "Consumer": "https://images.unsplash.com/photo-1534452203293-494d7ddbf7e0?q=80&w=300&auto=format",
-    "Green": "https://images.unsplash.com/photo-1497435334941-8c899ee9e8e9?q=80&w=300&auto=format",
-    "Dividend": "https://images.unsplash.com/photo-1579621970795-87facc2f976d?q=80&w=300&auto=format"
-  };
-
-  // Determine image URL
-  const displayImage = imageUrl || defaultImages[stack.industry as keyof typeof defaultImages] || defaultImages.Finance;
-  const displayCategory = category || stack.industry || "Finance";
-  
   return (
-    <motion.div
-      className="stack-card-dark cursor-pointer relative"
-      whileHover={{ y: -5 }}
-      transition={{ duration: 0.2 }}
+    <div 
+      className="stack-card rounded-xl overflow-hidden flex flex-col"
       onClick={() => onClick(stack.id)}
     >
-      <div className="stack-thumbnail">
-        <img 
-          src={displayImage} 
-          alt={stack.title} 
-          className="w-full h-full object-cover"
+      <div className="relative h-36 overflow-hidden">
+        <div 
+          className="w-full h-full bg-cover bg-center" 
+          style={{ 
+            backgroundColor: stack.color || '#1d1d31',
+            backgroundImage: imageUrl ? `url(${imageUrl})` : 'none',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center'
+          }}
         />
-        <div className="absolute top-2 right-2 bg-[#242438]/80 rounded-full p-1">
-          <ArrowUpRight className="w-4 h-4 text-cyan-400" />
+        
+        {category && (
+          <div className="absolute top-3 left-3 bg-black/50 rounded-full px-3 py-1 text-xs">
+            {category}
+          </div>
+        )}
+        
+        <div className="absolute bottom-3 left-3 bg-black/50 rounded-full px-3 py-1 flex items-center space-x-1 text-xs">
+          <Star className="w-3 h-3 text-yellow-400" />
+          <span>{stack.rating}.0</span>
+        </div>
+        
+        <div className="absolute bottom-3 right-3 bg-black/50 rounded-full px-3 py-1 flex items-center space-x-1 text-xs">
+          <Clock className="w-3 h-3 text-gray-300" />
+          <span>{stack.estimatedMinutes} min</span>
         </div>
       </div>
-      <div className="p-3">
-        <p className="stack-category">{displayCategory}</p>
-        <h3 className="stack-title">{stack.title}</h3>
-        <div className="flex justify-between items-center mt-2">
-          <span className="stack-stats">{stack.cardCount} Stocks | {stack.estimatedMinutes}YT</span>
+      
+      <div className="px-3 py-3 flex-1 flex flex-col justify-between">
+        <h3 className="font-semibold mb-1 text-white">{stack.title}</h3>
+        <p className="text-xs text-gray-400 line-clamp-2">{stack.description}</p>
+        
+        <div className="mt-2 flex items-center space-x-2">
+          <div className={`badge badge-${stack.difficulty}`}>
+            {stack.difficulty}
+          </div>
+          <div className="badge badge-cards">
+            {stack.cardCount} cards
+          </div>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }
