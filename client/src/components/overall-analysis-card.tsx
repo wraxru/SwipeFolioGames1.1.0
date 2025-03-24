@@ -13,31 +13,31 @@ interface OverallAnalysisCardProps {
 export default function OverallAnalysisCard({ ticker, name, rating, analysis }: OverallAnalysisCardProps) {
   // Calculate rating color and style based on the numeric rating (1-10)
   const getRatingColor = (rating: number) => {
-    if (rating >= 8) return "text-green-400";
-    if (rating >= 6) return "text-cyan-400";
-    if (rating >= 4) return "text-yellow-400";
-    return "text-red-400";
+    if (rating >= 8) return "text-green-600";
+    if (rating >= 6) return "text-sky-600";
+    if (rating >= 4) return "text-amber-600";
+    return "text-red-600";
   };
 
   const getRatingBackground = (rating: number) => {
-    if (rating >= 8) return "bg-green-900/30";
-    if (rating >= 6) return "bg-cyan-900/30";
-    if (rating >= 4) return "bg-yellow-900/30";
-    return "bg-red-900/30";
+    if (rating >= 8) return "bg-green-50";
+    if (rating >= 6) return "bg-sky-50";
+    if (rating >= 4) return "bg-amber-50";
+    return "bg-red-50";
   };
 
   const getRatingBorder = (rating: number) => {
-    if (rating >= 8) return "border-green-500/40";
-    if (rating >= 6) return "border-cyan-500/40";
-    if (rating >= 4) return "border-yellow-500/40";
-    return "border-red-500/40";
+    if (rating >= 8) return "border-green-200";
+    if (rating >= 6) return "border-sky-200";
+    if (rating >= 4) return "border-amber-200";
+    return "border-red-200";
   };
 
   const getRatingGradient = (rating: number) => {
-    if (rating >= 8) return "from-green-900/40 to-green-950/10";
-    if (rating >= 6) return "from-cyan-900/40 to-cyan-950/10";
-    if (rating >= 4) return "from-yellow-900/40 to-yellow-950/10";
-    return "from-red-900/40 to-red-950/10";
+    if (rating >= 8) return "from-green-50 to-white";
+    if (rating >= 6) return "from-sky-50 to-white";
+    if (rating >= 4) return "from-amber-50 to-white";
+    return "from-red-50 to-white";
   };
 
   const getRatingText = (rating: number) => {
@@ -49,30 +49,30 @@ export default function OverallAnalysisCard({ ticker, name, rating, analysis }: 
 
   // Get appropriate icon based on rating
   const RatingIcon = () => {
-    if (rating >= 8) return <TrendingUp className={cn("w-5 h-5", getRatingColor(rating), "drop-shadow-md")} />;
-    if (rating >= 6) return <ChartBar className={cn("w-5 h-5", getRatingColor(rating), "drop-shadow-md")} />;
-    if (rating >= 4) return <LineChart className={cn("w-5 h-5", getRatingColor(rating), "drop-shadow-md")} />;
-    return <Lightbulb className={cn("w-5 h-5", getRatingColor(rating), "drop-shadow-md")} />;
+    if (rating >= 8) return <TrendingUp className={cn("w-5 h-5", getRatingColor(rating))} />;
+    if (rating >= 6) return <ChartBar className={cn("w-5 h-5", getRatingColor(rating))} />;
+    if (rating >= 4) return <LineChart className={cn("w-5 h-5", getRatingColor(rating))} />;
+    return <Lightbulb className={cn("w-5 h-5", getRatingColor(rating))} />;
   };
 
   return (
     <Card 
-      className="border-gray-700/50 bg-gradient-to-br from-gray-900 to-black rounded-2xl shadow-xl overflow-hidden"
+      className="border border-slate-100 bg-white rounded-xl shadow-sm overflow-hidden"
       style={{
-        boxShadow: rating >= 8 ? '0 0 20px rgba(34, 197, 94, 0.05)' :
-                  rating >= 6 ? '0 0 20px rgba(6, 182, 212, 0.05)' :
-                  rating >= 4 ? '0 0 20px rgba(234, 179, 8, 0.05)' :
-                  '0 0 20px rgba(239, 68, 68, 0.05)'
+        boxShadow: rating >= 8 ? '0 0 15px rgba(34, 197, 94, 0.03)' :
+                  rating >= 6 ? '0 0 15px rgba(6, 182, 212, 0.03)' :
+                  rating >= 4 ? '0 0 15px rgba(234, 179, 8, 0.03)' :
+                  '0 0 15px rgba(239, 68, 68, 0.03)'
       }}
     >
-      <CardHeader className="pb-2 border-b border-gray-800">
-        <CardTitle className="text-xl font-bold flex items-center gap-2 text-white drop-shadow-sm">
+      <CardHeader className="pb-2 border-b border-slate-100">
+        <CardTitle className="text-xl font-bold flex items-center gap-2 text-slate-800">
           <div className={cn(
             "flex items-center justify-center p-1.5 rounded-full bg-gradient-to-br", 
             getRatingGradient(rating),
             "border",
             getRatingBorder(rating),
-            "shadow-lg"
+            "shadow-sm"
           )}>
             <RatingIcon />
           </div>
@@ -82,7 +82,7 @@ export default function OverallAnalysisCard({ ticker, name, rating, analysis }: 
       <CardContent className="pt-4">
         <div className="mb-4 flex items-center gap-3">
           <div className={cn(
-            "text-sm px-3 py-1.5 rounded-full font-medium flex items-center gap-1.5 shadow-md",
+            "text-sm px-3 py-1.5 rounded-full font-medium flex items-center gap-1.5 shadow-sm",
             "bg-gradient-to-r",
             getRatingGradient(rating),
             getRatingColor(rating),
@@ -90,17 +90,17 @@ export default function OverallAnalysisCard({ ticker, name, rating, analysis }: 
             getRatingBorder(rating)
           )}>
             <RatingIcon />
-            <span className="drop-shadow-sm">{getRatingText(rating)} ({rating}/10)</span>
+            <span>{getRatingText(rating)} ({rating}/10)</span>
           </div>
         </div>
         
         <div className="space-y-4">
           {/* Company identification */}
-          <h3 className="font-bold text-lg text-white drop-shadow-sm">{name} <span className="text-gray-400">({ticker})</span></h3>
+          <h3 className="font-bold text-lg text-slate-800">{name} <span className="text-slate-500">({ticker})</span></h3>
           
           {/* Analysis paragraph - styled with a container */}
-          <div className="bg-gradient-to-br from-gray-800/50 to-gray-900/70 p-4 rounded-xl border border-gray-700/50 shadow-inner">
-            <p className="text-gray-300 text-sm leading-relaxed">{analysis}</p>
+          <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 shadow-sm">
+            <p className="text-slate-600 text-sm leading-relaxed">{analysis}</p>
           </div>
         </div>
       </CardContent>

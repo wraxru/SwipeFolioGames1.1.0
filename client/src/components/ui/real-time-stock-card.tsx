@@ -324,15 +324,15 @@ export default function RealTimeStockCard({
     <div className="relative h-full">
       {/* Swipe indicators */}
       <div className="absolute top-1/2 left-4 z-10 transform -translate-y-1/2 opacity-50">
-        <ChevronLeft size={40} className={`text-white/30 ${currentIndex === 0 ? 'invisible' : ''}`} />
+        <ChevronLeft size={40} className={`text-slate-300 ${currentIndex === 0 ? 'invisible' : ''}`} />
       </div>
       <div className="absolute top-1/2 right-4 z-10 transform -translate-y-1/2 opacity-50">
-        <ChevronRight size={40} className="text-white/30" />
+        <ChevronRight size={40} className="text-slate-300" />
       </div>
       
       {/* Page indicator */}
       <div className="absolute top-2 left-0 right-0 flex justify-center z-10">
-        <div className="bg-gray-800/80 backdrop-blur-sm rounded-full px-3 py-1 text-xs border border-gray-700">
+        <div className="glass-effect rounded-full px-3 py-1 text-xs font-medium text-slate-600 shadow-sm">
           {currentIndex + 1} / {totalCount}
         </div>
       </div>
@@ -342,14 +342,14 @@ export default function RealTimeStockCard({
         <button 
           onClick={refreshData} 
           disabled={isRefreshing || isLoadingQuote || isLoadingIntraday}
-          className="bg-gray-800/80 backdrop-blur-sm rounded-full p-2 text-xs border border-gray-700 hover:bg-gray-700/80 transition-all disabled:opacity-50"
+          className="glass-effect rounded-full p-2 text-xs shadow-sm hover:bg-white transition-all disabled:opacity-50"
         >
-          <RefreshCw size={14} className={`text-green-400 ${isRefreshing ? 'animate-spin' : ''}`} />
+          <RefreshCw size={14} className={`text-sky-500 ${isRefreshing ? 'animate-spin' : ''}`} />
         </button>
       </div>
 
       <motion.div
-        className="h-full overflow-y-auto overflow-x-hidden pb-16"
+        className="h-full overflow-y-auto overflow-x-hidden pb-16 stock-card"
         ref={cardRef}
         drag="x"
         dragConstraints={{ left: 0, right: 0 }}
@@ -359,14 +359,14 @@ export default function RealTimeStockCard({
         style={{ x, opacity: cardOpacity, rotateZ: cardRotate }}
       >
         {/* Time Frame Selector */}
-        <div className="flex justify-between px-4 py-2 border-b border-gray-800">
+        <div className="flex justify-between px-4 py-3 border-b border-slate-100 bg-white">
           {["1D", "5D", "1M", "6M", "YTD", "1Y", "5Y", "MAX"].map((period) => (
             <button
               key={period}
               className={`px-2 py-1.5 rounded-md transition-all duration-200 ${
                 timeFrame === period 
-                  ? "text-green-400 font-bold border-b-2 border-green-400 bg-green-500/10" 
-                  : "text-gray-400 hover:bg-gray-800"
+                  ? "text-sky-500 font-bold border-b-2 border-sky-500 bg-sky-50" 
+                  : "text-slate-500 hover:bg-slate-50"
               }`}
               onClick={() => setTimeFrame(period as TimeFrame)}
             >
@@ -376,40 +376,40 @@ export default function RealTimeStockCard({
         </div>
 
         {/* Chart */}
-        <div className="px-4 pt-8 pb-8 border-b border-gray-800 h-60 relative mt-2 bg-gradient-to-b from-gray-900 to-black">
+        <div className="px-4 pt-8 pb-8 border-b border-slate-100 h-60 relative mt-2 bg-white">
           {isLoadingIntraday && timeFrame === "1D" ? (
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="text-center">
-                <RefreshCw size={24} className="animate-spin mx-auto text-green-400 mb-2" />
-                <p className="text-sm text-gray-300">Loading chart data...</p>
+                <RefreshCw size={24} className="animate-spin mx-auto text-sky-500 mb-2" />
+                <p className="text-sm text-slate-500">Loading chart data...</p>
               </div>
             </div>
           ) : (
             <>
               {/* Y-axis values - fixed positioning to avoid sticking out */}
-              <div className="absolute left-1 top-0 bottom-16 flex flex-col justify-between text-xs text-gray-500 w-8 text-right">
-                <div className="w-full px-1 py-0.5 rounded bg-black/70 backdrop-blur-sm text-right">${priceRangeMax}</div>
-                <div className="w-full px-1 py-0.5 rounded bg-black/70 backdrop-blur-sm text-right">${Math.round((priceRangeMax + priceRangeMin) / 2 * 100) / 100}</div>
-                <div className="w-full px-1 py-0.5 rounded bg-black/70 backdrop-blur-sm text-right">${priceRangeMin}</div>
+              <div className="absolute left-1 top-0 bottom-16 flex flex-col justify-between text-xs text-slate-500 w-8 text-right">
+                <div className="w-full px-1 py-0.5 rounded bg-white text-right font-medium">${priceRangeMax}</div>
+                <div className="w-full px-1 py-0.5 rounded bg-white text-right font-medium">${Math.round((priceRangeMax + priceRangeMin) / 2 * 100) / 100}</div>
+                <div className="w-full px-1 py-0.5 rounded bg-white text-right font-medium">${priceRangeMin}</div>
               </div>
               
               {/* Chart grid lines */}
               <div className="absolute left-10 right-0 top-0 bottom-16 flex flex-col justify-between pointer-events-none">
-                <div className="border-t border-gray-800 w-full h-0"></div>
-                <div className="border-t border-gray-800 w-full h-0"></div>
-                <div className="border-t border-gray-800 w-full h-0"></div>
+                <div className="border-t border-slate-100 w-full h-0"></div>
+                <div className="border-t border-slate-100 w-full h-0"></div>
+                <div className="border-t border-slate-100 w-full h-0"></div>
               </div>
               
               <div className="ml-10 chart-container h-[calc(100%-30px)]">
                 <svg viewBox="0 0 300 80" width="100%" height="100%" preserveAspectRatio="none">
                   <defs>
                     <linearGradient id={`chartGradient-${stock.ticker}`} x1="0%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" stopColor={realTimeChange >= 0 ? "rgba(34, 197, 94, 0.4)" : "rgba(239, 68, 68, 0.4)"} />
-                      <stop offset="100%" stopColor={realTimeChange >= 0 ? "rgba(34, 197, 94, 0)" : "rgba(239, 68, 68, 0)"} />
+                      <stop offset="0%" stopColor={realTimeChange >= 0 ? "rgba(14, 165, 233, 0.3)" : "rgba(239, 68, 68, 0.3)"} />
+                      <stop offset="100%" stopColor={realTimeChange >= 0 ? "rgba(14, 165, 233, 0)" : "rgba(239, 68, 68, 0)"} />
                     </linearGradient>
-                    {/* Add a glow effect */}
+                    {/* Add a subtle glow effect */}
                     <filter id={`glow-${stock.ticker}`}>
-                      <feGaussianBlur stdDeviation="2" result="blur" />
+                      <feGaussianBlur stdDeviation="1.5" result="blur" />
                       <feComposite in="SourceGraphic" in2="blur" operator="over" />
                     </filter>
                   </defs>
@@ -424,8 +424,8 @@ export default function RealTimeStockCard({
                           return `L ${x},${y}`;
                         }).join(" ")}`}
                         fill="none"
-                        stroke={realTimeChange >= 0 ? "#22c55e" : "#ef4444"}
-                        strokeWidth="2.5"
+                        stroke={realTimeChange >= 0 ? "#0ea5e9" : "#ef4444"}
+                        strokeWidth="2"
                         filter={`url(#glow-${stock.ticker})`}
                       />
                       
@@ -444,7 +444,7 @@ export default function RealTimeStockCard({
               </div>
               
               {/* Time scale */}
-              <div className="ml-10 flex justify-between text-xs text-gray-400 mt-4 p-2 bg-black/40 backdrop-blur-sm rounded-md">
+              <div className="ml-10 flex justify-between text-xs text-slate-500 mt-4 py-1 px-2 rounded-md">
                 {timeScaleLabels.map((label, index) => (
                   <span key={index} className="font-medium">{label}</span>
                 ))}
@@ -454,28 +454,25 @@ export default function RealTimeStockCard({
         </div>
 
         {/* Stock Info */}
-        <div className="px-4 py-4 border-b border-gray-800 bg-gradient-to-br from-gray-900 via-gray-900 to-black">
+        <div className="px-4 py-4 border-b border-slate-100 bg-white">
           {/* Header with name, ticker, and price side by side */}
           <div className="flex items-center justify-between mb-2">
             <div>
-              <h2 className="text-xl font-bold text-white drop-shadow-sm">
-                {stock.name} <span className="text-gray-400">({stock.ticker})</span>
+              <h2 className="text-xl font-bold text-slate-800">
+                {stock.name} <span className="text-slate-500">({stock.ticker})</span>
               </h2>
             </div>
             
             {/* Price bubble horizontal to the name */}
-            <div className={`flex items-center ${realTimeChange >= 0 ? 'bg-gradient-to-r from-green-900/50 to-green-950/30' : 'bg-gradient-to-r from-red-900/50 to-red-950/30'} rounded-full px-3 py-1.5 border ${realTimeChange >= 0 ? 'border-green-500/30' : 'border-red-500/30'} shadow-lg`}
-              style={{
-                boxShadow: realTimeChange >= 0 ? '0 0 15px rgba(34, 197, 94, 0.1)' : '0 0 15px rgba(239, 68, 68, 0.1)'
-              }}
+            <div className={`flex items-center ${realTimeChange >= 0 ? 'bg-green-50' : 'bg-red-50'} rounded-full px-3 py-1.5 border ${realTimeChange >= 0 ? 'border-green-200' : 'border-red-200'} shadow-sm`}
             >
               {isLoadingQuote ? (
-                <Skeleton className="h-6 w-20 bg-gray-700" />
+                <Skeleton className="h-6 w-20 bg-slate-100" />
               ) : (
                 <>
-                  <span className="text-xl font-bold text-white drop-shadow-md">${displayPrice}</span>
-                  <span className={`ml-2 text-sm ${realTimeChange >= 0 ? 'text-green-300' : 'text-red-300'} flex items-center font-medium drop-shadow-sm`}>
-                    <span className={`inline-block w-2 h-2 rounded-full mr-1 ${realTimeChange >= 0 ? 'bg-green-400' : 'bg-red-400'}`}></span>
+                  <span className="text-xl font-bold text-slate-800">${displayPrice}</span>
+                  <span className={`ml-2 text-sm ${realTimeChange >= 0 ? 'text-green-600' : 'text-red-600'} flex items-center font-medium`}>
+                    <span className={`inline-block w-2 h-2 rounded-full mr-1 ${realTimeChange >= 0 ? 'bg-green-500' : 'bg-red-500'}`}></span>
                     {realTimeChange >= 0 ? '+' : ''}{realTimeChange}%
                   </span>
                 </>
@@ -484,20 +481,20 @@ export default function RealTimeStockCard({
           </div>
           
           {/* Latest trading day info */}
-          <div className="text-xs text-gray-400 mb-2">
+          <div className="text-xs text-slate-500 mb-2">
             Last updated: {latestTradingDay}
           </div>
           
           {/* Description bubble */}
-          <div className="p-3 bg-gray-800/70 rounded-lg border border-gray-700/50 shadow-inner">
-            <p className="text-sm text-gray-300">
+          <div className="p-3 bg-slate-50 rounded-lg border border-slate-100 shadow-sm">
+            <p className="text-sm text-slate-600 leading-relaxed">
               {companyData?.Description || stock.description}
             </p>
           </div>
         </div>
 
         {/* Performance Metrics */}
-        <div className="grid grid-cols-2 gap-3 p-4 border-b border-gray-800 bg-gradient-to-b from-gray-900 to-gray-900/80">
+        <div className="grid grid-cols-2 gap-3 p-4 border-b border-slate-100 bg-white">
           {Object.entries(stock.metrics).map(([key, metricObj]) => {
             const metricName = key.charAt(0).toUpperCase() + key.slice(1);
             
@@ -505,73 +502,60 @@ export default function RealTimeStockCard({
               <div 
                 key={key}
                 className={`p-3 rounded-xl relative ${
-                  metricObj.color === 'green' ? 'bg-gradient-to-br from-green-900/40 to-black border border-green-500/50' :
-                  metricObj.color === 'yellow' ? 'bg-gradient-to-br from-yellow-900/40 to-black border border-yellow-500/50' : 
-                  'bg-gradient-to-br from-red-900/40 to-black border border-red-500/50'
-                } active:scale-95 transition-all duration-150 cursor-pointer shadow-lg hover:shadow-xl backdrop-blur-sm`}
+                  metricObj.color === 'green' ? 'metric-high' :
+                  metricObj.color === 'yellow' ? 'metric-average' : 
+                  'metric-low'
+                } active:scale-95 transition-all duration-150 cursor-pointer shadow-sm hover:shadow-md`}
                 onClick={() => handleMetricClick(metricName)}
-                style={{
-                  boxShadow: metricObj.color === 'green' ? '0 0 15px rgba(34, 197, 94, 0.15)' :
-                          metricObj.color === 'yellow' ? '0 0 15px rgba(234, 179, 8, 0.15)' :
-                          '0 0 15px rgba(239, 68, 68, 0.15)'
-                }}
               >
                 <div className="absolute top-2 right-2">
                   <Info size={16} className={`${
-                    metricObj.color === 'green' ? 'text-green-400 drop-shadow-md' :
-                    metricObj.color === 'yellow' ? 'text-yellow-400 drop-shadow-md' : 
-                    'text-red-400 drop-shadow-md'
+                    metricObj.color === 'green' ? 'text-green-500' :
+                    metricObj.color === 'yellow' ? 'text-amber-500' : 
+                    'text-red-500'
                   }`} />
                 </div>
                 <div 
                   className={`text-lg font-bold ${
-                    metricObj.color === 'green' ? 'text-green-300' :
-                    metricObj.color === 'yellow' ? 'text-yellow-300' : 
-                    'text-red-300'
-                  } drop-shadow-md`}
+                    metricObj.color === 'green' ? 'text-green-600' :
+                    metricObj.color === 'yellow' ? 'text-amber-600' : 
+                    'text-red-600'
+                  }`}
                 >
                   {metricObj.value}
                 </div>
-                <div className="text-white text-sm font-medium capitalize mt-1 drop-shadow-sm">{metricName}</div>
+                <div className="text-slate-700 text-sm font-medium capitalize mt-1">{metricName}</div>
               </div>
             );
           })}
         </div>
 
         {/* Stock Synopsis */}
-        <div className="p-4 bg-gradient-to-br from-gray-900 via-gray-900 to-black border-b border-gray-800">
-          <h3 className="font-bold text-lg mb-4 flex items-center text-white drop-shadow-sm">
+        <div className="p-4 border-b border-slate-100 bg-white">
+          <h3 className="font-bold text-lg mb-4 flex items-center text-slate-800">
             Stock Synopsis
-            <span className="ml-2 text-xs text-green-300 bg-gray-800/50 px-2 py-1 rounded-full border border-gray-700/50 shadow-inner">
+            <span className="ml-2 text-xs text-sky-500 bg-sky-50 px-2 py-1 rounded-full border border-sky-100 shadow-sm">
               AI-generated
             </span>
           </h3>
           <div className="space-y-4">
             {/* Price */}
-            <div className="flex gap-3 bg-gradient-to-br from-gray-800/50 to-gray-900/70 p-4 rounded-xl border border-gray-700/50 hover:border-green-800/30 transition-all shadow-lg hover:shadow-green-900/5">
-              <div className={`text-${realTimeChange >= 0 ? 'green' : 'red'}-400 w-12 h-12 min-w-12 flex items-center justify-center bg-gradient-to-br from-gray-800 to-gray-900 rounded-full shadow-lg border border-${realTimeChange >= 0 ? 'green' : 'red'}-700/30`}
-                style={{
-                  boxShadow: realTimeChange >= 0 ? '0 0 15px rgba(34, 197, 94, 0.1)' : '0 0 15px rgba(239, 68, 68, 0.1)'
-                }}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="drop-shadow-lg">
+            <div className="flex gap-3 bg-white p-4 rounded-xl border border-slate-100 hover:border-sky-100 transition-all shadow-sm hover:shadow-md">
+              <div className={`${realTimeChange >= 0 ? 'text-green-500 bg-green-50 border-green-100' : 'text-red-500 bg-red-50 border-red-100'} w-12 h-12 min-w-12 flex items-center justify-center rounded-full shadow-sm border`}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
                 </svg>
               </div>
               <div className="flex-1">
-                <div className="font-bold text-white text-base drop-shadow-sm">Price Trend</div>
-                <div className="text-sm text-gray-300 mt-1 leading-relaxed">{stock.synopsis.price}</div>
+                <div className="font-bold text-slate-800 text-base">Price Trend</div>
+                <div className="text-sm text-slate-600 mt-1 leading-relaxed">{stock.synopsis.price}</div>
               </div>
             </div>
             
             {/* Company */}
-            <div className="flex gap-3 bg-gradient-to-br from-gray-800/50 to-gray-900/70 p-4 rounded-xl border border-gray-700/50 hover:border-green-800/30 transition-all shadow-lg hover:shadow-green-900/5">
-              <div className="text-green-400 w-12 h-12 min-w-12 flex items-center justify-center bg-gradient-to-br from-gray-800 to-gray-900 rounded-full shadow-lg border border-green-700/30"
-                style={{
-                  boxShadow: '0 0 15px rgba(34, 197, 94, 0.1)'
-                }}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="drop-shadow-lg">
+            <div className="flex gap-3 bg-white p-4 rounded-xl border border-slate-100 hover:border-sky-100 transition-all shadow-sm hover:shadow-md">
+              <div className="text-sky-500 bg-sky-50 border-sky-100 w-12 h-12 min-w-12 flex items-center justify-center rounded-full shadow-sm border">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <rect width="16" height="20" x="4" y="2" rx="2" ry="2" />
                   <path d="M9 22v-4h6v4" />
                   <path d="M8 6h.01" />
@@ -586,26 +570,22 @@ export default function RealTimeStockCard({
                 </svg>
               </div>
               <div className="flex-1">
-                <div className="font-bold text-white text-base drop-shadow-sm">Company News</div>
-                <div className="text-sm text-gray-300 mt-1 leading-relaxed">{stock.synopsis.company}</div>
+                <div className="font-bold text-slate-800 text-base">Company News</div>
+                <div className="text-sm text-slate-600 mt-1 leading-relaxed">{stock.synopsis.company}</div>
               </div>
             </div>
             
             {/* Role */}
-            <div className="flex gap-3 bg-gradient-to-br from-gray-800/50 to-gray-900/70 p-4 rounded-xl border border-gray-700/50 hover:border-green-800/30 transition-all shadow-lg hover:shadow-green-900/5">
-              <div className="text-green-400 w-12 h-12 min-w-12 flex items-center justify-center bg-gradient-to-br from-gray-800 to-gray-900 rounded-full shadow-lg border border-green-700/30"
-                style={{
-                  boxShadow: '0 0 15px rgba(34, 197, 94, 0.1)'
-                }}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="drop-shadow-lg">
+            <div className="flex gap-3 bg-white p-4 rounded-xl border border-slate-100 hover:border-sky-100 transition-all shadow-sm hover:shadow-md">
+              <div className="text-sky-500 bg-sky-50 border-sky-100 w-12 h-12 min-w-12 flex items-center justify-center rounded-full shadow-sm border">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7Z" />
                   <path d="M16.5 16 15 20h-6l-1.5-4" />
                 </svg>
               </div>
               <div className="flex-1">
-                <div className="font-bold text-white text-base drop-shadow-sm">Portfolio Role</div>
-                <div className="text-sm text-gray-300 mt-1 leading-relaxed">{stock.synopsis.role}</div>
+                <div className="font-bold text-slate-800 text-base">Portfolio Role</div>
+                <div className="text-sm text-slate-600 mt-1 leading-relaxed">{stock.synopsis.role}</div>
               </div>
             </div>
           </div>
@@ -613,7 +593,7 @@ export default function RealTimeStockCard({
 
         {/* Overall Analysis */}
         {stock.overallAnalysis && (
-          <div className="p-4 bg-gray-900/80">
+          <div className="p-4 bg-white">
             <OverallAnalysisCard
               ticker={stock.ticker}
               name={stock.name}

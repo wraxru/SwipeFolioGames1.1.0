@@ -28,39 +28,39 @@ interface MetricPopupProps {
 const getColorClass = (color: "green" | "yellow" | "red") => {
   switch (color) {
     case "green":
-      return "text-cyan-400";
+      return "text-green-600";
     case "yellow":
-      return "text-yellow-400";
+      return "text-amber-600";
     case "red":
-      return "text-red-400";
+      return "text-red-600";
     default:
-      return "text-white";
+      return "text-slate-800";
   }
 };
 
 const getBgColorClass = (color: "green" | "yellow" | "red") => {
   switch (color) {
     case "green":
-      return "bg-gradient-to-br from-cyan-900/40 to-cyan-950/20";
+      return "bg-green-50";
     case "yellow":
-      return "bg-gradient-to-br from-yellow-900/40 to-yellow-950/20";
+      return "bg-amber-50";
     case "red":
-      return "bg-gradient-to-br from-red-900/40 to-red-950/20";
+      return "bg-red-50";
     default:
-      return "bg-gradient-to-br from-gray-900/40 to-gray-950/20";
+      return "bg-slate-50";
   }
 };
 
 const getBorderColorClass = (color: "green" | "yellow" | "red") => {
   switch (color) {
     case "green":
-      return "border-cyan-500/40";
+      return "border-green-200";
     case "yellow":
-      return "border-yellow-500/40";
+      return "border-amber-200";
     case "red":
-      return "border-red-500/40";
+      return "border-red-200";
     default:
-      return "border-gray-700";
+      return "border-slate-200";
   }
 };
 
