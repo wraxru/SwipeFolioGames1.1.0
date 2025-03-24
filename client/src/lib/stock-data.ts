@@ -671,6 +671,8 @@ const generateDetailedMetrics = (metricType: string, rating: string, industry: s
   }
 };
 
+import { getStockAnalysis } from "./stock-analysis-data";
+
 export const generateRandomStocks = (industry: string, count: number = 10): StockData[] => {
   const industryCompanies = companyData[industry]?.companies || [];
   const stocksToGenerate = Math.min(count, industryCompanies.length);
@@ -720,12 +722,18 @@ export const generateRandomStocks = (industry: string, count: number = 10): Stoc
     const companyNews = generateCompanyNews(company.name, industry);
     const role = generateRoleDescription(basicMetrics, industry);
     
+    // Generate a rating between 2.5 and 9.5
+    const rating = Math.round((2.5 + Math.random() * 7) * 10) / 10;
+    
+    // Get overall analysis from our data or generate one
+    const overallAnalysis = getStockAnalysis(company.ticker, industry);
+    
     return {
       name: company.name,
       ticker: company.ticker,
       price: price,
       change: change,
-      rating: Math.round((2.5 + Math.random() * 2.5) * 10) / 10, // 2.5-5.0 rating
+      rating: rating,
       smartScore: getRandomItem(smartScoreOptions),
       description: company.description,
       metrics: detailedMetrics,
@@ -734,6 +742,7 @@ export const generateRandomStocks = (industry: string, count: number = 10): Stoc
         company: companyNews,
         role: role
       },
+      overallAnalysis,
       chartData,
       industry
     };
