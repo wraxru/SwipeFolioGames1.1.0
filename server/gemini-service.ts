@@ -124,7 +124,15 @@ export async function generateAIStockData(stackName: string): Promise<any> {
       throw new Error(`Gemini API request failed: ${response.status} ${response.statusText}`);
     }
 
-    const responseData = await response.json();
+    const responseData = await response.json() as {
+      candidates: Array<{
+        content: {
+          parts: Array<{
+            text: string
+          }>
+        }
+      }>
+    };
     
     // Extract and parse the JSON response from Gemini
     const textResponse = responseData.candidates[0].content.parts[0].text;
