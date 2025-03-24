@@ -21,6 +21,37 @@ export interface StockData {
     role: string;
   };
   chartData: number[];
+  // Optional chart data by time frame
+  chartDataByTimeFrame?: {
+    [timeFrame: string]: number[];
+  };
+  // Optional AI-generated specific metric values
+  specificMetrics?: {
+    performance?: {
+      revenueGrowth: string;
+      profitMargin: string;
+      returnOnCapital: string;
+      industryComparison: string;
+    };
+    stability?: {
+      volatility: string;
+      beta: string;
+      dividendConsistency: string;
+      industryComparison: string;
+    };
+    value?: {
+      peRatio: string;
+      pbRatio: string;
+      dividendYield: string;
+      industryComparison: string;
+    };
+    momentum?: {
+      priceReturn3Month: string;
+      relativePerformance: string;
+      rsi: string;
+      industryComparison: string;
+    };
+  };
   // Optional AI-generated explanations for metrics
   metricExplanations?: {
     performance?: {

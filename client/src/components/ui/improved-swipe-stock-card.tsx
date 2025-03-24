@@ -93,10 +93,15 @@ export default function ImprovedSwipeStockCard({
     }
   };
   
-  // Generate chart data based on selected time frame
+  // Get chart data for the selected time frame
   const chartData = useMemo(() => {
+    // If we have time-based chart data, use it
+    if (stock.chartDataByTimeFrame && stock.chartDataByTimeFrame[timeFrame]) {
+      return stock.chartDataByTimeFrame[timeFrame];
+    }
+    // Otherwise use the regular chart data
     return generateTimeBasedData(stock.chartData, timeFrame);
-  }, [stock.chartData, timeFrame]);
+  }, [stock, timeFrame]);
   
   // Calculate min/max for chart display
   const minValue = Math.min(...chartData) * 0.98; // Add 2% padding below
