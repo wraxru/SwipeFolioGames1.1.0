@@ -97,26 +97,43 @@ export function createGeminiPrompt(stackName: string, ticker: string | null = nu
  */
 export async function generateAIStockData(stackName: string): Promise<any> {
   try {
-    const apiKey = process.env.GEMINI_API_KEY;
+    const apiKey = process.env.OPENROUTER_API_KEY;
     if (!apiKey) {
-      throw new Error("Gemini API key not found");
+      throw new Error("OpenRouter API key not found");
     }
     
-    // Initialize the Gemini API with the API key
-    const genAI = new GoogleGenerativeAI(apiKey);
+    const prompt = createGeminiPrompt(stackName);
     
-    // For text-only input, use the gemini-pro model
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+        'HTTP-Referer': 'https://replit.com',
+        'X-Title': 'SwipeFolio Stock Generator'
+      },
+      body: JSON.stringify({
+        model: 'google/gemini-pro',
+        messages: [
+          { role: 'user', content: prompt }
+        ],
+        temperature: 0.7,
+        max_tokens: 3072
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`OpenRouter API request failed: ${response.status} ${response.statusText}`);
+    }
+
+    const responseData = await response.json();
+    const textResponse = responseData.choices[0].message.content;
     
-    const generationConfig = {
-      temperature: 0.7,
-      topK: 20,
-      topP: 0.9,
-      maxOutputTokens: 3072,
-    };
+    // Extract and parse the JSON response
+    console.log("Raw response from OpenRouter:", textResponse.substring(0, 100) + "...");
+    const stockData = JSON.parse(textResponse);
     
-    const safetySettings = [
-      {
+    // Populate the template placeholders with actual values
         category: HarmCategory.HARM_CATEGORY_HARASSMENT,
         threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
       },
