@@ -218,27 +218,34 @@ export default function MetricPopup({
                         {/* Metric Content */}
                         <div className="p-3">
                           {/* Comparison Row */}
-                          <div className="flex justify-between items-center mb-3">
-                            <div className="flex items-center">
-                              <div className={`px-3 py-1 rounded-full ${bgColorClass} ${textColorClass} font-medium text-sm`}>
-                                {item.value}{item.suffix || ""}
-                              </div>
-                              <ArrowRight size={14} className="mx-2 text-gray-500" />
-                              <div className="text-gray-400 text-sm">
-                                Industry: {item.industry || industryAvg}{item.suffix || ""}
+                          <div className="flex flex-col gap-3 mb-3">
+                            <div className="flex justify-between items-center">
+                              {/* Status badge */}
+                              <div className={`px-2 py-1 rounded-full ${bgColorClass} text-xs font-medium uppercase ${textColorClass}`}>
+                                {comparisonColor === "green" ? "Better" : 
+                                 comparisonColor === "yellow" ? "Average" : "Below Avg"}
                               </div>
                             </div>
-                            <div className={`px-2 py-1 rounded-full ${bgColorClass} text-xs font-medium uppercase ${textColorClass}`}>
-                              {comparisonColor === "green" ? "Better" : 
-                               comparisonColor === "yellow" ? "Average" : "Below Avg"}
+                            
+                            {/* Metric comparison */}
+                            <div className="flex items-center justify-between w-full">
+                              <div className="flex flex-col items-center">
+                                <span className="text-xs text-gray-400 mb-1">Company</span>
+                                <div className={`px-3 py-1.5 rounded-lg ${bgColorClass} ${textColorClass} font-medium text-base flex items-center justify-center min-w-16`}>
+                                  {item.value}{item.suffix || ""}
+                                </div>
+                              </div>
+                              
+                              <ArrowRight size={20} className="mx-2 text-gray-500" />
+                              
+                              <div className="flex flex-col items-center">
+                                <span className="text-xs text-gray-400 mb-1">Industry Avg</span>
+                                <div className="px-3 py-1.5 rounded-lg bg-gray-800 text-gray-300 font-medium text-base flex items-center justify-center min-w-16">
+                                  {item.industry || industryAvg}{item.suffix || ""}
+                                </div>
+                              </div>
                             </div>
                           </div>
-                          
-                          {/* Explanation */}
-                          <p className="text-sm text-gray-300">
-                            {item.explanation || 
-                             `This shows how the company's ${item.label.toLowerCase()} compares to the ${metricData.industry} industry average.`}
-                          </p>
                         </div>
                       </div>
                     );

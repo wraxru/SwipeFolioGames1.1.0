@@ -66,6 +66,7 @@ export interface StockData {
     company: string;
     role: string;
   };
+  overallAnalysis?: string;
   chartData: number[];
   industry: string;
 }
