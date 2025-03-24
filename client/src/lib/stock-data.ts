@@ -538,21 +538,23 @@ import { apiRequest } from "@/lib/queryClient";
 // Get a set of stocks for the given industry using the server-side API
 export const getIndustryStocks = async (industry: string): Promise<StockData[]> => {
   try {
-    // Request AI-generated stocks from the server
+    // Request OpenRouter-generated stocks from the server
+    console.log(`Fetching stocks for ${industry} using OpenRouter API...`);
     const response = await fetch(`/api/stock-data/${encodeURIComponent(industry)}?count=5`);
     
     if (!response.ok) {
-      throw new Error(`Failed to fetch AI-generated stocks: ${response.status}`);
+      const errorText = await response.text();
+      throw new Error(`Failed to fetch AI-generated stocks: ${response.status} - ${errorText}`);
     }
     
     const aiStocks = await response.json();
     
     if (aiStocks && aiStocks.length > 0) {
-      console.log("Using AI-generated stocks from server");
+      console.log("Using OpenRouter-generated stocks from server");
       return aiStocks;
     }
   } catch (error) {
-    console.error("Error fetching AI stocks from server:", error);
+    console.error("Error fetching OpenRouter stocks from server:", error);
     // Fall back to random stocks on error
   }
   
