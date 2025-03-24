@@ -457,6 +457,18 @@ export default function ImprovedSwipeStockCard({
           })}
         </div>
 
+        {/* Overall Analysis */}
+        {stock.overallAnalysis && (
+          <div className="p-4 bg-gray-900/60 border-b border-gray-800">
+            <OverallAnalysisCard
+              ticker={stock.ticker}
+              name={stock.name}
+              rating={stock.rating}
+              analysis={stock.overallAnalysis}
+            />
+          </div>
+        )}
+
         {/* Stock Synopsis */}
         <div className="p-4 bg-gray-900">
           <h3 className="font-bold text-lg mb-3 flex items-center">

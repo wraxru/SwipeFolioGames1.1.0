@@ -808,6 +808,7 @@ const hardcodedStocks: Record<string, StockData[]> = {
         company: "Prologis expands portfolio with strategic acquisitions in high-growth logistics markets",
         role: "Core real estate holding with solid dividend and e-commerce driven growth tailwinds"
       },
+      overallAnalysis: "A high-quality logistics REIT benefiting from e-commerce growth with strong performance and stability. Offers a balanced opportunity with above-average growth, defensive characteristics, and reliable income.",
       chartData: [126.2, 127.1, 126.8, 126.5, 126.9, 127.3, 127.8, 127.4, 127.7, 128.2, 127.9, 127.85],
       industry: "Real Estate"
     },
@@ -866,6 +867,7 @@ const hardcodedStocks: Record<string, StockData[]> = {
         company: "American Tower's acquisition of data center assets enhances digital infrastructure positioning",
         role: "Anchor position for portfolio stability with 5G and data growth as long-term catalysts"
       },
+      overallAnalysis: "Essential wireless infrastructure provider with defensive characteristics and consistent income from long-term leases. Benefits from increasing data consumption and 5G expansion for continued stable growth.",
       chartData: [187.2, 188.1, 187.8, 187.3, 186.9, 186.7, 186.4, 186.2, 186.7, 186.9, 186.6, 186.45],
       industry: "Real Estate"
     },
