@@ -457,20 +457,8 @@ export default function ImprovedSwipeStockCard({
           })}
         </div>
 
-        {/* Overall Analysis */}
-        {stock.overallAnalysis && (
-          <div className="p-4 bg-gray-900/60 border-b border-gray-800">
-            <OverallAnalysisCard
-              ticker={stock.ticker}
-              name={stock.name}
-              rating={stock.rating}
-              analysis={stock.overallAnalysis}
-            />
-          </div>
-        )}
-
         {/* Stock Synopsis */}
-        <div className="p-4 bg-gray-900">
+        <div className="p-4 bg-gray-900 border-b border-gray-800">
           <h3 className="font-bold text-lg mb-3 flex items-center">
             Stock Synopsis
             <span className="ml-2 text-xs text-gray-400 bg-gray-800/50 px-2 py-1 rounded-full">
@@ -479,22 +467,22 @@ export default function ImprovedSwipeStockCard({
           </h3>
           <div className="space-y-4">
             {/* Price */}
-            <div className="flex gap-3 bg-gray-800/50 p-3 rounded-lg border border-gray-800">
-              <div className={`text-${stock.change >= 0 ? 'cyan' : 'red'}-400 w-10 h-10 min-w-10 flex items-center justify-center bg-gray-800 rounded-full`}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <div className="flex gap-3 bg-gray-800/50 p-3 rounded-lg border border-gray-800 hover:bg-gray-800/80 transition-all shadow-lg">
+              <div className={`text-${stock.change >= 0 ? 'cyan' : 'red'}-400 w-10 h-10 min-w-10 flex items-center justify-center bg-gray-800 rounded-full shadow-inner shadow-cyan-900/20`}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="drop-shadow-md">
                   <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
                 </svg>
               </div>
               <div className="flex-1">
-                <div className="font-semibold">Price</div>
-                <div className="text-sm text-gray-400">{stock.synopsis.price}</div>
+                <div className="font-semibold text-white">Price</div>
+                <div className="text-sm text-gray-300">{stock.synopsis.price}</div>
               </div>
             </div>
             
             {/* Company */}
-            <div className="flex gap-3 bg-gray-800/50 p-3 rounded-lg border border-gray-800">
-              <div className="text-cyan-400 w-10 h-10 min-w-10 flex items-center justify-center bg-gray-800 rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <div className="flex gap-3 bg-gray-800/50 p-3 rounded-lg border border-gray-800 hover:bg-gray-800/80 transition-all shadow-lg">
+              <div className="text-cyan-400 w-10 h-10 min-w-10 flex items-center justify-center bg-gray-800 rounded-full shadow-inner shadow-cyan-900/20">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="drop-shadow-md">
                   <rect width="16" height="20" x="4" y="2" rx="2" ry="2" />
                   <path d="M9 22v-4h6v4" />
                   <path d="M8 6h.01" />
@@ -509,26 +497,38 @@ export default function ImprovedSwipeStockCard({
                 </svg>
               </div>
               <div className="flex-1">
-                <div className="font-semibold">Company</div>
-                <div className="text-sm text-gray-400">{stock.synopsis.company}</div>
+                <div className="font-semibold text-white">Company</div>
+                <div className="text-sm text-gray-300">{stock.synopsis.company}</div>
               </div>
             </div>
             
             {/* Role */}
-            <div className="flex gap-3 bg-gray-800/50 p-3 rounded-lg border border-gray-800">
-              <div className="text-cyan-400 w-10 h-10 min-w-10 flex items-center justify-center bg-gray-800 rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <div className="flex gap-3 bg-gray-800/50 p-3 rounded-lg border border-gray-800 hover:bg-gray-800/80 transition-all shadow-lg">
+              <div className="text-cyan-400 w-10 h-10 min-w-10 flex items-center justify-center bg-gray-800 rounded-full shadow-inner shadow-cyan-900/20">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="drop-shadow-md">
                   <path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7Z" />
                   <path d="M16.5 16 15 20h-6l-1.5-4" />
                 </svg>
               </div>
               <div className="flex-1">
-                <div className="font-semibold">Company Role</div>
-                <div className="text-sm text-gray-400">{stock.synopsis.role}</div>
+                <div className="font-semibold text-white">Company Role</div>
+                <div className="text-sm text-gray-300">{stock.synopsis.role}</div>
               </div>
             </div>
           </div>
         </div>
+
+        {/* Overall Analysis */}
+        {stock.overallAnalysis && (
+          <div className="p-4 bg-gray-900/80">
+            <OverallAnalysisCard
+              ticker={stock.ticker}
+              name={stock.name}
+              rating={stock.rating}
+              analysis={stock.overallAnalysis}
+            />
+          </div>
+        )}
       </motion.div>
       
       {/* Metric Popup */}

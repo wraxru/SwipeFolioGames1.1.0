@@ -926,6 +926,7 @@ const hardcodedStocks: Record<string, StockData[]> = {
         company: "Simon Property Group's premium mall traffic exceeds pre-pandemic levels in key markets",
         role: "Value opportunity in retail real estate with attractive dividend yield and recovery potential"
       },
+      overallAnalysis: "Leading retail mall REIT offering superior dividend yield with improving post-pandemic fundamentals. Strong value proposition despite moderate performance metrics and some retail sector volatility.",
       chartData: [146.8, 147.2, 147.5, 147.1, 147.4, 147.9, 148.1, 148.3, 148.0, 148.4, 148.5, 148.65],
       industry: "Real Estate"
     },
@@ -984,6 +985,7 @@ const hardcodedStocks: Record<string, StockData[]> = {
         company: "Equinix's expansion into emerging markets shows promising early results",
         role: "Growth-oriented REIT with digital infrastructure focus and AI data center tailwinds"
       },
+      overallAnalysis: "Premier data center REIT with exceptional growth and strong business fundamentals. Strategic positioning in AI and cloud infrastructure provides sustainable competitive advantages and long-term growth potential.",
       chartData: [758.4, 759.2, 760.1, 759.8, 760.5, 761.3, 762.2, 762.8, 763.3, 763.7, 764.0, 764.32],
       industry: "Real Estate"
     },
@@ -1042,6 +1044,7 @@ const hardcodedStocks: Record<string, StockData[]> = {
         company: "Public Storage's occupancy rates exceeding expectations with pricing power intact",
         role: "Defensive REIT with steady cash flows and consistent dividend growth history"
       },
+      overallAnalysis: "Market-leading self-storage REIT with exceptional stability and strong profit margins. Offers defensive investment characteristics with inflation protection and consistent dividend income.",
       chartData: [287.8, 288.2, 288.5, 288.1, 288.4, 288.9, 289.1, 289.3, 289.0, 289.4, 289.6, 289.75],
       industry: "Real Estate"
     }

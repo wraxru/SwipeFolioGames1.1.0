@@ -231,7 +231,7 @@ export default function MetricPopup({
                             <div className="flex items-center justify-between w-full">
                               <div className="flex flex-col items-center">
                                 <span className="text-xs text-gray-400 mb-1">Company</span>
-                                <div className={`px-3 py-1.5 rounded-lg ${bgColorClass} ${textColorClass} font-medium text-base flex items-center justify-center min-w-16`}>
+                                <div className={`px-3 py-1.5 rounded-lg ${bgColorClass} ${textColorClass} font-medium text-base flex items-center justify-center min-w-16 shadow-lg`}>
                                   {item.value}{item.suffix || ""}
                                 </div>
                               </div>
@@ -239,8 +239,8 @@ export default function MetricPopup({
                               <ArrowRight size={20} className="mx-2 text-gray-500" />
                               
                               <div className="flex flex-col items-center">
-                                <span className="text-xs text-gray-400 mb-1">Industry Avg</span>
-                                <div className="px-3 py-1.5 rounded-lg bg-gray-800 text-gray-300 font-medium text-base flex items-center justify-center min-w-16">
+                                <span className="text-xs text-gray-400 mb-1"></span>
+                                <div className="px-3 py-1.5 rounded-lg bg-gray-800 text-gray-300 font-medium text-base flex items-center justify-center min-w-16 shadow-lg">
                                   {item.industry || industryAvg}{item.suffix || ""}
                                 </div>
                               </div>
