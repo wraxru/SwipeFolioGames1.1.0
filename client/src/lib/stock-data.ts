@@ -1,6 +1,57 @@
 // Stock data utilities for generating random stock information
 
 // Types for stock data
+export interface PerformanceDetails {
+  revenueGrowth: number;
+  profitMargin: number;
+  returnOnCapital: number;
+}
+
+export interface StabilityDetails {
+  volatility: number;
+  beta: number;
+  dividendConsistency: "High" | "Medium" | "Low" | "N/A";
+}
+
+export interface ValueDetails {
+  peRatio: number;
+  pbRatio: number;
+  dividendYield: number | "N/A";
+}
+
+export interface MomentumDetails {
+  threeMonthReturn: number;
+  relativePerformance: number;
+  rsi: number;
+}
+
+export interface MetricDetails {
+  performance: { 
+    value: string; 
+    color: string;
+    details: PerformanceDetails;
+    explanation?: string;
+  };
+  stability: { 
+    value: string; 
+    color: string;
+    details: StabilityDetails;
+    explanation?: string;
+  };
+  value: { 
+    value: string; 
+    color: string;
+    details: ValueDetails;
+    explanation?: string;
+  };
+  momentum: { 
+    value: string; 
+    color: string;
+    details: MomentumDetails;
+    explanation?: string;
+  };
+}
+
 export interface StockData {
   name: string;
   ticker: string;
@@ -9,44 +60,7 @@ export interface StockData {
   rating: number;
   smartScore: string;
   description: string;
-  metrics: {
-    performance: { 
-      value: string; 
-      color: string;
-      details: {
-        revenueGrowth: number;
-        profitMargin: number;
-        returnOnCapital: number;
-      }
-    };
-    stability: { 
-      value: string; 
-      color: string;
-      details: {
-        volatility: number;
-        beta: number;
-        dividendConsistency: "High" | "Medium" | "Low" | "N/A";
-      }
-    };
-    value: { 
-      value: string; 
-      color: string;
-      details: {
-        peRatio: number;
-        pbRatio: number;
-        dividendYield: number | "N/A";
-      }
-    };
-    momentum: { 
-      value: string; 
-      color: string;
-      details: {
-        threeMonthReturn: number;
-        relativePerformance: number;
-        rsi: number;
-      }
-    };
-  };
+  metrics: MetricDetails;
   synopsis: {
     price: string;
     company: string;

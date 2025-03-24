@@ -134,9 +134,9 @@ export default function MetricPopup({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 10 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-md z-50"
+            className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none"
           >
-            <div className="bg-gray-900 border border-gray-800 rounded-xl shadow-2xl overflow-hidden">
+            <div className="bg-gray-900 border border-gray-800 rounded-xl shadow-2xl overflow-hidden w-[90%] max-w-md m-auto pointer-events-auto">
               {/* Header */}
               <div className={`p-4 ${bgColorClass} border-b ${borderColorClass}`}>
                 <div className="flex justify-between items-center">
