@@ -5,7 +5,7 @@ import { Stack } from "@shared/schema";
 import { ArrowLeft, BellRing } from "lucide-react";
 import { getQueryFn } from "@/lib/queryClient";
 import { StockData, getIndustryStocks } from "@/lib/stock-data";
-import ImprovedSwipeStockCard from "@/components/ui/improved-swipe-stock-card";
+import SwipeStockCard from "@/components/ui/swipe-stock-card";
 import StackCompletedModal from "@/components/stack-completed-modal";
 
 export default function StockDetailPage() {
@@ -24,8 +24,6 @@ export default function StockDetailPage() {
   // Generate stocks data for the industry
   const stocks = useMemo(() => {
     if (!stack) return [];
-    // For now, we'll use the mock data until we fully integrate Gemini AI
-    // In a production app, we'd call generateMultipleStocks(stack.industry) here
     return getIndustryStocks(stack.industry);
   }, [stack]);
 
@@ -86,7 +84,7 @@ export default function StockDetailPage() {
       {/* Main content */}
       <div className="flex-1 relative">
         {stocks.length > 0 && (
-          <ImprovedSwipeStockCard
+          <SwipeStockCard
             stock={currentStock}
             onNext={handleNextStock}
             onPrevious={handlePreviousStock}

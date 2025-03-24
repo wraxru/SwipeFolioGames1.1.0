@@ -21,29 +21,6 @@ export interface StockData {
     role: string;
   };
   chartData: number[];
-  // Optional AI-generated explanations for metrics
-  metricExplanations?: {
-    performance?: {
-      calculation: string;
-      comparison: string;
-      meaning: string;
-    };
-    stability?: {
-      calculation: string;
-      comparison: string;
-      meaning: string;
-    };
-    value?: {
-      calculation: string;
-      comparison: string;
-      meaning: string;
-    };
-    momentum?: {
-      calculation: string;
-      comparison: string;
-      meaning: string;
-    };
-  };
 }
 
 // Industry-specific company data

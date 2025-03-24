@@ -308,18 +308,6 @@ export default function SwipeStockCard({
                 {value}
               </div>
               <div className="text-white text-sm capitalize">{key}</div>
-              <div 
-                className="absolute inset-0 cursor-pointer"
-                onClick={() => {
-                  const metric = stock.metrics[key];
-                  alert(
-                    `${key.toUpperCase()}\n\n` +
-                    `Rating: ${metric.value}\n\n` +
-                    `How we calculated this:\n${metric.explanation}\n\n` +
-                    `Industry Comparison:\n${metric.industryComparison}`
-                  );
-                }}
-              />
             </div>
           ))}
         </div>
