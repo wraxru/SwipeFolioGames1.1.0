@@ -318,11 +318,11 @@ export default function ImprovedSwipeStockCard({
 
         {/* Chart */}
         <div className="px-4 pt-8 pb-8 border-b border-gray-800 h-60 relative mt-2 bg-gradient-to-b from-gray-900 to-black">
-          {/* Y-axis values */}
-          <div className="absolute left-0 top-0 bottom-16 flex flex-col justify-between text-xs text-gray-500">
-            <span className="px-1 rounded bg-black/50 backdrop-blur-sm">${priceRangeMax}</span>
-            <span className="px-1 rounded bg-black/50 backdrop-blur-sm">${Math.round((priceRangeMax + priceRangeMin) / 2 * 100) / 100}</span>
-            <span className="px-1 rounded bg-black/50 backdrop-blur-sm">${priceRangeMin}</span>
+          {/* Y-axis values - fixed positioning to avoid sticking out */}
+          <div className="absolute left-1 top-0 bottom-16 flex flex-col justify-between text-xs text-gray-500 w-8 text-right">
+            <div className="w-full px-1 py-0.5 rounded bg-black/70 backdrop-blur-sm text-right">${priceRangeMax}</div>
+            <div className="w-full px-1 py-0.5 rounded bg-black/70 backdrop-blur-sm text-right">${Math.round((priceRangeMax + priceRangeMin) / 2 * 100) / 100}</div>
+            <div className="w-full px-1 py-0.5 rounded bg-black/70 backdrop-blur-sm text-right">${priceRangeMin}</div>
           </div>
           
           {/* Chart grid lines */}
@@ -336,12 +336,8 @@ export default function ImprovedSwipeStockCard({
             <svg viewBox="0 0 300 80" width="100%" height="100%" preserveAspectRatio="none">
               <defs>
                 <linearGradient id={`chartGradient-${stock.ticker}`} x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stopColor="rgba(6, 182, 212, 0.4)" />
-                  <stop offset="100%" stopColor="rgba(6, 182, 212, 0)" />
-                </linearGradient>
-                <linearGradient id={`negativeChartGradient-${stock.ticker}`} x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stopColor="rgba(239, 68, 68, 0.4)" />
-                  <stop offset="100%" stopColor="rgba(239, 68, 68, 0)" />
+                  <stop offset="0%" stopColor={stock.change >= 0 ? "rgba(34, 197, 94, 0.4)" : "rgba(239, 68, 68, 0.4)"} />
+                  <stop offset="100%" stopColor={stock.change >= 0 ? "rgba(34, 197, 94, 0)" : "rgba(239, 68, 68, 0)"} />
                 </linearGradient>
                 {/* Add a glow effect */}
                 <filter id={`glow-${stock.ticker}`}>
@@ -358,7 +354,7 @@ export default function ImprovedSwipeStockCard({
                   return `L ${x},${y}`;
                 }).join(" ")}`}
                 fill="none"
-                stroke={stock.change >= 0 ? "#06b6d4" : "#ef4444"}
+                stroke={stock.change >= 0 ? "#22c55e" : "#ef4444"}
                 strokeWidth="2.5"
                 filter={`url(#glow-${stock.ticker})`}
               />
@@ -370,7 +366,7 @@ export default function ImprovedSwipeStockCard({
                   const y = 80 - ((point - minValue) / (maxValue - minValue)) * 80;
                   return `L ${x},${y}`;
                 }).join(" ")} L 300,80 L 0,80 Z`}
-                fill={stock.change >= 0 ? `url(#chartGradient-${stock.ticker})` : `url(#negativeChartGradient-${stock.ticker})`}
+                fill={`url(#chartGradient-${stock.ticker})`}
               />
             </svg>
           </div>
@@ -386,26 +382,17 @@ export default function ImprovedSwipeStockCard({
         {/* Stock Info */}
         <div className="px-4 py-4 border-b border-gray-800 bg-gradient-to-br from-gray-900 via-gray-900 to-black">
           <div className="flex items-start justify-between mb-4">
-            <div>
-              <h2 className="text-xl font-bold text-white drop-shadow-sm">{stock.name} <span className="text-gray-400">({stock.ticker})</span></h2>
-              <div className="flex items-center gap-2 mt-2">
-                {/* Price bubble */}
-                <div className="flex items-center">
-                  <div className={`flex items-center ${stock.change >= 0 ? 'bg-gradient-to-r from-cyan-900/50 to-cyan-950/30' : 'bg-gradient-to-r from-red-900/50 to-red-950/30'} rounded-full px-3 py-2 border ${stock.change >= 0 ? 'border-cyan-500/30' : 'border-red-500/30'} shadow-lg`}
-                    style={{
-                      boxShadow: stock.change >= 0 ? '0 0 15px rgba(6, 182, 212, 0.1)' : '0 0 15px rgba(239, 68, 68, 0.1)'
-                    }}
-                  >
-                    <span className="text-2xl font-bold text-white drop-shadow-md">${displayPrice}</span>
-                    <span className={`ml-2 text-sm ${stock.change >= 0 ? 'text-cyan-300' : 'text-red-300'} flex items-center font-medium drop-shadow-sm`}>
-                      <span className={`inline-block w-2 h-2 rounded-full mr-1 ${stock.change >= 0 ? 'bg-cyan-400' : 'bg-red-400'}`}></span>
-                      {stock.change >= 0 ? '+' : ''}{stock.change}%
-                    </span>
-                  </div>
-                </div>
+            <div className="flex-1">
+              <h2 className="text-2xl font-bold text-white drop-shadow-sm">{stock.name} <span className="text-gray-400">({stock.ticker})</span></h2>
+              {/* Description moved up for better flow */}
+              <div className="bg-gray-800/40 rounded-lg p-3 mt-2 border border-gray-700/50 shadow-inner">
+                <p className="text-sm text-gray-300 leading-relaxed">
+                  {stock.description}
+                </p>
               </div>
             </div>
             <div className="flex flex-col items-end">
+              {/* Stars */}
               <div className="flex items-center">
                 {[1, 2, 3, 4, 5].map((star) => (
                   <Star
@@ -421,15 +408,26 @@ export default function ImprovedSwipeStockCard({
                   />
                 ))}
               </div>
-              <span className="text-sm text-cyan-400 mt-1.5 bg-gray-800/70 px-3 py-1 rounded-full shadow-inner border border-gray-700/50 font-medium">
-                SmartScore {stock.smartScore}
+              {/* SmartScore badge with just the value */}
+              <span className="text-sm text-green-400 mt-1.5 bg-gray-800/70 px-3 py-1 rounded-full shadow-inner border border-gray-700/50 font-medium">
+                {stock.smartScore}
               </span>
+              
+              {/* Price bubble moved to right column */}
+              <div className="mt-3">
+                <div className={`flex items-center ${stock.change >= 0 ? 'bg-gradient-to-r from-green-900/50 to-green-950/30' : 'bg-gradient-to-r from-red-900/50 to-red-950/30'} rounded-full px-3 py-2 border ${stock.change >= 0 ? 'border-green-500/30' : 'border-red-500/30'} shadow-lg`}
+                  style={{
+                    boxShadow: stock.change >= 0 ? '0 0 15px rgba(34, 197, 94, 0.1)' : '0 0 15px rgba(239, 68, 68, 0.1)'
+                  }}
+                >
+                  <span className="text-2xl font-bold text-white drop-shadow-md">${displayPrice}</span>
+                  <span className={`ml-2 text-sm ${stock.change >= 0 ? 'text-green-300' : 'text-red-300'} flex items-center font-medium drop-shadow-sm`}>
+                    <span className={`inline-block w-2 h-2 rounded-full mr-1 ${stock.change >= 0 ? 'bg-green-400' : 'bg-red-400'}`}></span>
+                    {stock.change >= 0 ? '+' : ''}{stock.change}%
+                  </span>
+                </div>
+              </div>
             </div>
-          </div>
-          <div className="bg-gray-800/40 rounded-lg p-3 border border-gray-700/50 shadow-inner">
-            <p className="text-sm text-gray-300 leading-relaxed">
-              {stock.description}
-            </p>
           </div>
         </div>
 
@@ -437,41 +435,32 @@ export default function ImprovedSwipeStockCard({
         <div className="grid grid-cols-2 gap-3 p-4 border-b border-gray-800 bg-gradient-to-b from-gray-900 to-gray-900/80">
           {Object.entries(stock.metrics).map(([key, metricObj]) => {
             const metricName = key.charAt(0).toUpperCase() + key.slice(1);
-            // Define glow and gradient colors based on rating
-            const glowColor = metricObj.color === 'green' ? 'cyan' : 
-                            metricObj.color === 'yellow' ? 'yellow' : 'red';
-            const gradientFrom = metricObj.color === 'green' ? 'from-cyan-900/60' : 
-                               metricObj.color === 'yellow' ? 'from-yellow-900/60' : 
-                               'from-red-900/60';
-            const gradientTo = metricObj.color === 'green' ? 'to-cyan-950/20' : 
-                             metricObj.color === 'yellow' ? 'to-yellow-950/20' : 
-                             'to-red-950/20';
             
             return (
               <div 
                 key={key}
                 className={`p-3 rounded-xl relative ${
-                  metricObj.color === 'green' ? 'bg-gradient-to-br from-cyan-900/40 to-black border border-cyan-500/50' :
+                  metricObj.color === 'green' ? 'bg-gradient-to-br from-green-900/40 to-black border border-green-500/50' :
                   metricObj.color === 'yellow' ? 'bg-gradient-to-br from-yellow-900/40 to-black border border-yellow-500/50' : 
                   'bg-gradient-to-br from-red-900/40 to-black border border-red-500/50'
                 } active:scale-95 transition-all duration-150 cursor-pointer shadow-lg hover:shadow-xl backdrop-blur-sm`}
                 onClick={() => handleMetricClick(metricName)}
                 style={{
-                  boxShadow: metricObj.color === 'green' ? '0 0 15px rgba(6, 182, 212, 0.15)' :
+                  boxShadow: metricObj.color === 'green' ? '0 0 15px rgba(34, 197, 94, 0.15)' :
                           metricObj.color === 'yellow' ? '0 0 15px rgba(234, 179, 8, 0.15)' :
                           '0 0 15px rgba(239, 68, 68, 0.15)'
                 }}
               >
                 <div className="absolute top-2 right-2">
                   <Info size={16} className={`${
-                    metricObj.color === 'green' ? 'text-cyan-400 drop-shadow-md' :
+                    metricObj.color === 'green' ? 'text-green-400 drop-shadow-md' :
                     metricObj.color === 'yellow' ? 'text-yellow-400 drop-shadow-md' : 
                     'text-red-400 drop-shadow-md'
                   }`} />
                 </div>
                 <div 
                   className={`text-lg font-bold ${
-                    metricObj.color === 'green' ? 'text-cyan-300' :
+                    metricObj.color === 'green' ? 'text-green-300' :
                     metricObj.color === 'yellow' ? 'text-yellow-300' : 
                     'text-red-300'
                   } drop-shadow-md`}
@@ -488,16 +477,16 @@ export default function ImprovedSwipeStockCard({
         <div className="p-4 bg-gradient-to-br from-gray-900 via-gray-900 to-black border-b border-gray-800">
           <h3 className="font-bold text-lg mb-4 flex items-center text-white drop-shadow-sm">
             Stock Synopsis
-            <span className="ml-2 text-xs text-cyan-300 bg-gray-800/50 px-2 py-1 rounded-full border border-gray-700/50 shadow-inner">
+            <span className="ml-2 text-xs text-green-300 bg-gray-800/50 px-2 py-1 rounded-full border border-gray-700/50 shadow-inner">
               AI-generated
             </span>
           </h3>
           <div className="space-y-4">
             {/* Price */}
-            <div className="flex gap-3 bg-gradient-to-br from-gray-800/50 to-gray-900/70 p-4 rounded-xl border border-gray-700/50 hover:border-cyan-800/30 transition-all shadow-lg hover:shadow-cyan-900/5">
-              <div className={`text-${stock.change >= 0 ? 'cyan' : 'red'}-400 w-12 h-12 min-w-12 flex items-center justify-center bg-gradient-to-br from-gray-800 to-gray-900 rounded-full shadow-lg border border-${stock.change >= 0 ? 'cyan' : 'red'}-700/30`}
+            <div className="flex gap-3 bg-gradient-to-br from-gray-800/50 to-gray-900/70 p-4 rounded-xl border border-gray-700/50 hover:border-green-800/30 transition-all shadow-lg hover:shadow-green-900/5">
+              <div className={`text-${stock.change >= 0 ? 'green' : 'red'}-400 w-12 h-12 min-w-12 flex items-center justify-center bg-gradient-to-br from-gray-800 to-gray-900 rounded-full shadow-lg border border-${stock.change >= 0 ? 'green' : 'red'}-700/30`}
                 style={{
-                  boxShadow: stock.change >= 0 ? '0 0 15px rgba(6, 182, 212, 0.1)' : '0 0 15px rgba(239, 68, 68, 0.1)'
+                  boxShadow: stock.change >= 0 ? '0 0 15px rgba(34, 197, 94, 0.1)' : '0 0 15px rgba(239, 68, 68, 0.1)'
                 }}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="drop-shadow-lg">
@@ -511,10 +500,10 @@ export default function ImprovedSwipeStockCard({
             </div>
             
             {/* Company */}
-            <div className="flex gap-3 bg-gradient-to-br from-gray-800/50 to-gray-900/70 p-4 rounded-xl border border-gray-700/50 hover:border-cyan-800/30 transition-all shadow-lg hover:shadow-cyan-900/5">
-              <div className="text-cyan-400 w-12 h-12 min-w-12 flex items-center justify-center bg-gradient-to-br from-gray-800 to-gray-900 rounded-full shadow-lg border border-cyan-700/30"
+            <div className="flex gap-3 bg-gradient-to-br from-gray-800/50 to-gray-900/70 p-4 rounded-xl border border-gray-700/50 hover:border-green-800/30 transition-all shadow-lg hover:shadow-green-900/5">
+              <div className="text-green-400 w-12 h-12 min-w-12 flex items-center justify-center bg-gradient-to-br from-gray-800 to-gray-900 rounded-full shadow-lg border border-green-700/30"
                 style={{
-                  boxShadow: '0 0 15px rgba(6, 182, 212, 0.1)'
+                  boxShadow: '0 0 15px rgba(34, 197, 94, 0.1)'
                 }}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="drop-shadow-lg">
@@ -538,10 +527,10 @@ export default function ImprovedSwipeStockCard({
             </div>
             
             {/* Role */}
-            <div className="flex gap-3 bg-gradient-to-br from-gray-800/50 to-gray-900/70 p-4 rounded-xl border border-gray-700/50 hover:border-cyan-800/30 transition-all shadow-lg hover:shadow-cyan-900/5">
-              <div className="text-cyan-400 w-12 h-12 min-w-12 flex items-center justify-center bg-gradient-to-br from-gray-800 to-gray-900 rounded-full shadow-lg border border-cyan-700/30"
+            <div className="flex gap-3 bg-gradient-to-br from-gray-800/50 to-gray-900/70 p-4 rounded-xl border border-gray-700/50 hover:border-green-800/30 transition-all shadow-lg hover:shadow-green-900/5">
+              <div className="text-green-400 w-12 h-12 min-w-12 flex items-center justify-center bg-gradient-to-br from-gray-800 to-gray-900 rounded-full shadow-lg border border-green-700/30"
                 style={{
-                  boxShadow: '0 0 15px rgba(6, 182, 212, 0.1)'
+                  boxShadow: '0 0 15px rgba(34, 197, 94, 0.1)'
                 }}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="drop-shadow-lg">
