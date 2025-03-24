@@ -7,6 +7,9 @@ import realtimeStocksRouter from "./api/realtime-stocks";
 export async function registerRoutes(app: Express): Promise<Server> {
   // Set up authentication routes
   setupAuth(app);
+  
+  // Register real-time stock data routes
+  app.use("/api/stocks", realtimeStocksRouter);
 
   // Get all stacks
   app.get("/api/stacks", async (req, res) => {
