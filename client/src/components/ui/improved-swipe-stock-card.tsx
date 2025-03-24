@@ -4,6 +4,7 @@ import { getIndustryAverages } from "@/lib/industry-data";
 import { Star, Info, AlertCircle, ChevronLeft, ChevronRight } from "lucide-react";
 import { motion, useAnimation, useMotionValue, useTransform, PanInfo } from "framer-motion";
 import MetricPopup from "./metric-popup";
+import OverallAnalysisCard from "@/components/overall-analysis-card";
 
 interface SwipeStockCardProps {
   stock: StockData;
