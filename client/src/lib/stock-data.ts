@@ -449,7 +449,7 @@ const generateRoleDescription = (metrics: any, industry: string): string => {
   }
   
   // Fallback general descriptions
-  const generalRoles = {
+  const generalRoles: Record<string, string[]> = {
     "growth": [
       "Growth opportunity with above-market return potential",
       "Momentum position in expanding sector",
@@ -473,7 +473,8 @@ const generateRoleDescription = (metrics: any, industry: string): string => {
     ]
   };
   
-  return getRandomItem(generalRoles[roleCategory]);
+  // Type assertion to make TypeScript happy - we know roleCategory will be one of the keys
+  return getRandomItem(generalRoles[roleCategory as keyof typeof generalRoles] || generalRoles["balanced"]);
 };
 
 // Generate complete random stock data for a specific industry

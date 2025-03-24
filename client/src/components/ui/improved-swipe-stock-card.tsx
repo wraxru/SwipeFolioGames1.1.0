@@ -377,15 +377,21 @@ export default function ImprovedSwipeStockCard({
         </div>
 
         {/* Stock Info */}
-        <div className="px-4 py-4 border-b border-gray-800">
+        <div className="px-4 py-4 border-b border-gray-800 bg-gray-900">
           <div className="flex items-start justify-between mb-3">
             <div>
               <h2 className="text-xl font-bold">{stock.name} <span className="text-gray-400">({stock.ticker})</span></h2>
               <div className="flex items-center gap-2 mt-1.5">
-                <span className="text-2xl font-semibold">${displayPrice}</span>
-                <span className={`text-sm ${stock.change >= 0 ? 'text-green-500' : 'text-red-500'} px-2 py-0.5 rounded-full bg-${stock.change >= 0 ? 'green' : 'red'}-900/20`}>
-                  {stock.change >= 0 ? '+' : ''}{stock.change}%
-                </span>
+                {/* Price bubble */}
+                <div className="flex items-center">
+                  <div className="flex items-center bg-gray-800 rounded-full px-3 py-1.5 border border-gray-700">
+                    <span className="text-xl font-semibold text-white">${displayPrice}</span>
+                    <span className={`ml-2 text-sm ${stock.change >= 0 ? 'text-green-500' : 'text-red-500'} flex items-center font-medium`}>
+                      <span className={`inline-block w-2 h-2 rounded-full mr-1 ${stock.change >= 0 ? 'bg-green-500' : 'bg-red-500'}`}></span>
+                      {stock.change >= 0 ? '+' : ''}{stock.change}%
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
             <div className="flex flex-col items-end">
@@ -415,7 +421,7 @@ export default function ImprovedSwipeStockCard({
         </div>
 
         {/* Performance Metrics */}
-        <div className="grid grid-cols-2 gap-3 p-4 border-b border-gray-800">
+        <div className="grid grid-cols-2 gap-3 p-4 border-b border-gray-800 bg-gray-900">
           {Object.entries(stock.metrics).map(([key, metricObj]) => {
             const metricName = key.charAt(0).toUpperCase() + key.slice(1);
             return (
@@ -425,29 +431,33 @@ export default function ImprovedSwipeStockCard({
                   metricObj.color === 'green' ? 'bg-green-900/30 border border-green-500/30' :
                   metricObj.color === 'yellow' ? 'bg-yellow-900/30 border border-yellow-500/30' : 
                   'bg-red-900/30 border border-red-500/30'
-                } active:scale-95 transition-transform cursor-pointer`}
+                } active:scale-95 transition-transform cursor-pointer shadow-md`}
                 onClick={() => handleMetricClick(metricName)}
               >
                 <div className="absolute top-2 right-2">
-                  <Info size={16} className="text-white/60" />
+                  <Info size={16} className={`${
+                    metricObj.color === 'green' ? 'text-green-500/60' :
+                    metricObj.color === 'yellow' ? 'text-yellow-500/60' : 
+                    'text-red-500/60'
+                  }`} />
                 </div>
                 <div 
-                  className={`font-bold ${
-                    metricObj.color === 'green' ? 'text-green-500' :
-                    metricObj.color === 'yellow' ? 'text-yellow-500' : 
-                    'text-red-500'
+                  className={`text-lg font-bold ${
+                    metricObj.color === 'green' ? 'text-green-400' :
+                    metricObj.color === 'yellow' ? 'text-yellow-400' : 
+                    'text-red-400'
                   }`}
                 >
                   {metricObj.value}
                 </div>
-                <div className="text-white text-sm capitalize">{metricName}</div>
+                <div className="text-white text-sm capitalize mt-1">{metricName}</div>
               </div>
             );
           })}
         </div>
 
         {/* Stock Synopsis */}
-        <div className="p-4 bg-gradient-to-b from-gray-900 to-black">
+        <div className="p-4 bg-gray-900">
           <h3 className="font-bold text-lg mb-3 flex items-center">
             Stock Synopsis
             <span className="ml-2 text-xs text-gray-400 bg-gray-800/50 px-2 py-1 rounded-full">
@@ -456,22 +466,22 @@ export default function ImprovedSwipeStockCard({
           </h3>
           <div className="space-y-4">
             {/* Price */}
-            <div className="flex gap-3 bg-gray-900/40 p-3 rounded-lg border border-gray-800">
-              <div className={`text-${stock.change >= 0 ? 'cyan' : 'red'}-400 p-2 bg-gray-800 rounded-full`}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <div className="flex gap-3 bg-gray-800/50 p-3 rounded-lg border border-gray-800">
+              <div className={`text-${stock.change >= 0 ? 'cyan' : 'red'}-400 w-10 h-10 min-w-10 flex items-center justify-center bg-gray-800 rounded-full`}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
                 </svg>
               </div>
-              <div>
+              <div className="flex-1">
                 <div className="font-semibold">Price</div>
                 <div className="text-sm text-gray-400">{stock.synopsis.price}</div>
               </div>
             </div>
             
             {/* Company */}
-            <div className="flex gap-3 bg-gray-900/40 p-3 rounded-lg border border-gray-800">
-              <div className="text-cyan-400 p-2 bg-gray-800 rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <div className="flex gap-3 bg-gray-800/50 p-3 rounded-lg border border-gray-800">
+              <div className="text-cyan-400 w-10 h-10 min-w-10 flex items-center justify-center bg-gray-800 rounded-full">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <rect width="16" height="20" x="4" y="2" rx="2" ry="2" />
                   <path d="M9 22v-4h6v4" />
                   <path d="M8 6h.01" />
@@ -485,22 +495,22 @@ export default function ImprovedSwipeStockCard({
                   <path d="M8 14h.01" />
                 </svg>
               </div>
-              <div>
+              <div className="flex-1">
                 <div className="font-semibold">Company</div>
                 <div className="text-sm text-gray-400">{stock.synopsis.company}</div>
               </div>
             </div>
             
             {/* Role */}
-            <div className="flex gap-3 bg-gray-900/40 p-3 rounded-lg border border-gray-800">
-              <div className="text-cyan-400 p-2 bg-gray-800 rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <div className="flex gap-3 bg-gray-800/50 p-3 rounded-lg border border-gray-800">
+              <div className="text-cyan-400 w-10 h-10 min-w-10 flex items-center justify-center bg-gray-800 rounded-full">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7Z" />
                   <path d="M16.5 16 15 20h-6l-1.5-4" />
                 </svg>
               </div>
-              <div>
-                <div className="font-semibold">Role</div>
+              <div className="flex-1">
+                <div className="font-semibold">Company Role</div>
                 <div className="text-sm text-gray-400">{stock.synopsis.role}</div>
               </div>
             </div>
