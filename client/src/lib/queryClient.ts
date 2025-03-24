@@ -29,7 +29,50 @@ export const getQueryFn: <T>(options: {
 }) => QueryFunction<T> =
   ({ on401: unauthorizedBehavior }) =>
   async ({ queryKey }) => {
-    const res = await fetch(queryKey[0] as string, {
+    // Extract base URL (first element) and parameters (remaining elements)
+    const baseUrl = queryKey[0] as string;
+    const params = queryKey.slice(1);
+    
+    // Construct URL with query parameters if needed
+    let url = baseUrl;
+    if (params.length > 0 && params[0] !== undefined && params[0] !== null) {
+      // If baseUrl contains path parameters, assume first param is for path
+      if (baseUrl.includes('/:')) {
+        url = baseUrl.replace(/\/:[^/]+/, `/${params[0]}`);
+        
+        // Add remaining params as query parameters if any
+        if (params.length > 1) {
+          const searchParams = new URLSearchParams();
+          for (let i = 1; i < params.length; i++) {
+            if (params[i] !== undefined && params[i] !== null) {
+              searchParams.append(`param${i}`, params[i] as string);
+            }
+          }
+          if ([...searchParams].length > 0) {
+            url += `?${searchParams.toString()}`;
+          }
+        }
+      } else {
+        // No path parameters, use query string format for all params
+        const searchParams = new URLSearchParams();
+        searchParams.append('symbol', params[0] as string);
+        
+        // Add additional parameters if any
+        for (let i = 1; i < params.length; i++) {
+          if (params[i] !== undefined && params[i] !== null) {
+            if (i === 1 && baseUrl.includes('/intraday')) {
+              // For intraday endpoint, second param is interval
+              searchParams.append('interval', params[i] as string);
+            } else {
+              searchParams.append(`param${i}`, params[i] as string);
+            }
+          }
+        }
+        url += `?${searchParams.toString()}`;
+      }
+    }
+    
+    const res = await fetch(url, {
       credentials: "include",
     });
 
