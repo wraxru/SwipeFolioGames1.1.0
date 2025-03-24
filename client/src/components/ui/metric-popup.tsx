@@ -85,7 +85,7 @@ export default function MetricPopup({
     // Otherwise, generate a generic explanation based on the rating
     const { rating, industry } = metricData;
     
-    if (rating === "High" || rating === "Strong") {
+    if (rating === "High" || rating === "Strong" || rating === "Good") {
       switch (metricName) {
         case "Performance":
           return `This company demonstrates exceptional operational execution with impressive revenue growth and efficient capital utilization. This level of performance often indicates strong competitive advantages and effective management, positioning them well within the ${industry} sector.`;
@@ -100,7 +100,7 @@ export default function MetricPopup({
       }
     }
     
-    if (rating === "Fair") {
+    if (rating === "Fair" || rating === "Average") {
       switch (metricName) {
         case "Performance":
           return `The company demonstrates adequate operational performance with reasonable growth metrics and capital efficiency. While not leading the ${industry} sector, they remain competitive and show balanced execution across key performance indicators.`;

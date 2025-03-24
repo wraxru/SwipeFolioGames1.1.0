@@ -653,8 +653,8 @@ const generateDetailedMetrics = (metricType: string, rating: string, industry: s
         peRatio: getRandomInRange(valRange.peRatio[0], valRange.peRatio[1]),
         pbRatio: getRandomInRange(valRange.pbRatio[0], valRange.pbRatio[1]),
         dividendYield: typeof yieldOptions[yieldOptions.length - 1] === "string" 
-          ? (Math.random() > 0.3 ? getRandomInRange(0, 0.5) : "N/A") 
-          : getRandomInRange(yieldOptions[0], yieldOptions[1])
+          ? (Math.random() > 0.3 ? getRandomInRange(0, 0.5) : "N/A" as "N/A") 
+          : getRandomInRange(Number(yieldOptions[0]), Number(yieldOptions[1]))
       };
       
     case 'momentum':
