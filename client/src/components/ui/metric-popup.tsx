@@ -75,6 +75,12 @@ export default function MetricPopup({
 
   // Generate explanation based on rating
   const getExplanation = () => {
+    // Use the provided explanation if available
+    if (metricData.explanation) {
+      return metricData.explanation;
+    }
+    
+    // Otherwise, generate a generic explanation based on the rating
     const { rating, industry } = metricData;
     
     if (rating === "High" || rating === "Strong") {
