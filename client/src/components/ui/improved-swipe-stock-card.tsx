@@ -381,18 +381,13 @@ export default function ImprovedSwipeStockCard({
 
         {/* Stock Info */}
         <div className="px-4 py-4 border-b border-gray-800 bg-gradient-to-br from-gray-900 via-gray-900 to-black">
-          <div className="flex items-start justify-between mb-4">
-            <div className="flex-1">
-              <h2 className="text-2xl font-bold text-white drop-shadow-sm">{stock.name} <span className="text-gray-400">({stock.ticker})</span></h2>
-              {/* Description moved up for better flow */}
-              <div className="bg-gray-800/40 rounded-lg p-3 mt-2 border border-gray-700/50 shadow-inner">
-                <p className="text-sm text-gray-300 leading-relaxed">
-                  {stock.description}
-                </p>
-              </div>
+          {/* Header with name, ticker, star rating and price */}
+          <div className="flex items-start justify-between">
+            <div>
+              <h2 className="text-xl font-bold text-white drop-shadow-sm">{stock.name} <span className="text-gray-400">({stock.ticker})</span></h2>
             </div>
             <div className="flex flex-col items-end">
-              {/* Stars */}
+              {/* Star Rating */}
               <div className="flex items-center">
                 {[1, 2, 3, 4, 5].map((star) => (
                   <Star
@@ -408,19 +403,15 @@ export default function ImprovedSwipeStockCard({
                   />
                 ))}
               </div>
-              {/* SmartScore badge with just the value */}
-              <span className="text-sm text-green-400 mt-1.5 bg-gray-800/70 px-3 py-1 rounded-full shadow-inner border border-gray-700/50 font-medium">
-                {stock.smartScore}
-              </span>
               
-              {/* Price bubble moved to right column */}
-              <div className="mt-3">
-                <div className={`flex items-center ${stock.change >= 0 ? 'bg-gradient-to-r from-green-900/50 to-green-950/30' : 'bg-gradient-to-r from-red-900/50 to-red-950/30'} rounded-full px-3 py-2 border ${stock.change >= 0 ? 'border-green-500/30' : 'border-red-500/30'} shadow-lg`}
+              {/* Price bubble in SmartScore position */}
+              <div className="mt-1.5">
+                <div className={`flex items-center ${stock.change >= 0 ? 'bg-gradient-to-r from-green-900/50 to-green-950/30' : 'bg-gradient-to-r from-red-900/50 to-red-950/30'} rounded-full px-3 py-1.5 border ${stock.change >= 0 ? 'border-green-500/30' : 'border-red-500/30'} shadow-lg`}
                   style={{
                     boxShadow: stock.change >= 0 ? '0 0 15px rgba(34, 197, 94, 0.1)' : '0 0 15px rgba(239, 68, 68, 0.1)'
                   }}
                 >
-                  <span className="text-2xl font-bold text-white drop-shadow-md">${displayPrice}</span>
+                  <span className="text-xl font-bold text-white drop-shadow-md">${displayPrice}</span>
                   <span className={`ml-2 text-sm ${stock.change >= 0 ? 'text-green-300' : 'text-red-300'} flex items-center font-medium drop-shadow-sm`}>
                     <span className={`inline-block w-2 h-2 rounded-full mr-1 ${stock.change >= 0 ? 'bg-green-400' : 'bg-red-400'}`}></span>
                     {stock.change >= 0 ? '+' : ''}{stock.change}%
@@ -428,6 +419,13 @@ export default function ImprovedSwipeStockCard({
                 </div>
               </div>
             </div>
+          </div>
+          
+          {/* Description bubble */}
+          <div className="mt-3 mb-0.5 p-3 bg-gray-800/70 rounded-lg border border-gray-700/50 shadow-inner">
+            <p className="text-sm text-gray-300">
+              {stock.description}
+            </p>
           </div>
         </div>
 
