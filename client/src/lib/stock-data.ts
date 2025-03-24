@@ -1,4 +1,72 @@
-smartScore: "High",
+export interface StockData {
+  name: string;
+  ticker: string;
+  price: number;
+  change: number;
+  rating: number;
+  smartScore: string;
+  description: string;
+  metrics: {
+    performance: {
+      value: string;
+      color: string;
+      details: {
+        revenueGrowth: number;
+        profitMargin: number;
+        returnOnCapital: number;
+      };
+      explanation: string;
+    };
+    stability: {
+      value: string;
+      color: string;
+      details: {
+        volatility: number;
+        beta: number;
+        dividendConsistency: string;
+      };
+      explanation: string;
+    };
+    value: {
+      value: string;
+      color: string;
+      details: {
+        peRatio: number;
+        pbRatio: number;
+        dividendYield: number;
+      };
+      explanation: string;
+    };
+    momentum: {
+      value: string;
+      color: string;
+      details: {
+        threeMonthReturn: number;
+        relativePerformance: number;
+        rsi: number;
+      };
+      explanation: string;
+    };
+  };
+  synopsis: {
+    price: string;
+    company: string;
+    role: string;
+  };
+  overallAnalysis: string;
+  chartData: number[];
+  industry: string;
+}
+
+const hardcodedStocks: Record<string, StockData[]> = {
+  "Healthcare": [
+    {
+      name: "Stryker Corporation",
+      ticker: "SYK",
+      price: 345.68,
+      change: 1.85,
+      rating: 4.5,
+      smartScore: "High",
       description: "Leading manufacturer of medical technologies including orthopaedic implants, surgical equipment, and neurotechnology products.",
       metrics: {
         performance: { 
