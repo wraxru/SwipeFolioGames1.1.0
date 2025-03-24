@@ -739,6 +739,615 @@ export const generateRandomStocks = (industry: string, count: number = 10): Stoc
 };
 
 // Get a set of random stocks for the given industry
+// Hardcoded stock data for specific industries
+const hardcodedStocks: Record<string, StockData[]> = {
+  "Real Estate": [
+    {
+      name: "Prologis Inc.",
+      ticker: "PLD",
+      price: 127.85,
+      change: 0.65,
+      rating: 4.2,
+      smartScore: "High",
+      description: "Global leader in logistics real estate with a focus on high-barrier, high-growth markets.",
+      metrics: {
+        performance: { 
+          value: "Good", 
+          color: "green",
+          details: {
+            revenueGrowth: 8.5,
+            profitMargin: 39.7,
+            returnOnCapital: 10.2
+          },
+          explanation: "Prologis demonstrates strong operational performance with above-average revenue growth (8.5% vs industry 6%) and excellent profit margins (39.7% vs industry 35%). Their return on capital is exceptional at 10.2%, indicating efficient use of investments to generate profits. This performance is driven by strategic positioning in high-demand logistics markets and e-commerce growth."
+        },
+        stability: { 
+          value: "High", 
+          color: "green",
+          details: {
+            volatility: 0.75,
+            beta: 0.85,
+            dividendConsistency: "High"
+          },
+          explanation: "With lower volatility (0.75) than the real estate sector average (0.8) and a beta of 0.85, Prologis offers more price stability than typical real estate investments. Their high dividend consistency indicates reliable income potential, making this a relatively stable holding even during market turbulence."
+        },
+        value: { 
+          value: "Fair", 
+          color: "yellow",
+          details: {
+            peRatio: 17.8,
+            pbRatio: 2.0,
+            dividendYield: 3.2
+          },
+          explanation: "Prologis trades at a modest premium to the real estate sector (PE ratio of 17.8 vs industry 16.0) reflecting its quality positioning. The dividend yield of 3.2% is slightly above the industry average of 3.0%, offering reasonable income. Overall, the valuation is fair considering its growth profile and market leadership."
+        },
+        momentum: { 
+          value: "Fair", 
+          color: "yellow",
+          details: {
+            threeMonthReturn: 2.8,
+            relativePerformance: 0.3,
+            rsi: 52
+          },
+          explanation: "Prologis shows moderate price momentum with a three-month return of 2.8% (vs industry 2.5%) and relative performance slightly above the sector. With an RSI of 52, the stock is neither overbought nor oversold, indicating balanced trading conditions with modest upward movement."
+        }
+      },
+      synopsis: {
+        price: "Showing resilience at current price points despite sector-wide pressures",
+        company: "Prologis expands portfolio with strategic acquisitions in high-growth logistics markets",
+        role: "Core real estate holding with solid dividend and e-commerce driven growth tailwinds"
+      },
+      chartData: [126.2, 127.1, 126.8, 126.5, 126.9, 127.3, 127.8, 127.4, 127.7, 128.2, 127.9, 127.85],
+      industry: "Real Estate"
+    },
+    {
+      name: "American Tower Corp.",
+      ticker: "AMT",
+      price: 186.45,
+      change: -0.32,
+      rating: 4.1,
+      smartScore: "High",
+      description: "Leading owner and operator of wireless and broadcast communications infrastructure globally.",
+      metrics: {
+        performance: { 
+          value: "Good", 
+          color: "green",
+          details: {
+            revenueGrowth: 7.2,
+            profitMargin: 40.3,
+            returnOnCapital: 10.8
+          },
+          explanation: "American Tower shows strong financial performance with revenue growth of 7.2% exceeding the industry average of 6%. Its profit margin of 40.3% is significantly higher than the industry's 35%, demonstrating excellent cost management. The company's 10.8% return on capital indicates efficient deployment of investments across its infrastructure assets."
+        },
+        stability: { 
+          value: "High", 
+          color: "green",
+          details: {
+            volatility: 0.72,
+            beta: 0.75,
+            dividendConsistency: "High"
+          },
+          explanation: "American Tower offers exceptional stability with low volatility (0.72) compared to the industry average (0.8). Its beta of 0.75 indicates less susceptibility to market swings, while its high dividend consistency provides reliable income. This stability stems from long-term contracts with major telecommunications providers."
+        },
+        value: { 
+          value: "Fair", 
+          color: "yellow",
+          details: {
+            peRatio: 18.2,
+            pbRatio: 2.1,
+            dividendYield: 3.4
+          },
+          explanation: "Trading at a slight premium to the real estate sector with a PE ratio of 18.2 versus the industry's 16.0, American Tower's valuation reflects its quality assets and growth prospects. The dividend yield of 3.4% exceeds the industry average of 3.0%, offering attractive income potential despite the premium valuation."
+        },
+        momentum: { 
+          value: "Fair", 
+          color: "yellow",
+          details: {
+            threeMonthReturn: 1.8,
+            relativePerformance: -0.2,
+            rsi: 49
+          },
+          explanation: "American Tower shows modest momentum with a three-month return of 1.8%, slightly below the industry average of 2.5%. With an RSI of 49, the stock is near equilibrium, neither overbought nor oversold. Recent underperformance reflects temporary sector rotation rather than fundamental concerns."
+        }
+      },
+      synopsis: {
+        price: "Experiencing mild pressure from profit-taking after recent outperformance",
+        company: "American Tower's acquisition of data center assets enhances digital infrastructure positioning",
+        role: "Anchor position for portfolio stability with 5G and data growth as long-term catalysts"
+      },
+      chartData: [187.2, 188.1, 187.8, 187.3, 186.9, 186.7, 186.4, 186.2, 186.7, 186.9, 186.6, 186.45],
+      industry: "Real Estate"
+    },
+    {
+      name: "Simon Property Group",
+      ticker: "SPG",
+      price: 148.65,
+      change: 1.25,
+      rating: 3.8,
+      smartScore: "Above Average",
+      description: "Largest shopping mall and retail REIT with premium properties across North America, Europe and Asia.",
+      metrics: {
+        performance: { 
+          value: "Fair", 
+          color: "yellow",
+          details: {
+            revenueGrowth: 4.8,
+            profitMargin: 32.6,
+            returnOnCapital: 8.2
+          },
+          explanation: "Simon Property Group shows adequate performance with 4.8% revenue growth, below the real estate sector average of 6%. Its profit margin of 32.6% trails the industry's 35%, reflecting challenges in the retail property space. However, the 8.2% return on capital remains solid and approaches industry standards of 9%."
+        },
+        stability: { 
+          value: "Fair", 
+          color: "yellow",
+          details: {
+            volatility: 0.95,
+            beta: 0.9,
+            dividendConsistency: "Medium"
+          },
+          explanation: "With higher volatility (0.95) than the real estate average (0.8), Simon Property Group experiences more significant price swings. Its beta of 0.9 indicates slightly elevated market sensitivity, while medium dividend consistency reflects past adjustments during retail sector challenges. Overall stability is adequate but not exceptional."
+        },
+        value: { 
+          value: "Good", 
+          color: "green",
+          details: {
+            peRatio: 13.2,
+            pbRatio: 1.4,
+            dividendYield: 5.2
+          },
+          explanation: "Simon Property Group offers attractive valuation with a PE ratio of 13.2, significantly below the industry average of 16.0. Its price-to-book ratio of 1.4 versus the industry's 1.8 indicates a discount to asset value. The standout 5.2% dividend yield (industry: 3.0%) provides substantial income potential for investors."
+        },
+        momentum: { 
+          value: "Fair", 
+          color: "yellow",
+          details: {
+            threeMonthReturn: 3.5,
+            relativePerformance: 1.0,
+            rsi: 54
+          },
+          explanation: "Simon Property Group demonstrates solid momentum with a three-month return of 3.5%, outperforming the real estate sector average of 2.5%. Its relative performance is positive at 1.0, and the RSI of 54 indicates balanced buying interest without being overbought. This momentum reflects improving sentiment toward quality retail assets."
+        }
+      },
+      synopsis: {
+        price: "Gradually climbing on improved forward guidance and analyst revisions",
+        company: "Simon Property Group's premium mall traffic exceeds pre-pandemic levels in key markets",
+        role: "Value opportunity in retail real estate with attractive dividend yield and recovery potential"
+      },
+      chartData: [146.8, 147.2, 147.5, 147.1, 147.4, 147.9, 148.1, 148.3, 148.0, 148.4, 148.5, 148.65],
+      industry: "Real Estate"
+    },
+    {
+      name: "Equinix Inc.",
+      ticker: "EQIX",
+      price: 764.32,
+      change: 2.45,
+      rating: 4.5,
+      smartScore: "High",
+      description: "Global leader in data center colocation, interconnection services, and cloud exchange solutions.",
+      metrics: {
+        performance: { 
+          value: "Strong", 
+          color: "green",
+          details: {
+            revenueGrowth: 10.2,
+            profitMargin: 38.5,
+            returnOnCapital: 11.5
+          },
+          explanation: "Equinix demonstrates exceptional performance with 10.2% revenue growth, far exceeding the real estate sector average of 6%. Its profit margin of 38.5% surpasses the industry benchmark of 35%, while its 11.5% return on capital significantly outperforms the 9% industry standard, reflecting its dominance in the high-growth digital infrastructure segment."
+        },
+        stability: { 
+          value: "High", 
+          color: "green",
+          details: {
+            volatility: 0.7,
+            beta: 0.78,
+            dividendConsistency: "High"
+          },
+          explanation: "Equinix offers excellent stability with lower volatility (0.7) than the real estate industry average (0.8). Its beta of 0.78 indicates reduced market sensitivity, while high dividend consistency provides reliable income. This stability stems from long-term contracts with major technology companies and recurring revenue streams."
+        },
+        value: { 
+          value: "Fair", 
+          color: "yellow",
+          details: {
+            peRatio: 19.8,
+            pbRatio: 2.2,
+            dividendYield: 2.3
+          },
+          explanation: "Equinix trades at a premium valuation with a PE ratio of 19.8 versus the industry average of 16.0, reflecting its superior growth profile. The price-to-book ratio of 2.2 exceeds the industry's 1.8, while the dividend yield of 2.3% falls below the sector's 3.0%. This valuation is justified by its technological leadership and growth prospects."
+        },
+        momentum: { 
+          value: "Strong", 
+          color: "green",
+          details: {
+            threeMonthReturn: 5.8,
+            relativePerformance: 3.3,
+            rsi: 58
+          },
+          explanation: "Equinix shows strong price momentum with a three-month return of 5.8%, more than double the real estate sector average of 2.5%. Its relative performance of 3.3 indicates significant outperformance, while the RSI of 58 reflects strong buying interest without reaching overbought territory. This momentum is driven by increasing demand for digital infrastructure."
+        }
+      },
+      synopsis: {
+        price: "Showing steady appreciation amid positive market sentiment and sector rotation",
+        company: "Equinix's expansion into emerging markets shows promising early results",
+        role: "Growth-oriented REIT with digital infrastructure focus and AI data center tailwinds"
+      },
+      chartData: [758.4, 759.2, 760.1, 759.8, 760.5, 761.3, 762.2, 762.8, 763.3, 763.7, 764.0, 764.32],
+      industry: "Real Estate"
+    },
+    {
+      name: "Public Storage",
+      ticker: "PSA",
+      price: 289.75,
+      change: 0.85,
+      rating: 4.0,
+      smartScore: "Above Average",
+      description: "Leading self-storage REIT with extensive facilities across the United States.",
+      metrics: {
+        performance: { 
+          value: "Good", 
+          color: "green",
+          details: {
+            revenueGrowth: 6.8,
+            profitMargin: 41.2,
+            returnOnCapital: 9.8
+          },
+          explanation: "Public Storage shows strong performance with 6.8% revenue growth, exceeding the real estate sector average of 6%. Its outstanding profit margin of 41.2% significantly surpasses the industry benchmark of 35%, reflecting efficient operations. The 9.8% return on capital approaches excellence and exceeds the industry standard of 9%."
+        },
+        stability: { 
+          value: "High", 
+          color: "green",
+          details: {
+            volatility: 0.68,
+            beta: 0.72,
+            dividendConsistency: "High"
+          },
+          explanation: "Public Storage offers exceptional stability with low volatility (0.68) compared to the industry average (0.8). Its beta of 0.72 indicates reduced market sensitivity, while high dividend consistency provides reliable income. This stability results from the recession-resistant nature of self-storage and diversified customer base."
+        },
+        value: { 
+          value: "Fair", 
+          color: "yellow",
+          details: {
+            peRatio: 16.8,
+            pbRatio: 1.9,
+            dividendYield: 4.2
+          },
+          explanation: "Public Storage trades at a slight premium with a PE ratio of 16.8 versus the industry average of 16.0, reflecting its quality operations. The price-to-book ratio of 1.9 is slightly above the industry's 1.8. Its attractive 4.2% dividend yield exceeds the sector's 3.0%, offering compelling income potential despite the modest valuation premium."
+        },
+        momentum: { 
+          value: "Fair", 
+          color: "yellow",
+          details: {
+            threeMonthReturn: 3.2,
+            relativePerformance: 0.7,
+            rsi: 53
+          },
+          explanation: "Public Storage shows solid momentum with a three-month return of 3.2%, outperforming the real estate sector average of 2.5%. Its relative performance of 0.7 indicates positive momentum compared to peers. With an RSI of 53, the stock is trading in a balanced range, showing steady accumulation without excessive enthusiasm."
+        }
+      },
+      synopsis: {
+        price: "Gradually climbing on improved forward guidance and analyst revisions",
+        company: "Public Storage's occupancy rates exceeding expectations with pricing power intact",
+        role: "Defensive REIT with steady cash flows and consistent dividend growth history"
+      },
+      chartData: [287.8, 288.2, 288.5, 288.1, 288.4, 288.9, 289.1, 289.3, 289.0, 289.4, 289.6, 289.75],
+      industry: "Real Estate"
+    }
+  ],
+  "Healthcare": [
+    {
+      name: "Stryker Corporation",
+      ticker: "SYK",
+      price: 345.68,
+      change: 1.85,
+      rating: 4.4,
+      smartScore: "High",
+      description: "Leading manufacturer of medical technologies including orthopaedic implants, surgical equipment, and neurotechnology products.",
+      metrics: {
+        performance: { 
+          value: "Strong", 
+          color: "green",
+          details: {
+            revenueGrowth: 13.5,
+            profitMargin: 21.2,
+            returnOnCapital: 14.8
+          },
+          explanation: "Stryker shows exceptional performance with 13.5% revenue growth, nearly matching the healthcare sector average of 15%. Its profit margin of 21.2% slightly exceeds the industry benchmark of 20%, while its outstanding 14.8% return on capital surpasses the 13% industry standard, demonstrating efficient capital deployment in high-value medical technology."
+        },
+        stability: { 
+          value: "High", 
+          color: "green",
+          details: {
+            volatility: 0.95,
+            beta: 1.0,
+            dividendConsistency: "High"
+          },
+          explanation: "Stryker offers strong stability with lower volatility (0.95) than the healthcare industry average (1.2). Its beta of 1.0 indicates market-neutral sensitivity, while high dividend consistency provides reliable income. This stability stems from diversified product lines and recurring revenue from consumables and service contracts."
+        },
+        value: { 
+          value: "Fair", 
+          color: "yellow",
+          details: {
+            peRatio: 24.2,
+            pbRatio: 3.8,
+            dividendYield: 0.8
+          },
+          explanation: "Stryker trades at a slight discount with a PE ratio of 24.2 versus the healthcare industry average of 25.0, offering reasonable value. The price-to-book ratio of 3.8 is slightly below the industry's 4.0. Its dividend yield of 0.8% exceeds the sector's 0.6%, providing a small income advantage while still prioritizing growth reinvestment."
+        },
+        momentum: { 
+          value: "Strong", 
+          color: "green",
+          details: {
+            threeMonthReturn: 7.2,
+            relativePerformance: 2.2,
+            rsi: 60
+          },
+          explanation: "Stryker shows strong price momentum with a three-month return of 7.2%, significantly outperforming the healthcare sector average of 5.0%. Its relative performance of 2.2 indicates substantial outperformance versus peers. With an RSI of 60, the stock shows solid buying interest while maintaining room for continued appreciation."
+        }
+      },
+      synopsis: {
+        price: "Showing steady appreciation amid positive market sentiment and sector rotation",
+        company: "Stryker's surgical robotics platform gaining market share in orthopedic procedures",
+        role: "Core medical technology holding with balanced growth and stability characteristics"
+      },
+      chartData: [340.2, 341.5, 342.3, 341.8, 342.5, 343.2, 343.8, 344.2, 344.7, 345.1, 345.4, 345.68],
+      industry: "Healthcare"
+    },
+    {
+      name: "ResMed Inc.",
+      ticker: "RMD",
+      price: 194.25,
+      change: -0.75,
+      rating: 3.9,
+      smartScore: "Above Average",
+      description: "Global leader in cloud-connected medical devices for sleep apnea, COPD, and other chronic respiratory conditions.",
+      metrics: {
+        performance: { 
+          value: "Good", 
+          color: "green",
+          details: {
+            revenueGrowth: 12.8,
+            profitMargin: 23.5,
+            returnOnCapital: 15.5
+          },
+          explanation: "ResMed demonstrates strong performance with 12.8% revenue growth, approaching the healthcare sector average of 15%. Its excellent profit margin of 23.5% exceeds the industry benchmark of 20%, while its outstanding 15.5% return on capital surpasses the 13% industry standard, reflecting efficiency in its specialized respiratory care business."
+        },
+        stability: { 
+          value: "Fair", 
+          color: "yellow",
+          details: {
+            volatility: 1.1,
+            beta: 1.05,
+            dividendConsistency: "Medium"
+          },
+          explanation: "ResMed offers moderate stability with slightly lower volatility (1.1) than the healthcare industry average (1.2). Its beta of 1.05 indicates near-market-neutral sensitivity. Medium dividend consistency reflects a balanced approach to shareholder returns while maintaining investment in growth initiatives."
+        },
+        value: { 
+          value: "Fair", 
+          color: "yellow",
+          details: {
+            peRatio: 23.5,
+            pbRatio: 3.6,
+            dividendYield: 0.9
+          },
+          explanation: "ResMed trades at a modest discount with a PE ratio of 23.5 versus the healthcare industry average of 25.0. The price-to-book ratio of 3.6 is below the industry's 4.0, suggesting good value. Its dividend yield of 0.9% exceeds the sector's 0.6%, providing slightly better income while still prioritizing growth initiatives."
+        },
+        momentum: { 
+          value: "Fair", 
+          color: "yellow",
+          details: {
+            threeMonthReturn: 2.8,
+            relativePerformance: -2.2,
+            rsi: 49
+          },
+          explanation: "ResMed shows moderate momentum with a three-month return of 2.8%, underperforming the healthcare sector average of 5.0%. Its relative performance of -2.2 indicates recent underperformance versus peers. With an RSI of 49, the stock is in neutral territory, neither overbought nor oversold, suggesting potential stabilization after recent pressure."
+        }
+      },
+      synopsis: {
+        price: "Experiencing mild pressure from profit-taking after recent outperformance",
+        company: "ResMed's connected care platform showing strong subscription revenue growth",
+        role: "Growth opportunity in sleep and respiratory care with recurring revenue model"
+      },
+      chartData: [195.8, 195.4, 195.1, 194.8, 194.5, 194.2, 194.6, 194.9, 194.5, 194.3, 194.1, 194.25],
+      industry: "Healthcare"
+    },
+    {
+      name: "Align Technology",
+      ticker: "ALGN",
+      price: 307.85,
+      change: 2.45,
+      rating: 4.2,
+      smartScore: "High",
+      description: "Global medical device company with industry-leading clear aligner and intraoral scanner technologies.",
+      metrics: {
+        performance: { 
+          value: "Strong", 
+          color: "green",
+          details: {
+            revenueGrowth: 17.5,
+            profitMargin: 19.8,
+            returnOnCapital: 15.2
+          },
+          explanation: "Align Technology demonstrates exceptional performance with 17.5% revenue growth, exceeding the healthcare sector average of 15%. While its profit margin of 19.8% is slightly below the industry benchmark of 20%, its outstanding 15.2% return on capital surpasses the 13% industry standard, reflecting its innovation-driven business model."
+        },
+        stability: { 
+          value: "Unstable", 
+          color: "red",
+          details: {
+            volatility: 1.35,
+            beta: 1.4,
+            dividendConsistency: "N/A"
+          },
+          explanation: "Align Technology shows elevated volatility (1.35) compared to the healthcare industry average (1.2). Its beta of 1.4 indicates significant market sensitivity, amplifying both upside and downside movements. The company does not pay dividends, focusing instead on growth reinvestment, which may not suit income-focused investors."
+        },
+        value: { 
+          value: "Fair", 
+          color: "yellow",
+          details: {
+            peRatio: 28.2,
+            pbRatio: 4.2,
+            dividendYield: 0
+          },
+          explanation: "Align Technology trades at a premium with a PE ratio of 28.2 versus the healthcare industry average of 25.0, reflecting growth expectations. The price-to-book ratio of 4.2 slightly exceeds the industry's 4.0. The company pays no dividend, prioritizing reinvestment for growth, which aligns with its innovation-focused business model."
+        },
+        momentum: { 
+          value: "Strong", 
+          color: "green",
+          details: {
+            threeMonthReturn: 9.5,
+            relativePerformance: 4.5,
+            rsi: 65
+          },
+          explanation: "Align Technology shows exceptional momentum with a three-month return of 9.5%, nearly double the healthcare sector average of 5.0%. Its relative performance of 4.5 indicates substantial outperformance versus peers. The RSI of 65 approaches but has not reached overbought territory, reflecting strong investor interest and positive sentiment."
+        }
+      },
+      synopsis: {
+        price: "Breaking out to new highs with institutional accumulation and heightened options activity",
+        company: "Align Technology's international expansion showing stronger-than-expected case growth",
+        role: "High-growth opportunity in dental clear aligners with strong brand recognition"
+      },
+      chartData: [301.2, 302.5, 303.1, 302.8, 303.6, 304.5, 305.2, 305.8, 306.3, 307.0, 307.4, 307.85],
+      industry: "Healthcare"
+    },
+    {
+      name: "Illumina Inc.",
+      ticker: "ILMN",
+      price: 124.85,
+      change: -1.25,
+      rating: 3.4,
+      smartScore: "Average",
+      description: "Global leader in DNA sequencing and array-based technologies for genetic analysis.",
+      metrics: {
+        performance: { 
+          value: "Fair", 
+          color: "yellow",
+          details: {
+            revenueGrowth: 7.5,
+            profitMargin: 16.2,
+            returnOnCapital: 10.5
+          },
+          explanation: "Illumina shows moderate performance with 7.5% revenue growth, trailing the healthcare sector average of 15%. Its profit margin of 16.2% falls below the industry benchmark of 20%, while its 10.5% return on capital is also below the 13% industry standard. These metrics reflect ongoing challenges in commercialization and margin pressure."
+        },
+        stability: { 
+          value: "Unstable", 
+          color: "red",
+          details: {
+            volatility: 1.45,
+            beta: 1.5,
+            dividendConsistency: "N/A"
+          },
+          explanation: "Illumina exhibits high volatility (1.45) compared to the healthcare industry average (1.2). Its beta of 1.5 indicates significant market sensitivity with amplified price swings. The company does not pay dividends, and its price action is frequently driven by clinical developments, regulatory announcements, and shifting competitive dynamics."
+        },
+        value: { 
+          value: "Fair", 
+          color: "yellow",
+          details: {
+            peRatio: 24.5,
+            pbRatio: 3.8,
+            dividendYield: 0
+          },
+          explanation: "Illumina trades at a slight discount with a PE ratio of 24.5 versus the healthcare industry average of 25.0. The price-to-book ratio of 3.8 is below the industry's 4.0, reflecting valuation concerns after recent challenges. The company pays no dividend, focusing investments on R&D and strategic initiatives to maintain technological leadership."
+        },
+        momentum: { 
+          value: "Weak", 
+          color: "red",
+          details: {
+            threeMonthReturn: -3.8,
+            relativePerformance: -8.8,
+            rsi: 41
+          },
+          explanation: "Illumina shows negative momentum with a three-month return of -3.8%, significantly underperforming the healthcare sector average of 5.0%. Its relative performance of -8.8 indicates substantial underperformance versus peers. With an RSI of 41, the stock is approaching but has not reached oversold territory, reflecting continued selling pressure."
+        }
+      },
+      synopsis: {
+        price: "Facing significant selling pressure after disappointing quarterly results",
+        company: "Illumina's new leadership team signals shift in corporate strategy",
+        role: "Speculative opportunity in genomics technology with turnaround potential"
+      },
+      chartData: [127.8, 126.9, 126.4, 125.8, 125.3, 124.7, 124.3, 125.0, 125.4, 124.9, 125.2, 124.85],
+      industry: "Healthcare"
+    },
+    {
+      name: "Insulet Corporation",
+      ticker: "PODD",
+      price: 189.65,
+      change: 1.35,
+      rating: 3.8,
+      smartScore: "Above Average",
+      description: "Medical device company specializing in tubeless insulin pump technology for diabetes management.",
+      metrics: {
+        performance: { 
+          value: "Strong", 
+          color: "green",
+          details: {
+            revenueGrowth: 20.5,
+            profitMargin: 18.5,
+            returnOnCapital: 13.8
+          },
+          explanation: "Insulet demonstrates exceptional performance with 20.5% revenue growth, significantly exceeding the healthcare sector average of 15%. While its profit margin of 18.5% is slightly below the industry benchmark of 20%, its strong 13.8% return on capital exceeds the 13% industry standard, reflecting successful commercialization of innovative diabetes management technology."
+        },
+        stability: { 
+          value: "Unstable", 
+          color: "red",
+          details: {
+            volatility: 1.4,
+            beta: 1.35,
+            dividendConsistency: "N/A"
+          },
+          explanation: "Insulet exhibits elevated volatility (1.4) compared to the healthcare industry average (1.2). Its beta of 1.35 indicates significant market sensitivity, with more amplified price swings than the broader market. The company does not pay dividends, focusing instead on growth reinvestment and market expansion opportunities."
+        },
+        value: { 
+          value: "Poor", 
+          color: "red",
+          details: {
+            peRatio: 32.5,
+            pbRatio: 4.8,
+            dividendYield: 0
+          },
+          explanation: "Insulet trades at a significant premium with a PE ratio of 32.5 versus the healthcare industry average of 25.0, reflecting high growth expectations. The price-to-book ratio of 4.8 exceeds the industry's 4.0, indicating investors are paying up for innovation. The company pays no dividend, prioritizing reinvestment in its rapid-growth business model."
+        },
+        momentum: { 
+          value: "Fair", 
+          color: "yellow",
+          details: {
+            threeMonthReturn: 5.5,
+            relativePerformance: 0.5,
+            rsi: 55
+          },
+          explanation: "Insulet shows solid momentum with a three-month return of 5.5%, slightly outperforming the healthcare sector average of 5.0%. Its relative performance of 0.5 indicates modest outperformance versus peers. With an RSI of 55, the stock is in balanced territory, showing steady buying interest without excessive enthusiasm."
+        }
+      },
+      synopsis: {
+        price: "Moving upward as new product adoption exceeds initial expectations",
+        company: "Insulet's automated insulin delivery system gaining significant market share",
+        role: "Growth opportunity in diabetes technology with innovative product offerings"
+      },
+      chartData: [187.2, 188.1, 187.9, 187.6, 188.2, 188.7, 189.0, 189.3, 189.1, 189.4, 189.7, 189.65],
+      industry: "Healthcare"
+    }
+  ]
+};
+
+// Generate chart data for all hardcoded stocks that don't have it
+Object.keys(hardcodedStocks).forEach(industry => {
+  hardcodedStocks[industry].forEach(stock => {
+    if (!stock.chartData) {
+      // Generate random chart data if not present
+      const basePrice = stock.price * 0.99;
+      stock.chartData = Array(12).fill(0).map((_, i) => {
+        return +(basePrice + (Math.random() * stock.price * 0.03)).toFixed(2);
+      });
+      // Make the last data point match the current price
+      stock.chartData[stock.chartData.length - 1] = stock.price;
+    }
+  });
+});
+
 export const getIndustryStocks = (industry: string): StockData[] => {
+  // Return hardcoded stocks if available for the industry
+  if (hardcodedStocks[industry]) {
+    return hardcodedStocks[industry];
+  }
+  
+  // Fallback to generated stocks for industries without hardcoded data
   return generateRandomStocks(industry);
 };
