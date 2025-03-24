@@ -105,8 +105,9 @@ export default function ImprovedSwipeStockCard({
   }, [stock, timeFrame]);
   
   // Calculate min/max for chart display
-  const minValue = Math.min(...chartData) * 0.98; // Add 2% padding below
-  const maxValue = Math.max(...chartData) * 1.02; // Add 2% padding above
+  const chartDataSafe = chartData.length > 0 ? chartData : [0, 0];
+  const minValue = Math.min(...chartDataSafe) * 0.98; // Add 2% padding below
+  const maxValue = Math.max(...chartDataSafe) * 1.02; // Add 2% padding above
   
   // Get time scale labels based on selected timeframe
   const timeScaleLabels = useMemo(() => 
@@ -195,7 +196,7 @@ export default function ImprovedSwipeStockCard({
   };
 
   // Convert price to display format
-  const displayPrice = stock.price.toFixed(2);
+  const displayPrice = stock?.price ? stock.price.toFixed(2) : "0.00";
   
   // Determine price range to show on Y-axis
   const priceRangeMin = Math.floor(minValue);
@@ -395,7 +396,7 @@ export default function ImprovedSwipeStockCard({
               </div>
               <div className="flex-1">
                 <div className="font-semibold">Price</div>
-                <div className="text-sm text-gray-400">{stock.synopsis.price}</div>
+                <div className="text-sm text-gray-400">{stock.synopsis?.price || "Current price appears stable"}</div>
               </div>
             </div>
             
@@ -420,7 +421,7 @@ export default function ImprovedSwipeStockCard({
               </div>
               <div className="flex-1">
                 <div className="font-semibold">Company</div>
-                <div className="text-sm text-gray-400">{stock.synopsis.company}</div>
+                <div className="text-sm text-gray-400">{stock.synopsis?.company || "Company maintains market position"}</div>
               </div>
             </div>
             
@@ -436,7 +437,7 @@ export default function ImprovedSwipeStockCard({
               </div>
               <div className="flex-1">
                 <div className="font-semibold">Role</div>
-                <div className="text-sm text-gray-400">{stock.synopsis.role}</div>
+                <div className="text-sm text-gray-400">{stock.synopsis?.role || "anchor"}</div>
               </div>
             </div>
           </div>
