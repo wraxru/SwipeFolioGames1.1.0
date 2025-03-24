@@ -161,9 +161,11 @@ export default function RealTimeStockCard({
   }, [formattedIntradayData, stock.chartData, timeFrame]);
   
   // Parse real-time price and change percentage
-  const realTimePrice = quoteData ? parseFloat(quoteData["05. price"]) : stock.price;
-  const realTimeChange = quoteData 
-    ? parseFloat(quoteData["09. change"].replace('%', '')) 
+  const realTimePrice = quoteData?.["Global Quote"]?.["05. price"] 
+    ? parseFloat(quoteData["Global Quote"]["05. price"]) 
+    : stock.price;
+  const realTimeChange = quoteData?.["Global Quote"]?.["09. change"] 
+    ? parseFloat(quoteData["Global Quote"]["09. change"]) 
     : stock.change;
   
   // Calculate min/max for chart display
