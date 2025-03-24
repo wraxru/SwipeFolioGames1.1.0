@@ -4,7 +4,7 @@ export interface StockData {
   price: number;
   change: number;
   rating: number;
-  smartScore: string;
+  smartScore?: string;
   description: string;
   metrics: {
     performance: {
@@ -355,10 +355,185 @@ const hardcodedStocks: Record<string, StockData[]> = {
       chartData: [187.2, 188.1, 187.9, 187.6, 188.2, 188.7, 189.0, 189.3, 189.1, 189.4, 189.7, 189.65],
       industry: "Healthcare"
     }
+  ],
+  "Real Estate": [
+    {
+      name: "Prologis Inc.",
+      ticker: "PLD",
+      price: 127.85,
+      change: 0.65,
+      rating: 4.3,
+      description: "Global leader in logistics real estate with a focus on high-barrier, high-growth markets.",
+      metrics: {
+        performance: { 
+          value: "Good", 
+          color: "green",
+          details: {
+            revenueGrowth: 8.5,
+            profitMargin: 39.7,
+            returnOnCapital: 10.2
+          },
+          explanation: "Prologis demonstrates solid performance with 8.5% revenue growth, exceeding the real estate sector average of 6.0%. Its excellent profit margin of 39.7% significantly outperforms the industry benchmark of 35.0%, while its strong 10.2% return on capital surpasses the 9.0% industry standard, reflecting its strategic focus on high-value logistics properties in key markets."
+        },
+        stability: { 
+          value: "High", 
+          color: "green",
+          details: {
+            volatility: 0.75,
+            beta: 0.85,
+            dividendConsistency: "High"
+          },
+          explanation: "Prologis offers exceptional stability with significantly lower volatility (0.75) than the real estate industry average (0.8). Its beta of 0.85 indicates lower market sensitivity than peers. High dividend consistency reflects its reliable income stream from long-term leases with high-quality tenants, providing dependable income for investors."
+        },
+        value: { 
+          value: "Fair", 
+          color: "yellow",
+          details: {
+            peRatio: 17.8,
+            pbRatio: 2.0,
+            dividendYield: 3.2
+          },
+          explanation: "Prologis trades at a modest premium with a PE ratio of 17.8 versus the real estate industry average of 16.0, reflecting its quality and growth profile. The price-to-book ratio of 2.0 slightly exceeds the industry's 1.8, indicating investors' willingness to pay for its premium portfolio. Its dividend yield of 3.2% beats the sector's 3.0%, offering an attractive income component."
+        },
+        momentum: { 
+          value: "Fair", 
+          color: "yellow",
+          details: {
+            threeMonthReturn: 2.8,
+            relativePerformance: 0.3,
+            rsi: 52
+          },
+          explanation: "Prologis shows moderate momentum with a three-month return of 2.8%, slightly outperforming the real estate sector average of 2.5%. Its relative performance of 0.3 indicates modest outperformance versus peers. With an RSI of 52, the stock is in balanced territory, suggesting steady investor interest without excessive enthusiasm or pessimism."
+        }
+      },
+      synopsis: {
+        price: "Showing resilience at current price points despite sector-wide pressures",
+        company: "Prologis expands portfolio with strategic acquisitions in high-growth logistics markets",
+        role: "Core real estate holding with solid dividend and e-commerce driven growth tailwinds"
+      },
+      overallAnalysis: "A high-quality logistics REIT benefiting from e-commerce growth and supply chain reconfiguration. Offers a balanced opportunity with above-average growth potential, defensive characteristics, and reliable income.",
+      chartData: [125.2, 125.8, 126.3, 125.9, 126.4, 126.9, 127.2, 127.0, 127.3, 127.7, 127.9, 127.85],
+      industry: "Real Estate"
+    },
+    {
+      name: "Realty Income Corp.",
+      ticker: "O",
+      price: 57.85,
+      change: 0.35,
+      rating: 4.0,
+      description: "Triple-net lease REIT focused on commercial properties with monthly dividend payments.",
+      metrics: {
+        performance: { 
+          value: "Fair", 
+          color: "yellow",
+          details: {
+            revenueGrowth: 5.2,
+            profitMargin: 30.5,
+            returnOnCapital: 7.8
+          },
+          explanation: "Realty Income shows moderate performance with 5.2% revenue growth, slightly below the real estate sector average of 6.0%. Its profit margin of 30.5% trails the industry benchmark of 35.0%, while its 7.8% return on capital falls below the 9.0% industry standard. These metrics reflect its focus on stability and income rather than aggressive growth."
+        },
+        stability: { 
+          value: "High", 
+          color: "green",
+          details: {
+            volatility: 0.65,
+            beta: 0.7,
+            dividendConsistency: "High"
+          },
+          explanation: "Realty Income offers exceptional stability with significantly lower volatility (0.65) than the real estate industry average (0.8). Its beta of 0.7 indicates defensive characteristics that help it outperform during market downturns. High dividend consistency reflects its focus on maintaining its 'Monthly Dividend Company' reputation."
+        },
+        value: { 
+          value: "Good", 
+          color: "green",
+          details: {
+            peRatio: 14.2,
+            pbRatio: 1.5,
+            dividendYield: 5.8
+          },
+          explanation: "Realty Income trades at an attractive discount with a PE ratio of 14.2 versus the real estate industry average of 16.0. The price-to-book ratio of 1.5 is below the industry's 1.8, suggesting good value. Its standout dividend yield of 5.8% significantly exceeds the sector's 3.0%, making it particularly attractive for income-oriented investors."
+        },
+        momentum: { 
+          value: "Fair", 
+          color: "yellow",
+          details: {
+            threeMonthReturn: 2.2,
+            relativePerformance: -0.3,
+            rsi: 51
+          },
+          explanation: "Realty Income shows moderate momentum with a three-month return of 2.2%, slightly underperforming the real estate sector average of 2.5%. Its relative performance of -0.3 indicates minor underperformance versus peers. With an RSI of 51, the stock is in balanced territory, suggesting steady trading without significant buying or selling pressure."
+        }
+      },
+      synopsis: {
+        price: "Trading near equilibrium despite broader market volatility",
+        company: "Realty Income's acquisition of Spirit Realty enhances diversification and scale",
+        role: "Income-generating position with monthly dividends and defensive characteristics"
+      },
+      overallAnalysis: "A steady, income-focused REIT with one of the most reliable dividend payments in the market. Offers exceptional income potential with moderate growth prospects and defensive characteristics that help it weather market turbulence.",
+      chartData: [56.8, 57.1, 56.9, 57.2, 57.5, 57.3, 57.6, 57.9, 57.7, 57.6, 57.7, 57.85],
+      industry: "Real Estate"
+    },
+    {
+      name: "Simon Property Group",
+      ticker: "SPG",
+      price: 148.65,
+      change: 1.25,
+      rating: 3.8,
+      description: "Largest shopping mall and retail REIT with premium properties across North America, Europe and Asia.",
+      metrics: {
+        performance: { 
+          value: "Fair", 
+          color: "yellow",
+          details: {
+            revenueGrowth: 4.8,
+            profitMargin: 32.6,
+            returnOnCapital: 8.2
+          },
+          explanation: "Simon Property Group shows moderate performance with 4.8% revenue growth, lagging the real estate sector average of 6.0%. Its profit margin of 32.6% is slightly below the industry benchmark of 35.0%, while its 8.2% return on capital approaches but falls short of the 9.0% industry standard. These metrics reflect ongoing challenges in the retail environment being offset by premium property positioning."
+        },
+        stability: { 
+          value: "Fair", 
+          color: "yellow",
+          details: {
+            volatility: 0.95,
+            beta: 0.9,
+            dividendConsistency: "Medium"
+          },
+          explanation: "Simon Property Group exhibits moderate stability with volatility (0.95) higher than the real estate industry average (0.8). Its beta of 0.9 indicates slightly higher market sensitivity than peers. Medium dividend consistency reflects historical dividend adjustments during retail sector disruptions, though the company maintains a commitment to shareholder returns."
+        },
+        value: { 
+          value: "Good", 
+          color: "green",
+          details: {
+            peRatio: 13.2,
+            pbRatio: 1.4,
+            dividendYield: 5.2
+          },
+          explanation: "Simon Property Group trades at an attractive discount with a PE ratio of 13.2 versus the real estate industry average of 16.0, reflecting ongoing concerns about retail properties. The price-to-book ratio of 1.4 is well below the industry's 1.8, suggesting significant value. Its generous dividend yield of 5.2% far exceeds the sector's 3.0%, offering substantial income potential."
+        },
+        momentum: { 
+          value: "Fair", 
+          color: "yellow",
+          details: {
+            threeMonthReturn: 3.5,
+            relativePerformance: 1.0,
+            rsi: 54
+          },
+          explanation: "Simon Property Group shows solid momentum with a three-month return of 3.5%, outperforming the real estate sector average of 2.5%. Its relative performance of 1.0 indicates moderate outperformance versus peers. With an RSI of 54, the stock is in balanced territory, suggesting steady buying interest without excessive enthusiasm."
+        }
+      },
+      synopsis: {
+        price: "Gradually climbing on improved forward guidance and analyst revisions",
+        company: "Simon Property Group's premium mall traffic exceeds pre-pandemic levels in key markets",
+        role: "Value opportunity in retail real estate with attractive dividend yield and recovery potential"
+      },
+      overallAnalysis: "A major retail REIT demonstrating resilience in a challenging environment. Offers compelling value with a high dividend yield and recovery potential as premium retail locations remain relevant despite e-commerce pressures.",
+      chartData: [145.9, 146.3, 147.0, 146.7, 147.2, 147.5, 147.8, 148.2, 148.0, 148.3, 148.5, 148.65],
+      industry: "Real Estate"
+    }
   ]
 };
 
-// Generate chart data for all hardcoded stocks that don't have it
 Object.keys(hardcodedStocks).forEach(industry => {
   hardcodedStocks[industry].forEach(stock => {
     if (!stock.chartData) {
