@@ -8,9 +8,9 @@ import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from '@google/ge
  */
 export function createGeminiPrompt(stackName: string, ticker: string | null = null): string {
   return `Generate a realistic stock profile based on the following investment stack: "${stackName}".
-  
+
   Your response should be detailed, accurate JSON with the following structure:
-  
+
   {
     "companyName": "Full Company Name",
     "ticker": "SYMBOL",
@@ -77,7 +77,7 @@ export function createGeminiPrompt(stackName: string, ticker: string | null = nu
       }
     }
   }
-  
+
   Important:
   - Create a realistic company that would be part of the "${stackName}" industry or theme
   - If a specific ticker "${ticker || ''}" is provided, make sure to use that ticker and an appropriate company name
@@ -101,39 +101,18 @@ export async function generateAIStockData(stackName: string): Promise<any> {
     if (!apiKey) {
       throw new Error("OpenRouter API key not found");
     }
-    
-    const prompt = createGeminiPrompt(stackName);
-    
-    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-        'HTTP-Referer': 'https://replit.com',
-        'X-Title': 'SwipeFolio Stock Generator'
-      },
-      body: JSON.stringify({
-        model: 'google/gemini-pro',
-        messages: [
-          { role: 'user', content: prompt }
-        ],
-        temperature: 0.7,
-        max_tokens: 3072
-      })
+
+    const model = new GoogleGenerativeAI({
+      apiKey,
     });
 
-    if (!response.ok) {
-      throw new Error(`OpenRouter API request failed: ${response.status} ${response.statusText}`);
-    }
+    const generationConfig = {
+      maxOutputTokens: 3072,
+      temperature: 0.7,
+    };
 
-    const responseData = await response.json();
-    const textResponse = responseData.choices[0].message.content;
-    
-    // Extract and parse the JSON response
-    console.log("Raw response from OpenRouter:", textResponse.substring(0, 100) + "...");
-    const stockData = JSON.parse(textResponse);
-    
-    // Populate the template placeholders with actual values
+    const safetySettings = [
+      {
         category: HarmCategory.HARM_CATEGORY_HARASSMENT,
         threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
       },
@@ -150,41 +129,41 @@ export async function generateAIStockData(stackName: string): Promise<any> {
         threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
       },
     ];
-    
+
     const prompt = createGeminiPrompt(stackName);
-    
+
     const result = await model.generateContent({
       contents: [{ role: "user", parts: [{ text: prompt }] }],
       generationConfig,
       safetySettings,
     });
-    
+
     const response = result.response;
     const textResponse = response.text();
-    
+
     // Extract and parse the JSON response from Gemini
     console.log("Raw response from Gemini:", textResponse.substring(0, 100) + "...");
     const stockData = JSON.parse(textResponse);
-    
+
     // Populate the template placeholders with actual values
     populateMetricExplanations(stockData);
-    
+
     // Generate chart data for different time periods based on the stock's momentum and volatility
     const volatilityValue = stockData.specificMetrics?.stability?.volatility 
       ? parseFloat(stockData.specificMetrics.stability.volatility) 
       : 0.15;
-    
+
     // Add chart data
     stockData.chartDataByTimeFrame = generateChartDataAllTimeframes(
       stockData.currentPrice,
       stockData.metrics.momentum,
       volatilityValue
     );
-    
+
     // Add rating and smartScore for compatibility
     stockData.rating = calculateRating(stockData.metrics);
     stockData.smartScore = getSmartScoreLabel(stockData.rating);
-    
+
     return stockData;
   } catch (error) {
     console.error("Error generating AI stock data:", error);
@@ -208,11 +187,11 @@ function calculateRating(metrics: {
     value: { 'High': 5, 'Fair': 3, 'Low': 1 },
     momentum: { 'Strong': 5, 'Fair': 3, 'Weak': 1 }
   };
-  
+
   // Calculate average score
   let total = 0;
   let count = 0;
-  
+
   for (const metric in metrics) {
     if (Object.prototype.hasOwnProperty.call(metrics, metric)) {
       const value = metrics[metric as keyof typeof metrics];
@@ -223,7 +202,7 @@ function calculateRating(metrics: {
       }
     }
   }
-  
+
   // Return rounded average to one decimal place
   return count > 0 ? Math.round((total / count) * 10) / 10 : 3.0;
 }
@@ -247,22 +226,22 @@ function getSmartScoreLabel(rating: number): string {
  */
 function populateMetricExplanations(stockData: any): void {
   if (!stockData.metricExplanations || !stockData.specificMetrics) return;
-  
+
   // For each metric type (performance, stability, etc.)
   Object.keys(stockData.metricExplanations).forEach(metricType => {
     if (!stockData.specificMetrics[metricType]) return;
-    
+
     // For each property in the explanation (calculation, comparison, meaning)
     Object.keys(stockData.metricExplanations[metricType]).forEach(property => {
       let text = stockData.metricExplanations[metricType][property];
-      
+
       // Replace each placeholder {placeholder} with the actual value
       Object.keys(stockData.specificMetrics[metricType]).forEach(specificMetric => {
         const placeholder = `{${specificMetric}}`;
         const value = stockData.specificMetrics[metricType][specificMetric];
         text = text.replace(placeholder, value);
       });
-      
+
       // Update the explanation with the populated text
       stockData.metricExplanations[metricType][property] = text;
     });
@@ -296,50 +275,50 @@ function generateChartDataAllTimeframes(
     default:
       momentumFactor = 0;
   }
-  
+
   return {
     "1D": generateImprovedChartData(currentPrice, 24, "hours", {
       startChange: -0.01 - momentumFactor * 0.005,
       volatility: volatilityValue * 0.3,
       trend: momentumFactor * 0.0004
     }),
-    
+
     "5D": generateImprovedChartData(currentPrice, 5, "days", {
       startChange: -0.03 - momentumFactor * 0.01,
       volatility: volatilityValue * 0.4,
       trend: momentumFactor * 0.0006
     }),
-    
+
     "1M": generateImprovedChartData(currentPrice, 30, "days", {
       startChange: -0.05 - momentumFactor * 0.03,
       volatility: volatilityValue * 0.5,
       trend: momentumFactor * 0.001
     }),
-    
+
     "6M": generateImprovedChartData(currentPrice, 6, "months", {
       startChange: -0.1 - momentumFactor * 0.05,
       volatility: volatilityValue * 0.7,
       trend: momentumFactor * 0.003
     }),
-    
+
     "YTD": generateImprovedChartData(currentPrice, new Date().getMonth() + 1, "months", {
       startChange: -0.08 - momentumFactor * 0.04,
       volatility: volatilityValue * 0.8,
       trend: momentumFactor * 0.005
     }),
-    
+
     "1Y": generateImprovedChartData(currentPrice, 12, "months", {
       startChange: -0.15 - momentumFactor * 0.1,
       volatility: volatilityValue,
       trend: momentumFactor * 0.007
     }),
-    
+
     "5Y": generateImprovedChartData(currentPrice, 5, "years", {
       startChange: -0.4 - momentumFactor * 0.2,
       volatility: volatilityValue * 1.2,
       trend: momentumFactor * 0.01
     }),
-    
+
     "MAX": generateImprovedChartData(currentPrice, 10, "years", {
       startChange: -0.6 - momentumFactor * 0.3,
       volatility: volatilityValue * 1.5,
@@ -371,43 +350,43 @@ function generateImprovedChartData(
     volatility = 0.1,    // Default volatility
     trend = 0.002        // Default slight upward trend
   } = options;
-  
+
   // Calculate number of data points based on time unit
   const dataPoints = getDataPointCount(units, timeUnit);
-  
+
   // Start price is a percentage change from the end price
   const startPrice = endPrice * (1 + startChange);
-  
+
   // Calculate total change and per-step change
   const totalChange = endPrice / startPrice - 1;
   const baseChangePerStep = totalChange / dataPoints;
-  
+
   // Generate data points
   const data: number[] = [];
   let currentPrice = startPrice;
-  
+
   for (let i = 0; i < dataPoints; i++) {
     data.push(currentPrice);
-    
+
     // Base trend component
     let changeForThisStep = baseChangePerStep + trend;
-    
+
     // Random volatility component
     // More volatility at the middle of the time period, less at start/end
     const position = i / dataPoints;
     const volatilityWeight = 4 * position * (1 - position); // Parabola peaking at 0.5
     const randomFactor = ((Math.random() - 0.5) * 2 * volatility) * volatilityWeight;
-    
+
     // Apply change for this step
     currentPrice = currentPrice * (1 + changeForThisStep + randomFactor);
-    
+
     // Ensure we don't go below zero (extremely unlikely but just in case)
     if (currentPrice < 0.01) currentPrice = 0.01;
   }
-  
+
   // Add final price point to ensure it ends exactly at endPrice
   data.push(endPrice);
-  
+
   return data;
 }
 
@@ -438,10 +417,10 @@ function getDataPointCount(units: number, timeUnit: string): number {
 export async function generateMultipleStocks(industry: string, count: number = 3): Promise<any[]> {
   try {
     const stocks = [];
-    
+
     for (let i = 0; i < count; i++) {
       const stock = await generateAIStockData(industry);
-      
+
       // Add color mappings for metrics
       if (stock.metrics) {
         stock.metrics = {
@@ -463,10 +442,10 @@ export async function generateMultipleStocks(industry: string, count: number = 3
           }
         };
       }
-      
+
       stocks.push(stock);
     }
-    
+
     return stocks;
   } catch (error) {
     console.error("Error generating multiple stocks:", error);
@@ -500,6 +479,6 @@ function getColorForMetric(metricType: string, value: string): string {
       'Weak': '#ef4444'    // Red
     }
   };
-  
+
   return colorMap[metricType]?.[value] || '#94a3b8'; // Default to slate-400
 }
