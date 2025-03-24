@@ -170,8 +170,13 @@ export default function ImprovedSwipeStockCard({
     };
 
     // Use AI explanations if available, otherwise use samples
-    const data = stock.metricExplanations?.[name as keyof typeof stock.metricExplanations] || 
-                sampleExplanations[name as keyof typeof sampleExplanations];
+    let data;
+    if (stock.metricExplanations && name in sampleExplanations) {
+      data = stock.metricExplanations[name as keyof typeof stock.metricExplanations] || 
+             sampleExplanations[name as keyof typeof sampleExplanations];
+    } else {
+      data = sampleExplanations[name as keyof typeof sampleExplanations];
+    }
     
     setCurrentMetric({ name, data, color });
     setIsExplanationOpen(true);
@@ -339,7 +344,7 @@ export default function ImprovedSwipeStockCard({
                 color === 'yellow' ? 'bg-yellow-900/30 border border-yellow-500/30' : 
                 'bg-red-900/30 border border-red-500/30'
               } hover:bg-gray-800/30 transition-colors active:scale-95 text-left`}
-              onClick={() => showMetricExplanation(key, null, color)}
+              onClick={() => showMetricExplanation(key as string, null, color)}
             >
               <div className="absolute top-2 right-2">
                 <Info size={16} className="text-white/60" />

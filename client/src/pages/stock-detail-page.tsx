@@ -5,7 +5,7 @@ import { Stack } from "@shared/schema";
 import { ArrowLeft, BellRing } from "lucide-react";
 import { getQueryFn } from "@/lib/queryClient";
 import { StockData, getIndustryStocks } from "@/lib/stock-data";
-import SwipeStockCard from "@/components/ui/swipe-stock-card";
+import ImprovedSwipeStockCard from "@/components/ui/improved-swipe-stock-card";
 import StackCompletedModal from "@/components/stack-completed-modal";
 
 export default function StockDetailPage() {
@@ -86,7 +86,7 @@ export default function StockDetailPage() {
       {/* Main content */}
       <div className="flex-1 relative">
         {stocks.length > 0 && (
-          <SwipeStockCard
+          <ImprovedSwipeStockCard
             stock={currentStock}
             onNext={handleNextStock}
             onPrevious={handlePreviousStock}
