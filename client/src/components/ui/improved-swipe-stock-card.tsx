@@ -3,7 +3,7 @@ import { StockData } from "@/lib/stock-data";
 import { Star, Info, ChevronLeft, ChevronRight } from "lucide-react";
 import { motion, useAnimation, useMotionValue, useTransform, PanInfo } from "framer-motion";
 import MetricExplanationModal from "./metric-explanation-modal";
-import { generateChartData } from "@/lib/openrouter-service";
+import { generateChartData } from "@/lib/gemini-service";
 
 interface SwipeStockCardProps {
   stock: StockData;
@@ -61,8 +61,7 @@ export default function ImprovedSwipeStockCard({
     name: string;
     data: any;
     color: string;
-    specificValues?: any;
-  }>({ name: "", data: null, color: "", specificValues: undefined });
+  }>({ name: "", data: null, color: "" });
   
   // Helper to generate new chart data based on the selected time frame
   const generateTimeBasedData = (data: number[], timeFrame: TimeFrame) => {
@@ -94,20 +93,14 @@ export default function ImprovedSwipeStockCard({
     }
   };
   
-  // Get chart data for the selected time frame
+  // Generate chart data based on selected time frame
   const chartData = useMemo(() => {
-    // If we have time-based chart data, use it
-    if (stock.chartDataByTimeFrame && stock.chartDataByTimeFrame[timeFrame]) {
-      return stock.chartDataByTimeFrame[timeFrame];
-    }
-    // Otherwise use the regular chart data
     return generateTimeBasedData(stock.chartData, timeFrame);
-  }, [stock, timeFrame]);
+  }, [stock.chartData, timeFrame]);
   
   // Calculate min/max for chart display
-  const chartDataSafe = chartData.length > 0 ? chartData : [0, 0];
-  const minValue = Math.min(...chartDataSafe) * 0.98; // Add 2% padding below
-  const maxValue = Math.max(...chartDataSafe) * 1.02; // Add 2% padding above
+  const minValue = Math.min(...chartData) * 0.98; // Add 2% padding below
+  const maxValue = Math.max(...chartData) * 1.02; // Add 2% padding above
   
   // Get time scale labels based on selected timeframe
   const timeScaleLabels = useMemo(() => 
@@ -185,18 +178,12 @@ export default function ImprovedSwipeStockCard({
       data = sampleExplanations[name as keyof typeof sampleExplanations];
     }
     
-    // Get specific metric values if available
-    let specificValues = undefined;
-    if (stock.specificMetrics && name in (stock.specificMetrics as any)) {
-      specificValues = stock.specificMetrics[name as keyof typeof stock.specificMetrics];
-    }
-    
-    setCurrentMetric({ name, data, color, specificValues });
+    setCurrentMetric({ name, data, color });
     setIsExplanationOpen(true);
   };
 
   // Convert price to display format
-  const displayPrice = stock?.price ? stock.price.toFixed(2) : "0.00";
+  const displayPrice = stock.price.toFixed(2);
   
   // Determine price range to show on Y-axis
   const priceRangeMin = Math.floor(minValue);
@@ -396,7 +383,7 @@ export default function ImprovedSwipeStockCard({
               </div>
               <div className="flex-1">
                 <div className="font-semibold">Price</div>
-                <div className="text-sm text-gray-400">{stock.synopsis?.price || "Current price appears stable"}</div>
+                <div className="text-sm text-gray-400">{stock.synopsis.price}</div>
               </div>
             </div>
             
@@ -421,7 +408,7 @@ export default function ImprovedSwipeStockCard({
               </div>
               <div className="flex-1">
                 <div className="font-semibold">Company</div>
-                <div className="text-sm text-gray-400">{stock.synopsis?.company || "Company maintains market position"}</div>
+                <div className="text-sm text-gray-400">{stock.synopsis.company}</div>
               </div>
             </div>
             
@@ -437,7 +424,7 @@ export default function ImprovedSwipeStockCard({
               </div>
               <div className="flex-1">
                 <div className="font-semibold">Role</div>
-                <div className="text-sm text-gray-400">{stock.synopsis?.role || "anchor"}</div>
+                <div className="text-sm text-gray-400">{stock.synopsis.role}</div>
               </div>
             </div>
           </div>
@@ -451,7 +438,6 @@ export default function ImprovedSwipeStockCard({
         metricName={currentMetric.name}
         metricData={currentMetric.data}
         color={currentMetric.color}
-        specificValues={currentMetric.specificValues}
       />
     </div>
   );

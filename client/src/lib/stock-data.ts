@@ -21,37 +21,6 @@ export interface StockData {
     role: string;
   };
   chartData: number[];
-  // Optional chart data by time frame
-  chartDataByTimeFrame?: {
-    [timeFrame: string]: number[];
-  };
-  // Optional AI-generated specific metric values
-  specificMetrics?: {
-    performance?: {
-      revenueGrowth: string;
-      profitMargin: string;
-      returnOnCapital: string;
-      industryComparison: string;
-    };
-    stability?: {
-      volatility: string;
-      beta: string;
-      dividendConsistency: string;
-      industryComparison: string;
-    };
-    value?: {
-      peRatio: string;
-      pbRatio: string;
-      dividendYield: string;
-      industryComparison: string;
-    };
-    momentum?: {
-      priceReturn3Month: string;
-      relativePerformance: string;
-      rsi: string;
-      industryComparison: string;
-    };
-  };
   // Optional AI-generated explanations for metrics
   metricExplanations?: {
     performance?: {
@@ -532,33 +501,7 @@ export const generateRandomStocks = (industry: string, count: number = 10): Stoc
   });
 };
 
-// Import API request helper
-import { apiRequest } from "@/lib/queryClient";
-
-// Get a set of stocks for the given industry using the server-side API
-export const getIndustryStocks = async (industry: string): Promise<StockData[]> => {
-  try {
-    // Request OpenRouter-generated stocks from the server
-    console.log(`Fetching stocks for ${industry} using OpenRouter API...`);
-    const response = await fetch(`/api/stock-data/${encodeURIComponent(industry)}?count=5`);
-    
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Failed to fetch AI-generated stocks: ${response.status} - ${errorText}`);
-    }
-    
-    const aiStocks = await response.json();
-    
-    if (aiStocks && aiStocks.length > 0) {
-      console.log("Using OpenRouter-generated stocks from server");
-      return aiStocks;
-    }
-  } catch (error) {
-    console.error("Error fetching OpenRouter stocks from server:", error);
-    // Fall back to random stocks on error
-  }
-  
-  // Fallback to random generation
-  console.log("Using randomly generated stocks (fallback)");
+// Get a set of random stocks for the given industry
+export const getIndustryStocks = (industry: string): StockData[] => {
   return generateRandomStocks(industry);
 };

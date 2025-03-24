@@ -17,9 +17,6 @@ interface MetricExplanationModalProps {
     meaning: string;
   };
   color: string;
-  specificValues?: {
-    [key: string]: string;
-  };
 }
 
 export default function MetricExplanationModal({
@@ -27,8 +24,7 @@ export default function MetricExplanationModal({
   onClose,
   metricName,
   metricData,
-  color,
-  specificValues
+  color
 }: MetricExplanationModalProps) {
   if (!metricData) return null;
   
@@ -119,25 +115,6 @@ export default function MetricExplanationModal({
             </div>
           </div>
         </div>
-        
-        {/* Specific metric values section */}
-        {specificValues && Object.keys(specificValues).length > 0 && (
-          <div className="bg-gray-900/80 rounded-lg mt-2 border border-gray-800 overflow-hidden">
-            <div className="px-4 py-3 border-b border-gray-800">
-              <h3 className="font-semibold text-sm">Specific Metrics</h3>
-            </div>
-            <div className="divide-y divide-gray-800">
-              {Object.entries(specificValues).map(([key, value]) => (
-                <div key={key} className="px-4 py-2 flex justify-between items-center">
-                  <span className="text-sm capitalize text-gray-400">
-                    {key.replace(/([A-Z])/g, ' $1').trim()}
-                  </span>
-                  <span className="text-sm font-medium">{value}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
         
         <div className="bg-gray-900/50 p-3 rounded-lg mt-2 border border-gray-800">
           <p className="text-xs text-gray-400">

@@ -22,27 +22,11 @@ export default function StockDetailPage() {
   });
 
   // Generate stocks data for the industry
-  const [stocks, setStocks] = useState<StockData[]>([]);
-  const [loadingStocks, setLoadingStocks] = useState(false);
-  
-  // Load stocks when stack changes
-  useEffect(() => {
-    const loadStocks = async () => {
-      if (!stack) return;
-      
-      setLoadingStocks(true);
-      try {
-        // Now we're actually using AI-generated stocks
-        const result = await getIndustryStocks(stack.industry);
-        setStocks(result);
-      } catch (error) {
-        console.error("Error loading stocks:", error);
-      } finally {
-        setLoadingStocks(false);
-      }
-    };
-    
-    loadStocks();
+  const stocks = useMemo(() => {
+    if (!stack) return [];
+    // For now, we'll use the mock data until we fully integrate Gemini AI
+    // In a production app, we'd call generateMultipleStocks(stack.industry) here
+    return getIndustryStocks(stack.industry);
   }, [stack]);
 
   // Handle navigation between stocks
@@ -72,7 +56,7 @@ export default function StockDetailPage() {
     setLocation("/");
   };
 
-  if (isLoading || loadingStocks || stocks.length === 0) {
+  if (isLoading || stocks.length === 0) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-black">
         <div className="animate-spin w-10 h-10 border-4 border-cyan-400 border-t-transparent rounded-full"></div>
