@@ -317,32 +317,37 @@ export default function ImprovedSwipeStockCard({
         </div>
 
         {/* Chart */}
-        <div className="px-4 pt-8 pb-2 border-b border-gray-800 h-52 relative mt-2">
+        <div className="px-4 pt-8 pb-8 border-b border-gray-800 h-60 relative mt-2 bg-gradient-to-b from-gray-900 to-black">
           {/* Y-axis values */}
-          <div className="absolute left-0 top-0 bottom-8 flex flex-col justify-between text-xs text-gray-500">
-            <span>${priceRangeMax}</span>
-            <span>${Math.round((priceRangeMax + priceRangeMin) / 2 * 100) / 100}</span>
-            <span>${priceRangeMin}</span>
+          <div className="absolute left-0 top-0 bottom-16 flex flex-col justify-between text-xs text-gray-500">
+            <span className="px-1 rounded bg-black/50 backdrop-blur-sm">${priceRangeMax}</span>
+            <span className="px-1 rounded bg-black/50 backdrop-blur-sm">${Math.round((priceRangeMax + priceRangeMin) / 2 * 100) / 100}</span>
+            <span className="px-1 rounded bg-black/50 backdrop-blur-sm">${priceRangeMin}</span>
           </div>
           
           {/* Chart grid lines */}
-          <div className="absolute left-10 right-0 top-0 bottom-8 flex flex-col justify-between pointer-events-none">
+          <div className="absolute left-10 right-0 top-0 bottom-16 flex flex-col justify-between pointer-events-none">
             <div className="border-t border-gray-800 w-full h-0"></div>
             <div className="border-t border-gray-800 w-full h-0"></div>
             <div className="border-t border-gray-800 w-full h-0"></div>
           </div>
           
-          <div className="ml-10 chart-container h-full">
+          <div className="ml-10 chart-container h-[calc(100%-30px)]">
             <svg viewBox="0 0 300 80" width="100%" height="100%" preserveAspectRatio="none">
               <defs>
                 <linearGradient id={`chartGradient-${stock.ticker}`} x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stopColor="rgba(6, 182, 212, 0.3)" />
+                  <stop offset="0%" stopColor="rgba(6, 182, 212, 0.4)" />
                   <stop offset="100%" stopColor="rgba(6, 182, 212, 0)" />
                 </linearGradient>
                 <linearGradient id={`negativeChartGradient-${stock.ticker}`} x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stopColor="rgba(239, 68, 68, 0.3)" />
+                  <stop offset="0%" stopColor="rgba(239, 68, 68, 0.4)" />
                   <stop offset="100%" stopColor="rgba(239, 68, 68, 0)" />
                 </linearGradient>
+                {/* Add a glow effect */}
+                <filter id={`glow-${stock.ticker}`}>
+                  <feGaussianBlur stdDeviation="2" result="blur" />
+                  <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                </filter>
               </defs>
               
               {/* Line chart */}
@@ -354,7 +359,8 @@ export default function ImprovedSwipeStockCard({
                 }).join(" ")}`}
                 fill="none"
                 stroke={stock.change >= 0 ? "#06b6d4" : "#ef4444"}
-                strokeWidth="2"
+                strokeWidth="2.5"
+                filter={`url(#glow-${stock.ticker})`}
               />
               
               {/* Area fill */}
@@ -370,25 +376,29 @@ export default function ImprovedSwipeStockCard({
           </div>
           
           {/* Time scale */}
-          <div className="ml-10 flex justify-between text-xs text-gray-500 mt-2">
+          <div className="ml-10 flex justify-between text-xs text-gray-400 mt-4 p-2 bg-black/40 backdrop-blur-sm rounded-md">
             {timeScaleLabels.map((label, index) => (
-              <span key={index}>{label}</span>
+              <span key={index} className="font-medium">{label}</span>
             ))}
           </div>
         </div>
 
         {/* Stock Info */}
-        <div className="px-4 py-4 border-b border-gray-800 bg-gray-900">
-          <div className="flex items-start justify-between mb-3">
+        <div className="px-4 py-4 border-b border-gray-800 bg-gradient-to-br from-gray-900 via-gray-900 to-black">
+          <div className="flex items-start justify-between mb-4">
             <div>
-              <h2 className="text-xl font-bold">{stock.name} <span className="text-gray-400">({stock.ticker})</span></h2>
-              <div className="flex items-center gap-2 mt-1.5">
+              <h2 className="text-xl font-bold text-white drop-shadow-sm">{stock.name} <span className="text-gray-400">({stock.ticker})</span></h2>
+              <div className="flex items-center gap-2 mt-2">
                 {/* Price bubble */}
                 <div className="flex items-center">
-                  <div className="flex items-center bg-gray-800 rounded-full px-3 py-1.5 border border-gray-700">
-                    <span className="text-xl font-semibold text-white">${displayPrice}</span>
-                    <span className={`ml-2 text-sm ${stock.change >= 0 ? 'text-green-500' : 'text-red-500'} flex items-center font-medium`}>
-                      <span className={`inline-block w-2 h-2 rounded-full mr-1 ${stock.change >= 0 ? 'bg-green-500' : 'bg-red-500'}`}></span>
+                  <div className={`flex items-center ${stock.change >= 0 ? 'bg-gradient-to-r from-cyan-900/50 to-cyan-950/30' : 'bg-gradient-to-r from-red-900/50 to-red-950/30'} rounded-full px-3 py-2 border ${stock.change >= 0 ? 'border-cyan-500/30' : 'border-red-500/30'} shadow-lg`}
+                    style={{
+                      boxShadow: stock.change >= 0 ? '0 0 15px rgba(6, 182, 212, 0.1)' : '0 0 15px rgba(239, 68, 68, 0.1)'
+                    }}
+                  >
+                    <span className="text-2xl font-bold text-white drop-shadow-md">${displayPrice}</span>
+                    <span className={`ml-2 text-sm ${stock.change >= 0 ? 'text-cyan-300' : 'text-red-300'} flex items-center font-medium drop-shadow-sm`}>
+                      <span className={`inline-block w-2 h-2 rounded-full mr-1 ${stock.change >= 0 ? 'bg-cyan-400' : 'bg-red-400'}`}></span>
                       {stock.change >= 0 ? '+' : ''}{stock.change}%
                     </span>
                   </div>
@@ -400,89 +410,114 @@ export default function ImprovedSwipeStockCard({
                 {[1, 2, 3, 4, 5].map((star) => (
                   <Star
                     key={star}
-                    size={16}
+                    size={18}
                     className={`${
                       star <= Math.floor(stock.rating)
-                        ? "text-yellow-400 fill-yellow-400"
+                        ? "text-yellow-400 fill-yellow-400 drop-shadow-md"
                         : star <= stock.rating
-                        ? "text-yellow-400 fill-yellow-400 opacity-50"
-                        : "text-gray-600"
+                        ? "text-yellow-400 fill-yellow-400 opacity-50 drop-shadow-sm"
+                        : "text-gray-700"
                     }`}
                   />
                 ))}
               </div>
-              <span className="text-sm text-gray-400 mt-1 bg-gray-800/50 px-2 py-0.5 rounded-full">
+              <span className="text-sm text-cyan-400 mt-1.5 bg-gray-800/70 px-3 py-1 rounded-full shadow-inner border border-gray-700/50 font-medium">
                 SmartScore {stock.smartScore}
               </span>
             </div>
           </div>
-          <p className="text-sm text-gray-400">
-            {stock.description}
-          </p>
+          <div className="bg-gray-800/40 rounded-lg p-3 border border-gray-700/50 shadow-inner">
+            <p className="text-sm text-gray-300 leading-relaxed">
+              {stock.description}
+            </p>
+          </div>
         </div>
 
         {/* Performance Metrics */}
-        <div className="grid grid-cols-2 gap-3 p-4 border-b border-gray-800 bg-gray-900">
+        <div className="grid grid-cols-2 gap-3 p-4 border-b border-gray-800 bg-gradient-to-b from-gray-900 to-gray-900/80">
           {Object.entries(stock.metrics).map(([key, metricObj]) => {
             const metricName = key.charAt(0).toUpperCase() + key.slice(1);
+            // Define glow and gradient colors based on rating
+            const glowColor = metricObj.color === 'green' ? 'cyan' : 
+                            metricObj.color === 'yellow' ? 'yellow' : 'red';
+            const gradientFrom = metricObj.color === 'green' ? 'from-cyan-900/60' : 
+                               metricObj.color === 'yellow' ? 'from-yellow-900/60' : 
+                               'from-red-900/60';
+            const gradientTo = metricObj.color === 'green' ? 'to-cyan-950/20' : 
+                             metricObj.color === 'yellow' ? 'to-yellow-950/20' : 
+                             'to-red-950/20';
+            
             return (
               <div 
                 key={key}
-                className={`p-3 rounded-lg relative ${
-                  metricObj.color === 'green' ? 'bg-green-900/30 border border-green-500/30' :
-                  metricObj.color === 'yellow' ? 'bg-yellow-900/30 border border-yellow-500/30' : 
-                  'bg-red-900/30 border border-red-500/30'
-                } active:scale-95 transition-transform cursor-pointer shadow-md`}
+                className={`p-3 rounded-xl relative ${
+                  metricObj.color === 'green' ? 'bg-gradient-to-br from-cyan-900/40 to-black border border-cyan-500/50' :
+                  metricObj.color === 'yellow' ? 'bg-gradient-to-br from-yellow-900/40 to-black border border-yellow-500/50' : 
+                  'bg-gradient-to-br from-red-900/40 to-black border border-red-500/50'
+                } active:scale-95 transition-all duration-150 cursor-pointer shadow-lg hover:shadow-xl backdrop-blur-sm`}
                 onClick={() => handleMetricClick(metricName)}
+                style={{
+                  boxShadow: metricObj.color === 'green' ? '0 0 15px rgba(6, 182, 212, 0.15)' :
+                          metricObj.color === 'yellow' ? '0 0 15px rgba(234, 179, 8, 0.15)' :
+                          '0 0 15px rgba(239, 68, 68, 0.15)'
+                }}
               >
                 <div className="absolute top-2 right-2">
                   <Info size={16} className={`${
-                    metricObj.color === 'green' ? 'text-green-500/60' :
-                    metricObj.color === 'yellow' ? 'text-yellow-500/60' : 
-                    'text-red-500/60'
+                    metricObj.color === 'green' ? 'text-cyan-400 drop-shadow-md' :
+                    metricObj.color === 'yellow' ? 'text-yellow-400 drop-shadow-md' : 
+                    'text-red-400 drop-shadow-md'
                   }`} />
                 </div>
                 <div 
                   className={`text-lg font-bold ${
-                    metricObj.color === 'green' ? 'text-green-400' :
-                    metricObj.color === 'yellow' ? 'text-yellow-400' : 
-                    'text-red-400'
-                  }`}
+                    metricObj.color === 'green' ? 'text-cyan-300' :
+                    metricObj.color === 'yellow' ? 'text-yellow-300' : 
+                    'text-red-300'
+                  } drop-shadow-md`}
                 >
                   {metricObj.value}
                 </div>
-                <div className="text-white text-sm capitalize mt-1">{metricName}</div>
+                <div className="text-white text-sm font-medium capitalize mt-1 drop-shadow-sm">{metricName}</div>
               </div>
             );
           })}
         </div>
 
         {/* Stock Synopsis */}
-        <div className="p-4 bg-gray-900 border-b border-gray-800">
-          <h3 className="font-bold text-lg mb-3 flex items-center">
+        <div className="p-4 bg-gradient-to-br from-gray-900 via-gray-900 to-black border-b border-gray-800">
+          <h3 className="font-bold text-lg mb-4 flex items-center text-white drop-shadow-sm">
             Stock Synopsis
-            <span className="ml-2 text-xs text-gray-400 bg-gray-800/50 px-2 py-1 rounded-full">
+            <span className="ml-2 text-xs text-cyan-300 bg-gray-800/50 px-2 py-1 rounded-full border border-gray-700/50 shadow-inner">
               AI-generated
             </span>
           </h3>
           <div className="space-y-4">
             {/* Price */}
-            <div className="flex gap-3 bg-gray-800/50 p-3 rounded-lg border border-gray-800 hover:bg-gray-800/80 transition-all shadow-lg">
-              <div className={`text-${stock.change >= 0 ? 'cyan' : 'red'}-400 w-10 h-10 min-w-10 flex items-center justify-center bg-gray-800 rounded-full shadow-inner shadow-cyan-900/20`}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="drop-shadow-md">
+            <div className="flex gap-3 bg-gradient-to-br from-gray-800/50 to-gray-900/70 p-4 rounded-xl border border-gray-700/50 hover:border-cyan-800/30 transition-all shadow-lg hover:shadow-cyan-900/5">
+              <div className={`text-${stock.change >= 0 ? 'cyan' : 'red'}-400 w-12 h-12 min-w-12 flex items-center justify-center bg-gradient-to-br from-gray-800 to-gray-900 rounded-full shadow-lg border border-${stock.change >= 0 ? 'cyan' : 'red'}-700/30`}
+                style={{
+                  boxShadow: stock.change >= 0 ? '0 0 15px rgba(6, 182, 212, 0.1)' : '0 0 15px rgba(239, 68, 68, 0.1)'
+                }}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="drop-shadow-lg">
                   <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
                 </svg>
               </div>
               <div className="flex-1">
-                <div className="font-semibold text-white">Price</div>
-                <div className="text-sm text-gray-300">{stock.synopsis.price}</div>
+                <div className="font-bold text-white text-base drop-shadow-sm">Price Trend</div>
+                <div className="text-sm text-gray-300 mt-1 leading-relaxed">{stock.synopsis.price}</div>
               </div>
             </div>
             
             {/* Company */}
-            <div className="flex gap-3 bg-gray-800/50 p-3 rounded-lg border border-gray-800 hover:bg-gray-800/80 transition-all shadow-lg">
-              <div className="text-cyan-400 w-10 h-10 min-w-10 flex items-center justify-center bg-gray-800 rounded-full shadow-inner shadow-cyan-900/20">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="drop-shadow-md">
+            <div className="flex gap-3 bg-gradient-to-br from-gray-800/50 to-gray-900/70 p-4 rounded-xl border border-gray-700/50 hover:border-cyan-800/30 transition-all shadow-lg hover:shadow-cyan-900/5">
+              <div className="text-cyan-400 w-12 h-12 min-w-12 flex items-center justify-center bg-gradient-to-br from-gray-800 to-gray-900 rounded-full shadow-lg border border-cyan-700/30"
+                style={{
+                  boxShadow: '0 0 15px rgba(6, 182, 212, 0.1)'
+                }}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="drop-shadow-lg">
                   <rect width="16" height="20" x="4" y="2" rx="2" ry="2" />
                   <path d="M9 22v-4h6v4" />
                   <path d="M8 6h.01" />
@@ -497,22 +532,26 @@ export default function ImprovedSwipeStockCard({
                 </svg>
               </div>
               <div className="flex-1">
-                <div className="font-semibold text-white">Company</div>
-                <div className="text-sm text-gray-300">{stock.synopsis.company}</div>
+                <div className="font-bold text-white text-base drop-shadow-sm">Company News</div>
+                <div className="text-sm text-gray-300 mt-1 leading-relaxed">{stock.synopsis.company}</div>
               </div>
             </div>
             
             {/* Role */}
-            <div className="flex gap-3 bg-gray-800/50 p-3 rounded-lg border border-gray-800 hover:bg-gray-800/80 transition-all shadow-lg">
-              <div className="text-cyan-400 w-10 h-10 min-w-10 flex items-center justify-center bg-gray-800 rounded-full shadow-inner shadow-cyan-900/20">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="drop-shadow-md">
+            <div className="flex gap-3 bg-gradient-to-br from-gray-800/50 to-gray-900/70 p-4 rounded-xl border border-gray-700/50 hover:border-cyan-800/30 transition-all shadow-lg hover:shadow-cyan-900/5">
+              <div className="text-cyan-400 w-12 h-12 min-w-12 flex items-center justify-center bg-gradient-to-br from-gray-800 to-gray-900 rounded-full shadow-lg border border-cyan-700/30"
+                style={{
+                  boxShadow: '0 0 15px rgba(6, 182, 212, 0.1)'
+                }}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="drop-shadow-lg">
                   <path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7Z" />
                   <path d="M16.5 16 15 20h-6l-1.5-4" />
                 </svg>
               </div>
               <div className="flex-1">
-                <div className="font-semibold text-white">Company Role</div>
-                <div className="text-sm text-gray-300">{stock.synopsis.role}</div>
+                <div className="font-bold text-white text-base drop-shadow-sm">Portfolio Role</div>
+                <div className="text-sm text-gray-300 mt-1 leading-relaxed">{stock.synopsis.role}</div>
               </div>
             </div>
           </div>

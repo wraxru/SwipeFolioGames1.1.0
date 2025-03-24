@@ -28,11 +28,11 @@ interface MetricPopupProps {
 const getColorClass = (color: "green" | "yellow" | "red") => {
   switch (color) {
     case "green":
-      return "text-green-500";
+      return "text-cyan-400";
     case "yellow":
-      return "text-yellow-500";
+      return "text-yellow-400";
     case "red":
-      return "text-red-500";
+      return "text-red-400";
     default:
       return "text-white";
   }
@@ -41,24 +41,24 @@ const getColorClass = (color: "green" | "yellow" | "red") => {
 const getBgColorClass = (color: "green" | "yellow" | "red") => {
   switch (color) {
     case "green":
-      return "bg-green-900/40";
+      return "bg-gradient-to-br from-cyan-900/40 to-cyan-950/20";
     case "yellow":
-      return "bg-yellow-900/40";
+      return "bg-gradient-to-br from-yellow-900/40 to-yellow-950/20";
     case "red":
-      return "bg-red-900/40";
+      return "bg-gradient-to-br from-red-900/40 to-red-950/20";
     default:
-      return "bg-gray-900/40";
+      return "bg-gradient-to-br from-gray-900/40 to-gray-950/20";
   }
 };
 
 const getBorderColorClass = (color: "green" | "yellow" | "red") => {
   switch (color) {
     case "green":
-      return "border-green-500/30";
+      return "border-cyan-500/40";
     case "yellow":
-      return "border-yellow-500/30";
+      return "border-yellow-500/40";
     case "red":
-      return "border-red-500/30";
+      return "border-red-500/40";
     default:
       return "border-gray-700";
   }
@@ -166,21 +166,27 @@ export default function MetricPopup({
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
             className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none"
           >
-            <div className="bg-gray-900 border border-gray-800 rounded-xl shadow-2xl overflow-hidden w-[90%] max-w-md m-auto pointer-events-auto">
+            <div className="bg-gradient-to-br from-gray-900 to-black border border-gray-700/50 rounded-xl shadow-2xl overflow-hidden w-[90%] max-w-md m-auto pointer-events-auto"
+              style={{
+                boxShadow: metricColor === "green" ? '0 10px 25px rgba(6, 182, 212, 0.15)' :
+                          metricColor === "yellow" ? '0 10px 25px rgba(234, 179, 8, 0.15)' :
+                          '0 10px 25px rgba(239, 68, 68, 0.15)'
+              }}
+            >
               {/* Header */}
               <div className={`p-4 ${bgColorClass} border-b ${borderColorClass}`}>
                 <div className="flex justify-between items-center">
-                  <h2 className={`text-xl font-bold ${colorClass}`}>
+                  <h2 className={`text-xl font-bold ${colorClass} drop-shadow-md`}>
                     {metricName}: <span className={colorClass}>{metricData.rating}</span>
                   </h2>
                   <button 
                     onClick={onClose}
-                    className="bg-gray-800 p-2 rounded-full text-gray-400 hover:text-white hover:bg-gray-700 transition-colors"
+                    className="bg-gray-800/80 p-2 rounded-full text-gray-400 hover:text-white hover:bg-gray-700 transition-colors backdrop-blur-sm shadow-lg"
                   >
                     <X size={16} />
                   </button>
                 </div>
-                <p className="text-sm text-gray-300 mt-1">
+                <p className="text-sm text-gray-300 mt-1 drop-shadow-sm">
                   Key metrics for {metricName.toLowerCase()} in the {metricData.industry} industry
                 </p>
               </div>
@@ -206,32 +212,32 @@ export default function MetricPopup({
                     const borderColorClass = getBorderColorClass(comparisonColor);
                     
                     return (
-                      <div key={index} className="bg-gray-800/50 rounded-lg border border-gray-700 overflow-hidden">
+                      <div key={index} className="bg-gradient-to-br from-gray-800/50 to-gray-900/70 rounded-xl border border-gray-700/50 overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
                         {/* Metric Header */}
                         <div className={`p-3 ${bgColorClass} border-b ${borderColorClass}`}>
                           <h3 className="text-white font-semibold flex items-center">
-                            <Info size={14} className={`${textColorClass} mr-2`} />
+                            <Info size={16} className={`${textColorClass} mr-2 drop-shadow-md`} />
                             {item.label}
                           </h3>
                         </div>
                         
                         {/* Metric Content */}
-                        <div className="p-3">
+                        <div className="p-4">
                           {/* Comparison Row */}
                           <div className="flex flex-col gap-3 mb-3">
                             <div className="flex justify-between items-center">
                               {/* Status badge */}
-                              <div className={`px-2 py-1 rounded-full ${bgColorClass} text-xs font-medium uppercase ${textColorClass}`}>
-                                {comparisonColor === "green" ? "Better" : 
-                                 comparisonColor === "yellow" ? "Average" : "Below Avg"}
+                              <div className={`px-3 py-1 rounded-full ${bgColorClass} text-xs font-medium uppercase ${textColorClass} shadow-md border ${borderColorClass}`}>
+                                {comparisonColor === "green" ? "Better than Industry" : 
+                                 comparisonColor === "yellow" ? "Industry Average" : "Below Industry Avg"}
                               </div>
                             </div>
                             
                             {/* Metric comparison */}
-                            <div className="flex items-center justify-between w-full">
+                            <div className="flex items-center justify-between w-full mt-2">
                               <div className="flex flex-col items-center">
-                                <span className="text-xs text-gray-400 mb-1">Company</span>
-                                <div className={`px-3 py-1.5 rounded-lg ${bgColorClass} ${textColorClass} font-medium text-base flex items-center justify-center min-w-16 shadow-lg`}>
+                                <span className="text-xs text-gray-400 mb-1.5 font-medium">Company</span>
+                                <div className={`px-4 py-2 rounded-lg ${bgColorClass} ${textColorClass} font-bold text-base flex items-center justify-center min-w-20 shadow-lg border ${borderColorClass} drop-shadow-md`}>
                                   {item.value}{item.suffix || ""}
                                 </div>
                               </div>
@@ -239,8 +245,8 @@ export default function MetricPopup({
                               <ArrowRight size={20} className="mx-2 text-gray-500" />
                               
                               <div className="flex flex-col items-center">
-                                <span className="text-xs text-gray-400 mb-1"></span>
-                                <div className="px-3 py-1.5 rounded-lg bg-gray-800 text-gray-300 font-medium text-base flex items-center justify-center min-w-16 shadow-lg">
+                                <span className="text-xs text-gray-400 mb-1.5 font-medium">Industry Avg</span>
+                                <div className="px-4 py-2 rounded-lg bg-gray-800 text-gray-300 font-bold text-base flex items-center justify-center min-w-20 shadow-lg border border-gray-700/50">
                                   {item.industry || industryAvg}{item.suffix || ""}
                                 </div>
                               </div>
@@ -253,18 +259,18 @@ export default function MetricPopup({
                 </div>
                 
                 {/* Overall Explanation */}
-                <div className="mt-6 bg-gray-800/50 rounded-lg p-3 border border-gray-700">
-                  <h3 className="text-white font-semibold flex items-center mb-2">
-                    <TrendingUp size={14} className={`${colorClass} mr-2`} />
+                <div className="mt-6 bg-gradient-to-br from-gray-800/50 to-gray-900/70 rounded-xl p-4 border border-gray-700/50 shadow-lg">
+                  <h3 className="text-white font-bold flex items-center mb-3">
+                    <TrendingUp size={16} className={`${colorClass} mr-2 drop-shadow-md`} />
                     What This Means Overall
                   </h3>
-                  <p className="text-sm text-gray-300">
+                  <p className="text-sm text-gray-300 leading-relaxed">
                     {getExplanation()}
                   </p>
                 </div>
                 
                 {/* Footer */}
-                <div className="mt-6 pt-3 border-t border-gray-800">
+                <div className="mt-6 pt-3 border-t border-gray-800/50">
                   <p className="text-xs text-gray-500 italic">
                     These metrics are based on both historical data and forward-looking indicators. 
                     They should be used as one of many tools in your investment decision-making.
