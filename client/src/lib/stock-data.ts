@@ -532,20 +532,27 @@ export const generateRandomStocks = (industry: string, count: number = 10): Stoc
   });
 };
 
-// Import the Gemini API functions
-import { generateMultipleStocks } from "@/lib/gemini-service";
+// Import API request helper
+import { apiRequest } from "@/lib/queryClient";
 
-// Get a set of stocks for the given industry
+// Get a set of stocks for the given industry using the server-side API
 export const getIndustryStocks = async (industry: string): Promise<StockData[]> => {
   try {
-    // Attempt to get AI-generated stocks first
-    const aiStocks = await generateMultipleStocks(industry, 5); // Get 5 AI-generated stocks
+    // Request AI-generated stocks from the server
+    const response = await fetch(`/api/stock-data/${encodeURIComponent(industry)}?count=5`);
+    
+    if (!response.ok) {
+      throw new Error(`Failed to fetch AI-generated stocks: ${response.status}`);
+    }
+    
+    const aiStocks = await response.json();
+    
     if (aiStocks && aiStocks.length > 0) {
-      console.log("Using AI-generated stocks");
+      console.log("Using AI-generated stocks from server");
       return aiStocks;
     }
   } catch (error) {
-    console.error("Error generating AI stocks:", error);
+    console.error("Error fetching AI stocks from server:", error);
     // Fall back to random stocks on error
   }
   

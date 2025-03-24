@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth } from "./auth";
+import { generateAIStockData, generateMultipleStocks } from "./gemini-service";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Set up authentication routes
@@ -183,6 +184,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
     
     res.json(dailyProgress);
+  });
+  
+  // Gemini API Routes
+  app.get("/api/stock-data/:industry", async (req, res) => {
+    try {
+      const industry = req.params.industry;
+      const count = parseInt(req.query.count as string) || 5;
+      
+      const stocks = await generateMultipleStocks(industry, count);
+      res.json(stocks);
+    } catch (error) {
+      console.error("Error generating industry stocks:", error);
+      res.status(500).json({ 
+        message: "Failed to generate stock data", 
+        error: error instanceof Error ? error.message : String(error) 
+      });
+    }
+  });
+  
+  app.get("/api/stock/:stackName", async (req, res) => {
+    try {
+      const stackName = req.params.stackName;
+      const ticker = req.query.ticker as string || null;
+      
+      const stockData = await generateAIStockData(stackName);
+      res.json(stockData);
+    } catch (error) {
+      console.error("Error generating stock data:", error);
+      res.status(500).json({ 
+        message: "Failed to generate stock data", 
+        error: error instanceof Error ? error.message : String(error) 
+      });
+    }
   });
 
   const httpServer = createServer(app);
