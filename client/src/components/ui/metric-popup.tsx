@@ -19,6 +19,7 @@ interface MetricPopupProps {
       value: string;
     }[];
     industry: string;
+    explanation?: string;
   };
 }
 

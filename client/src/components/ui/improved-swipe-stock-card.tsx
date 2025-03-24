@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { StockData } from "@/lib/stock-data";
+import { getIndustryAverages } from "@/lib/industry-data";
 import { Star, Info, AlertCircle, ChevronLeft, ChevronRight } from "lucide-react";
 import { motion, useAnimation, useMotionValue, useTransform, PanInfo } from "framer-motion";
 import MetricPopup from "./metric-popup";
@@ -68,151 +69,40 @@ const getTimeScaleLabels = (timeFrame: TimeFrame): string[] => {
   }
 };
 
-// Function to get industry average metrics for the metric popup
+// Function to get industry average metrics for the metric popup using our industry-data module
 const getIndustryAverageData = (stock: StockData, metricType: string) => {
-  // Industry averages
-  const averages = {
-    "Tech": {
-      performance: [
-        { label: "Revenue Growth", value: "12% industry avg" },
-        { label: "Profit Margin", value: "18% industry avg" },
-        { label: "Return on Capital", value: "16% industry avg" }
-      ],
-      stability: [
-        { label: "Volatility", value: "1.0 industry avg" },
-        { label: "Beta", value: "1.1 industry avg" },
-        { label: "Dividend Consistency", value: "Medium industry avg" }
-      ],
-      value: [
-        { label: "P/E Ratio", value: "22 industry avg" },
-        { label: "P/B Ratio", value: "3.2 industry avg" },
-        { label: "Dividend Yield", value: "1.2% industry avg" }
-      ],
-      momentum: [
-        { label: "3-Month Return", value: "4.5% industry avg" },
-        { label: "Market Performance", value: "2.8% industry avg" },
-        { label: "RSI", value: "52 industry avg" }
-      ]
-    },
-    "Healthcare": {
-      performance: [
-        { label: "Revenue Growth", value: "8% industry avg" },
-        { label: "Profit Margin", value: "15% industry avg" },
-        { label: "Return on Capital", value: "12% industry avg" }
-      ],
-      stability: [
-        { label: "Volatility", value: "0.9 industry avg" },
-        { label: "Beta", value: "0.9 industry avg" },
-        { label: "Dividend Consistency", value: "High industry avg" }
-      ],
-      value: [
-        { label: "P/E Ratio", value: "18 industry avg" },
-        { label: "P/B Ratio", value: "2.8 industry avg" },
-        { label: "Dividend Yield", value: "1.8% industry avg" }
-      ],
-      momentum: [
-        { label: "3-Month Return", value: "3.2% industry avg" },
-        { label: "Market Performance", value: "1.5% industry avg" },
-        { label: "RSI", value: "50 industry avg" }
-      ]
-    },
-    "Consumer": {
-      performance: [
-        { label: "Revenue Growth", value: "5% industry avg" },
-        { label: "Profit Margin", value: "10% industry avg" },
-        { label: "Return on Capital", value: "11% industry avg" }
-      ],
-      stability: [
-        { label: "Volatility", value: "0.85 industry avg" },
-        { label: "Beta", value: "0.85 industry avg" },
-        { label: "Dividend Consistency", value: "Medium industry avg" }
-      ],
-      value: [
-        { label: "P/E Ratio", value: "20 industry avg" },
-        { label: "P/B Ratio", value: "3.0 industry avg" },
-        { label: "Dividend Yield", value: "2.0% industry avg" }
-      ],
-      momentum: [
-        { label: "3-Month Return", value: "2.8% industry avg" },
-        { label: "Market Performance", value: "1.2% industry avg" },
-        { label: "RSI", value: "48 industry avg" }
-      ]
-    },
-    "Real Estate": {
-      performance: [
-        { label: "Revenue Growth", value: "4% industry avg" },
-        { label: "Profit Margin", value: "20% industry avg" },
-        { label: "Return on Capital", value: "8% industry avg" }
-      ],
-      stability: [
-        { label: "Volatility", value: "0.8 industry avg" },
-        { label: "Beta", value: "0.8 industry avg" },
-        { label: "Dividend Consistency", value: "High industry avg" }
-      ],
-      value: [
-        { label: "P/E Ratio", value: "16 industry avg" },
-        { label: "P/B Ratio", value: "2.2 industry avg" },
-        { label: "Dividend Yield", value: "3.5% industry avg" }
-      ],
-      momentum: [
-        { label: "3-Month Return", value: "2.5% industry avg" },
-        { label: "Market Performance", value: "1.0% industry avg" },
-        { label: "RSI", value: "47 industry avg" }
-      ]
-    },
-    "ESG": {
-      performance: [
-        { label: "Revenue Growth", value: "8% industry avg" },
-        { label: "Profit Margin", value: "12% industry avg" },
-        { label: "Return on Capital", value: "10% industry avg" }
-      ],
-      stability: [
-        { label: "Volatility", value: "0.95 industry avg" },
-        { label: "Beta", value: "0.9 industry avg" },
-        { label: "Dividend Consistency", value: "Medium industry avg" }
-      ],
-      value: [
-        { label: "P/E Ratio", value: "18 industry avg" },
-        { label: "P/B Ratio", value: "2.6 industry avg" },
-        { label: "Dividend Yield", value: "1.5% industry avg" }
-      ],
-      momentum: [
-        { label: "3-Month Return", value: "4.0% industry avg" },
-        { label: "Market Performance", value: "2.2% industry avg" },
-        { label: "RSI", value: "51 industry avg" }
-      ]
-    }
-  };
+  // Get industry averages from our centralized data
+  const industryAvgs = getIndustryAverages(stock.industry);
   
-  // Default industry averages if the specific industry isn't found
-  const defaultAverages = {
-    performance: [
-      { label: "Revenue Growth", value: "7% industry avg" },
-      { label: "Profit Margin", value: "12% industry avg" },
-      { label: "Return on Capital", value: "10% industry avg" }
-    ],
-    stability: [
-      { label: "Volatility", value: "1.0 industry avg" },
-      { label: "Beta", value: "1.0 industry avg" },
-      { label: "Dividend Consistency", value: "Medium industry avg" }
-    ],
-    value: [
-      { label: "P/E Ratio", value: "18 industry avg" },
-      { label: "P/B Ratio", value: "2.8 industry avg" },
-      { label: "Dividend Yield", value: "2.0% industry avg" }
-    ],
-    momentum: [
-      { label: "3-Month Return", value: "3.0% industry avg" },
-      { label: "Market Performance", value: "1.5% industry avg" },
-      { label: "RSI", value: "50 industry avg" }
-    ]
-  };
+  // Format for display
+  if (metricType === 'performance') {
+    return [
+      { label: "Revenue Growth", value: `${industryAvgs.performance.revenueGrowth}% industry avg` },
+      { label: "Profit Margin", value: `${industryAvgs.performance.profitMargin}% industry avg` },
+      { label: "Return on Capital", value: `${industryAvgs.performance.returnOnCapital}% industry avg` }
+    ];
+  } else if (metricType === 'stability') {
+    return [
+      { label: "Volatility", value: `${industryAvgs.stability.volatility} industry avg` },
+      { label: "Beta", value: `${industryAvgs.stability.beta} industry avg` },
+      { label: "Dividend Consistency", value: `${industryAvgs.stability.dividendConsistency} industry avg` }
+    ];
+  } else if (metricType === 'value') {
+    return [
+      { label: "P/E Ratio", value: `${industryAvgs.value.peRatio} industry avg` },
+      { label: "P/B Ratio", value: `${industryAvgs.value.pbRatio} industry avg` },
+      { label: "Dividend Yield", value: `${industryAvgs.value.dividendYield}% industry avg` }
+    ];
+  } else if (metricType === 'momentum') {
+    return [
+      { label: "3-Month Return", value: `${industryAvgs.momentum.threeMonthReturn}% industry avg` },
+      { label: "Relative Performance", value: `${industryAvgs.momentum.relativePerformance}% industry avg` },
+      { label: "RSI", value: `${industryAvgs.momentum.rsi} industry avg` }
+    ];
+  }
   
-  // Get the appropriate industry averages or use default
-  const industryAverages = averages[stock.industry as keyof typeof averages] || defaultAverages;
-  
-  // Return the averages for the requested metric type
-  return industryAverages[metricType as keyof typeof industryAverages] || defaultAverages[metricType as keyof typeof defaultAverages];
+  // Default empty array if metric type is not recognized
+  return [];
 };
 
 export default function ImprovedSwipeStockCard({ 
@@ -295,19 +185,24 @@ export default function ImprovedSwipeStockCard({
     // Get color and data for the selected metric
     let color: "green" | "yellow" | "red" = "green";
     let metricObj;
+    let metricDetails;
     
     switch(metricName) {
       case "Performance":
         metricObj = stock.metrics.performance;
+        metricDetails = stock.metrics.performance.details;
         break;
       case "Stability":
         metricObj = stock.metrics.stability;
+        metricDetails = stock.metrics.stability.details;
         break;
       case "Value":
         metricObj = stock.metrics.value;
+        metricDetails = stock.metrics.value.details;
         break;
       case "Momentum":
         metricObj = stock.metrics.momentum;
+        metricDetails = stock.metrics.momentum.details;
         break;
       default:
         return;
@@ -321,28 +216,32 @@ export default function ImprovedSwipeStockCard({
     // Format metric values for display
     const metricValues = [];
     if (metricName === "Performance") {
+      const perfDetails = metricDetails as { revenueGrowth: number; profitMargin: number; returnOnCapital: number };
       metricValues.push(
-        { label: "Revenue Growth", value: metricObj.details.revenueGrowth, suffix: "%" },
-        { label: "Profit Margin", value: metricObj.details.profitMargin, suffix: "%" },
-        { label: "Return on Capital", value: metricObj.details.returnOnCapital, suffix: "%" }
+        { label: "Revenue Growth", value: perfDetails.revenueGrowth, suffix: "%" },
+        { label: "Profit Margin", value: perfDetails.profitMargin, suffix: "%" },
+        { label: "Return on Capital", value: perfDetails.returnOnCapital, suffix: "%" }
       );
     } else if (metricName === "Stability") {
+      const stabDetails = metricDetails as { volatility: number; beta: number; dividendConsistency: string };
       metricValues.push(
-        { label: "Volatility", value: metricObj.details.volatility, suffix: "" },
-        { label: "Beta", value: metricObj.details.beta, suffix: "" },
-        { label: "Dividend Consistency", value: metricObj.details.dividendConsistency, suffix: "" }
+        { label: "Volatility", value: stabDetails.volatility, suffix: "" },
+        { label: "Beta", value: stabDetails.beta, suffix: "" },
+        { label: "Dividend Consistency", value: stabDetails.dividendConsistency, suffix: "" }
       );
     } else if (metricName === "Value") {
+      const valDetails = metricDetails as { peRatio: number; pbRatio: number; dividendYield: number | "N/A" };
       metricValues.push(
-        { label: "P/E Ratio", value: metricObj.details.peRatio, suffix: "" },
-        { label: "P/B Ratio", value: metricObj.details.pbRatio, suffix: "" },
-        { label: "Dividend Yield", value: metricObj.details.dividendYield === "N/A" ? "N/A" : metricObj.details.dividendYield, suffix: metricObj.details.dividendYield === "N/A" ? "" : "%" }
+        { label: "P/E Ratio", value: valDetails.peRatio, suffix: "" },
+        { label: "P/B Ratio", value: valDetails.pbRatio, suffix: "" },
+        { label: "Dividend Yield", value: valDetails.dividendYield === "N/A" ? "N/A" : valDetails.dividendYield, suffix: valDetails.dividendYield === "N/A" ? "" : "%" }
       );
     } else if (metricName === "Momentum") {
+      const momDetails = metricDetails as { threeMonthReturn: number; relativePerformance: number; rsi: number };
       metricValues.push(
-        { label: "3-Month Return", value: metricObj.details.threeMonthReturn, suffix: "%" },
-        { label: "Relative Performance", value: metricObj.details.relativePerformance, suffix: "%" },
-        { label: "RSI", value: metricObj.details.rsi, suffix: "" }
+        { label: "3-Month Return", value: momDetails.threeMonthReturn, suffix: "%" },
+        { label: "Relative Performance", value: momDetails.relativePerformance, suffix: "%" },
+        { label: "RSI", value: momDetails.rsi, suffix: "" }
       );
     }
     
@@ -357,7 +256,8 @@ export default function ImprovedSwipeStockCard({
         values: metricValues,
         rating: metricObj.value,
         industryAverage,
-        industry: stock.industry
+        industry: stock.industry,
+        explanation: metricObj.explanation || ""
       }
     });
     
