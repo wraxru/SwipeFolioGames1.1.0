@@ -2,10 +2,11 @@ import { useState, useEffect, useMemo } from "react";
 import { useParams, useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { Stack } from "@shared/schema";
-import { ArrowLeft, BellRing } from "lucide-react";
+import { ArrowLeft, BellRing, Zap } from "lucide-react";
 import { getQueryFn } from "@/lib/queryClient";
 import { StockData, getIndustryStocks } from "@/lib/stock-data";
 import ImprovedSwipeStockCard from "@/components/ui/improved-swipe-stock-card";
+import RealTimeStockCard from "@/components/ui/real-time-stock-card";
 import StackCompletedModal from "@/components/stack-completed-modal";
 
 export default function StockDetailPage() {
@@ -13,6 +14,7 @@ export default function StockDetailPage() {
   const [_, setLocation] = useLocation();
   const [currentStockIndex, setCurrentStockIndex] = useState(0);
   const [completedModalOpen, setCompletedModalOpen] = useState(false);
+  const [useRealTimeData, setUseRealTimeData] = useState(true);
   
   // Fetch stack data
   const { data: stack, isLoading } = useQuery<Stack>({
@@ -88,9 +90,18 @@ export default function StockDetailPage() {
         >
           <ArrowLeft size={20} />
         </button>
-        <h1 className="text-xl font-bold text-cyan-400">Swipefolio</h1>
-        <button className="text-cyan-400 hover:bg-gray-800 p-2 rounded-full transition-colors relative">
-          <div className="absolute top-1 right-1 w-2 h-2 bg-cyan-400 rounded-full"></div>
+        <div className="flex items-center gap-2">
+          <h1 className="text-xl font-bold text-green-400">Swipefolio</h1>
+          <button 
+            onClick={() => setUseRealTimeData(!useRealTimeData)}
+            className={`ml-2 text-xs ${useRealTimeData ? 'text-green-300 bg-green-900/40' : 'text-gray-400 bg-gray-800/50'} px-3 py-1 rounded-full border ${useRealTimeData ? 'border-green-500/50' : 'border-gray-700'} flex items-center gap-1 hover:bg-gray-700/30 transition-all`}
+          >
+            <Zap size={12} className={useRealTimeData ? "text-green-300" : "text-gray-400"} />
+            {useRealTimeData ? "Real-time" : "Static"} 
+          </button>
+        </div>
+        <button className="text-green-400 hover:bg-gray-800 p-2 rounded-full transition-colors relative">
+          <div className="absolute top-1 right-1 w-2 h-2 bg-green-400 rounded-full"></div>
           <BellRing size={20} />
         </button>
       </header>
@@ -98,13 +109,23 @@ export default function StockDetailPage() {
       {/* Main content */}
       <div className="flex-1 relative">
         {stocks.length > 0 && (
-          <ImprovedSwipeStockCard
-            stock={currentStock}
-            onNext={handleNextStock}
-            onPrevious={handlePreviousStock}
-            currentIndex={currentStockIndex}
-            totalCount={stocks.length}
-          />
+          useRealTimeData ? (
+            <RealTimeStockCard
+              stock={currentStock}
+              onNext={handleNextStock}
+              onPrevious={handlePreviousStock}
+              currentIndex={currentStockIndex}
+              totalCount={stocks.length}
+            />
+          ) : (
+            <ImprovedSwipeStockCard
+              stock={currentStock}
+              onNext={handleNextStock}
+              onPrevious={handlePreviousStock}
+              currentIndex={currentStockIndex}
+              totalCount={stocks.length}
+            />
+          )
         )}
       </div>
 

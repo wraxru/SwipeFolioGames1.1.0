@@ -50,7 +50,7 @@ export interface CompanyOverview {
   RevenueTTM: string;
   GrossProfitTTM: string;
   Beta: string;
-  // Add more fields as needed
+  [key: string]: string | number; // Allow for additional properties from the API
 }
 
 /**
