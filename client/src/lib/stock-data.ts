@@ -229,72 +229,204 @@ const generateChartData = (trend: 'up' | 'down' | 'mixed' = 'mixed'): number[] =
   return points;
 };
 
-// Generate random price synopsis based on chart trend
+// Advanced AI-like synopsis generator for stock price trends
 const generatePriceSynopsis = (change: number, industry: string): string => {
-  if (change > 3) {
+  // More detailed and AI-like descriptions for price movement
+  if (change > 2.5) {
     return getRandomItem([
-      `Rising on strong earnings and positive sector outlook`,
-      `Surging after exceeding quarterly projections`,
-      `Climbing on unexpected revenue growth`,
-      `Up sharply following analyst upgrades`
+      "Surging on exceptional earnings and raised guidance for next quarter",
+      "Making significant gains after multiple analyst upgrades and positive sector catalysts",
+      "Breaking out to new highs with institutional accumulation and heightened options activity",
+      "Rallying sharply on news of expanding profit margins and market share gains",
+      "Experiencing strong momentum after exceeding revenue forecasts by double digits"
     ]);
-  } else if (change > 0) {
+  } else if (change > 0.5) {
     return getRandomItem([
-      `Steady gains amid positive industry trends`,
-      `Edging higher on improved market sentiment`,
-      `Showing resilience despite sector challenges`,
-      `Modest gains following recent product launches`
+      "Showing steady appreciation amid positive market sentiment and sector rotation",
+      "Gradually climbing on improved forward guidance and analyst revisions",
+      "Moving upward as new product adoption exceeds initial expectations",
+      "Trading higher after successful product launch generating positive media coverage",
+      "Gaining traction with investors as operational efficiency improvements materialize"
     ]);
-  } else if (change > -3) {
+  } else if (change > -0.5) {
     return getRandomItem([
-      `Slight dip following record highs last week`,
-      `Minor pullback after recent rally`,
-      `Trading lower on profit-taking`,
-      `Small decline amid broader market adjustment`
+      "Trading near equilibrium despite broader market volatility",
+      "Consolidating recent gains while building technical support at current levels",
+      "Showing resilience at current price points despite sector-wide pressures",
+      "Holding steady as investors digest recent financial disclosures and guidance",
+      "Maintaining price stability amid mixed signals from recent earnings calls"
+    ]);
+  } else if (change > -2.5) {
+    return getRandomItem([
+      "Experiencing mild pressure from profit-taking after recent outperformance",
+      "Seeing modest declines amid broader market rotation to defensive sectors",
+      "Pulling back slightly on light volume suggesting limited conviction from sellers",
+      "Drifting lower after reaching technical resistance levels on previous session",
+      "Undergoing minor correction within ongoing uptrend pattern"
     ]);
   } else {
     return getRandomItem([
-      `Dropping on disappointing quarterly results`,
-      `Down sharply following reduced guidance`,
-      `Falling amid industry-wide regulatory concerns`,
-      `Declining after missing analyst expectations`
+      "Facing significant selling pressure after disappointing quarterly results",
+      "Declining sharply on unexpected guidance reduction and margin compression",
+      "Dropping on concerns about increased competition in core market segments",
+      "Selling off after key product delays and development setbacks were announced",
+      "Under pressure from institutional selling following regulatory challenges"
     ]);
   }
 };
 
-// Generate random company news
+// More specific company news generator that uses company name and industry
 const generateCompanyNews = (company: string, industry: string): string => {
-  const newsItems = [
-    `New partnership to expand market reach`,
-    `Launch of innovative product line`,
-    `Restructuring to improve operational efficiency`,
-    `Expanding into international markets`,
-    `Investment in sustainable technologies`,
-    `New CEO appointment announced`,
-    `Cost-cutting measures implemented`,
-    `Strategic acquisition to boost growth`,
-    `Increased R&D spending on innovation`,
-    `Dividend increase announced for shareholders`
+  const companyFirstWord = company.split(' ')[0]; // Get first word of company name
+  
+  // Industry-specific news items
+  const industryNews: Record<string, string[]> = {
+    "Tech": [
+      `${companyFirstWord}'s new AI initiative aims to revolutionize cloud computing`,
+      `Strategic acquisition strengthens ${companyFirstWord}'s position in semiconductor market`,
+      `Partnership with leading cloud providers expands ${companyFirstWord}'s platform reach`,
+      `Recent software development accelerates ${companyFirstWord}'s digital transformation offerings`,
+      `${companyFirstWord} unveils next-generation chip architecture at developer conference`
+    ],
+    "Healthcare": [
+      `${companyFirstWord}'s breakthrough treatment receives fast-track FDA consideration`,
+      `Clinical trial results exceed expectations for ${companyFirstWord}'s flagship therapy`,
+      `Strategic restructuring allows ${companyFirstWord} to focus on higher-margin medical devices`,
+      `${companyFirstWord} expands research partnership with leading medical institutions`,
+      `Recent acquisition enhances ${companyFirstWord}'s diagnostic technology portfolio`
+    ],
+    "Consumer": [
+      `${companyFirstWord}'s direct-to-consumer strategy showing strong initial adoption`,
+      `New product line expansion helps ${companyFirstWord} reach younger demographic`,
+      `${companyFirstWord}'s loyalty program achieving higher-than-expected customer retention`,
+      `Supply chain improvements reducing ${companyFirstWord}'s operational costs significantly`,
+      `${companyFirstWord} implementing sustainability initiatives across product manufacturing`
+    ],
+    "ESG": [
+      `${companyFirstWord}'s carbon-neutral commitment accelerated by five years`,
+      `Renewable energy installations exceed ${companyFirstWord}'s annual targets`,
+      `${companyFirstWord}'s sustainability practices earn top industry certification`,
+      `New green technology patent strengthens ${companyFirstWord}'s competitive advantage`,
+      `${companyFirstWord} partners with environmental nonprofits for conservation efforts`
+    ],
+    "Real Estate": [
+      `${companyFirstWord} expands portfolio with strategic acquisitions in high-growth markets`,
+      `Occupancy rates exceeding expectations across ${companyFirstWord}'s commercial properties`,
+      `${companyFirstWord}'s shift to mixed-use developments attracting premium tenants`,
+      `Digital infrastructure investments position ${companyFirstWord} ahead of industry trends`,
+      `${companyFirstWord} refinancing debt at favorable rates, improving quarterly outlook`
+    ]
+  };
+  
+  // Get industry-specific news or fallback to general news
+  const newsOptions = industryNews[industry] || [
+    `${companyFirstWord} announces strategic restructuring to improve operational efficiency`,
+    `New leadership team at ${companyFirstWord} signals shift in corporate strategy`,
+    `${companyFirstWord}'s expansion into emerging markets shows promising early results`,
+    `Recent investments in automation helping ${companyFirstWord} reduce operational costs`,
+    `${companyFirstWord} commits to ambitious ESG goals following stakeholder pressure`
   ];
   
-  return getRandomItem(newsItems);
+  return getRandomItem(newsOptions);
 };
 
-// Generate investment role description
+// More sophisticated role description generator
 const generateRoleDescription = (metrics: any, industry: string): string => {
-  if (metrics.stability.value === "High" || metrics.stability.value === "Stable") {
-    if (metrics.performance.value === "Strong" || metrics.performance.value === "Good") {
-      return "Core holding for stability and consistent growth";
-    } else {
-      return "Defensive position for portfolio stability";
+  // Create industry-specific role descriptions
+  const industryRoles: Record<string, Record<string, string[]>> = {
+    "Tech": {
+      "growth": [
+        "High-growth opportunity in rapidly expanding tech segment",
+        "Innovation leader with disruptive product potential",
+        "Momentum play with secular tailwinds in digital transformation",
+        "Market share gainer in evolving technology landscape",
+        "Aggressive growth position with significant upside potential"
+      ],
+      "value": [
+        "Established tech leader with strong cash flow generation",
+        "Mature technology player with reliable dividend history",
+        "Value opportunity in otherwise premium-priced tech sector",
+        "Defensive tech position with recession-resistant services",
+        "Undervalued tech infrastructure provider with stable business model"
+      ],
+      "balanced": [
+        "Core technology holding with balanced risk-reward profile",
+        "Hybrid growth-value technology position with diversified revenue",
+        "All-weather tech exposure with both defensive and growth elements",
+        "Innovation-focused company with established market position",
+        "Moderate-risk technology investment with competitive moat"
+      ]
+    },
+    "Healthcare": {
+      "growth": [
+        "Breakthrough biotechnology opportunity with significant market potential",
+        "Innovative medical technology with rapid adoption trajectory",
+        "High-growth therapeutic franchise addressing unmet medical needs",
+        "Emerging healthcare leader with disruptive care delivery model",
+        "Speculative opportunity in novel treatment paradigm"
+      ],
+      "value": [
+        "Established pharmaceutical with strong patent portfolio and dividend",
+        "Defensive healthcare position providing essential medical services",
+        "Steady compounder in healthcare distribution and logistics",
+        "Undervalued medical device manufacturer with recurring revenue",
+        "Stable healthcare infrastructure provider with regulatory advantages"
+      ],
+      "balanced": [
+        "Diversified healthcare exposure across multiple therapeutic areas",
+        "Balanced pharmaceutical with both mature products and pipeline potential",
+        "Moderate-risk position in essential healthcare services",
+        "Healthcare innovator with established commercial products",
+        "Core healthcare holding with both defensive and growth characteristics"
+      ]
     }
-  } else if (metrics.momentum.value === "Strong" || metrics.momentum.value === "Rising") {
-    return "Growth opportunity with positive momentum";
-  } else if (metrics.value.value === "Excellent" || metrics.value.value === "Good") {
-    return "Value play with potential for revaluation";
+  };
+  
+  // Determine role category based on metrics
+  let roleCategory: string;
+  if (metrics.performance.value === "Strong" || metrics.performance.value === "Good" || 
+      metrics.momentum.value === "Strong" || metrics.momentum.value === "Rising") {
+    roleCategory = "growth";
+  } else if (metrics.value.value === "Excellent" || metrics.value.value === "Good" || 
+             metrics.stability.value === "High" || metrics.stability.value === "Stable") {
+    roleCategory = "value";
   } else {
-    return "Speculative position with high risk/reward ratio";
+    roleCategory = "balanced";
   }
+  
+  // Get industry and category specific roles or fallback to general
+  const industryCategory = industryRoles[industry]?.[roleCategory];
+  
+  if (industryCategory) {
+    return getRandomItem(industryCategory);
+  }
+  
+  // Fallback general descriptions
+  const generalRoles = {
+    "growth": [
+      "Growth opportunity with above-market return potential",
+      "Momentum position in expanding sector",
+      "Aggressive growth allocation with higher volatility",
+      "High-beta exposure for bull market participation",
+      "Innovative disruptor with substantial upside potential"
+    ],
+    "value": [
+      "Anchor position for portfolio stability and income",
+      "Core defensive holding with reliable cash flows",
+      "Blue-chip component with consistent performance history",
+      "Value opportunity at current valuation metrics",
+      "Income-generating position with dividend growth potential"
+    ],
+    "balanced": [
+      "Balanced exposure with favorable risk-reward profile",
+      "Moderate-risk position with sector-average volatility",
+      "Core holding with hybrid value and growth characteristics",
+      "All-weather investment for various market environments",
+      "Strategic allocation with favorable competitive positioning"
+    ]
+  };
+  
+  return getRandomItem(generalRoles[roleCategory]);
 };
 
 // Generate complete random stock data for a specific industry
