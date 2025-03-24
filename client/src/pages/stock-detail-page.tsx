@@ -24,6 +24,8 @@ export default function StockDetailPage() {
   // Generate stocks data for the industry
   const stocks = useMemo(() => {
     if (!stack) return [];
+    // For now, we'll use the mock data until we fully integrate Gemini AI
+    // In a production app, we'd call generateMultipleStocks(stack.industry) here
     return getIndustryStocks(stack.industry);
   }, [stack]);
 
