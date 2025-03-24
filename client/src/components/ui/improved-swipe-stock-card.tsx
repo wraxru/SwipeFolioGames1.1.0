@@ -381,48 +381,28 @@ export default function ImprovedSwipeStockCard({
 
         {/* Stock Info */}
         <div className="px-4 py-4 border-b border-gray-800 bg-gradient-to-br from-gray-900 via-gray-900 to-black">
-          {/* Header with name, ticker, star rating and price */}
-          <div className="flex items-start justify-between">
+          {/* Header with name, ticker, and price side by side */}
+          <div className="flex items-center justify-between mb-2">
             <div>
               <h2 className="text-xl font-bold text-white drop-shadow-sm">{stock.name} <span className="text-gray-400">({stock.ticker})</span></h2>
             </div>
-            <div className="flex flex-col items-end">
-              {/* Star Rating */}
-              <div className="flex items-center">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <Star
-                    key={star}
-                    size={18}
-                    className={`${
-                      star <= Math.floor(stock.rating)
-                        ? "text-yellow-400 fill-yellow-400 drop-shadow-md"
-                        : star <= stock.rating
-                        ? "text-yellow-400 fill-yellow-400 opacity-50 drop-shadow-sm"
-                        : "text-gray-700"
-                    }`}
-                  />
-                ))}
-              </div>
-              
-              {/* Price bubble in SmartScore position */}
-              <div className="mt-1.5">
-                <div className={`flex items-center ${stock.change >= 0 ? 'bg-gradient-to-r from-green-900/50 to-green-950/30' : 'bg-gradient-to-r from-red-900/50 to-red-950/30'} rounded-full px-3 py-1.5 border ${stock.change >= 0 ? 'border-green-500/30' : 'border-red-500/30'} shadow-lg`}
-                  style={{
-                    boxShadow: stock.change >= 0 ? '0 0 15px rgba(34, 197, 94, 0.1)' : '0 0 15px rgba(239, 68, 68, 0.1)'
-                  }}
-                >
-                  <span className="text-xl font-bold text-white drop-shadow-md">${displayPrice}</span>
-                  <span className={`ml-2 text-sm ${stock.change >= 0 ? 'text-green-300' : 'text-red-300'} flex items-center font-medium drop-shadow-sm`}>
-                    <span className={`inline-block w-2 h-2 rounded-full mr-1 ${stock.change >= 0 ? 'bg-green-400' : 'bg-red-400'}`}></span>
-                    {stock.change >= 0 ? '+' : ''}{stock.change}%
-                  </span>
-                </div>
-              </div>
+            
+            {/* Price bubble horizontal to the name */}
+            <div className={`flex items-center ${stock.change >= 0 ? 'bg-gradient-to-r from-green-900/50 to-green-950/30' : 'bg-gradient-to-r from-red-900/50 to-red-950/30'} rounded-full px-3 py-1.5 border ${stock.change >= 0 ? 'border-green-500/30' : 'border-red-500/30'} shadow-lg`}
+              style={{
+                boxShadow: stock.change >= 0 ? '0 0 15px rgba(34, 197, 94, 0.1)' : '0 0 15px rgba(239, 68, 68, 0.1)'
+              }}
+            >
+              <span className="text-xl font-bold text-white drop-shadow-md">${displayPrice}</span>
+              <span className={`ml-2 text-sm ${stock.change >= 0 ? 'text-green-300' : 'text-red-300'} flex items-center font-medium drop-shadow-sm`}>
+                <span className={`inline-block w-2 h-2 rounded-full mr-1 ${stock.change >= 0 ? 'bg-green-400' : 'bg-red-400'}`}></span>
+                {stock.change >= 0 ? '+' : ''}{stock.change}%
+              </span>
             </div>
           </div>
           
           {/* Description bubble */}
-          <div className="mt-3 mb-0.5 p-3 bg-gray-800/70 rounded-lg border border-gray-700/50 shadow-inner">
+          <div className="p-3 bg-gray-800/70 rounded-lg border border-gray-700/50 shadow-inner">
             <p className="text-sm text-gray-300">
               {stock.description}
             </p>
