@@ -78,27 +78,27 @@ const getIndustryAverageData = (stock: StockData, metricType: string) => {
   // Format for display
   if (metricType === 'performance') {
     return [
-      { label: "Revenue Growth", value: `${industryAvgs.performance.revenueGrowth}% industry avg` },
-      { label: "Profit Margin", value: `${industryAvgs.performance.profitMargin}% industry avg` },
-      { label: "Return on Capital", value: `${industryAvgs.performance.returnOnCapital}% industry avg` }
+      { label: "Revenue Growth", value: `${industryAvgs.performance.revenueGrowth}` },
+      { label: "Profit Margin", value: `${industryAvgs.performance.profitMargin}` },
+      { label: "Return on Capital", value: `${industryAvgs.performance.returnOnCapital}` }
     ];
   } else if (metricType === 'stability') {
     return [
-      { label: "Volatility", value: `${industryAvgs.stability.volatility} industry avg` },
-      { label: "Beta", value: `${industryAvgs.stability.beta} industry avg` },
-      { label: "Dividend Consistency", value: `${industryAvgs.stability.dividendConsistency} industry avg` }
+      { label: "Volatility", value: `${industryAvgs.stability.volatility}` },
+      { label: "Beta", value: `${industryAvgs.stability.beta}` },
+      { label: "Dividend Consistency", value: `${industryAvgs.stability.dividendConsistency}` }
     ];
   } else if (metricType === 'value') {
     return [
-      { label: "P/E Ratio", value: `${industryAvgs.value.peRatio} industry avg` },
-      { label: "P/B Ratio", value: `${industryAvgs.value.pbRatio} industry avg` },
-      { label: "Dividend Yield", value: `${industryAvgs.value.dividendYield}% industry avg` }
+      { label: "P/E Ratio", value: `${industryAvgs.value.peRatio}` },
+      { label: "P/B Ratio", value: `${industryAvgs.value.pbRatio}` },
+      { label: "Dividend Yield", value: `${industryAvgs.value.dividendYield}` }
     ];
   } else if (metricType === 'momentum') {
     return [
-      { label: "3-Month Return", value: `${industryAvgs.momentum.threeMonthReturn}% industry avg` },
-      { label: "Relative Performance", value: `${industryAvgs.momentum.relativePerformance}% industry avg` },
-      { label: "RSI", value: `${industryAvgs.momentum.rsi} industry avg` }
+      { label: "3-Month Return", value: `${industryAvgs.momentum.threeMonthReturn}` },
+      { label: "Relative Performance", value: `${industryAvgs.momentum.relativePerformance}` },
+      { label: "RSI", value: `${industryAvgs.momentum.rsi}` }
     ];
   }
   
