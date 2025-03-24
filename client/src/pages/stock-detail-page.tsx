@@ -5,7 +5,7 @@ import { Stack } from "@shared/schema";
 import { ArrowLeft, BellRing } from "lucide-react";
 import { getQueryFn } from "@/lib/queryClient";
 import { StockData, getIndustryStocks } from "@/lib/stock-data";
-import SwipeStockCard from "@/components/ui/swipe-stock-card";
+import ImprovedSwipeStockCard from "@/components/ui/improved-swipe-stock-card";
 import StackCompletedModal from "@/components/stack-completed-modal";
 
 export default function StockDetailPage() {
@@ -54,10 +54,24 @@ export default function StockDetailPage() {
     setLocation("/");
   };
 
-  if (isLoading || stocks.length === 0) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-black">
         <div className="animate-spin w-10 h-10 border-4 border-cyan-400 border-t-transparent rounded-full"></div>
+      </div>
+    );
+  }
+
+  if (!stack || stocks.length === 0) {
+    return (
+      <div className="flex items-center justify-center flex-col min-h-screen bg-black">
+        <p className="text-white mb-4">No stocks available for this industry.</p>
+        <button 
+          onClick={handleBack}
+          className="text-cyan-400 hover:bg-gray-800 px-4 py-2 rounded-full transition-colors border border-cyan-400"
+        >
+          Go Back
+        </button>
       </div>
     );
   }
@@ -84,7 +98,7 @@ export default function StockDetailPage() {
       {/* Main content */}
       <div className="flex-1 relative">
         {stocks.length > 0 && (
-          <SwipeStockCard
+          <ImprovedSwipeStockCard
             stock={currentStock}
             onNext={handleNextStock}
             onPrevious={handlePreviousStock}

@@ -10,10 +10,42 @@ export interface StockData {
   smartScore: string;
   description: string;
   metrics: {
-    performance: { value: string; color: string };
-    stability: { value: string; color: string };
-    value: { value: string; color: string };
-    momentum: { value: string; color: string };
+    performance: { 
+      value: string; 
+      color: string;
+      details: {
+        revenueGrowth: number;
+        profitMargin: number;
+        returnOnCapital: number;
+      }
+    };
+    stability: { 
+      value: string; 
+      color: string;
+      details: {
+        volatility: number;
+        beta: number;
+        dividendConsistency: "High" | "Medium" | "Low" | "N/A";
+      }
+    };
+    value: { 
+      value: string; 
+      color: string;
+      details: {
+        peRatio: number;
+        pbRatio: number;
+        dividendYield: number | "N/A";
+      }
+    };
+    momentum: { 
+      value: string; 
+      color: string;
+      details: {
+        threeMonthReturn: number;
+        relativePerformance: number;
+        rsi: number;
+      }
+    };
   };
   synopsis: {
     price: string;
@@ -21,6 +53,7 @@ export interface StockData {
     role: string;
   };
   chartData: number[];
+  industry: string;
 }
 
 // Industry-specific company data
@@ -430,6 +463,198 @@ const generateRoleDescription = (metrics: any, industry: string): string => {
 };
 
 // Generate complete random stock data for a specific industry
+// Industry average metrics for specific industries
+const industryAverages: Record<string, {
+  revenueGrowth: number;
+  profitMargin: number;
+  returnOnCapital: number;
+  peRatio: number;
+  beta: number;
+  dividendYield: number;
+}> = {
+  "Tech": {
+    revenueGrowth: 12,
+    profitMargin: 18,
+    returnOnCapital: 16,
+    peRatio: 22,
+    beta: 1.1,
+    dividendYield: 1.2
+  },
+  "Healthcare": {
+    revenueGrowth: 8,
+    profitMargin: 15,
+    returnOnCapital: 12,
+    peRatio: 18,
+    beta: 0.9,
+    dividendYield: 1.8
+  },
+  "Consumer": {
+    revenueGrowth: 5,
+    profitMargin: 10,
+    returnOnCapital: 11,
+    peRatio: 20,
+    beta: 0.85,
+    dividendYield: 2.0
+  },
+  "Real Estate": {
+    revenueGrowth: 4,
+    profitMargin: 20,
+    returnOnCapital: 8,
+    peRatio: 16,
+    beta: 0.8,
+    dividendYield: 3.5
+  },
+  "ESG": {
+    revenueGrowth: 8,
+    profitMargin: 12,
+    returnOnCapital: 10,
+    peRatio: 18,
+    beta: 0.9,
+    dividendYield: 1.5
+  }
+};
+
+// Generate detailed metrics based on the rating
+const generateDetailedMetrics = (metricType: string, rating: string, industry: string) => {
+  // Get industry averages or use defaults
+  const industryAvg = industryAverages[industry] || {
+    revenueGrowth: 7,
+    profitMargin: 12,
+    returnOnCapital: 10,
+    peRatio: 18,
+    beta: 1.0,
+    dividendYield: 2.0
+  };
+  
+  // Define base ranges for metrics
+  const ranges = {
+    performance: {
+      High: {
+        revenueGrowth: [industryAvg.revenueGrowth * 1.2, industryAvg.revenueGrowth * 2],
+        profitMargin: [Math.max(20, industryAvg.profitMargin * 1.2), 35],
+        returnOnCapital: [Math.max(15, industryAvg.returnOnCapital * 1.2), 30]
+      },
+      Fair: {
+        revenueGrowth: [3, industryAvg.revenueGrowth * 1.1],
+        profitMargin: [10, industryAvg.profitMargin],
+        returnOnCapital: [8, industryAvg.returnOnCapital]
+      },
+      Low: {
+        revenueGrowth: [-2, 3],
+        profitMargin: [1, 10],
+        returnOnCapital: [1, 8]
+      }
+    },
+    stability: {
+      High: {
+        volatility: [0.5, 0.8],
+        beta: [0.7, 1.1],
+        dividendConsistency: ["High"]
+      },
+      Fair: {
+        volatility: [0.8, 1.2],
+        beta: [0.5, 1.3],
+        dividendConsistency: ["Medium"]
+      },
+      Unstable: {
+        volatility: [1.2, 2.0],
+        beta: [0.2, 0.5, 1.3, 1.8], // Either low or high beta
+        dividendConsistency: ["Low", "N/A"]
+      }
+    },
+    value: {
+      High: {
+        peRatio: [8, Math.min(15, industryAvg.peRatio * 0.8)],
+        pbRatio: [0.8, 2.5],
+        dividendYield: [Math.max(2, industryAvg.dividendYield * 1.2), 5]
+      },
+      Fair: {
+        peRatio: [15, 25],
+        pbRatio: [2.5, 4],
+        dividendYield: [0.5, 2]
+      },
+      Low: {
+        peRatio: [25, 50],
+        pbRatio: [4, 8],
+        dividendYield: [0, 0.5, "N/A"]
+      }
+    },
+    momentum: {
+      Strong: {
+        threeMonthReturn: [5, 20],
+        relativePerformance: [3, 15],
+        rsi: [55, 70]
+      },
+      Fair: {
+        threeMonthReturn: [-2, 5],
+        relativePerformance: [-2, 3],
+        rsi: [45, 55]
+      },
+      Weak: {
+        threeMonthReturn: [-15, -2],
+        relativePerformance: [-10, -2],
+        rsi: [30, 45]
+      }
+    }
+  };
+  
+  // Function to get random number in range
+  const getRandomInRange = (min: number, max: number) => {
+    return Math.round((min + Math.random() * (max - min)) * 100) / 100;
+  };
+  
+  // Function to get random item from array
+  const getRandomFromArray = (arr: any[]) => {
+    return arr[Math.floor(Math.random() * arr.length)];
+  };
+  
+  // Generate details based on metric type and rating
+  switch (metricType) {
+    case 'performance':
+      const perfRange = ranges.performance[rating as keyof typeof ranges.performance] || ranges.performance.Fair;
+      return {
+        revenueGrowth: getRandomInRange(perfRange.revenueGrowth[0], perfRange.revenueGrowth[1]),
+        profitMargin: getRandomInRange(perfRange.profitMargin[0], perfRange.profitMargin[1]),
+        returnOnCapital: getRandomInRange(perfRange.returnOnCapital[0], perfRange.returnOnCapital[1])
+      };
+      
+    case 'stability':
+      const stabRange = ranges.stability[rating as keyof typeof ranges.stability] || ranges.stability.Fair;
+      const betaOptions = Array.isArray(stabRange.beta) 
+        ? [getRandomFromArray(stabRange.beta)] 
+        : [stabRange.beta[0], stabRange.beta[1]];
+      return {
+        volatility: getRandomInRange(stabRange.volatility[0], stabRange.volatility[1]),
+        beta: getRandomInRange(betaOptions[0], betaOptions.length > 1 ? betaOptions[1] : betaOptions[0] + 0.1),
+        dividendConsistency: getRandomFromArray(stabRange.dividendConsistency)
+      };
+      
+    case 'value':
+      const valRange = ranges.value[rating as keyof typeof ranges.value] || ranges.value.Fair;
+      const yieldOptions = Array.isArray(valRange.dividendYield) 
+        ? valRange.dividendYield 
+        : [valRange.dividendYield[0], valRange.dividendYield[1]];
+      return {
+        peRatio: getRandomInRange(valRange.peRatio[0], valRange.peRatio[1]),
+        pbRatio: getRandomInRange(valRange.pbRatio[0], valRange.pbRatio[1]),
+        dividendYield: typeof yieldOptions[yieldOptions.length - 1] === "string" 
+          ? (Math.random() > 0.3 ? getRandomInRange(0, 0.5) : "N/A") 
+          : getRandomInRange(yieldOptions[0], yieldOptions[1])
+      };
+      
+    case 'momentum':
+      const momRange = ranges.momentum[rating as keyof typeof ranges.momentum] || ranges.momentum.Fair;
+      return {
+        threeMonthReturn: getRandomInRange(momRange.threeMonthReturn[0], momRange.threeMonthReturn[1]),
+        relativePerformance: getRandomInRange(momRange.relativePerformance[0], momRange.relativePerformance[1]),
+        rsi: getRandomInRange(momRange.rsi[0], momRange.rsi[1])
+      };
+      
+    default:
+      return {};
+  }
+};
+
 export const generateRandomStocks = (industry: string, count: number = 10): StockData[] => {
   const industryCompanies = companyData[industry]?.companies || [];
   const stocksToGenerate = Math.min(count, industryCompanies.length);
@@ -446,18 +671,38 @@ export const generateRandomStocks = (industry: string, count: number = 10): Stoc
     const price = Math.round((40 + Math.random() * 160) * 100) / 100;
     const change = Math.round((Math.random() * 8 - 4) * 100) / 100;
     
-    // Generate metrics
-    const metrics = {
+    // Get basic metrics with rating only
+    const basicMetrics = {
       performance: getRandomItem(performanceOptions),
       stability: getRandomItem(stabilityOptions),
       value: getRandomItem(valueOptions),
       momentum: getRandomItem(momentumOptions)
     };
     
+    // Generate detailed metrics based on ratings
+    const detailedMetrics = {
+      performance: {
+        ...basicMetrics.performance,
+        details: generateDetailedMetrics('performance', basicMetrics.performance.value, industry) as any
+      },
+      stability: {
+        ...basicMetrics.stability,
+        details: generateDetailedMetrics('stability', basicMetrics.stability.value, industry) as any
+      },
+      value: {
+        ...basicMetrics.value,
+        details: generateDetailedMetrics('value', basicMetrics.value.value, industry) as any
+      },
+      momentum: {
+        ...basicMetrics.momentum,
+        details: generateDetailedMetrics('momentum', basicMetrics.momentum.value, industry) as any
+      }
+    };
+    
     // Generate synopsis
     const priceSynopsis = generatePriceSynopsis(change, industry);
     const companyNews = generateCompanyNews(company.name, industry);
-    const role = generateRoleDescription(metrics, industry);
+    const role = generateRoleDescription(basicMetrics, industry);
     
     return {
       name: company.name,
@@ -467,13 +712,14 @@ export const generateRandomStocks = (industry: string, count: number = 10): Stoc
       rating: Math.round((2.5 + Math.random() * 2.5) * 10) / 10, // 2.5-5.0 rating
       smartScore: getRandomItem(smartScoreOptions),
       description: company.description,
-      metrics,
+      metrics: detailedMetrics,
       synopsis: {
         price: priceSynopsis,
         company: companyNews,
         role: role
       },
-      chartData
+      chartData,
+      industry
     };
   });
 };
