@@ -154,7 +154,7 @@ export default function MetricPopup({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50"
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50"
             onClick={onClose}
           />
           
@@ -166,27 +166,27 @@ export default function MetricPopup({
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
             className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none"
           >
-            <div className="bg-gradient-to-br from-gray-900 to-black border border-gray-700/50 rounded-xl shadow-2xl overflow-hidden w-[90%] max-w-md m-auto pointer-events-auto"
+            <div className="bg-white border border-slate-200 rounded-xl shadow-lg overflow-hidden w-[90%] max-w-md m-auto pointer-events-auto"
               style={{
-                boxShadow: metricColor === "green" ? '0 10px 25px rgba(6, 182, 212, 0.15)' :
-                          metricColor === "yellow" ? '0 10px 25px rgba(234, 179, 8, 0.15)' :
-                          '0 10px 25px rgba(239, 68, 68, 0.15)'
+                boxShadow: metricColor === "green" ? '0 10px 25px rgba(34, 197, 94, 0.1)' :
+                          metricColor === "yellow" ? '0 10px 25px rgba(234, 179, 8, 0.1)' :
+                          '0 10px 25px rgba(239, 68, 68, 0.1)'
               }}
             >
               {/* Header */}
               <div className={`p-4 ${bgColorClass} border-b ${borderColorClass}`}>
                 <div className="flex justify-between items-center">
-                  <h2 className={`text-xl font-bold ${colorClass} drop-shadow-md`}>
+                  <h2 className={`text-xl font-bold ${colorClass}`}>
                     {metricName}: <span className={colorClass}>{metricData.rating}</span>
                   </h2>
                   <button 
                     onClick={onClose}
-                    className="bg-gray-800/80 p-2 rounded-full text-gray-400 hover:text-white hover:bg-gray-700 transition-colors backdrop-blur-sm shadow-lg"
+                    className="bg-slate-100 p-2 rounded-full text-slate-500 hover:text-slate-800 hover:bg-slate-200 transition-colors shadow-sm"
                   >
                     <X size={16} />
                   </button>
                 </div>
-                <p className="text-sm text-gray-300 mt-1 drop-shadow-sm">
+                <p className="text-sm text-slate-600 mt-1">
                   Key metrics for {metricName.toLowerCase()} in the {metricData.industry} industry
                 </p>
               </div>
@@ -212,11 +212,11 @@ export default function MetricPopup({
                     const borderColorClass = getBorderColorClass(comparisonColor);
                     
                     return (
-                      <div key={index} className="bg-gradient-to-br from-gray-800/50 to-gray-900/70 rounded-xl border border-gray-700/50 overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
+                      <div key={index} className="bg-white rounded-xl border border-slate-100 overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
                         {/* Metric Header */}
                         <div className={`p-3 ${bgColorClass} border-b ${borderColorClass}`}>
-                          <h3 className="text-white font-semibold flex items-center">
-                            <Info size={16} className={`${textColorClass} mr-2 drop-shadow-md`} />
+                          <h3 className="text-slate-800 font-semibold flex items-center">
+                            <Info size={16} className={`${textColorClass} mr-2`} />
                             {item.label}
                           </h3>
                         </div>
@@ -227,7 +227,7 @@ export default function MetricPopup({
                           <div className="flex flex-col gap-3 mb-3">
                             <div className="flex justify-between items-center">
                               {/* Status badge */}
-                              <div className={`px-3 py-1 rounded-full ${bgColorClass} text-xs font-medium uppercase ${textColorClass} shadow-md border ${borderColorClass}`}>
+                              <div className={`px-3 py-1 rounded-full ${bgColorClass} text-xs font-medium uppercase ${textColorClass} shadow-sm border ${borderColorClass}`}>
                                 {comparisonColor === "green" ? "Better than Industry" : 
                                  comparisonColor === "yellow" ? "Industry Average" : "Below Industry Avg"}
                               </div>
@@ -236,17 +236,17 @@ export default function MetricPopup({
                             {/* Metric comparison */}
                             <div className="flex items-center justify-between w-full mt-2">
                               <div className="flex flex-col items-center">
-                                <span className="text-xs text-gray-400 mb-1.5 font-medium">Company</span>
-                                <div className={`px-4 py-2 rounded-lg ${bgColorClass} ${textColorClass} font-bold text-base flex items-center justify-center min-w-20 shadow-lg border ${borderColorClass} drop-shadow-md`}>
+                                <span className="text-xs text-slate-500 mb-1.5 font-medium">Company</span>
+                                <div className={`px-4 py-2 rounded-lg ${bgColorClass} ${textColorClass} font-bold text-base flex items-center justify-center min-w-20 shadow-sm border ${borderColorClass}`}>
                                   {item.value}{item.suffix || ""}
                                 </div>
                               </div>
                               
-                              <ArrowRight size={20} className="mx-2 text-gray-500" />
+                              <ArrowRight size={20} className="mx-2 text-slate-400" />
                               
                               <div className="flex flex-col items-center">
-                                <span className="text-xs text-gray-400 mb-1.5 font-medium">Industry Avg</span>
-                                <div className="px-4 py-2 rounded-lg bg-gray-800 text-gray-300 font-bold text-base flex items-center justify-center min-w-20 shadow-lg border border-gray-700/50">
+                                <span className="text-xs text-slate-500 mb-1.5 font-medium">Industry Avg</span>
+                                <div className="px-4 py-2 rounded-lg bg-slate-50 text-slate-600 font-bold text-base flex items-center justify-center min-w-20 shadow-sm border border-slate-200">
                                   {item.industry || industryAvg}{item.suffix || ""}
                                 </div>
                               </div>
@@ -259,19 +259,19 @@ export default function MetricPopup({
                 </div>
                 
                 {/* Overall Explanation */}
-                <div className="mt-6 bg-gradient-to-br from-gray-800/50 to-gray-900/70 rounded-xl p-4 border border-gray-700/50 shadow-lg">
-                  <h3 className="text-white font-bold flex items-center mb-3">
-                    <TrendingUp size={16} className={`${colorClass} mr-2 drop-shadow-md`} />
+                <div className="mt-6 bg-slate-50 rounded-xl p-4 border border-slate-100 shadow-sm">
+                  <h3 className="text-slate-800 font-bold flex items-center mb-3">
+                    <TrendingUp size={16} className={`${colorClass} mr-2`} />
                     What This Means Overall
                   </h3>
-                  <p className="text-sm text-gray-300 leading-relaxed">
+                  <p className="text-sm text-slate-600 leading-relaxed">
                     {getExplanation()}
                   </p>
                 </div>
                 
                 {/* Footer */}
-                <div className="mt-6 pt-3 border-t border-gray-800/50">
-                  <p className="text-xs text-gray-500 italic">
+                <div className="mt-6 pt-3 border-t border-slate-100">
+                  <p className="text-xs text-slate-500 italic">
                     These metrics are based on both historical data and forward-looking indicators. 
                     They should be used as one of many tools in your investment decision-making.
                   </p>
