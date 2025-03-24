@@ -1,5 +1,5 @@
 import React from "react";
-import { X, PlusCircle, TrendingUp, CircleDot } from "lucide-react";
+import { X, Info, TrendingUp, ArrowRight, PlusCircle, CircleDot } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface MetricPopupProps {
@@ -12,6 +12,8 @@ interface MetricPopupProps {
       label: string;
       value: string | number;
       suffix?: string;
+      industry?: string | number; // For industry average comparison
+      explanation?: string; // Explanation for this specific metric
     }[];
     rating: "High" | "Strong" | "Fair" | "Low" | "Unstable" | "Weak";
     industryAverage: {
@@ -121,6 +123,23 @@ export default function MetricPopup({
     }[metricName] || "This metric shows below-average results, indicating potential challenges for future performance.";
   };
 
+  // Get value comparison status (better, similar, worse)
+  const getComparisonStatus = (value: number | string, industry: number | string): "green" | "yellow" | "red" => {
+    // Handle string values
+    if (typeof value === 'string' || typeof industry === 'string') {
+      return "yellow"; // Default to neutral for string comparisons
+    }
+    
+    // Handle numeric values
+    // For metrics where higher is better (like revenue growth)
+    if (value > industry * 1.1) return "green";
+    if (value < industry * 0.9) return "red";
+    return "yellow";
+    
+    // Note: In a real implementation, we'd have logic to handle metrics
+    // where lower is better (like volatility) or specific thresholds
+  };
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -157,70 +176,80 @@ export default function MetricPopup({
                     <X size={16} />
                   </button>
                 </div>
+                <p className="text-sm text-gray-300 mt-1">
+                  Key metrics for {metricName.toLowerCase()} in the {metricData.industry} industry
+                </p>
               </div>
               
               {/* Content */}
               <div className="p-4 max-h-[70vh] overflow-y-auto">
-                {/* How It's Calculated */}
-                <div className="mb-6">
-                  <div className="flex items-center mb-3">
-                    <PlusCircle size={16} className={`${colorClass} mr-2`} />
-                    <h3 className="text-lg font-semibold text-white">How It's Calculated</h3>
-                  </div>
-                  
-                  <div className="bg-gray-800/50 rounded-lg p-3 border border-gray-700">
-                    <p className="text-sm text-gray-300 mb-3">
-                      Based on the following metrics compared to industry averages:
-                    </p>
+                {/* Integrated Metrics with Explanations */}
+                <div className="space-y-4">
+                  {metricData.values.map((item, index) => {
+                    // Match up industry average for this metric
+                    const industryAvg = metricData.industryAverage.find(
+                      indItem => indItem.label === item.label
+                    )?.value || "N/A";
                     
-                    <div className="space-y-2">
-                      {metricData.values.map((item, index) => (
-                        <div key={index} className="flex justify-between text-sm">
-                          <span className="text-gray-400">{item.label}:</span>
-                          <span className="text-white font-medium">
-                            {item.value}{item.suffix || ""}
-                          </span>
+                    // Determine color based on comparison
+                    const comparisonColor = getComparisonStatus(
+                      item.value, 
+                      item.industry || industryAvg
+                    );
+                    
+                    const textColorClass = getColorClass(comparisonColor);
+                    const bgColorClass = getBgColorClass(comparisonColor);
+                    const borderColorClass = getBorderColorClass(comparisonColor);
+                    
+                    return (
+                      <div key={index} className="bg-gray-800/50 rounded-lg border border-gray-700 overflow-hidden">
+                        {/* Metric Header */}
+                        <div className={`p-3 ${bgColorClass} border-b ${borderColorClass}`}>
+                          <h3 className="text-white font-semibold flex items-center">
+                            <Info size={14} className={`${textColorClass} mr-2`} />
+                            {item.label}
+                          </h3>
                         </div>
-                      ))}
-                    </div>
-                  </div>
+                        
+                        {/* Metric Content */}
+                        <div className="p-3">
+                          {/* Comparison Row */}
+                          <div className="flex justify-between items-center mb-3">
+                            <div className="flex items-center">
+                              <div className={`px-3 py-1 rounded-full ${bgColorClass} ${textColorClass} font-medium text-sm`}>
+                                {item.value}{item.suffix || ""}
+                              </div>
+                              <ArrowRight size={14} className="mx-2 text-gray-500" />
+                              <div className="text-gray-400 text-sm">
+                                Industry: {item.industry || industryAvg}{item.suffix || ""}
+                              </div>
+                            </div>
+                            <div className={`px-2 py-1 rounded-full ${bgColorClass} text-xs font-medium uppercase ${textColorClass}`}>
+                              {comparisonColor === "green" ? "Better" : 
+                               comparisonColor === "yellow" ? "Average" : "Below Avg"}
+                            </div>
+                          </div>
+                          
+                          {/* Explanation */}
+                          <p className="text-sm text-gray-300">
+                            {item.explanation || 
+                             `This shows how the company's ${item.label.toLowerCase()} compares to the ${metricData.industry} industry average.`}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
                 
-                {/* Industry Comparison */}
-                <div className="mb-6">
-                  <div className="flex items-center mb-3">
-                    <TrendingUp size={16} className={`${colorClass} mr-2`} />
-                    <h3 className="text-lg font-semibold text-white">Industry Comparison</h3>
-                  </div>
-                  
-                  <div className="bg-gray-800/50 rounded-lg p-3 border border-gray-700">
-                    <p className="text-sm text-gray-300 mb-3">
-                      How this compares to the average in the {metricData.industry} industry:
-                    </p>
-                    
-                    <div className="space-y-2">
-                      {metricData.industryAverage.map((item, index) => (
-                        <div key={index} className="flex justify-between text-sm">
-                          <span className="text-gray-400">{item.label}:</span>
-                          <span className="text-white font-medium">{item.value}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-                
-                {/* What It Means */}
-                <div>
-                  <div className="flex items-center mb-3">
-                    <CircleDot size={16} className={`${colorClass} mr-2`} />
-                    <h3 className="text-lg font-semibold text-white">What It Means</h3>
-                  </div>
-                  
-                  <div className="bg-gray-800/50 rounded-lg p-3 border border-gray-700">
-                    <p className="text-sm text-gray-300">
-                      {getExplanation()}
-                    </p>
-                  </div>
+                {/* Overall Explanation */}
+                <div className="mt-6 bg-gray-800/50 rounded-lg p-3 border border-gray-700">
+                  <h3 className="text-white font-semibold flex items-center mb-2">
+                    <TrendingUp size={14} className={`${colorClass} mr-2`} />
+                    What This Means Overall
+                  </h3>
+                  <p className="text-sm text-gray-300">
+                    {getExplanation()}
+                  </p>
                 </div>
                 
                 {/* Footer */}
