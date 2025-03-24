@@ -3,7 +3,7 @@ import { StockData } from "@/lib/stock-data";
 import { Star, Info, ChevronLeft, ChevronRight } from "lucide-react";
 import { motion, useAnimation, useMotionValue, useTransform, PanInfo } from "framer-motion";
 import MetricExplanationModal from "./metric-explanation-modal";
-import { generateChartData } from "@/lib/gemini-service";
+import { generateChartData } from "@/lib/openrouter-service";
 
 interface SwipeStockCardProps {
   stock: StockData;

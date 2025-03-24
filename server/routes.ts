@@ -2,7 +2,18 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth } from "./auth";
+import OpenAI from "openai";
 import { generateAIStockData, generateMultipleStocks } from "./openrouter-service";
+
+// Initialize OpenAI with OpenRouter URL and API key
+const openai = new OpenAI({
+  apiKey: process.env.OPENROUTER_API_KEY,
+  baseURL: "https://openrouter.ai/api/v1",
+  defaultHeaders: {
+    "HTTP-Referer": "https://swipefolio.replit.app",
+    "X-Title": "SwipeFolio"
+  }
+});
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Set up authentication routes
@@ -186,7 +197,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(dailyProgress);
   });
   
-  // Gemini API Routes
+  // OpenRouter API Routes
   app.get("/api/stock-data/:industry", async (req, res) => {
     try {
       const industry = req.params.industry;
@@ -214,6 +225,85 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error("Error generating stock data:", error);
       res.status(500).json({ 
         message: "Failed to generate stock data", 
+        error: error instanceof Error ? error.message : String(error) 
+      });
+    }
+  });
+  
+  // Stock Analysis API for detailed analysis
+  app.post("/api/stock-analysis", async (req, res) => {
+    try {
+      const { companyName, industry, currentPrice, metrics } = req.body;
+      
+      if (!companyName || !industry || !currentPrice || !metrics) {
+        return res.status(400).json({ message: "Missing required parameters" });
+      }
+      
+      // Use OpenRouter API to generate detailed analysis
+      const response = await openai.chat.completions.create({
+        model: "openai/gpt-4-turbo",
+        messages: [
+          {
+            role: "system",
+            content: "You are a financial analyst generating concise stock insights."
+          },
+          {
+            role: "user",
+            content: `Generate a concise stock analysis for ${companyName} in ${industry} industry.
+Current price: $${currentPrice}
+
+Rules:
+1. Price synopsis: Generate a 6-word analysis of price movement
+2. Company insight: Generate a single-line company update
+3. Role: Assign ONE role from ONLY these options: anchor, driver, grower, speculative
+4. Target price: Generate a realistic target price based on the metrics
+5. For each metric (performance, stability, value, momentum):
+   - Provide a concise explanation of the calculation
+   - Add a brief industry comparison
+   - Keep explanations under 2 lines
+
+Format as JSON with this exact structure:
+{
+  "price": "6-word price analysis",
+  "company": "single-line company insight",
+  "role": "one of: anchor, driver, grower, speculative",
+  "targetPrice": number,
+  "metrics": {
+    "performance": {
+      "value": "strong/moderate/weak",
+      "explanation": "calculation explanation",
+      "industryComparison": "comparison"
+    },
+    "stability": {
+      "value": "strong/moderate/weak",
+      "explanation": "calculation explanation",
+      "industryComparison": "comparison"
+    },
+    "value": {
+      "value": "strong/moderate/weak",
+      "explanation": "calculation explanation",
+      "industryComparison": "comparison"
+    },
+    "momentum": {
+      "value": "strong/moderate/weak",
+      "explanation": "calculation explanation",
+      "industryComparison": "comparison"
+    }
+  }
+}`
+          }
+        ],
+        response_format: { type: "json_object" }
+      });
+      
+      // Extract and return the response
+      const analysisData = JSON.parse(response.choices[0].message.content);
+      res.json(analysisData);
+      
+    } catch (error) {
+      console.error("Error generating stock analysis:", error);
+      res.status(500).json({ 
+        message: "Failed to generate stock analysis", 
         error: error instanceof Error ? error.message : String(error) 
       });
     }
