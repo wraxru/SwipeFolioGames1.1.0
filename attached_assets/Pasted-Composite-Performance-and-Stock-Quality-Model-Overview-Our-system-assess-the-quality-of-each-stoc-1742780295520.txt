@@ -1,0 +1,77 @@
+Composite Performance and Stock Quality Model Overview
+
+Our system assess the quality of each stock using four core metrics:
+Value: How attractively priced is the stock to its earnings and book value?
+Growth: How quickly is the company expanding its revenue and earnings?
+Momentum: How well the stock has been trending in recent months (outside of raw price returns)
+Stability: How consistent and predictable the stock’s performance is
+
+Each of these factors are measured using financial data and normalized to a 0-100 scale. These scores are individually represented on each stock card under the appropriate threshold value. These scores are aggregated to compose an overall portfolio rating. 
+
+Value
+Value is composed of 3 key metrics that are weighted and added together:
+P/E Ratio
+One of the most commonly used valuation measures. It tells us how much investors are willing to pay for one dollar of a company’s earnings.
+A lower P/E compared to peers suggests a stock might be undervalued→ shows whether a stock is “cheap” or “expensive” relative to its earnings
+P/B Ratio
+The price-to-book ratio compares the market price of a stock to its book (net asset) value
+This helps us understand if stock is undervalued compared to the company's actual net assets. More important for industries where asset value is key.
+Dividend Yield
+Dividend yield indicates cash return an investor receives for each dollar invested
+Higher dividend yield can signal that a stock provides steady income and may be undervalued if the yield is higher than industry averages
+Each value is normalized and compared with the industry median
+SP/E = 100 x PEmedianPE
+SPB = 100 x PBmedianPB
+SDY = 100 x DYDYmedian
+Svalue =  50% x SP/E  + 30% x SP/B + 20% x SDY
+Growth
+Growth is composed of two metrics
+Revenue Growth Rate
+How quickly the company’s revenues is increasing
+EPS Growth Rate
+How quickly earnings per share are growing
+Each value is normalized using a target/industry growth rate (IGR)
+SRG = min(100, RGRIRG x 100)
+SEPS =  min(100, EPSGIRG x 100)
+SGrowth = 60% x SRG + 40% x SEPS
+Momentum
+Momentum is composed of three metrics
+Price return over last 3 months
+Relative performance 
+How stock performs versus market index (e.g S&P 500)
+Technical Indicator (RSI)
+Relative strength index (RSI) can indicate if momentum is healthy
+Each value is normalized against industry benchmarks (IB)
+Sreturn =  min(100, R3mIB x 100)
+Srelative = 100 x Stock Return - Index ReturnIndex Return
+SRSI = 100 - | RSI - 50 | x Scaling Factor
+Note: This prioritizes a RSI near 50 to indicate steady momentum.
+Smomentum = 50% x Sreturn + 30% x Srelative + 20% x SRSI
+Stability
+Stability is composed of 3 key metrics
+Volatility (σ)
+Annualized standard deviation of returns
+Beta: 
+How the stock moves relative to the overall market
+Dividend Consistency:
+Measures how consistent dividends have been paid out over the last 5 years
+Proposed evaluations
+Sσ = 100 x 10%σ	
+Note: for volatility, lower values are better and the 10% is a target volatility
+SB = max (0,100 - 100 x (B - 1)) 
+Beta <= 1 is ideal, for B above 1 this decreases linearly
+Dividend consistency can be assigned a score between 0 and 100 based on historical reliability
+Sstability = 50% x Sσ + 30% x SB + 20% x Sdiv
+
+Total Stock Quality Score (SQS)
+
+The four scores will be aggregated to determine an overall SQS. This will take a weighted average (precise % TBD upon further evaluation)
+
+SQS = 25% x Svalue + 25% x Sgrowth + 25% x Smomentum +25% x Sstability
+
+Portfolio Score
+
+Portfolio SQS =  (ai x SQSi)
+
+Where ai is the fraction of the portfolio invested in stock i. 
+
