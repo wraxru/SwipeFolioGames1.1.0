@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { StockData } from "@/lib/stock-data";
 import { Star, Info, AlertCircle, ChevronLeft, ChevronRight } from "lucide-react";
 import { motion, useAnimation, useMotionValue, useTransform, PanInfo } from "framer-motion";
@@ -10,6 +10,62 @@ interface SwipeStockCardProps {
   currentIndex: number;
   totalCount: number;
 }
+
+type TimeFrame = "1D" | "5D" | "1M" | "6M" | "YTD" | "1Y" | "5Y" | "MAX";
+
+// Helper to generate new chart data based on the selected time frame
+const generateTimeBasedData = (data: number[], timeFrame: TimeFrame) => {
+  // Create variations of the chart data based on timeframe
+  switch(timeFrame) {
+    case "1D":
+      // 1-day data will be more volatile with hourly fluctuations
+      return data.map((point, i) => point * (1 + Math.sin(i * 0.5) * 0.03));
+    case "5D":
+      // 5-day data will have bigger swings
+      return data.map((point, i) => point * (1 + Math.sin(i * 0.3) * 0.05));
+    case "1M":
+      // Default monthly data
+      return data;
+    case "6M":
+      // 6-month data will be smoother with an overall trend
+      return data.map((point, i) => point * (1 + (i/data.length) * 0.1));
+    case "1Y":
+      // 1-year data with more pronounced trends
+      return data.map((point, i) => point * (1 + Math.sin(i * 0.2) * 0.08 + (i/data.length) * 0.15));
+    case "5Y":
+      // 5-year data with longer cycles
+      return data.map((point, i) => point * (1 + Math.sin(i * 0.1) * 0.12 + (i/data.length) * 0.3));
+    case "MAX":
+      // Lifetime data with very long cycles 
+      return data.map((point, i) => point * (1 + Math.sin(i * 0.05) * 0.15 + (i/data.length) * 0.5));
+    default:
+      return data;
+  }
+};
+
+// Function to get time scale labels based on timeframe
+const getTimeScaleLabels = (timeFrame: TimeFrame): string[] => {
+  switch(timeFrame) {
+    case "1D":
+      return ["9:30", "11:00", "12:30", "14:00", "15:30", "16:00"];
+    case "5D":
+      return ["Mon", "Tue", "Wed", "Thu", "Fri"];
+    case "1M":
+      return ["Week 1", "Week 2", "Week 3", "Week 4"];
+    case "6M":
+      return ["Jan", "Feb", "Mar", "Apr", "May", "Jun"];
+    case "YTD":
+      return ["Jan", "Mar", "May", "Jul", "Sep", "Nov"];
+    case "1Y":
+      return ["Jan", "Mar", "May", "Jul", "Sep", "Nov"];
+    case "5Y":
+      return ["2020", "2021", "2022", "2023", "2024"];
+    case "MAX":
+      return ["2015", "2017", "2019", "2021", "2023"];
+    default:
+      return ["9:30", "11:00", "12:30", "14:00", "15:30", "16:00"];
+  }
+};
 
 export default function SwipeStockCard({ 
   stock, 
@@ -24,12 +80,24 @@ export default function SwipeStockCard({
   const cardRotate = useTransform(x, [-200, 0, 200], [-10, 0, 10]);
   const cardRef = useRef<HTMLDivElement>(null);
   
-  const [timeFrame, setTimeFrame] = useState<string>("1M");
+  const [timeFrame, setTimeFrame] = useState<TimeFrame>("1M");
   const [swipeDirection, setSwipeDirection] = useState<string | null>(null);
-
-  const chartData = stock.chartData;
-  const minValue = Math.min(...chartData) - 2;
-  const maxValue = Math.max(...chartData) + 2;
+  
+  // Use timeframe-dependent chart data
+  const chartData = useMemo(() => 
+    generateTimeBasedData(stock.chartData, timeFrame),
+    [stock.chartData, timeFrame]
+  );
+  
+  // Calculate min/max for chart display
+  const minValue = Math.min(...chartData) - 5;
+  const maxValue = Math.max(...chartData) + 5;
+  
+  // Get time scale labels based on selected timeframe
+  const timeScaleLabels = useMemo(() => 
+    getTimeScaleLabels(timeFrame),
+    [timeFrame]
+  );
 
   const handleDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
     const threshold = 100;
@@ -66,6 +134,13 @@ export default function SwipeStockCard({
     }
   };
 
+  // Convert price to display format
+  const displayPrice = stock.price.toFixed(2);
+  
+  // Determine price range to show on Y-axis
+  const priceRangeMin = Math.floor(minValue);
+  const priceRangeMax = Math.ceil(maxValue);
+  
   return (
     <div className="relative h-full">
       {/* Swipe indicators */}
@@ -78,7 +153,7 @@ export default function SwipeStockCard({
       
       {/* Page indicator */}
       <div className="absolute top-2 left-0 right-0 flex justify-center z-10">
-        <div className="bg-gray-800/70 rounded-full px-3 py-1 text-xs">
+        <div className="bg-gray-800/80 backdrop-blur-sm rounded-full px-3 py-1 text-xs border border-gray-700">
           {currentIndex + 1} / {totalCount}
         </div>
       </div>
@@ -98,12 +173,12 @@ export default function SwipeStockCard({
           {["1D", "5D", "1M", "6M", "YTD", "1Y", "5Y", "MAX"].map((period) => (
             <button
               key={period}
-              className={`px-2 py-1 ${
+              className={`px-2 py-1.5 rounded-md transition-all duration-200 ${
                 timeFrame === period 
-                  ? "text-cyan-400 font-bold border-b-2 border-cyan-400" 
-                  : "text-gray-400"
+                  ? "text-cyan-400 font-bold border-b-2 border-cyan-400 bg-cyan-500/10" 
+                  : "text-gray-400 hover:bg-gray-800"
               }`}
-              onClick={() => setTimeFrame(period)}
+              onClick={() => setTimeFrame(period as TimeFrame)}
             >
               {period}
             </button>
@@ -111,62 +186,75 @@ export default function SwipeStockCard({
         </div>
 
         {/* Chart */}
-        <div className="px-2 pt-6 pb-2 border-b border-gray-800 h-44 relative">
-          <svg viewBox="0 0 300 80" width="100%" height="100%" preserveAspectRatio="none">
-            <defs>
-              <linearGradient id="chartGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stopColor="rgba(6, 182, 212, 0.3)" />
-                <stop offset="100%" stopColor="rgba(6, 182, 212, 0)" />
-              </linearGradient>
-              <linearGradient id="negativeChartGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stopColor="rgba(239, 68, 68, 0.3)" />
-                <stop offset="100%" stopColor="rgba(239, 68, 68, 0)" />
-              </linearGradient>
-            </defs>
-            
-            {/* Line chart */}
-            <path
-              d={`M 0,${80 - ((chartData[0] - minValue) / (maxValue - minValue)) * 80} ${chartData.map((point, i) => {
-                const x = (i / (chartData.length - 1)) * 300;
-                const y = 80 - ((point - minValue) / (maxValue - minValue)) * 80;
-                return `L ${x},${y}`;
-              }).join(" ")}`}
-              fill="none"
-              stroke={stock.change >= 0 ? "#06b6d4" : "#ef4444"}
-              strokeWidth="2"
-            />
-            
-            {/* Area fill */}
-            <path
-              d={`M 0,${80 - ((chartData[0] - minValue) / (maxValue - minValue)) * 80} ${chartData.map((point, i) => {
-                const x = (i / (chartData.length - 1)) * 300;
-                const y = 80 - ((point - minValue) / (maxValue - minValue)) * 80;
-                return `L ${x},${y}`;
-              }).join(" ")} L 300,80 L 0,80 Z`}
-              fill={stock.change >= 0 ? "url(#chartGradient)" : "url(#negativeChartGradient)"}
-            />
-          </svg>
+        <div className="px-4 pt-8 pb-2 border-b border-gray-800 h-52 relative mt-2">
+          {/* Y-axis values */}
+          <div className="absolute left-0 top-0 bottom-8 flex flex-col justify-between text-xs text-gray-500">
+            <span>${priceRangeMax}</span>
+            <span>${(priceRangeMax + priceRangeMin) / 2}</span>
+            <span>${priceRangeMin}</span>
+          </div>
+          
+          {/* Chart grid lines */}
+          <div className="absolute left-10 right-0 top-0 bottom-8 flex flex-col justify-between pointer-events-none">
+            <div className="border-t border-gray-800 w-full h-0"></div>
+            <div className="border-t border-gray-800 w-full h-0"></div>
+            <div className="border-t border-gray-800 w-full h-0"></div>
+          </div>
+          
+          <div className="ml-10 chart-container h-full">
+            <svg viewBox="0 0 300 80" width="100%" height="100%" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id={`chartGradient-${stock.ticker}`} x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stopColor="rgba(6, 182, 212, 0.3)" />
+                  <stop offset="100%" stopColor="rgba(6, 182, 212, 0)" />
+                </linearGradient>
+                <linearGradient id={`negativeChartGradient-${stock.ticker}`} x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stopColor="rgba(239, 68, 68, 0.3)" />
+                  <stop offset="100%" stopColor="rgba(239, 68, 68, 0)" />
+                </linearGradient>
+              </defs>
+              
+              {/* Line chart */}
+              <path
+                d={`M 0,${80 - ((chartData[0] - minValue) / (maxValue - minValue)) * 80} ${chartData.map((point, i) => {
+                  const x = (i / (chartData.length - 1)) * 300;
+                  const y = 80 - ((point - minValue) / (maxValue - minValue)) * 80;
+                  return `L ${x},${y}`;
+                }).join(" ")}`}
+                fill="none"
+                stroke={stock.change >= 0 ? "#06b6d4" : "#ef4444"}
+                strokeWidth="2"
+              />
+              
+              {/* Area fill */}
+              <path
+                d={`M 0,${80 - ((chartData[0] - minValue) / (maxValue - minValue)) * 80} ${chartData.map((point, i) => {
+                  const x = (i / (chartData.length - 1)) * 300;
+                  const y = 80 - ((point - minValue) / (maxValue - minValue)) * 80;
+                  return `L ${x},${y}`;
+                }).join(" ")} L 300,80 L 0,80 Z`}
+                fill={stock.change >= 0 ? `url(#chartGradient-${stock.ticker})` : `url(#negativeChartGradient-${stock.ticker})`}
+              />
+            </svg>
+          </div>
           
           {/* Time scale */}
-          <div className="flex justify-between text-xs text-gray-500 mt-2">
-            <span>6:00</span>
-            <span>10:00</span>
-            <span>14:00</span>
-            <span>18:00</span>
-            <span>22:00</span>
-            <span>2:00</span>
+          <div className="ml-10 flex justify-between text-xs text-gray-500 mt-2">
+            {timeScaleLabels.map((label, index) => (
+              <span key={index}>{label}</span>
+            ))}
           </div>
         </div>
 
         {/* Stock Info */}
-        <div className="p-4 border-b border-gray-800">
-          <div className="flex items-start justify-between">
+        <div className="px-4 py-4 border-b border-gray-800">
+          <div className="flex items-start justify-between mb-3">
             <div>
-              <h2 className="text-xl font-bold">{stock.name} ({stock.ticker})</h2>
-              <div className="flex items-center gap-2 mt-1">
-                <span className="text-2xl font-semibold">${stock.price.toFixed(2)}</span>
-                <span className={`text-sm ${stock.change >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                  ({stock.change >= 0 ? '+' : ''}{stock.change}%)
+              <h2 className="text-xl font-bold">{stock.name} <span className="text-gray-400">({stock.ticker})</span></h2>
+              <div className="flex items-center gap-2 mt-1.5">
+                <span className="text-2xl font-semibold">${displayPrice}</span>
+                <span className={`text-sm ${stock.change >= 0 ? 'text-green-500' : 'text-red-500'} px-2 py-0.5 rounded-full bg-${stock.change >= 0 ? 'green' : 'red'}-900/20`}>
+                  {stock.change >= 0 ? '+' : ''}{stock.change}%
                 </span>
               </div>
             </div>
@@ -186,10 +274,12 @@ export default function SwipeStockCard({
                   />
                 ))}
               </div>
-              <span className="text-sm text-gray-400 mt-1">SmartScore {stock.smartScore}</span>
+              <span className="text-sm text-gray-400 mt-1 bg-gray-800/50 px-2 py-0.5 rounded-full">
+                SmartScore {stock.smartScore}
+              </span>
             </div>
           </div>
-          <p className="text-sm text-gray-400 mt-2">
+          <p className="text-sm text-gray-400">
             {stock.description}
           </p>
         </div>
@@ -223,7 +313,7 @@ export default function SwipeStockCard({
         </div>
 
         {/* Stock Synopsis */}
-        <div className="p-4">
+        <div className="p-4 bg-gradient-to-b from-gray-900 to-black">
           <h3 className="font-bold text-lg mb-3 flex items-center">
             Stock Synopsis
             <span className="ml-2 text-xs text-gray-400 bg-gray-800/50 px-2 py-1 rounded-full">
@@ -232,7 +322,7 @@ export default function SwipeStockCard({
           </h3>
           <div className="space-y-4">
             {/* Price */}
-            <div className="flex gap-3">
+            <div className="flex gap-3 bg-gray-900/40 p-3 rounded-lg border border-gray-800">
               <div className={`text-${stock.change >= 0 ? 'cyan' : 'red'}-400 p-2 bg-gray-800 rounded-full`}>
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
@@ -245,7 +335,7 @@ export default function SwipeStockCard({
             </div>
             
             {/* Company */}
-            <div className="flex gap-3">
+            <div className="flex gap-3 bg-gray-900/40 p-3 rounded-lg border border-gray-800">
               <div className="text-cyan-400 p-2 bg-gray-800 rounded-full">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <rect width="16" height="20" x="4" y="2" rx="2" ry="2" />
@@ -268,7 +358,7 @@ export default function SwipeStockCard({
             </div>
             
             {/* Role */}
-            <div className="flex gap-3">
+            <div className="flex gap-3 bg-gray-900/40 p-3 rounded-lg border border-gray-800">
               <div className="text-cyan-400 p-2 bg-gray-800 rounded-full">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7Z" />
