@@ -161,12 +161,17 @@ export default function RealTimeStockCard({
   }, [formattedIntradayData, stock.chartData, timeFrame]);
   
   // Parse real-time price and change percentage
-  const realTimePrice = quoteData?.["Global Quote"]?.["05. price"] 
-    ? parseFloat(quoteData["Global Quote"]["05. price"]) 
+  const realTimePrice = quoteData?.["05. price"] 
+    ? parseFloat(quoteData["05. price"]) 
     : stock.price;
-  const realTimeChange = quoteData?.["Global Quote"]?.["09. change"] 
-    ? parseFloat(quoteData["Global Quote"]["09. change"]) 
+  
+  // Convert change percentage string (e.g. "1.85%") to number
+  const realTimeChange = quoteData?.["10. change percent"] 
+    ? parseFloat(quoteData["10. change percent"].replace('%', '')) 
     : stock.change;
+    
+  // Format display price
+  const displayPrice = realTimePrice.toFixed(2);
   
   // Calculate min/max for chart display
   const minValue = Math.min(...chartData) - 5;
@@ -304,8 +309,7 @@ export default function RealTimeStockCard({
     setIsMetricPopupOpen(true);
   };
 
-  // Convert price to display format
-  const displayPrice = realTimePrice.toFixed(2);
+  // Price display format is defined above
   
   // Determine price range to show on Y-axis
   const priceRangeMin = Math.floor(minValue);
