@@ -61,7 +61,8 @@ export default function ImprovedSwipeStockCard({
     name: string;
     data: any;
     color: string;
-  }>({ name: "", data: null, color: "" });
+    specificValues?: any;
+  }>({ name: "", data: null, color: "", specificValues: undefined });
   
   // Helper to generate new chart data based on the selected time frame
   const generateTimeBasedData = (data: number[], timeFrame: TimeFrame) => {
@@ -183,7 +184,13 @@ export default function ImprovedSwipeStockCard({
       data = sampleExplanations[name as keyof typeof sampleExplanations];
     }
     
-    setCurrentMetric({ name, data, color });
+    // Get specific metric values if available
+    let specificValues = undefined;
+    if (stock.specificMetrics && name in (stock.specificMetrics as any)) {
+      specificValues = stock.specificMetrics[name as keyof typeof stock.specificMetrics];
+    }
+    
+    setCurrentMetric({ name, data, color, specificValues });
     setIsExplanationOpen(true);
   };
 
@@ -443,6 +450,7 @@ export default function ImprovedSwipeStockCard({
         metricName={currentMetric.name}
         metricData={currentMetric.data}
         color={currentMetric.color}
+        specificValues={currentMetric.specificValues}
       />
     </div>
   );
