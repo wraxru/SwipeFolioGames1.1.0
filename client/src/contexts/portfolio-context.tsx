@@ -95,10 +95,29 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
   function getMetricScore(stock: StockData, metricName: string): number {
     console.log(`\nCalculating ${metricName} score for ${stock.ticker}:`);
     
+    // Convert string ratings directly to scores per requirements
+    const stringToScore = (value: string): number => {
+      switch (value) {
+        case "Strong":
+        case "High":
+          return 90;
+        case "Good":
+          return 70;
+        case "Fair":
+        case "Average":
+          return 50;
+        case "Weak":
+        case "Poor": 
+        case "Unstable":
+          return 30;
+        default:
+          return 50;
+      }
+    };
+
     const metricData = stock.metrics[metricName as keyof typeof stock.metrics];
     const metricValue = metricData.value;
-    const metricColor = metricData.color;
-    console.log(`- Base metric value: "${metricValue}" (color: ${metricColor})`);
+    console.log(`- Base metric value: "${metricValue}" (color: ${metricData.color})`);
     
     const industryAvgs = getIndustryAverages(stock.industry);
     console.log(`- Industry: ${stock.industry}`);
