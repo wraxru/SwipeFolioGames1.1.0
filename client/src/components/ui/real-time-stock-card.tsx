@@ -4,6 +4,7 @@ import { getIndustryAverages } from "@/lib/industry-data";
 import { Star, Info, AlertCircle, ChevronLeft, ChevronRight, RefreshCw, TrendingUp, DollarSign, Shield, Zap } from "lucide-react";
 import { motion, useAnimation, useMotionValue, useTransform, PanInfo } from "framer-motion";
 import MetricPopup from "./metric-popup-fixed";
+import PortfolioImpactCalculator from "./portfolio-impact-calculator";
 import OverallAnalysisCard from "@/components/overall-analysis-card";
 import { useStockQuote, useIntradayData, useCompanyOverview } from "@/hooks/use-stock-data";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -183,6 +184,9 @@ export default function RealTimeStockCard({
     [timeFrame]
   );
 
+  // State for portfolio impact calculator
+  const [isPortfolioImpactOpen, setIsPortfolioImpactOpen] = useState(false);
+  
   // Function to refresh data
   const refreshData = async () => {
     setIsRefreshing(true);
@@ -200,7 +204,8 @@ export default function RealTimeStockCard({
         opacity: 0,
         transition: { duration: 0.3 }
       }).then(() => {
-        onPrevious();
+        // Open portfolio impact calculator instead of going to previous card
+        setIsPortfolioImpactOpen(true);
         cardControls.set({ x: 0, opacity: 1 });
         setSwipeDirection(null);
       });
