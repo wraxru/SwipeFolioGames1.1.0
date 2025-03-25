@@ -794,6 +794,8 @@ const hardcodedStocks: Record<string, StockData[]> = {
       price: 149.84,
       change: 1.8,
       rating: 6.4,
+      oneYearReturn: "19.65%",
+      predictedPrice: "$167.30",
       description: "A healthcare REIT specializing in senior housing, post-acute care, and outpatient medical properties.",
       metrics: {
         performance: {
@@ -852,6 +854,8 @@ const hardcodedStocks: Record<string, StockData[]> = {
       price: 69.48,
       change: -1.2,
       rating: 5.5,
+      oneYearReturn: "-5.32%",
+      predictedPrice: "$74.90",
       description: "The largest publicly-traded developer, owner and manager of Class A office properties.",
       metrics: {
         performance: {
@@ -910,6 +914,8 @@ const hardcodedStocks: Record<string, StockData[]> = {
       price: 71.36,
       change: 0.4,
       rating: 6.7,
+      oneYearReturn: "4.25%",
+      predictedPrice: "$77.50",
       description: "A leading multifamily residential REIT focused on urban and high-density suburban communities.",
       metrics: {
         performance: {
