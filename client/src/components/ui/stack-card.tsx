@@ -94,10 +94,7 @@ export default function StackCard({ stack, onClick, imageUrl, category }: StackC
             {stack.difficulty || 'intermediate'}
           </div>
           
-          <div className="flex items-center space-x-1 bg-gray-800 text-gray-400 text-xs px-2 py-1 rounded-full">
-            <Clock className="w-3 h-3" />
-            <span>{stack.estimatedMinutes || 15} min</span>
-          </div>
+          
         </div>
       </div>
     </motion.div>

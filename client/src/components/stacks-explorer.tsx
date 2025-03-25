@@ -56,7 +56,7 @@ export default function StacksExplorer({ stacks }: StacksExplorerProps) {
       image: "https://images.unsplash.com/photo-1516321497487-e288fb19713f?q=80&w=580&auto=format&fit=crop" 
     }
   };
-  
+
   // Filter out non-industry stacks (like "investing" and "crypto currency" guides)
   const industryStacksOnly = stacks.filter(stack => {
     // Keep stacks if they have a real industry name, filter out educational stacks
@@ -64,15 +64,15 @@ export default function StacksExplorer({ stacks }: StacksExplorerProps) {
                           stack.title.includes("Basics") || 
                           stack.title.includes("101") ||
                           stack.title.includes("Learn");
-    
+
     return !isEducational;
   });
-  
+
   // Add some default industry stacks if we don't have enough
   if (industryStacksOnly.length < 5) {
     // Example industries to add if there aren't enough
     const defaultIndustries = ["Tech", "Healthcare", "Consumer", "Real Estate", "ESG"];
-    
+
     // Add missing industries from our defaults
     defaultIndustries.forEach((industry, index) => {
       if (!industryStacksOnly.some(s => s.industry === industry)) {
