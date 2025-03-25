@@ -380,7 +380,8 @@ const hardcodedStocks: Record<string, StockData[]> = {
             revenueGrowth: 8.5,
             profitMargin: 45.2,
             returnOnCapital: 6.8
-          }
+          },
+          explanation: "Strong revenue growth exceeding industry average with excellent profit margins. Returns on capital are solid and slightly above the REIT industry benchmark."
         },
         stability: {
           value: "Strong",
@@ -389,7 +390,8 @@ const hardcodedStocks: Record<string, StockData[]> = {
             volatility: 0.85,
             beta: 0.92,
             dividendConsistency: "High"
-          }
+          },
+          explanation: "Below average volatility and beta indicate less market sensitivity than peers. Strong history of consistent dividend increases even during economic downturns."
         },
         value: {
           value: "Fair",
@@ -398,7 +400,8 @@ const hardcodedStocks: Record<string, StockData[]> = {
             peRatio: 22.5,
             pbRatio: 2.1,
             dividendYield: 2.8
-          }
+          },
+          explanation: "Trading at a modest premium to earnings and book value compared to REIT averages. Dividend yield is slightly below sector average but offset by better growth profile."
         },
         momentum: {
           value: "Average",
@@ -407,55 +410,11 @@ const hardcodedStocks: Record<string, StockData[]> = {
             threeMonthReturn: 4.2,
             relativePerformance: -0.5,
             rsi: 52.5
-          }
+          },
+          explanation: "Solid recent price performance with minimal underperformance versus peers. Neutral RSI suggests balanced buying and selling pressure."
         }
       },
-      price: 110.26,
-      change: 0.8,
-      rating: 7.2,
       description: "A leading global owner, operator and developer of logistics real estate.",
-      metrics: {
-        performance: {
-          value: "Average",
-          color: "yellow",
-          details: {
-            revenueGrowth: 2.2,
-            profitMargin: 45.4,
-            returnOnCapital: 4.3
-          },
-          explanation: "Mixed performance with modest revenue growth but excellent profitability. Strong operational efficiency in managing logistics properties with healthy returns on invested capital."
-        },
-        stability: {
-          value: "Poor",
-          color: "red",
-          details: {
-            volatility: 2.5,
-            beta: 1.24,
-            dividendConsistency: "Medium"
-          },
-          explanation: "Higher-than-industry-average volatility and beta indicate more price fluctuations than peers. Dividend growth history is acceptable but not outstanding compared to some REITs."
-        },
-        value: {
-          value: "Average",
-          color: "yellow",
-          details: {
-            peRatio: 28,
-            pbRatio: 1.9,
-            dividendYield: "3.7%"
-          },
-          explanation: "Trades at a fair valuation relative to earnings and book value. Dividend yield is slightly below the REIT industry average but remains attractive compared to broader market."
-        },
-        momentum: {
-          value: "Average",
-          color: "yellow",
-          details: {
-            threeMonthReturn: 6.1,
-            relativePerformance: -2,
-            rsi: 37.4
-          },
-          explanation: "Recent price performance is mixed with decent absolute returns but slightly underperforming the broader real estate index. RSI suggests the stock is neither overbought nor oversold."
-        }
-      },
       synopsis: {
         price: "Trading at 110.26, reflecting modest recent gains despite market volatility.",
         company: "Global leader in logistics real estate with significant e-commerce exposure.",
