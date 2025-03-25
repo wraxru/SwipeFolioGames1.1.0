@@ -331,13 +331,34 @@ export default function RealTimeStockCard({
   
   return (
     <div className="relative h-full">
-      {/* Swipe indicators */}
-      <div className="absolute top-1/2 left-4 z-10 transform -translate-y-1/2 opacity-50">
-        <ChevronLeft size={40} className={`text-slate-300 ${currentIndex === 0 ? 'invisible' : ''}`} />
-      </div>
-      <div className="absolute top-1/2 right-4 z-10 transform -translate-y-1/2 opacity-50">
-        <ChevronRight size={40} className="text-slate-300" />
-      </div>
+      {/* Swipe indicators - Enhanced */}
+      <motion.div 
+        className="swipe-indicator swipe-left"
+        animate={{
+          opacity: swipeDirection === "left" ? 0.9 : 0.5,
+          scale: swipeDirection === "left" ? 1.1 : 1,
+          x: swipeDirection === "left" ? -10 : 0
+        }}
+      >
+        <div className="flex flex-col items-center justify-center">
+          <ChevronLeft size={28} className="mb-1" />
+          <span className="text-[10px] font-medium">Next</span>
+        </div>
+      </motion.div>
+      
+      <motion.div 
+        className="swipe-indicator swipe-right"
+        animate={{
+          opacity: swipeDirection === "right" ? 0.9 : 0.5,
+          scale: swipeDirection === "right" ? 1.1 : 1,
+          x: swipeDirection === "right" ? 10 : 0
+        }}
+      >
+        <div className="flex flex-col items-center justify-center">
+          <DollarSign size={24} className="mb-1" />
+          <span className="text-[10px] font-medium">Invest</span>
+        </div>
+      </motion.div>
       
       {/* Page indicator */}
       <div className="absolute top-2 left-0 right-0 flex justify-center z-10">

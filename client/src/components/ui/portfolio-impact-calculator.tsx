@@ -109,25 +109,40 @@ export default function PortfolioImpactCalculator({
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* Backdrop */}
+          {/* Backdrop with blur effect */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50"
+            transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
+            className="calculator-overlay"
             onClick={onClose}
           />
           
-          {/* Modal */}
+          {/* Modal with enhanced animations */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="fixed inset-x-4 top-[10%] md:inset-auto md:top-[15%] md:left-1/2 md:right-auto md:-translate-x-1/2 md:w-[450px] max-h-[80vh] overflow-auto rounded-2xl bg-white shadow-2xl z-50 border border-slate-200"
+            initial={{ opacity: 0, scale: 0.92, y: 30 }}
+            animate={{ 
+              opacity: 1, 
+              scale: 1, 
+              y: 0,
+              transition: { 
+                type: "spring", 
+                damping: 30, 
+                stiffness: 350,
+                duration: 0.4,
+                ease: [0.23, 1, 0.32, 1]
+              }
+            }}
+            exit={{ 
+              opacity: 0, 
+              scale: 0.95, 
+              y: 20,
+              transition: { duration: 0.25, ease: [0.32, 0, 0.67, 0] }
+            }}
+            className="calculator-modal"
             style={{
-              boxShadow: '0 10px 25px rgba(0, 0, 0, 0.12), 0 4px 10px rgba(0, 0, 0, 0.05)'
+              boxShadow: '0 20px 60px -15px rgba(0, 0, 0, 0.25), 0 12px 25px -10px rgba(0, 0, 0, 0.1)'
             }}
           >
             {/* Header */}
@@ -341,20 +356,68 @@ export default function PortfolioImpactCalculator({
                   </div>
                 </div>
                 
-                {/* Invest Button */}
-                <button
-                  className="w-full rounded-xl py-4 bg-gradient-to-r from-green-400 to-emerald-500 text-white font-bold text-lg shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2"
+                {/* Invest Button - Enhanced with delightful animations */}
+                <motion.button
+                  className="invest-button"
                   onClick={handleInvest}
                   disabled={isLoading || investmentAmount <= 0 || investmentAmount > cash}
+                  whileTap={{ scale: 0.95 }}
+                  whileHover={{ 
+                    scale: 1.02,
+                    boxShadow: "0 15px 30px rgba(0, 0, 0, 0.15)"
+                  }}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ 
+                    opacity: 1, 
+                    y: 0,
+                    transition: { 
+                      delay: 0.1,
+                      duration: 0.4, 
+                      ease: [0.23, 1, 0.32, 1] 
+                    }
+                  }}
                 >
                   {isLoading ? (
-                    <span className="animate-pulse">Processing...</span>
+                    <motion.div 
+                      animate={{ 
+                        scale: [1, 1.05, 1],
+                        opacity: [0.8, 1, 0.8]
+                      }}
+                      transition={{ 
+                        repeat: Infinity,
+                        duration: 1.5
+                      }}
+                      className="flex items-center"
+                    >
+                      <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Processing...
+                    </motion.div>
                   ) : (
-                    <>
-                      Invest <ChevronRight size={20} className="animate-pulse" />
-                    </>
+                    <motion.div 
+                      className="flex items-center gap-2"
+                      initial={{ x: 0 }}
+                      whileHover={{ x: 5 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <span>Invest</span>
+                      <motion.div
+                        animate={{ 
+                          x: [0, 4, 0],
+                        }}
+                        transition={{ 
+                          repeat: Infinity,
+                          duration: 1.5,
+                          ease: "easeInOut"
+                        }}
+                      >
+                        <ChevronRight size={20} />
+                      </motion.div>
+                    </motion.div>
                   )}
-                </button>
+                </motion.button>
               </div>
             </div>
           </motion.div>

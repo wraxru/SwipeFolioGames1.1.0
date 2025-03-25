@@ -196,3 +196,93 @@
 .chart-negative-stroke {
   @apply stroke-red-500;
 }
+
+/* Swipe Animations and Delightful UI Effects */
+@keyframes slideInRight {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideInLeft {
+  from { transform: translateX(-100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes popIn {
+  0% { transform: scale(0.8); opacity: 0; }
+  40% { transform: scale(1.05); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes floatUp {
+  0% { transform: translateY(10px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.animate-slide-right {
+  animation: slideInRight 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.animate-slide-left {
+  animation: slideInLeft 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.animate-pop {
+  animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.animate-float-up {
+  animation: floatUp 0.5s ease-out forwards;
+}
+
+.animate-pulse-subtle {
+  animation: pulse 2s infinite ease-in-out;
+}
+
+/* Portfolio Impact Calculator styles */
+.calculator-overlay {
+  @apply bg-black/40 backdrop-blur-sm fixed inset-0 z-50 transition-all duration-300;
+}
+
+.calculator-modal {
+  @apply fixed inset-x-4 top-[10%] md:inset-auto md:top-[15%] md:left-1/2 md:right-auto md:-translate-x-1/2 md:w-[450px] 
+  max-h-[80vh] overflow-auto rounded-2xl bg-white z-50 border border-slate-200 shadow-2xl
+  transition-all duration-300;
+}
+
+/* Enhanced card swipe effects */
+.stock-card {
+  touch-action: pan-y;
+  will-change: transform;
+  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.swipe-indicator {
+  @apply absolute top-1/2 -translate-y-1/2 bg-white/80 rounded-full p-2 shadow-lg
+  border border-slate-100 backdrop-blur-sm transition-all duration-300;
+}
+
+.swipe-left {
+  @apply left-3 text-cyan-500 opacity-0;
+}
+
+.swipe-right {
+  @apply right-3 text-emerald-500 opacity-0;
+}
+
+.stock-card:hover .swipe-indicator {
+  @apply opacity-50;
+}
+
+/* Paper trading button effects */
+.invest-button {
+  @apply w-full rounded-xl py-4 bg-gradient-to-r from-green-400 to-emerald-500 text-white 
+  font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-300
+  hover:translate-y-[-2px] active:translate-y-[1px];
+}
