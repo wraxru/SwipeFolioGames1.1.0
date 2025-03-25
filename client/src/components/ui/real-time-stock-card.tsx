@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { StockData } from "@/lib/stock-data";
 import { getIndustryAverages } from "@/lib/industry-data";
-import { Star, Info, AlertCircle, ChevronLeft, ChevronRight, RefreshCw } from "lucide-react";
+import { Star, Info, AlertCircle, ChevronLeft, ChevronRight, RefreshCw, TrendingUp, DollarSign, Shield, Zap } from "lucide-react";
 import { motion, useAnimation, useMotionValue, useTransform, PanInfo } from "framer-motion";
 import MetricPopup from "./metric-popup-fixed";
 import OverallAnalysisCard from "@/components/overall-analysis-card";
