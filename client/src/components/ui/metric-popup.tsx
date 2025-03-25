@@ -7,7 +7,17 @@ import { useState } from "react";
 // Get comparison status (better, similar, worse)
 function getComparisonStatus(value: number | string, industry: number | string, 
                           isLowerBetter: boolean = false): "green" | "yellow" | "red" {
-  // Parse string values to numbers if possible
+  // Handle non-numeric qualitative values
+  if (typeof value === 'string' && (value === 'High' || value === 'Medium' || value === 'Low')) {
+    if (value === industry) return "yellow";
+    if (value === 'High' && industry === 'Medium') return "green";
+    if (value === 'Low' && industry === 'Medium') return "red";
+    if (value === 'Medium' && industry === 'Low') return "green";
+    if (value === 'Medium' && industry === 'High') return "red";
+    return "yellow";
+  }
+
+  // Parse numeric values
   const numValue = typeof value === 'string' ? parseFloat(value) : value;
   const numIndustry = typeof industry === 'string' ? parseFloat(industry) : industry;
   

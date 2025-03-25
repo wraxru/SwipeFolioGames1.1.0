@@ -372,6 +372,47 @@ const hardcodedStocks: Record<string, StockData[]> = {
       price: 110.26,
       change: 0.8,
       rating: 7.2,
+      metrics: {
+        performance: {
+          value: "Good",
+          color: "green",
+          details: {
+            revenueGrowth: 8.5,
+            profitMargin: 45.2,
+            returnOnCapital: 6.8
+          }
+        },
+        stability: {
+          value: "Strong",
+          color: "green",
+          details: {
+            volatility: 0.85,
+            beta: 0.92,
+            dividendConsistency: "High"
+          }
+        },
+        value: {
+          value: "Fair",
+          color: "yellow",
+          details: {
+            peRatio: 22.5,
+            pbRatio: 2.1,
+            dividendYield: 2.8
+          }
+        },
+        momentum: {
+          value: "Average",
+          color: "yellow",
+          details: {
+            threeMonthReturn: 4.2,
+            relativePerformance: -0.5,
+            rsi: 52.5
+          }
+        }
+      }
+      price: 110.26,
+      change: 0.8,
+      rating: 7.2,
       description: "A leading global owner, operator and developer of logistics real estate.",
       metrics: {
         performance: {
