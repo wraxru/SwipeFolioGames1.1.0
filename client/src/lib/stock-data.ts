@@ -409,7 +409,7 @@ const hardcodedStocks: Record<string, StockData[]> = {
             rsi: 52.5
           }
         }
-      }
+      },
       price: 110.26,
       change: 0.8,
       rating: 7.2,
