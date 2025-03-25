@@ -119,7 +119,7 @@ export default function PortfolioImpactCalculator({
             onClick={onClose}
           />
           
-          {/* Modal with enhanced animations */}
+          {/* Modal with enhanced animations and better centering */}
           <motion.div
             initial={{ opacity: 0, scale: 0.92, y: 30 }}
             animate={{ 
@@ -142,7 +142,13 @@ export default function PortfolioImpactCalculator({
             }}
             className="calculator-modal"
             style={{
-              boxShadow: '0 20px 60px -15px rgba(0, 0, 0, 0.25), 0 12px 25px -10px rgba(0, 0, 0, 0.1)'
+              boxShadow: '0 20px 60px -15px rgba(0, 0, 0, 0.25), 0 12px 25px -10px rgba(0, 0, 0, 0.1)',
+              position: 'fixed',
+              left: '50%',
+              top: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: '90%',
+              maxWidth: '450px'
             }}
           >
             {/* Header */}
