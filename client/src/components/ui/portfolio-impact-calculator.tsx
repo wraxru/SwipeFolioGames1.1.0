@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence, useMotionValue, useTransform, useSpring } from "framer-motion";
-import { X, DollarSign, ChevronDown, ChevronUp, ChevronRight, Info, TrendingUp, Shield, Zap, ArrowRight, Check } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { X, DollarSign, ChevronDown, ChevronUp, ChevronRight, Info, TrendingUp, Shield, Zap } from "lucide-react";
 import { StockData } from "@/lib/stock-data";
 import { usePortfolio } from "@/contexts/portfolio-context";
 import { cn } from "@/lib/utils";
@@ -423,10 +423,59 @@ export default function PortfolioImpactCalculator({
                     Processing...
                   </motion.div>
                 ) : (
-                  <SlideToInvest 
-                    onComplete={handleInvest}
-                    disabled={investmentAmount <= 0 || investmentAmount > cash}
-                  />
+                  <div className="slide-to-invest-container">
+                    {/* Track */}
+                    <motion.div 
+                      className="slide-track"
+                      ref={slideTrackRef}
+                    >
+                      {/* Hint text */}
+                      <div className="slider-hint">
+                        {slidingInProgress ? "Keep going..." : "← Slide to invest →"}
+                      </div>
+                      
+                      {/* Draggable thumb */}
+                      <motion.div
+                        className="slider-thumb"
+                        drag="x"
+                        dragElastic={0}
+                        dragMomentum={false}
+                        dragConstraints={slideTrackRef}
+                        style={{ x: slideX }}
+                        onDragStart={() => setSlidingInProgress(true)}
+                        onDragEnd={handleSlideEnd}
+                        whileDrag={{ scale: 1.05 }}
+                        animate={slideSuccess ? { x: slideTrackWidth } : {}}
+                        onClick={() => {}}
+                      >
+                        <motion.div
+                          animate={{ 
+                            x: slidingInProgress ? [0, 5, 0] : [0, 0, 0],
+                          }}
+                          transition={{ 
+                            repeat: Infinity,
+                            duration: 0.7,
+                            ease: "easeInOut"
+                          }}
+                        >
+                          {slideSuccess ? <Check size={20} /> : <ArrowRight size={20} />}
+                        </motion.div>
+                      </motion.div>
+                      
+                      {/* Success overlay */}
+                      <motion.div 
+                        className="slide-success"
+                        style={{ opacity: successOpacity }}
+                      >
+                        <motion.div
+                          animate={{ scale: slideSuccess ? [0.8, 1.1, 1] : 1 }}
+                          transition={{ duration: 0.4 }}
+                        >
+                          Investing!
+                        </motion.div>
+                      </motion.div>
+                    </motion.div>
+                  </div>
                 )}
               </div>
             </div>
