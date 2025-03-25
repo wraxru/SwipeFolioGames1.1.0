@@ -1,6 +1,7 @@
 import React from "react";
-import { X, Info, TrendingUp, ArrowRight, PlusCircle, CircleDot, ChevronUp, ChevronDown, Minus } from "lucide-react";
+import { X, Info, TrendingUp, ArrowRight, PlusCircle, CircleDot, ChevronUp, ChevronDown, Minus, HelpCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useState } from "react";
 
 // Utility functions for comparison
 // Get comparison status (better, similar, worse)
@@ -99,11 +100,11 @@ const getColorClass = (color: "green" | "yellow" | "red") => {
 const getBgColorClass = (color: "green" | "yellow" | "red") => {
   switch (color) {
     case "green":
-      return "bg-green-50";
+      return "bg-green-50/90";
     case "yellow":
-      return "bg-amber-50";
+      return "bg-amber-50/90";
     case "red":
-      return "bg-red-50";
+      return "bg-red-50/90";
     default:
       return "bg-slate-50";
   }
@@ -150,6 +151,63 @@ const ComparisonSymbol = ({
       {symbol === ">" && <ChevronUp size={18} className={textColorClass} />}
       {symbol === "=" && <Minus size={18} className={textColorClass} />}
       {symbol === "<" && <ChevronDown size={18} className={textColorClass} />}
+    </div>
+  );
+};
+
+// Helper component for explanation tooltip
+const InfoTooltip = ({ label }: { label: string }) => {
+  const [showTooltip, setShowTooltip] = useState(false);
+  
+  // Get the metric description based on the label
+  const getDescription = (metricLabel: string): string => {
+    switch (metricLabel) {
+      case "P/E Ratio":
+        return "How many dollars you pay for each dollar the company earns per year; a higher number often means the stock is more 'expensive.'";
+      case "P/B Ratio":
+        return "Shows how the stock price compares to the company's accounting 'net worth' (book value); high means price is well above its balance-sheet value.";
+      case "Dividend Yield":
+        return "The percentage of your investment you'd get back in annual cash dividends (e.g., 3% means $3 per year on a $100 investment).";
+      case "Revenue Growth":
+        return "How much the company's total sales went up (or down) compared to last year, showing if the business is expanding or shrinking.";
+      case "Profit Margin":
+        return "Out of every dollar of sales, how much is left as profit after expenses (e.g., 20% margin means 20 cents of profit per $1 of revenue).";
+      case "Return on Capital":
+      case "Return on Capital (ROC or ROI)":
+        return "Tells you how effectively the company uses its money and assets to make a profit (higher means better use of their property/investments).";
+      case "3-Month Return":
+      case "Three-Month Return":
+        return "How the stock price changed over the last three months (e.g., +10% means it gained 10% in that period).";
+      case "Relative Performance":
+        return "Compares the stock's return to a major market index (e.g., if it's +5%, the stock did 5% better than the overall market).";
+      case "RSI":
+        return "A technical measure of recent price moves; below 40 often means it's been weak or 'oversold,' above 70 can mean it's 'overbought.'";
+      case "Volatility":
+        return "How much the stock's price bounces around day to day; higher volatility means the price can swing up or down more dramatically.";
+      case "Beta":
+        return "A measure of how much the stock tends to move relative to the overall market (e.g., a beta of 1.2 means it moves 20% more than the market).";
+      case "Dividend Consistency":
+        return "Whether the company reliably pays (and often increases) its dividend, or if it has a history of cutting or skipping dividend payments.";
+      default:
+        return "This metric helps evaluate the stock's performance relative to industry standards.";
+    }
+  };
+  
+  return (
+    <div className="relative">
+      <button
+        onClick={() => setShowTooltip(!showTooltip)}
+        className="p-1 rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+      >
+        <HelpCircle size={16} />
+      </button>
+      
+      {showTooltip && (
+        <div className="absolute z-10 w-64 p-3 bg-white rounded-lg shadow-lg border border-slate-200 text-xs text-slate-600 leading-relaxed left-0 top-full mt-1">
+          {getDescription(label)}
+          <div className="absolute -top-2 left-2 w-3 h-3 bg-white border-t border-l border-slate-200 transform rotate-45"></div>
+        </div>
+      )}
     </div>
   );
 };
@@ -292,9 +350,12 @@ export default function MetricPopup({
                       <div key={index} className="bg-white rounded-xl border border-slate-100 overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
                         {/* Metric Header */}
                         <div className={`p-3 ${bgColorClass} border-b ${borderColorClass}`}>
-                          <h3 className="text-slate-800 font-semibold flex items-center">
-                            <Info size={16} className={`${textColorClass} mr-2`} />
-                            {item.label}
+                          <h3 className="text-slate-800 font-semibold flex items-center justify-between">
+                            <div className="flex items-center">
+                              <Info size={16} className={`${textColorClass} mr-2`} />
+                              {item.label}
+                            </div>
+                            <InfoTooltip label={item.label} />
                           </h3>
                         </div>
                         
@@ -313,7 +374,7 @@ export default function MetricPopup({
                             {/* Metric comparison */}
                             <div className="flex items-center justify-between w-full mt-2">
                               <div className="flex flex-col items-center">
-                                <span className="text-xs text-slate-500 mb-1.5 font-semibold">{metricData.name || "Company"}</span>
+                                <span className="text-xs text-slate-800 mb-1.5 font-semibold">{metricData.name || "Company"}</span>
                                 <div className={`px-5 py-3 rounded-lg ${bgColorClass} ${textColorClass} font-bold text-xl flex items-center justify-center min-w-24 shadow-md border ${borderColorClass}`}
                                   style={{
                                     boxShadow: comparisonColor === "green" ? "0 4px 10px rgba(34, 197, 94, 0.2)" : 
@@ -350,7 +411,7 @@ export default function MetricPopup({
                               </div>
                               
                               <div className="flex flex-col items-center">
-                                <span className="text-xs text-slate-500 mb-1.5 font-semibold">Industry Average</span>
+                                <span className="text-xs text-slate-800 mb-1.5 font-semibold">Industry Average</span>
                                 <div className="px-5 py-3 rounded-lg bg-slate-50 text-slate-600 font-bold text-xl flex items-center justify-center min-w-24 shadow-md border border-slate-200"
                                   style={{ boxShadow: "0 4px 10px rgba(0, 0, 0, 0.05)" }}>
                                   {item.industry || industryAvg}{item.suffix || ""}
@@ -358,44 +419,7 @@ export default function MetricPopup({
                               </div>
                             </div>
                             
-                            {/* Metric Definition - without "What this means" label */}
-                            <div className="mt-3 bg-slate-50 rounded-lg p-3 text-xs text-slate-600 leading-relaxed border border-slate-100 shadow-sm">
-                              {item.label === "P/E Ratio" && 
-                                "How many dollars you pay for each dollar the company earns per year; a higher number often means the stock is more 'expensive.'"}
-                              
-                              {item.label === "P/B Ratio" && 
-                                "Shows how the stock price compares to the company's accounting 'net worth' (book value); high means price is well above its balance-sheet value."}
-                              
-                              {item.label === "Dividend Yield" && 
-                                "The percentage of your investment you'd get back in annual cash dividends (e.g., 3% means $3 per year on a $100 investment)."}
-                              
-                              {item.label === "Revenue Growth" && 
-                                "How much the company's total sales went up (or down) compared to last year, showing if the business is expanding or shrinking."}
-                              
-                              {item.label === "Profit Margin" && 
-                                "Out of every dollar of sales, how much is left as profit after expenses (e.g., 20% margin means 20 cents of profit per $1 of revenue)."}
-                              
-                              {(item.label === "Return on Capital" || item.label === "Return on Capital (ROC or ROI)") && 
-                                "Tells you how effectively the company uses its money and assets to make a profit (higher means better use of their property/investments)."}
-                              
-                              {(item.label === "3-Month Return" || item.label.includes("Month Return")) && 
-                                "How the stock price changed over the last three months (e.g., +10% means it gained 10% in that period)."}
-                              
-                              {(item.label === "Relative Performance" || item.label.includes("Relative Performance")) && 
-                                "Compares the stock's return to a major market index (e.g., if it's +5%, the stock did 5% better than the overall market)."}
-                              
-                              {item.label === "RSI" && 
-                                "A technical measure of recent price moves; below 40 often means it's been weak or 'oversold,' above 70 can mean it's 'overbought.'"}
-                              
-                              {item.label === "Volatility" && 
-                                "How much the stock's price bounces around day to day; higher volatility means the price can swing up or down more dramatically."}
-                              
-                              {item.label === "Beta" && 
-                                "A measure of how much the stock tends to move relative to the overall market (e.g., a beta of 1.2 means it moves 20% more than the market)."}
-                              
-                              {item.label === "Dividend Consistency" && 
-                                "Whether the company reliably pays (and often increases) its dividend, or if it has a history of cutting or skipping dividend payments."}
-                            </div>
+
                           </div>
                         </div>
                       </div>
