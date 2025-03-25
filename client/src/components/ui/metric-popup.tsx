@@ -398,7 +398,7 @@ export default function MetricPopup({
                               
                               {/* Display comparison symbol with correct orientation */}
                               <div className="flex flex-col items-center justify-center">
-                                <div className={`${getColorClass(comparisonColor)} font-bold text-2xl flex items-center justify-center mx-2 p-1.5 rounded-full bg-white shadow-sm`}>
+                                <div className={`${getColorClass(comparisonColor)} font-bold text-3xl flex items-center justify-center mx-2 p-1.5 rounded-full bg-white shadow-sm`}>
                                   {(() => {
                                     // Use correct arrows based on actual numeric values 
                                     const numValue = typeof item.value === 'string' ? parseFloat(item.value) : item.value;
@@ -407,7 +407,7 @@ export default function MetricPopup({
                                                         (typeof industryValue === 'number' ? industryValue : 0);
                                     
                                     if (isNaN(numValue) || isNaN(numIndustry)) {
-                                      return <Minus size={24} className={getColorClass(comparisonColor)} />;
+                                      return <Minus size={30} className={getColorClass(comparisonColor)} />;
                                     }
                                     
                                     // Check if numbers are approximately equal (within 5%)
@@ -415,11 +415,17 @@ export default function MetricPopup({
                                     const isApproxEqual = ratio > 0.95 && ratio < 1.05;
                                     
                                     if (isApproxEqual) {
-                                      return <span className={`${getColorClass(comparisonColor)} text-xl font-semibold`}>~</span>;
-                                    } else if (numValue > numIndustry) {
-                                      return <ChevronUp size={24} className={getColorClass(comparisonColor)} />;
+                                      return <span className={`${getColorClass(comparisonColor)} text-3xl font-semibold`}>~</span>;
+                                    } else if (isMetricBetterWhenLower(item.label)) {
+                                      // For metrics where lower is better (like P/E ratio, volatility)
+                                      return numValue < numIndustry 
+                                        ? <ArrowRight size={30} className={getColorClass(comparisonColor)} /> // pointing right toward company (good)
+                                        : <ArrowRight size={30} className={`${getColorClass(comparisonColor)} transform rotate-180`} />; // pointing left toward industry (bad)
                                     } else {
-                                      return <ChevronDown size={24} className={getColorClass(comparisonColor)} />;
+                                      // For metrics where higher is better (like revenue growth)
+                                      return numValue > numIndustry 
+                                        ? <ArrowRight size={30} className={getColorClass(comparisonColor)} /> // pointing right toward company (good)
+                                        : <ArrowRight size={30} className={`${getColorClass(comparisonColor)} transform rotate-180`} />; // pointing left toward industry (bad)
                                     }
                                   })()}
                                 </div>
