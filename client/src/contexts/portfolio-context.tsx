@@ -93,26 +93,38 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
   
   // Helper to get numeric score from metric on a 0-100 scale
   function getMetricScore(stock: StockData, metricName: string): number {
+    console.log(`\nCalculating ${metricName} score for ${stock.ticker}:`);
+    
     const metricData = stock.metrics[metricName as keyof typeof stock.metrics];
     const metricValue = metricData.value;
+    const metricColor = metricData.color;
+    console.log(`- Base metric value: "${metricValue}" (color: ${metricColor})`);
+    
     const industryAvgs = getIndustryAverages(stock.industry);
+    console.log(`- Industry: ${stock.industry}`);
+    console.log(`- Industry averages for ${metricName}:`, industryAvgs[metricName as keyof typeof industryAvgs]);
     
     // Get detailed metrics data with proper typing
     let detailedMetrics: PerformanceDetails | StabilityDetails | ValueDetails | MomentumDetails;
     switch(metricName) {
       case 'performance':
         detailedMetrics = stock.metrics.performance.details as PerformanceDetails;
+        console.log(`- Performance details:`, detailedMetrics);
         break;
       case 'stability':
         detailedMetrics = stock.metrics.stability.details as StabilityDetails;
+        console.log(`- Stability details:`, detailedMetrics);
         break;
       case 'value':
         detailedMetrics = stock.metrics.value.details as ValueDetails;
+        console.log(`- Value details:`, detailedMetrics);
         break;
       case 'momentum':
         detailedMetrics = stock.metrics.momentum.details as MomentumDetails;
+        console.log(`- Momentum details:`, detailedMetrics);
         break;
       default:
+        console.log(`- Unknown metric type: ${metricName}`);
         return 0; // Default to 0 score if we can't determine the metric type
     }
     
@@ -265,7 +277,16 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
     }
     
     // Normalize the score if we have weights
-    return totalWeight > 0 ? weightedScore / totalWeight : 0;
+    const finalScore = totalWeight > 0 ? weightedScore / totalWeight : 0;
+    console.log(`- Final ${metricName} score (0-100 scale): ${finalScore}`);
+    
+    // Log individual sub-scores for this metric
+    console.log(`- ${metricName} calculation summary:`);
+    console.log(`  Total weighted score: ${weightedScore.toFixed(1)}`);
+    console.log(`  Total weight: ${totalWeight}`);
+    console.log(`  Final normalized score: ${finalScore.toFixed(1)}`);
+    
+    return finalScore;
   }
   
   // Buy a stock
@@ -587,20 +608,33 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
     simulatedHoldings: PortfolioHolding[],
     newStock: StockData
   ): number {
-    if (simulatedHoldings.length === 0) return getMetricScore(newStock, metricName);
+    console.log(`\nCalculating weighted ${metricName} score for portfolio with ${simulatedHoldings.length} holdings:`);
+    
+    if (simulatedHoldings.length === 0) {
+      const directScore = getMetricScore(newStock, metricName);
+      console.log(`Empty portfolio - returning direct score for ${newStock.ticker}: ${directScore}`);
+      return directScore;
+    }
     
     let weightedScore = 0;
     let totalWeight = 0;
     
+    console.log(`${metricName.charAt(0).toUpperCase() + metricName.slice(1)} calculation:`);
     simulatedHoldings.forEach(holding => {
       const metricScore = getMetricScore(holding.stock, metricName);
       const weight = holding.value;
       
-      weightedScore += metricScore * weight;
+      const contributionToTotal = metricScore * weight;
+      weightedScore += contributionToTotal;
       totalWeight += weight;
+      
+      console.log(`- ${holding.stock.ticker}: score ${metricScore} × weight $${weight.toFixed(2)} = ${contributionToTotal.toFixed(1)}`);
     });
     
-    return totalWeight > 0 ? parseFloat((weightedScore / totalWeight).toFixed(1)) : 0;
+    const finalScore = totalWeight > 0 ? parseFloat((weightedScore / totalWeight).toFixed(1)) : 0;
+    console.log(`Total weighted score: ${weightedScore.toFixed(1)} / total weight $${totalWeight.toFixed(2)} = ${finalScore}`);
+    
+    return finalScore;
   }
   
   // Context value
