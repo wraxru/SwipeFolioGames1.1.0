@@ -57,50 +57,46 @@ export default function OverallAnalysisCard({ ticker, name, rating, analysis }: 
 
   return (
     <Card 
-      className="border border-slate-100 bg-white rounded-xl shadow-sm overflow-hidden"
-      style={{
-        boxShadow: rating >= 8 ? '0 0 15px rgba(34, 197, 94, 0.03)' :
-                  rating >= 6 ? '0 0 15px rgba(6, 182, 212, 0.03)' :
-                  rating >= 4 ? '0 0 15px rgba(234, 179, 8, 0.03)' :
-                  '0 0 15px rgba(239, 68, 68, 0.03)'
-      }}
+      className="border border-slate-100 bg-white rounded-lg overflow-hidden"
     >
-      <CardHeader className="pb-2 border-b border-slate-100">
-        <CardTitle className="text-xl font-bold flex items-center gap-2 text-slate-800">
+      <CardHeader className="py-3 px-4">
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-base font-semibold flex items-center gap-2 text-slate-800">
+            Analysis Overview
+          </CardTitle>
+          
           <div className={cn(
-            "flex items-center justify-center p-1.5 rounded-full bg-gradient-to-br", 
-            getRatingGradient(rating),
-            "border",
-            getRatingBorder(rating),
-            "shadow-sm"
-          )}>
-            <RatingIcon />
-          </div>
-          Overall Analysis
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="pt-4">
-        <div className="mb-4 flex items-center gap-3">
-          <div className={cn(
-            "text-sm px-3 py-1.5 rounded-full font-medium flex items-center gap-1.5 shadow-sm",
-            "bg-gradient-to-r",
-            getRatingGradient(rating),
+            "text-xs px-2 py-0.5 rounded-full font-medium flex items-center gap-1",
             getRatingColor(rating),
             "border",
-            getRatingBorder(rating)
+            getRatingBorder(rating),
+            getRatingBackground(rating)
           )}>
             <RatingIcon />
             <span>{getRatingText(rating)} ({rating}/10)</span>
           </div>
         </div>
-        
-        <div className="space-y-4">
-          {/* Company identification */}
-          <h3 className="font-bold text-lg text-slate-800">{name} <span className="text-slate-500">({ticker})</span></h3>
+      </CardHeader>
+      <CardContent className="pt-0 px-4 pb-4">
+        <div className="space-y-3">          
+          {/* Analysis paragraph - minimalist styling */}
+          <div className="bg-slate-50/70 p-3 rounded-lg border border-slate-100">
+            <p className="text-slate-600 text-xs leading-relaxed">{analysis}</p>
+          </div>
           
-          {/* Analysis paragraph - styled with a container */}
-          <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 shadow-sm">
-            <p className="text-slate-600 text-sm leading-relaxed">{analysis}</p>
+          {/* Key Insight box - new Robinhood-style feature */}
+          <div className="mt-3 bg-sky-50/50 p-3 rounded-lg border border-sky-100">
+            <div className="flex gap-2 items-start">
+              <div className="text-sky-500 bg-sky-50 border border-sky-100 w-8 h-8 min-w-8 flex items-center justify-center rounded-full">
+                <Lightbulb className="w-4 h-4" />
+              </div>
+              <div>
+                <h4 className="text-xs font-medium text-slate-800 mb-1">Key Insight</h4>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  {name} is currently rated {getRatingText(rating).toLowerCase()} based on financial performance, market conditions, and growth potential.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </CardContent>

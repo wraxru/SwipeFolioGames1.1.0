@@ -358,15 +358,15 @@ export default function RealTimeStockCard({
         animate={cardControls}
         style={{ x, opacity: cardOpacity, rotateZ: cardRotate }}
       >
-        {/* Time Frame Selector */}
-        <div className="flex justify-between px-4 py-3 border-b border-slate-100 bg-white">
+        {/* Time Frame Selector - Updated with Robinhood style */}
+        <div className="flex justify-center space-x-1 px-4 py-3 border-b border-slate-100 bg-white">
           {["1D", "5D", "1M", "6M", "YTD", "1Y", "5Y", "MAX"].map((period) => (
             <button
               key={period}
-              className={`px-2 py-1.5 rounded-md transition-all duration-200 ${
+              className={`px-3 py-1 text-xs rounded-full transition-all duration-200 ${
                 timeFrame === period 
-                  ? "text-sky-500 font-bold border-b-2 border-sky-500 bg-sky-50" 
-                  : "text-slate-500 hover:bg-slate-50"
+                  ? `${realTimeChange >= 0 ? 'text-green-600 bg-green-50 border border-green-100' : 'text-red-600 bg-red-50 border border-red-100'} font-medium` 
+                  : 'text-slate-500 hover:bg-slate-50 border border-transparent'
               }`}
               onClick={() => setTimeFrame(period as TimeFrame)}
             >
@@ -480,9 +480,9 @@ export default function RealTimeStockCard({
             </div>
           </div>
           
-          {/* Description bubble */}
-          <div className="p-3 bg-slate-50 rounded-lg border border-slate-100 shadow-sm">
-            <p className="text-sm text-slate-600 leading-relaxed">
+          {/* Description bubble - Cleaner style */}
+          <div className="mt-2 p-3 bg-slate-50/70 rounded-lg border border-slate-100">
+            <p className="text-xs text-slate-600 leading-relaxed">
               {companyData?.Description || stock.description}
             </p>
           </div>
@@ -525,32 +525,32 @@ export default function RealTimeStockCard({
           })}
         </div>
 
-        {/* Stock Synopsis */}
+        {/* Stock Synopsis - Cleaner Robinhood-style */}
         <div className="p-4 border-b border-slate-100 bg-white">
-          <h3 className="font-bold text-lg mb-4 flex items-center text-slate-800">
-            Stock Synopsis
-            <span className="ml-2 text-xs text-sky-500 bg-sky-50 px-2 py-1 rounded-full border border-sky-100 shadow-sm">
-              AI-generated
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="font-semibold text-base text-slate-800">Stock Synopsis</h3>
+            <span className="text-xs text-sky-500 bg-sky-50 px-2 py-0.5 rounded-full border border-sky-100">
+              AI Analysis
             </span>
-          </h3>
-          <div className="space-y-4">
-            {/* Price */}
-            <div className="flex gap-3 bg-white p-4 rounded-xl border border-slate-100 hover:border-sky-100 transition-all shadow-sm hover:shadow-md">
-              <div className={`${realTimeChange >= 0 ? 'text-green-500 bg-green-50 border-green-100' : 'text-red-500 bg-red-50 border-red-100'} w-12 h-12 min-w-12 flex items-center justify-center rounded-full shadow-sm border`}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          </div>
+          <div className="space-y-3">
+            {/* Price - Minimalist with clean lines */}
+            <div className="flex gap-3 bg-white p-3 rounded-lg border border-slate-100 hover:border-slate-200 transition-all duration-200">
+              <div className={`${realTimeChange >= 0 ? 'text-green-500 bg-green-50 border-green-100' : 'text-red-500 bg-red-50 border-red-100'} w-10 h-10 min-w-10 flex items-center justify-center rounded-full border`}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
                 </svg>
               </div>
               <div className="flex-1">
-                <div className="font-bold text-slate-800 text-base">Price Trend</div>
-                <div className="text-sm text-slate-600 mt-1 leading-relaxed">{stock.synopsis.price}</div>
+                <div className="font-medium text-slate-800 text-sm">Price Trend</div>
+                <div className="text-xs text-slate-600 mt-1 leading-relaxed">{stock.synopsis.price}</div>
               </div>
             </div>
             
-            {/* Company */}
-            <div className="flex gap-3 bg-white p-4 rounded-xl border border-slate-100 hover:border-sky-100 transition-all shadow-sm hover:shadow-md">
-              <div className="text-sky-500 bg-sky-50 border-sky-100 w-12 h-12 min-w-12 flex items-center justify-center rounded-full shadow-sm border">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            {/* Company - Minimalist with clean lines */}
+            <div className="flex gap-3 bg-white p-3 rounded-lg border border-slate-100 hover:border-slate-200 transition-all duration-200">
+              <div className="text-sky-500 bg-sky-50 border-sky-100 w-10 h-10 min-w-10 flex items-center justify-center rounded-full border">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <rect width="16" height="20" x="4" y="2" rx="2" ry="2" />
                   <path d="M9 22v-4h6v4" />
                   <path d="M8 6h.01" />
@@ -565,22 +565,22 @@ export default function RealTimeStockCard({
                 </svg>
               </div>
               <div className="flex-1">
-                <div className="font-bold text-slate-800 text-base">Company News</div>
-                <div className="text-sm text-slate-600 mt-1 leading-relaxed">{stock.synopsis.company}</div>
+                <div className="font-medium text-slate-800 text-sm">Company News</div>
+                <div className="text-xs text-slate-600 mt-1 leading-relaxed">{stock.synopsis.company}</div>
               </div>
             </div>
             
-            {/* Role */}
-            <div className="flex gap-3 bg-white p-4 rounded-xl border border-slate-100 hover:border-sky-100 transition-all shadow-sm hover:shadow-md">
-              <div className="text-sky-500 bg-sky-50 border-sky-100 w-12 h-12 min-w-12 flex items-center justify-center rounded-full shadow-sm border">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            {/* Role - Minimalist with clean lines */}
+            <div className="flex gap-3 bg-white p-3 rounded-lg border border-slate-100 hover:border-slate-200 transition-all duration-200">
+              <div className="text-sky-500 bg-sky-50 border-sky-100 w-10 h-10 min-w-10 flex items-center justify-center rounded-full border">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7Z" />
                   <path d="M16.5 16 15 20h-6l-1.5-4" />
                 </svg>
               </div>
               <div className="flex-1">
-                <div className="font-bold text-slate-800 text-base">Portfolio Role</div>
-                <div className="text-sm text-slate-600 mt-1 leading-relaxed">{stock.synopsis.role}</div>
+                <div className="font-medium text-slate-800 text-sm">Portfolio Role</div>
+                <div className="text-xs text-slate-600 mt-1 leading-relaxed">{stock.synopsis.role}</div>
               </div>
             </div>
           </div>
