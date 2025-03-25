@@ -73,10 +73,21 @@ export const calculatePerformanceScore = (
   console.log(`- Profit Margin market weight: ${profitMarginMarketWeight.toFixed(2)}`);
   console.log(`- ROC market weight: ${rocMarketWeight.toFixed(2)}`);
   
-  // Step 3: Apply weightings according to formula (40% rev growth, 30% profit margin, 30% ROC)
-  const revContribution = 0.4 * revGrowthCapped * revGrowthMarketWeight;
-  const profitContribution = 0.3 * profitMarginCapped * profitMarginMarketWeight;
-  const rocContribution = 0.3 * rocCapped * rocMarketWeight;
+  // Step 3: Apply weightings according to formula:
+  // 40% * (Rev Growth stock/industry) * (rev growth industry/market)
+  // 30% * (Profit margin stock/industry) * (PM industry/market)  
+  // 30% * (ROC stock/industry) * (ROC industry/market)
+  const revGrowthStockIndustry = stockMetrics.revenueGrowth / industryAvgs.revenueGrowth;
+  const revGrowthIndustryMarket = industryAvgs.revenueGrowth / marketAverages.performance.revenueGrowth;
+  const revContribution = 0.4 * revGrowthStockIndustry * revGrowthIndustryMarket;
+
+  const pmStockIndustry = stockMetrics.profitMargin / industryAvgs.profitMargin;
+  const pmIndustryMarket = industryAvgs.profitMargin / marketAverages.performance.profitMargin;
+  const profitContribution = 0.3 * pmStockIndustry * pmIndustryMarket;
+
+  const rocStockIndustry = stockMetrics.returnOnCapital / industryAvgs.returnOnCapital;
+  const rocIndustryMarket = industryAvgs.returnOnCapital / marketAverages.performance.returnOnCapital;
+  const rocContribution = 0.3 * rocStockIndustry * rocIndustryMarket;
   
   console.log(`- Rev Growth contribution: ${revContribution.toFixed(2)}`);
   console.log(`- Profit Margin contribution: ${profitContribution.toFixed(2)}`);
@@ -255,9 +266,16 @@ export const calculateMomentumScore = (
   console.log(`- 3-Month Return market weight: ${threeMonthReturnMarketWeight.toFixed(2)}`);
   console.log(`- RSI market weight: ${rsiMarketWeight.toFixed(2)}`);
   
-  // Step 3: Apply weightings: 50% 3-month return, 50% RSI
-  const threeMonthContribution = 0.5 * threeMonthReturnNormalized * (industryAvgs.threeMonthReturn / marketAverages.momentum.threeMonthReturn);
-  const rsiContribution = 0.5 * rsiNormalized * (industryAvgs.rsi / marketAverages.momentum.rsi);
+  // Step 3: Apply weightings according to formula:
+  // 50% * (3-month return stock/industry normalized) * (3-month return industry/market normalized)
+  // 50% * (RSI stock/industry normalized) * (RSI industry/market normalized)
+  const threeMonthStockIndustry = stockMetrics.threeMonthReturn / industryAvgs.threeMonthReturn;
+  const threeMonthIndustryMarket = industryAvgs.threeMonthReturn / marketAverages.momentum.threeMonthReturn;
+  const threeMonthContribution = 0.5 * threeMonthStockIndustry * threeMonthIndustryMarket;
+
+  const rsiStockIndustry = stockMetrics.rsi / industryAvgs.rsi;
+  const rsiIndustryMarket = industryAvgs.rsi / marketAverages.momentum.rsi;
+  const rsiContribution = 0.5 * rsiStockIndustry * rsiIndustryMarket;
   
   console.log(`- 3-Month Return contribution: ${threeMonthContribution.toFixed(2)}`);
   console.log(`- RSI contribution: ${rsiContribution.toFixed(2)}`);
