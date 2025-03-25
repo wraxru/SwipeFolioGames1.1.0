@@ -290,5 +290,33 @@
 .invest-button {
   @apply w-full rounded-xl py-4 bg-gradient-to-r from-green-400 to-emerald-500 text-white 
   font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-300
-  hover:translate-y-[-2px] active:translate-y-[1px];
+  hover:translate-y-[-2px] active:translate-y-[1px] relative overflow-hidden;
+}
+
+/* Slide-to-invest effects */
+.slide-to-invest-container {
+  @apply relative w-full h-14 rounded-xl overflow-hidden bg-gradient-to-r from-slate-100/50 to-white/80
+  border border-slate-200 shadow-inner;
+}
+
+.slide-track {
+  @apply absolute top-0 left-0 right-0 bottom-0 flex items-center px-4;
+}
+
+.slider-thumb {
+  @apply h-10 w-16 sm:w-20 rounded-lg bg-gradient-to-r from-green-400 to-emerald-500 
+  shadow-md flex items-center justify-center text-white font-semibold 
+  cursor-grab active:cursor-grabbing z-10;
+  touch-action: none;
+}
+
+.slider-hint {
+  @apply absolute inset-0 flex items-center justify-center text-slate-500 text-base font-medium
+  select-none pointer-events-none z-0;
+}
+
+.slide-success {
+  @apply absolute inset-0 flex items-center justify-center bg-gradient-to-r 
+  from-green-400 to-emerald-500 text-white font-bold text-base opacity-0 z-20
+  transition-opacity duration-300;
 }

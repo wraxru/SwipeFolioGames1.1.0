@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { X, DollarSign, ChevronDown, ChevronUp, ChevronRight, Info, TrendingUp, Shield, Zap } from "lucide-react";
+import React, { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence, useMotionValue, useTransform, useSpring } from "framer-motion";
+import { X, DollarSign, ChevronDown, ChevronUp, ChevronRight, Info, TrendingUp, Shield, Zap, ArrowRight, Check } from "lucide-react";
 import { StockData } from "@/lib/stock-data";
 import { usePortfolio } from "@/contexts/portfolio-context";
 import { cn } from "@/lib/utils";
@@ -247,20 +247,30 @@ export default function PortfolioImpactCalculator({
                     </svg>
                   </div>
                   
-                  {/* Legend - positioned below chart for better visibility */}
+                  {/* Legend - moved to the left for better visibility and with background labels */}
                   {Object.entries(impact.industryAllocation).length > 0 && (
-                    <div className="absolute top-[65%] left-1/2 transform -translate-x-1/2 text-sm bg-white p-1.5 rounded-md shadow-sm border border-slate-100 flex items-center">
+                    <div className="absolute top-[50%] -translate-y-1/2 left-2 text-sm flex flex-col gap-2">
                       {Object.entries(impact.industryAllocation).map(([industry, allocation], index) => {
                         const colors = ["#06b6d4", "#8b5cf6", "#fbbf24", "#34d399", "#f87171"];
                         const color = colors[index % colors.length];
                         
-                        // Only show legend items with actual values
+                        // Only show legend items with actual values and handle Real Estate positioning separately
                         return allocation.new > 0 ? (
-                          <div key={industry} className="flex items-center mx-1.5 font-medium">
+                          <div 
+                            key={industry} 
+                            className={cn(
+                              "flex items-center px-2 py-1 rounded-md shadow-sm font-medium",
+                              industry === "Real Estate" ? "bg-white/90 border border-slate-100" : "bg-white/90 border border-slate-100"
+                            )}
+                            style={{
+                              // Adjust Real Estate position to not cover the pie chart
+                              marginLeft: industry === "Real Estate" ? "-10px" : "0px"
+                            }}
+                          >
                             <div className="w-3 h-3 rounded-full mr-1.5" style={{ backgroundColor: color }}></div>
                             <div className="flex flex-col items-start">
                               <div className="flex items-center">
-                                <span className="mr-1 text-xs text-slate-700">{industry}</span>
+                                <span className="mr-1 text-xs text-slate-700 font-medium">{industry}</span>
                                 <span className="font-bold text-xs text-slate-900">{formatPercentage(allocation.new)}</span>
                               </div>
                               {/* Only show change indicator when there's a difference */}
@@ -393,68 +403,31 @@ export default function PortfolioImpactCalculator({
                   </div>
                 </div>
                 
-                {/* Invest Button - Enhanced with delightful animations */}
-                <motion.button
-                  className="invest-button"
-                  onClick={handleInvest}
-                  disabled={isLoading || investmentAmount <= 0 || investmentAmount > cash}
-                  whileTap={{ scale: 0.95 }}
-                  whileHover={{ 
-                    scale: 1.02,
-                    boxShadow: "0 15px 30px rgba(0, 0, 0, 0.15)"
-                  }}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ 
-                    opacity: 1, 
-                    y: 0,
-                    transition: { 
-                      delay: 0.1,
-                      duration: 0.4, 
-                      ease: [0.23, 1, 0.32, 1] 
-                    }
-                  }}
-                >
-                  {isLoading ? (
-                    <motion.div 
-                      animate={{ 
-                        scale: [1, 1.05, 1],
-                        opacity: [0.8, 1, 0.8]
-                      }}
-                      transition={{ 
-                        repeat: Infinity,
-                        duration: 1.5
-                      }}
-                      className="flex items-center"
-                    >
-                      <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                      Processing...
-                    </motion.div>
-                  ) : (
-                    <motion.div 
-                      className="flex items-center gap-2"
-                      initial={{ x: 0 }}
-                      whileHover={{ x: 5 }}
-                      transition={{ duration: 0.3 }}
-                    >
-                      <span>Invest</span>
-                      <motion.div
-                        animate={{ 
-                          x: [0, 4, 0],
-                        }}
-                        transition={{ 
-                          repeat: Infinity,
-                          duration: 1.5,
-                          ease: "easeInOut"
-                        }}
-                      >
-                        <ChevronRight size={20} />
-                      </motion.div>
-                    </motion.div>
-                  )}
-                </motion.button>
+                {/* Slide-to-Invest Component - More interactive and engaging */}
+                {isLoading ? (
+                  <motion.div 
+                    className="invest-button flex items-center justify-center"
+                    animate={{ 
+                      scale: [1, 1.02, 1],
+                      opacity: [0.9, 1, 0.9]
+                    }}
+                    transition={{ 
+                      repeat: Infinity,
+                      duration: 1.5
+                    }}
+                  >
+                    <svg className="animate-spin mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Processing...
+                  </motion.div>
+                ) : (
+                  <SlideToInvest 
+                    onComplete={handleInvest}
+                    disabled={investmentAmount <= 0 || investmentAmount > cash}
+                  />
+                )}
               </div>
             </div>
           </motion.div>
