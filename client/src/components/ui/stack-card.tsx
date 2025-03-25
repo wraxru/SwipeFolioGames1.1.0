@@ -24,7 +24,7 @@ export default function StackCard({ stack, onClick, imageUrl, category }: StackC
       "from-pink-500 to-rose-600", // Crypto
       "from-indigo-500 to-blue-600", // Stocks
     ];
-    
+
     const index = stack.id % gradients.length;
     return gradients[index];
   };
@@ -40,50 +40,50 @@ export default function StackCard({ stack, onClick, imageUrl, category }: StackC
       <div className="relative h-36 overflow-hidden">
         {/* Image with overlay gradient */}
         <div className="absolute inset-0 bg-black/30 z-10" />
-        
+
         <div 
           className="w-full h-full bg-cover bg-center" 
           style={{ 
             backgroundImage: imageUrl ? `url(${imageUrl})` : 'none'
           }}
         />
-        
+
         {/* Decorative gradient band */}
         <div className={`absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r ${getGradient()}`} />
-        
+
         {/* Category badge */}
         {category && (
           <div className="absolute top-3 left-3 bg-black/60 border border-gray-700 backdrop-blur-sm rounded-full px-3 py-1 text-xs font-medium z-20 text-white">
             {category}
           </div>
         )}
-        
+
         {/* Rating */}
         <div className="absolute bottom-3 left-3 bg-black/60 backdrop-blur-sm rounded-full px-3 py-1 flex items-center space-x-1 text-xs z-20 border border-gray-700">
           <Star className="w-3 h-3 text-yellow-400" />
           <span className="text-white">{stack.rating}.0</span>
         </div>
-        
+
         {/* Card count */}
         <div className="absolute bottom-3 right-3 bg-black/60 backdrop-blur-sm border border-gray-700 rounded-full px-3 py-1 flex items-center space-x-1 text-xs z-20">
           <BarChart2 className="w-3 h-3 text-cyan-400" />
           <span className="text-white">{stack.cardCount || 10} stocks</span>
         </div>
       </div>
-      
+
       {/* Card Body */}
       <div className="px-4 py-3 flex-1 flex flex-col justify-between">
         {/* Title with icon */}
         <div>
           <div className="flex items-start justify-between">
-            <h3 className="font-bold text-lg text-white leading-tight">{stack.title}</h3>
+            <h3 className="font-bold text-lg text-gray-800 leading-tight">{stack.title}</h3> {/* Changed text color here */}
             <div className="p-1.5 rounded-full bg-gray-800">
               <TrendingUp className="w-4 h-4 text-cyan-400" />
             </div>
           </div>
           <p className="text-xs text-gray-400 mt-1 line-clamp-2">{stack.description}</p>
         </div>
-        
+
         {/* Bottom badges */}
         <div className="mt-3 flex items-center space-x-2">
           <div className={`badge ${
@@ -93,8 +93,6 @@ export default function StackCard({ stack, onClick, imageUrl, category }: StackC
           } text-xs px-2 py-1 rounded-full border`}>
             {stack.difficulty || 'intermediate'}
           </div>
-          
-          
         </div>
       </div>
     </motion.div>
