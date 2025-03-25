@@ -360,7 +360,7 @@ const hardcodedStocks: Record<string, StockData[]> = {
     {
       name: "Prologis Inc.",
       ticker: "PLD",
-      price: 127.85,
+      price: 110.26,
       change: 0.65,
       rating: 4.3,
       description: "Global leader in logistics real estate with a focus on high-barrier, high-growth markets.",
@@ -369,9 +369,9 @@ const hardcodedStocks: Record<string, StockData[]> = {
           value: "Good", 
           color: "green",
           details: {
-            revenueGrowth: 8.5,
-            profitMargin: 39.7,
-            returnOnCapital: 10.2
+            revenueGrowth: 2.2,
+            profitMargin: 45.4,
+            returnOnCapital: 4.3
           },
           explanation: "Prologis demonstrates solid performance with 8.5% revenue growth, exceeding the real estate sector average of 6.0%. Its excellent profit margin of 39.7% significantly outperforms the industry benchmark of 35.0%, while its strong 10.2% return on capital surpasses the 9.0% industry standard, reflecting its strategic focus on high-value logistics properties in key markets."
         },
@@ -379,9 +379,9 @@ const hardcodedStocks: Record<string, StockData[]> = {
           value: "High", 
           color: "green",
           details: {
-            volatility: 0.75,
-            beta: 0.85,
-            dividendConsistency: "High"
+            volatility: 2.5,
+            beta: 1.24,
+            dividendConsistency: "Average"
           },
           explanation: "Prologis offers exceptional stability with significantly lower volatility (0.75) than the real estate industry average (0.8). Its beta of 0.85 indicates lower market sensitivity than peers. High dividend consistency reflects its reliable income stream from long-term leases with high-quality tenants, providing dependable income for investors."
         },
@@ -389,9 +389,9 @@ const hardcodedStocks: Record<string, StockData[]> = {
           value: "Fair", 
           color: "yellow",
           details: {
-            peRatio: 17.8,
-            pbRatio: 2.0,
-            dividendYield: 3.2
+            peRatio: 28,
+            pbRatio: 1.9,
+            dividendYield: 3.7
           },
           explanation: "Prologis trades at a modest premium with a PE ratio of 17.8 versus the real estate industry average of 16.0, reflecting its quality and growth profile. The price-to-book ratio of 2.0 slightly exceeds the industry's 1.8, indicating investors' willingness to pay for its premium portfolio. Its dividend yield of 3.2% beats the sector's 3.0%, offering an attractive income component."
         },
@@ -399,9 +399,9 @@ const hardcodedStocks: Record<string, StockData[]> = {
           value: "Fair", 
           color: "yellow",
           details: {
-            threeMonthReturn: 2.8,
-            relativePerformance: 0.3,
-            rsi: 52
+            threeMonthReturn: .061,
+            relativePerformance: -2,
+            rsi: 37.4
           },
           explanation: "Prologis shows moderate momentum with a three-month return of 2.8%, slightly outperforming the real estate sector average of 2.5%. Its relative performance of 0.3 indicates modest outperformance versus peers. With an RSI of 52, the stock is in balanced territory, suggesting steady investor interest without excessive enthusiasm or pessimism."
         }

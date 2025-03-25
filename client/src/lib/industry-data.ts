@@ -133,24 +133,24 @@ export const industryAverages: Record<string, {
   },
   "Real Estate": {
     performance: {
-      revenueGrowth: 6,
-      profitMargin: 15,
-      returnOnCapital: 9
+      revenueGrowth: 5,
+      profitMargin: 25,
+      returnOnCapital: 4.5
     },
     stability: {
-      volatility: 0.8,
-      beta: 0.8,
-      dividendConsistency: "High"
+      volatility: 2.5,
+      beta: 1,
+      dividendConsistency: "Medium"
     },
     value: {
-      peRatio: 16.0,
-      pbRatio: 1.8,
-      dividendYield: 3.0
+      peRatio: 36.0,
+      pbRatio: 2.5,
+      dividendYield: 4.0
     },
     momentum: {
-      threeMonthReturn: 2.5,
-      relativePerformance: 0.5,
-      rsi: 52
+      threeMonthReturn: .02,
+      relativePerformance: -5,
+      rsi: 49
     }
   },
   // Default values for other categories
