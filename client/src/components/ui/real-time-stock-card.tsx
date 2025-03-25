@@ -550,13 +550,33 @@ export default function RealTimeStockCard({
                       'bg-gradient-to-r from-red-400 to-rose-500'}`}>
                     </div>
                     
-                    {/* Info Icon */}
+                    {/* Unique Icon for each metric type */}
                     <div className="absolute top-2 right-2">
-                      <Info size={16} className={`${
-                        metricObj.color === 'green' ? 'text-green-500' :
-                        metricObj.color === 'yellow' ? 'text-amber-500' : 
-                        'text-red-500'
-                      }`} />
+                      {metricName === 'Performance' ? (
+                        <TrendingUp size={16} className={`${
+                          metricObj.color === 'green' ? 'text-green-500' :
+                          metricObj.color === 'yellow' ? 'text-amber-500' : 
+                          'text-red-500'
+                        }`} />
+                      ) : metricName === 'Value' ? (
+                        <DollarSign size={16} className={`${
+                          metricObj.color === 'green' ? 'text-green-500' :
+                          metricObj.color === 'yellow' ? 'text-amber-500' : 
+                          'text-red-500'
+                        }`} />
+                      ) : metricName === 'Stability' ? (
+                        <Shield size={16} className={`${
+                          metricObj.color === 'green' ? 'text-green-500' :
+                          metricObj.color === 'yellow' ? 'text-amber-500' : 
+                          'text-red-500'
+                        }`} />
+                      ) : (
+                        <Zap size={16} className={`${
+                          metricObj.color === 'green' ? 'text-green-500' :
+                          metricObj.color === 'yellow' ? 'text-amber-500' : 
+                          'text-red-500'
+                        }`} />
+                      )}
                     </div>
                     
                     {/* Decorative bubble in corner */}
@@ -704,26 +724,29 @@ export default function RealTimeStockCard({
                 {/* Common background with slight highlight */}
                 <div className="absolute inset-0 bg-gradient-to-br from-amber-50/20 to-yellow-50/20 rounded-xl opacity-30"></div>
                 
-                {/* 1-Year Return */}
+                {/* 1-Year Return - Redesigned for prominence */}
                 {stock.oneYearReturn && (
                   <div className="p-4 border-b border-slate-100 relative">
                     <div className="flex items-center gap-4">
                       <div className={`${parseFloat(stock.oneYearReturn) >= 0 ? 'text-white bg-gradient-to-br from-green-400 to-green-600' : 'text-white bg-gradient-to-br from-red-400 to-red-600'} 
                         w-12 h-12 min-w-12 flex items-center justify-center rounded-lg shadow-md`}>
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
-                          <polyline points="16 7 22 7 22 13"></polyline>
+                          {/* Calendar icon for 1-Year Return */}
+                          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                          <line x1="16" y1="2" x2="16" y2="6"></line>
+                          <line x1="8" y1="2" x2="8" y2="6"></line>
+                          <line x1="3" y1="10" x2="21" y2="10"></line>
+                          {parseFloat(stock.oneYearReturn) >= 0 ? 
+                            <polyline points="12 14 12 18 16 18"></polyline> : 
+                            <polyline points="12 18 12 14 8 14"></polyline>}
                         </svg>
                       </div>
                       <div className="flex-1 relative">
-                        <div className="font-bold text-slate-800 text-base flex items-center">
+                        <div className="font-bold text-slate-800 text-base">
                           1-Year Return
-                          <div className={`ml-2 text-xs px-2 py-0.5 rounded-full ${parseFloat(stock.oneYearReturn) >= 0 ? 'text-green-600 bg-green-50 border border-green-100' : 'text-red-600 bg-red-50 border border-red-100'}`}>
-                            {stock.oneYearReturn}
-                          </div>
                         </div>
-                        <div className="text-sm text-slate-600 mt-1.5 leading-relaxed">
-                          Historical performance over the past 12 months shows {parseFloat(stock.oneYearReturn) >= 0 ? "positive" : "negative"} returns.
+                        <div className={`text-2xl font-bold mt-1 ${parseFloat(stock.oneYearReturn) >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                          {stock.oneYearReturn}
                         </div>
                       </div>
                     </div>
@@ -737,9 +760,11 @@ export default function RealTimeStockCard({
                       <div className="text-white bg-gradient-to-br from-blue-400 to-blue-600 
                         w-12 h-12 min-w-12 flex items-center justify-center rounded-lg shadow-md">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          {/* Crystal ball / prediction icon */}
                           <circle cx="12" cy="12" r="10"/>
-                          <path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/>
-                          <path d="M12 18V6"/>
+                          <path d="M12 8v4l3 3"/>
+                          <path d="M7 19.4a6 6 0 0 1-2.4-8.4"/>
+                          <path d="M17 19.4a6 6 0 0 0 2.4-8.4"/>
                         </svg>
                       </div>
                       <div className="flex-1 relative">
