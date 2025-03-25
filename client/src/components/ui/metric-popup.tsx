@@ -79,6 +79,7 @@ interface MetricPopupProps {
     }[];
     industry: string;
     explanation?: string;
+    name?: string; // Company name
   };
 }
 
@@ -312,33 +313,53 @@ export default function MetricPopup({
                             {/* Metric comparison */}
                             <div className="flex items-center justify-between w-full mt-2">
                               <div className="flex flex-col items-center">
-                                <span className="text-xs text-slate-500 mb-1.5 font-medium">Company</span>
-                                <div className={`px-4 py-2 rounded-lg ${bgColorClass} ${textColorClass} font-bold text-base flex items-center justify-center min-w-20 shadow-sm border ${borderColorClass}`}>
+                                <span className="text-xs text-slate-500 mb-1.5 font-semibold">{metricData.name || "Company"}</span>
+                                <div className={`px-5 py-3 rounded-lg ${bgColorClass} ${textColorClass} font-bold text-xl flex items-center justify-center min-w-24 shadow-md border ${borderColorClass}`}
+                                  style={{
+                                    boxShadow: comparisonColor === "green" ? "0 4px 10px rgba(34, 197, 94, 0.2)" : 
+                                             comparisonColor === "yellow" ? "0 4px 10px rgba(245, 158, 11, 0.2)" :
+                                             "0 4px 10px rgba(239, 68, 68, 0.2)"
+                                  }}>
                                   {item.value}{item.suffix || ""}
                                 </div>
                               </div>
                               
-                              {/* Display comparison symbol instead of arrow */}
-                              <ComparisonSymbol 
-                                symbol={getComparisonSymbol(
-                                  item.value, 
-                                  item.industry || industryAvg,
-                                  isMetricBetterWhenLower(item.label)
-                                )} 
-                                color={comparisonColor} 
-                              />
+                              {/* Display comparison symbol with correct orientation */}
+                              <div className="flex flex-col items-center justify-center">
+                                <div className={`${getColorClass(comparisonColor)} font-bold text-2xl flex items-center justify-center mx-2 p-1.5 rounded-full bg-white shadow-sm`}>
+                                  {(() => {
+                                    // Use correct arrows based on actual numeric values 
+                                    const numValue = typeof item.value === 'string' ? parseFloat(item.value) : item.value;
+                                    const industryValue = item.industry || industryAvg;
+                                    const numIndustry = typeof industryValue === 'string' ? parseFloat(industryValue) : 
+                                                        (typeof industryValue === 'number' ? industryValue : 0);
+                                    
+                                    if (isNaN(numValue) || isNaN(numIndustry)) {
+                                      return <Minus size={24} className={getColorClass(comparisonColor)} />;
+                                    }
+                                    
+                                    if (numValue > numIndustry) {
+                                      return <ChevronUp size={24} className={getColorClass(comparisonColor)} />;
+                                    } else if (numValue < numIndustry) {
+                                      return <ChevronDown size={24} className={getColorClass(comparisonColor)} />;
+                                    } else {
+                                      return <Minus size={24} className={getColorClass(comparisonColor)} />;
+                                    }
+                                  })()}
+                                </div>
+                              </div>
                               
                               <div className="flex flex-col items-center">
-                                <span className="text-xs text-slate-500 mb-1.5 font-medium">Industry Avg</span>
-                                <div className="px-4 py-2 rounded-lg bg-slate-50 text-slate-600 font-bold text-base flex items-center justify-center min-w-20 shadow-sm border border-slate-200">
+                                <span className="text-xs text-slate-500 mb-1.5 font-semibold">Industry Average</span>
+                                <div className="px-5 py-3 rounded-lg bg-slate-50 text-slate-600 font-bold text-xl flex items-center justify-center min-w-24 shadow-md border border-slate-200"
+                                  style={{ boxShadow: "0 4px 10px rgba(0, 0, 0, 0.05)" }}>
                                   {item.industry || industryAvg}{item.suffix || ""}
                                 </div>
                               </div>
                             </div>
                             
-                            {/* Metric Definition */}
-                            <div className="mt-3 bg-slate-50 rounded-lg p-3 text-xs text-slate-600 leading-relaxed border border-slate-100">
-                              <span className="font-medium text-slate-700">What this means: </span>
+                            {/* Metric Definition - without "What this means" label */}
+                            <div className="mt-3 bg-slate-50 rounded-lg p-3 text-xs text-slate-600 leading-relaxed border border-slate-100 shadow-sm">
                               {item.label === "P/E Ratio" && 
                                 "How many dollars you pay for each dollar the company earns per year; a higher number often means the stock is more 'expensive.'"}
                               
