@@ -158,7 +158,7 @@ export default function MetricPopup({
             onClick={onClose}
           />
           
-          {/* Modal */}
+          {/* Modal - Robinhood-inspired */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -166,29 +166,32 @@ export default function MetricPopup({
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
             className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none"
           >
-            <div className="bg-white border border-slate-200 rounded-xl shadow-lg overflow-hidden w-[90%] max-w-md m-auto pointer-events-auto"
+            <div className="bg-white border border-slate-200 rounded-lg shadow-lg overflow-hidden w-[90%] max-w-md m-auto pointer-events-auto"
               style={{
-                boxShadow: metricColor === "green" ? '0 10px 25px rgba(34, 197, 94, 0.1)' :
-                          metricColor === "yellow" ? '0 10px 25px rgba(234, 179, 8, 0.1)' :
-                          '0 10px 25px rgba(239, 68, 68, 0.1)'
+                boxShadow: '0 6px 20px rgba(0, 0, 0, 0.08)'
               }}
             >
-              {/* Header */}
-              <div className={`p-4 ${bgColorClass} border-b ${borderColorClass}`}>
-                <div className="flex justify-between items-center">
-                  <h2 className={`text-xl font-bold ${colorClass}`}>
-                    {metricName}: <span className={colorClass}>{metricData.rating}</span>
-                  </h2>
-                  <button 
-                    onClick={onClose}
-                    className="bg-slate-100 p-2 rounded-full text-slate-500 hover:text-slate-800 hover:bg-slate-200 transition-colors shadow-sm"
-                  >
-                    <X size={16} />
-                  </button>
+              {/* Header - Simplified Robinhood style */}
+              <div className="p-3 border-b border-slate-100 flex justify-between items-center">
+                <div className="flex items-center">
+                  <div className={`w-7 h-7 flex items-center justify-center rounded-full mr-2 ${bgColorClass} border ${borderColorClass}`}>
+                    <TrendingUp size={14} className={colorClass} />
+                  </div>
+                  <div>
+                    <h2 className="text-base font-semibold text-slate-800">
+                      {metricName} <span className={`${colorClass} text-sm font-medium`}>• {metricData.rating}</span>
+                    </h2>
+                    <p className="text-xs text-slate-500">
+                      {metricData.industry} industry metrics
+                    </p>
+                  </div>
                 </div>
-                <p className="text-sm text-slate-600 mt-1">
-                  Key metrics for {metricName.toLowerCase()} in the {metricData.industry} industry
-                </p>
+                <button 
+                  onClick={onClose}
+                  className="p-1.5 rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+                >
+                  <X size={16} />
+                </button>
               </div>
               
               {/* Content */}
