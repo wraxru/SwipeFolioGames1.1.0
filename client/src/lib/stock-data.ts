@@ -391,7 +391,7 @@ const hardcodedStocks: Record<string, StockData[]> = {
           value: "Poor",
           color: "red",
           details: {
-            volatility: 2.50,
+            volatility: 8.6,
             beta: 1.24,
             dividendConsistency: "Medium"
           },
@@ -452,7 +452,7 @@ const hardcodedStocks: Record<string, StockData[]> = {
           value: "Average",
           color: "yellow",
           details: {
-            volatility: 2.0,
+            volatility: 6.93,
             beta: 0.82,
             dividendConsistency: "Good"
           },
@@ -512,7 +512,7 @@ const hardcodedStocks: Record<string, StockData[]> = {
           value: "Poor",
           color: "red",
           details: {
-            volatility: 2.6,
+            volatility: 9.01,
             beta: 1.49,
             dividendConsistency: "Poor"
           },
@@ -572,7 +572,7 @@ const hardcodedStocks: Record<string, StockData[]> = {
           value: "Average",
           color: "yellow",
           details: {
-            volatility: 2.0,
+            volatility: 6.93,
             beta: 0.89,
             dividendConsistency: "Good"
           },
@@ -632,7 +632,7 @@ const hardcodedStocks: Record<string, StockData[]> = {
           value: "Average",
           color: "yellow",
           details: {
-            volatility: 2.6,
+            volatility: 9.01,
             beta: 0.8,
             dividendConsistency: "Good"
           },
@@ -692,7 +692,7 @@ const hardcodedStocks: Record<string, StockData[]> = {
           value: "Poor",
           color: "red",
           details: {
-            volatility: 3.1,
+            volatility: 10.74,
             beta: 0.92,
             dividendConsistency: "Good"
           },
@@ -752,7 +752,7 @@ const hardcodedStocks: Record<string, StockData[]> = {
           value: "Average",
           color: "yellow",
           details: {
-            volatility: 2.6,
+            volatility: 9.01,
             beta: 0.89,
             dividendConsistency: "Good"
           },
@@ -812,7 +812,7 @@ const hardcodedStocks: Record<string, StockData[]> = {
           value: "Average",
           color: "yellow",
           details: {
-            volatility: 2.2,
+            volatility: 7.62,
             beta: 0.94,
             dividendConsistency: "Poor"
           },
@@ -872,7 +872,7 @@ const hardcodedStocks: Record<string, StockData[]> = {
           value: "Average",
           color: "yellow",
           details: {
-            volatility: 3.0,
+            volatility: 10.39,
             beta: 1.08,
             dividendConsistency: "Poor"
           },
@@ -932,7 +932,7 @@ const hardcodedStocks: Record<string, StockData[]> = {
           value: "Average",
           color: "yellow",
           details: {
-            volatility: 2.3,
+            volatility: 7.97,
             beta: 0.88,
             dividendConsistency: "Medium"
           },
