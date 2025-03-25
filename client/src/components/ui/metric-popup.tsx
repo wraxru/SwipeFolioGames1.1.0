@@ -1,6 +1,7 @@
 import React from "react";
-import { X, Info, TrendingUp, ArrowRight, PlusCircle, CircleDot } from "lucide-react";
+import { X, Info, TrendingUp, ArrowRight, PlusCircle, CircleDot, ChevronUp, ChevronDown, Minus } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { getComparisonStatus, getComparisonSymbol } from "../../lib/industry-data";
 
 interface MetricPopupProps {
   isOpen: boolean;
@@ -15,7 +16,7 @@ interface MetricPopupProps {
       industry?: string | number; // For industry average comparison
       explanation?: string; // Explanation for this specific metric
     }[];
-    rating: "High" | "Strong" | "Fair" | "Low" | "Unstable" | "Weak" | "Good" | "Average";
+    rating: "High" | "Strong" | "Fair" | "Low" | "Unstable" | "Weak" | "Good" | "Average" | "Poor";
     industryAverage: {
       label: string;
       value: string;
@@ -62,6 +63,38 @@ const getBorderColorClass = (color: "green" | "yellow" | "red") => {
     default:
       return "border-slate-200";
   }
+};
+
+// Function to determine if a metric is better when lower (like P/E ratio, volatility)
+const isMetricBetterWhenLower = (metricLabel: string): boolean => {
+  const lowerIsBetterMetrics = [
+    "P/E Ratio", 
+    "P/B Ratio", 
+    "Volatility", 
+    "Beta"
+  ];
+  return lowerIsBetterMetrics.some(metric => 
+    metricLabel.toLowerCase().includes(metric.toLowerCase())
+  );
+};
+
+// Component to display comparison symbol
+const ComparisonSymbol = ({ 
+  symbol,
+  color
+}: { 
+  symbol: "<" | "=" | ">", 
+  color: "green" | "yellow" | "red" 
+}) => {
+  const textColorClass = getColorClass(color);
+  
+  return (
+    <div className={`flex items-center justify-center ${textColorClass} font-bold text-lg mx-1`}>
+      {symbol === ">" && <ChevronUp size={18} className={textColorClass} />}
+      {symbol === "=" && <Minus size={18} className={textColorClass} />}
+      {symbol === "<" && <ChevronDown size={18} className={textColorClass} />}
+    </div>
+  );
 };
 
 export default function MetricPopup({
@@ -125,23 +158,6 @@ export default function MetricPopup({
       "Value": `Currently trading at valuation multiples that exceed typical ranges for the ${industry} sector. These elevated valuations may indicate the stock is relatively expensive compared to its fundamentals or growth prospects.`,
       "Momentum": `The stock is demonstrating negative price momentum, underperforming both the broader market and sector peers. This downward trajectory often reflects investor concerns or deteriorating fundamentals within the ${industry} sector.`,
     }[metricName] || "This metric shows below-average results, indicating potential challenges for future performance.";
-  };
-
-  // Get value comparison status (better, similar, worse)
-  const getComparisonStatus = (value: number | string, industry: number | string): "green" | "yellow" | "red" => {
-    // Handle string values
-    if (typeof value === 'string' || typeof industry === 'string') {
-      return "yellow"; // Default to neutral for string comparisons
-    }
-    
-    // Handle numeric values
-    // For metrics where higher is better (like revenue growth)
-    if (value > industry * 1.1) return "green";
-    if (value < industry * 0.9) return "red";
-    return "yellow";
-    
-    // Note: In a real implementation, we'd have logic to handle metrics
-    // where lower is better (like volatility) or specific thresholds
   };
 
   return (
@@ -245,7 +261,15 @@ export default function MetricPopup({
                                 </div>
                               </div>
                               
-                              <ArrowRight size={20} className="mx-2 text-slate-400" />
+                              {/* Display comparison symbol instead of arrow */}
+                              <ComparisonSymbol 
+                                symbol={getComparisonSymbol(
+                                  item.value, 
+                                  item.industry || industryAvg,
+                                  isMetricBetterWhenLower(item.label)
+                                )} 
+                                color={comparisonColor} 
+                              />
                               
                               <div className="flex flex-col items-center">
                                 <span className="text-xs text-slate-500 mb-1.5 font-medium">Industry Avg</span>
