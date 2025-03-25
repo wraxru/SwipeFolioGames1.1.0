@@ -141,7 +141,7 @@ const ComparisonSymbol = ({
   symbol,
   color
 }: { 
-  symbol: "<" | "=" | ">", 
+  symbol: "<" | "=" | ">" | "~", 
   color: "green" | "yellow" | "red" 
 }) => {
   const textColorClass = getColorClass(color);
@@ -150,6 +150,7 @@ const ComparisonSymbol = ({
     <div className={`flex items-center justify-center ${textColorClass} font-bold text-lg mx-1`}>
       {symbol === ">" && <ChevronUp size={18} className={textColorClass} />}
       {symbol === "=" && <Minus size={18} className={textColorClass} />}
+      {symbol === "~" && <span className={textColorClass}>~</span>}
       {symbol === "<" && <ChevronDown size={18} className={textColorClass} />}
     </div>
   );
@@ -375,11 +376,11 @@ export default function MetricPopup({
                             <div className="flex items-center justify-between w-full mt-2">
                               <div className="flex flex-col items-center">
                                 <span className="text-xs text-slate-800 mb-1.5 font-semibold">{metricData.name || "Company"}</span>
-                                <div className={`px-5 py-3 rounded-lg ${bgColorClass} ${textColorClass} font-bold text-xl flex items-center justify-center min-w-24 shadow-md border ${borderColorClass}`}
+                                <div className={`px-5 py-3 rounded-lg ${bgColorClass} ${textColorClass} font-bold text-2xl flex items-center justify-center min-w-24 shadow-md border ${borderColorClass} transform hover:scale-105 transition-all duration-150`}
                                   style={{
-                                    boxShadow: comparisonColor === "green" ? "0 4px 10px rgba(34, 197, 94, 0.2)" : 
-                                             comparisonColor === "yellow" ? "0 4px 10px rgba(245, 158, 11, 0.2)" :
-                                             "0 4px 10px rgba(239, 68, 68, 0.2)"
+                                    boxShadow: comparisonColor === "green" ? "0 8px 16px rgba(34, 197, 94, 0.25), 0 2px 4px rgba(34, 197, 94, 0.15)" : 
+                                             comparisonColor === "yellow" ? "0 8px 16px rgba(245, 158, 11, 0.25), 0 2px 4px rgba(245, 158, 11, 0.15)" :
+                                             "0 8px 16px rgba(239, 68, 68, 0.25), 0 2px 4px rgba(239, 68, 68, 0.15)"
                                   }}>
                                   {item.value}{item.suffix || ""}
                                 </div>
@@ -399,12 +400,16 @@ export default function MetricPopup({
                                       return <Minus size={24} className={getColorClass(comparisonColor)} />;
                                     }
                                     
-                                    if (numValue > numIndustry) {
+                                    // Check if numbers are approximately equal (within 5%)
+                                    const ratio = numValue / numIndustry;
+                                    const isApproxEqual = ratio > 0.95 && ratio < 1.05;
+                                    
+                                    if (isApproxEqual) {
+                                      return <span className={`${getColorClass(comparisonColor)} text-xl font-semibold`}>~</span>;
+                                    } else if (numValue > numIndustry) {
                                       return <ChevronUp size={24} className={getColorClass(comparisonColor)} />;
-                                    } else if (numValue < numIndustry) {
-                                      return <ChevronDown size={24} className={getColorClass(comparisonColor)} />;
                                     } else {
-                                      return <Minus size={24} className={getColorClass(comparisonColor)} />;
+                                      return <ChevronDown size={24} className={getColorClass(comparisonColor)} />;
                                     }
                                   })()}
                                 </div>
@@ -412,8 +417,8 @@ export default function MetricPopup({
                               
                               <div className="flex flex-col items-center">
                                 <span className="text-xs text-slate-800 mb-1.5 font-semibold">Industry Average</span>
-                                <div className="px-5 py-3 rounded-lg bg-slate-50 text-slate-600 font-bold text-xl flex items-center justify-center min-w-24 shadow-md border border-slate-200"
-                                  style={{ boxShadow: "0 4px 10px rgba(0, 0, 0, 0.05)" }}>
+                                <div className="px-5 py-3 rounded-lg bg-slate-50 text-slate-600 font-bold text-2xl flex items-center justify-center min-w-24 shadow-md border border-slate-200 transform hover:scale-105 transition-all duration-150"
+                                  style={{ boxShadow: "0 8px 16px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.05)" }}>
                                   {item.industry || industryAvg}{item.suffix || ""}
                                 </div>
                               </div>
