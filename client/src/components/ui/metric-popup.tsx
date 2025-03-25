@@ -335,6 +335,46 @@ export default function MetricPopup({
                                 </div>
                               </div>
                             </div>
+                            
+                            {/* Metric Definition */}
+                            <div className="mt-3 bg-slate-50 rounded-lg p-3 text-xs text-slate-600 leading-relaxed border border-slate-100">
+                              <span className="font-medium text-slate-700">What this means: </span>
+                              {item.label === "P/E Ratio" && 
+                                "How many dollars you pay for each dollar the company earns per year; a higher number often means the stock is more 'expensive.'"}
+                              
+                              {item.label === "P/B Ratio" && 
+                                "Shows how the stock price compares to the company's accounting 'net worth' (book value); high means price is well above its balance-sheet value."}
+                              
+                              {item.label === "Dividend Yield" && 
+                                "The percentage of your investment you'd get back in annual cash dividends (e.g., 3% means $3 per year on a $100 investment)."}
+                              
+                              {item.label === "Revenue Growth" && 
+                                "How much the company's total sales went up (or down) compared to last year, showing if the business is expanding or shrinking."}
+                              
+                              {item.label === "Profit Margin" && 
+                                "Out of every dollar of sales, how much is left as profit after expenses (e.g., 20% margin means 20 cents of profit per $1 of revenue)."}
+                              
+                              {(item.label === "Return on Capital" || item.label === "Return on Capital (ROC or ROI)") && 
+                                "Tells you how effectively the company uses its money and assets to make a profit (higher means better use of their property/investments)."}
+                              
+                              {(item.label === "3-Month Return" || item.label.includes("Month Return")) && 
+                                "How the stock price changed over the last three months (e.g., +10% means it gained 10% in that period)."}
+                              
+                              {(item.label === "Relative Performance" || item.label.includes("Relative Performance")) && 
+                                "Compares the stock's return to a major market index (e.g., if it's +5%, the stock did 5% better than the overall market)."}
+                              
+                              {item.label === "RSI" && 
+                                "A technical measure of recent price moves; below 40 often means it's been weak or 'oversold,' above 70 can mean it's 'overbought.'"}
+                              
+                              {item.label === "Volatility" && 
+                                "How much the stock's price bounces around day to day; higher volatility means the price can swing up or down more dramatically."}
+                              
+                              {item.label === "Beta" && 
+                                "A measure of how much the stock tends to move relative to the overall market (e.g., a beta of 1.2 means it moves 20% more than the market)."}
+                              
+                              {item.label === "Dividend Consistency" && 
+                                "Whether the company reliably pays (and often increases) its dividend, or if it has a history of cutting or skipping dividend payments."}
+                            </div>
                           </div>
                         </div>
                       </div>
