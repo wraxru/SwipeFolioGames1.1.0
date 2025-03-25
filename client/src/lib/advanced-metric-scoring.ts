@@ -77,16 +77,20 @@ export const calculatePerformanceScore = (
   // 40% * (Rev Growth stock/industry) * (rev growth industry/market)
   // 30% * (Profit margin stock/industry) * (PM industry/market)  
   // 30% * (ROC stock/industry) * (ROC industry/market)
-  const revGrowthStockIndustry = stockMetrics.revenueGrowth / industryAvgs.revenueGrowth;
-  const revGrowthIndustryMarket = industryAvgs.revenueGrowth / marketAverages.performance.revenueGrowth;
+  
+  // 1. Cap the stock/industry ratios to prevent extreme values
+  const revGrowthStockIndustry = Math.min(1.0, stockMetrics.revenueGrowth / industryAvgs.revenueGrowth);
+  const pmStockIndustry = Math.min(1.0, stockMetrics.profitMargin / industryAvgs.profitMargin);
+  const rocStockIndustry = Math.min(1.0, stockMetrics.returnOnCapital / industryAvgs.returnOnCapital);
+  
+  // 2. Cap the industry/market ratios
+  const revGrowthIndustryMarket = Math.min(1.0, industryAvgs.revenueGrowth / marketAverages.performance.revenueGrowth);
+  const pmIndustryMarket = Math.min(1.0, industryAvgs.profitMargin / marketAverages.performance.profitMargin);
+  const rocIndustryMarket = Math.min(1.0, industryAvgs.returnOnCapital / marketAverages.performance.returnOnCapital);
+  
+  // 3. Calculate weighted contributions
   const revContribution = 0.4 * revGrowthStockIndustry * revGrowthIndustryMarket;
-
-  const pmStockIndustry = stockMetrics.profitMargin / industryAvgs.profitMargin;
-  const pmIndustryMarket = industryAvgs.profitMargin / marketAverages.performance.profitMargin;
   const profitContribution = 0.3 * pmStockIndustry * pmIndustryMarket;
-
-  const rocStockIndustry = stockMetrics.returnOnCapital / industryAvgs.returnOnCapital;
-  const rocIndustryMarket = industryAvgs.returnOnCapital / marketAverages.performance.returnOnCapital;
   const rocContribution = 0.3 * rocStockIndustry * rocIndustryMarket;
   
   console.log(`- Rev Growth contribution: ${revContribution.toFixed(2)}`);
@@ -144,9 +148,20 @@ export const calculateStabilityScore = (
   console.log(`- Div Consistency market weight: ${divConsistencyMarketWeight.toFixed(2)}`);
   
   // Step 3: Apply weightings: 55% volatility, 25% beta, 20% dividend consistency
-  const volatilityContribution = 0.55 * volatilityNormalized * (marketAverages.stability.volatility / industryAvgs.volatility);
-  const betaContribution = 0.25 * betaNormalized * (industryAvgs.beta / marketAverages.stability.beta);
-  const divConsistencyContribution = 0.20 * divConsistencyNormalized * (industryDivConsistency / marketAverages.stability.dividendConsistency);
+  // 1. First cap the normalized values to avoid extremely high scores
+  const volatilityCapped = Math.min(1.0, volatilityNormalized);
+  const betaCapped = Math.min(1.0, betaNormalized);
+  const divConsistencyCapped = Math.min(1.0, divConsistencyNormalized);
+  
+  // 2. Cap the market weightings to prevent skewing
+  const volatilityMarketRatio = Math.min(1.0, marketAverages.stability.volatility / industryAvgs.volatility);
+  const betaMarketRatio = Math.min(1.0, industryAvgs.beta / marketAverages.stability.beta);
+  const divConsistencyMarketRatio = Math.min(1.0, industryDivConsistency / marketAverages.stability.dividendConsistency);
+  
+  // 3. Calculate contributions with capped values
+  const volatilityContribution = 0.55 * volatilityCapped * volatilityMarketRatio;
+  const betaContribution = 0.25 * betaCapped * betaMarketRatio;
+  const divConsistencyContribution = 0.20 * divConsistencyCapped * divConsistencyMarketRatio;
   
   console.log(`- Volatility contribution: ${volatilityContribution.toFixed(2)}`);
   console.log(`- Beta contribution: ${betaContribution.toFixed(2)}`);
@@ -212,9 +227,20 @@ export const calculateValueScore = (
   console.log(`- Div Yield market weight: ${divYieldMarketWeight.toFixed(2)}`);
   
   // Step 3: Apply weightings: 50% P/E, 30% P/B, 20% dividend yield
-  const peContribution = 0.5 * peRatioNormalized * (marketAverages.value.peRatio / industryAvgs.peRatio);
-  const pbContribution = 0.3 * pbRatioNormalized * (marketAverages.value.pbRatio / industryAvgs.pbRatio);
-  const divYieldContribution = 0.2 * divYieldNormalized * (industryAvgs.dividendYield / marketAverages.value.dividendYield);
+  // 1. First cap the normalized values to avoid extremely high scores
+  const peRatioCapped = Math.min(1.0, peRatioNormalized);
+  const pbRatioCapped = Math.min(1.0, pbRatioNormalized);
+  const divYieldCapped = Math.min(1.0, divYieldNormalized);
+  
+  // 2. Cap the market weightings to prevent skewing
+  const peRatioMarketRatio = Math.min(1.0, marketAverages.value.peRatio / industryAvgs.peRatio);
+  const pbRatioMarketRatio = Math.min(1.0, marketAverages.value.pbRatio / industryAvgs.pbRatio);
+  const divYieldMarketRatio = Math.min(1.0, industryAvgs.dividendYield / marketAverages.value.dividendYield);
+  
+  // 3. Calculate contributions with capped values
+  const peContribution = 0.5 * peRatioCapped * peRatioMarketRatio;
+  const pbContribution = 0.3 * pbRatioCapped * pbRatioMarketRatio;
+  const divYieldContribution = 0.2 * divYieldCapped * divYieldMarketRatio;
   
   console.log(`- P/E contribution: ${peContribution.toFixed(2)}`);
   console.log(`- P/B contribution: ${pbContribution.toFixed(2)}`);
@@ -249,8 +275,10 @@ export const calculateMomentumScore = (
   
   // For RSI, best when close to 50
   const rsiIdeal = 50;
-  const rsiDeviation = Math.abs(stockMetrics.rsi - rsiIdeal) / 25; // Scale by 25, so 25 point deviation = 1.0
-  const rsiNormalized = normalizeValue(1 - rsiDeviation); 
+  // Calculate how far the RSI is from ideal (50), scaled to 0-1
+  // where 1 means it's at the ideal value and 0 means it's far away (25+ points)
+  const rsiDistanceScore = 1 - Math.min(25, Math.abs(stockMetrics.rsi - rsiIdeal)) / 25;
+  const rsiNormalized = normalizeValue(rsiDistanceScore);
   
   // For relative performance, this is already relative to industry
   const relPerfNormalized = normalizeValue(0.5 + (stockMetrics.relativePerformance / 5));
@@ -267,15 +295,26 @@ export const calculateMomentumScore = (
   console.log(`- RSI market weight: ${rsiMarketWeight.toFixed(2)}`);
   
   // Step 3: Apply weightings according to formula:
-  // 50% * (3-month return stock/industry normalized) * (3-month return industry/market normalized)
-  // 50% * (RSI stock/industry normalized) * (RSI industry/market normalized)
-  const threeMonthStockIndustry = stockMetrics.threeMonthReturn / industryAvgs.threeMonthReturn;
-  const threeMonthIndustryMarket = industryAvgs.threeMonthReturn / marketAverages.momentum.threeMonthReturn;
+  // For RSI, following the specific formula from your requirements
+  
+  // 1. For three-month return (higher is better):
+  // Cap the stock/industry ratio at 1.0 for normalization
+  const threeMonthStockIndustry = Math.min(1.0, stockMetrics.threeMonthReturn / industryAvgs.threeMonthReturn);
+  // Cap the industry/market ratio at 1.0
+  const threeMonthIndustryMarket = Math.min(1.0, industryAvgs.threeMonthReturn / marketAverages.momentum.threeMonthReturn);
+  // Weight is 50% for this component
   const threeMonthContribution = 0.5 * threeMonthStockIndustry * threeMonthIndustryMarket;
-
-  const rsiStockIndustry = stockMetrics.rsi / industryAvgs.rsi;
-  const rsiIndustryMarket = industryAvgs.rsi / marketAverages.momentum.rsi;
-  const rsiContribution = 0.5 * rsiStockIndustry * rsiIndustryMarket;
+  
+  // 2. For RSI:
+  // Use the same RSI distance score calculation we did above
+  // This converts to a 0-1 scale where 0 is far from ideal and 1 is at ideal
+  const rsiScore = 1.0 - Math.min(25, Math.abs(stockMetrics.rsi - 50)) / 25;
+  // Capping to 0-1 range
+  const rsiNormalizedCapped = Math.min(1.0, rsiScore);
+  // Apply industry/market weighting (capped)
+  const rsiIndustryMarket = Math.min(1.0, industryAvgs.rsi / marketAverages.momentum.rsi);
+  // Weight is 50% for this component
+  const rsiContribution = 0.5 * rsiNormalizedCapped * rsiIndustryMarket;
   
   console.log(`- 3-Month Return contribution: ${threeMonthContribution.toFixed(2)}`);
   console.log(`- RSI contribution: ${rsiContribution.toFixed(2)}`);
