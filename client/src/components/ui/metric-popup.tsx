@@ -2,6 +2,53 @@ import React from "react";
 import { X, Info, TrendingUp, ArrowRight, PlusCircle, CircleDot, ChevronUp, ChevronDown, Minus } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
+// Utility functions for comparison
+// Get comparison status (better, similar, worse)
+function getComparisonStatus(value: number | string, industry: number | string, 
+                          isLowerBetter: boolean = false): "green" | "yellow" | "red" {
+  // Handle string values
+  if (typeof value === 'string' || typeof industry === 'string') {
+    return "yellow"; // Default to neutral for string comparisons
+  }
+  
+  // Handle numeric values
+  if (isLowerBetter) {
+    // For metrics where lower is better (like volatility, PE ratio)
+    if (value < industry * 0.9) return "green";
+    if (value > industry * 1.1) return "red";
+    return "yellow";
+  } else {
+    // For metrics where higher is better (like revenue growth)
+    if (value > industry * 1.1) return "green";
+    if (value < industry * 0.9) return "red";
+    return "yellow";
+  }
+}
+
+// Get comparison symbol
+function getComparisonSymbol(value: number | string, industry: number | string, 
+                        isLowerBetter: boolean = false): "<" | "=" | ">" {
+  // Handle string values
+  if (typeof value === 'string' || typeof industry === 'string') {
+    return "="; // Default for string comparisons
+  }
+  
+  // Handle numeric values with 5% threshold for equality
+  const ratio = value / industry;
+  
+  if (isLowerBetter) {
+    // For metrics where lower is better
+    if (ratio < 0.95) return "<"; // Value is less than industry (good)
+    if (ratio > 1.05) return ">"; // Value is greater than industry (bad)
+    return "="; // Approximately equal
+  } else {
+    // For metrics where higher is better
+    if (ratio > 1.05) return ">"; // Value is greater than industry (good)
+    if (ratio < 0.95) return "<"; // Value is less than industry (bad)
+    return "="; // Approximately equal
+  }
+}
+
 interface MetricPopupProps {
   isOpen: boolean;
   onClose: () => void;
