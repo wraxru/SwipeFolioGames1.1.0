@@ -1,4 +1,4 @@
-// Industry average constants based on the guidance document
+// Industry average constants based on provided real estate data
 export const industryAverages: Record<string, {
   performance: {
     revenueGrowth: number;
@@ -133,24 +133,24 @@ export const industryAverages: Record<string, {
   },
   "Real Estate": {
     performance: {
-      revenueGrowth: 5,
-      profitMargin: 25,
-      returnOnCapital: 4.5
+      revenueGrowth: 6.0,
+      profitMargin: 35.0,
+      returnOnCapital: 9.0
     },
     stability: {
-      volatility: 2.5,
-      beta: 1,
-      dividendConsistency: "Medium"
+      volatility: 0.8,
+      beta: 0.8,
+      dividendConsistency: "High"
     },
     value: {
-      peRatio: 36.0,
-      pbRatio: 2.5,
-      dividendYield: 4.0
+      peRatio: 16.0,
+      pbRatio: 1.8,
+      dividendYield: 3.0
     },
     momentum: {
-      threeMonthReturn: .02,
-      relativePerformance: -5,
-      rsi: 49
+      threeMonthReturn: 2.5,
+      relativePerformance: 0.5,
+      rsi: 52
     }
   },
   // Default values for other categories
@@ -180,7 +180,7 @@ export const industryAverages: Record<string, {
 
 // Helper to get industry averages for a specific industry or default if not found
 export const getIndustryAverages = (industry: string) => {
-  return industryAverages[industry] || industryAverages["Default"];
+  return industryAverages[industry] || industryAverages["Real Estate"];
 };
 
 // Helper functions to return ratings based on industry averages
