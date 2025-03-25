@@ -367,53 +367,112 @@ const hardcodedStocks: Record<string, StockData[]> = {
   ],
   "Real Estate": [
     {
+      name: "Prologis",
+      ticker: "PLD",
+      price: 110.26,
+      change: 0.8,
+      rating: 3.6,
+      smartScore: "Average",
+      description: "Prologis is a leading global industrial REIT specializing in logistics real estate, including distribution centers and warehouses.",
+      metrics: {
+        performance: { 
+          value: "Average", 
+          color: "yellow",
+          details: {
+            revenueGrowth: 2.2,
+            profitMargin: 45.4,
+            returnOnCapital: 4.3
+          },
+          explanation: "Prologis shows moderate performance with 2.2% revenue growth, below the real estate industry average of 5.0%. However, its strong profit margin of 45.4% is significantly above the industry benchmark of 25%, while its solid 4.3% return on capital is close to the 4.5% industry standard."
+        },
+        stability: { 
+          value: "Poor", 
+          color: "red",
+          details: {
+            volatility: 2.5,
+            beta: 1.24,
+            dividendConsistency: "Medium"
+          },
+          explanation: "Prologis exhibits higher volatility (2.5%) compared to the real estate sector average of 2.5%. Its beta of 1.24 indicates increased market sensitivity. Medium dividend consistency suggests periodic adjustments to dividend policies which may concern income-focused investors."
+        },
+        value: { 
+          value: "Average", 
+          color: "yellow",
+          details: {
+            peRatio: 28.0,
+            pbRatio: 1.9,
+            dividendYield: 3.7
+          },
+          explanation: "Prologis trades at a PE ratio of 28.0, below the real estate industry average of 36.0. Its price-to-book ratio of 1.9 is better than the industry's 2.5, offering good value. Its dividend yield of 3.7% is slightly below the sector's 4.0% average, offering moderate income potential."
+        },
+        momentum: { 
+          value: "Average", 
+          color: "yellow",
+          details: {
+            threeMonthReturn: 6.1,
+            relativePerformance: -2.0,
+            rsi: 37.4
+          },
+          explanation: "Prologis shows mixed momentum with a positive three-month return of 6.1%, outperforming the real estate industry average of 2.0%. Its relative performance of -2.0% versus the index indicates slight underperformance. With an RSI of 37.4, the stock is approaching oversold territory, suggesting potential for a technical rebound."
+        }
+      },
+      synopsis: {
+        price: "Trading at a discount to historical multiples despite strong operational performance",
+        company: "Prologis benefits from e-commerce growth driving demand for logistics facilities",
+        role: "Core real estate holding with exposure to global logistics and supply chain trends"
+      },
+      overallAnalysis: "A high-quality logistics REIT benefiting from e-commerce growth and supply chain reconfiguration. Strong operational metrics and strategic global positioning provide resilience and long-term growth potential despite near-term interest rate pressures.",
+      chartData: [107.5, 108.2, 108.9, 109.3, 109.8, 110.0, 110.1, 110.3, 110.2, 110.1, 110.2, 110.26],
+      industry: "Real Estate"
+    },
+    {
       name: "Realty Income Corp",
       ticker: "O",
       price: 56.28,
-      change: 1.29,
-      rating: 4.0,
-      smartScore: "Good",
+      change: 0.65,
+      rating: 3.8,
+      smartScore: "Average",
       description: "Realty Income is a triple-net lease REIT focusing on high-quality, freestanding commercial properties with long-term leases.",
       metrics: {
         performance: { 
-          value: "Fair", 
+          value: "Average", 
           color: "yellow",
           details: {
-            revenueGrowth: 5.7,
-            profitMargin: 29.5,
-            returnOnCapital: 1.30
+            revenueGrowth: 29.5,
+            profitMargin: 16.0,
+            returnOnCapital: 1.3
           },
-          explanation: "Realty Income shows solid performance with 5.7% revenue growth, slightly above the real estate industry average of 5.0%. Its profit margin of 29.5% and return on capital of 1.3% reflect stable operations from its portfolio of triple-net lease properties with high-quality tenants."
+          explanation: "Realty Income shows strong revenue growth at 29.5%, well above the real estate industry average of 5.0%. However, its profit margin of 16.0% is below the industry benchmark of 25%, and its return on capital of 1.3% is significantly below the 4.5% industry standard, reflecting the triple-net lease business model's lower but more predictable returns."
         },
         stability: { 
-          value: "High", 
-          color: "green",
-          details: {
-            volatility: 0.66,
-            beta: 0.82,
-            dividendConsistency: "High"
-          },
-          explanation: "Realty Income exhibits excellent stability with low volatility (0.66) compared to the real estate sector average. Its beta of 0.82 indicates reduced market sensitivity. The company maintains exceptional dividend consistency as a 'Dividend Aristocrat', providing reliable monthly income for investors."
-        },
-        value: { 
-          value: "Good", 
-          color: "green",
-          details: {
-            peRatio: 16.0,
-            pbRatio: 1.3,
-            dividendYield: 5.7
-          },
-          explanation: "Realty Income trades at an attractive valuation with a PE ratio of 16.0, below the REIT industry average. Its price-to-book ratio of 1.3 suggests good value, while its generous 5.7% dividend yield significantly exceeds the sector's average, offering substantial income potential."
-        },
-        momentum: { 
-          value: "Fair", 
+          value: "Average", 
           color: "yellow",
           details: {
-            threeMonthReturn: 1.5,
+            volatility: 2.0,
+            beta: 0.82,
+            dividendConsistency: "Good"
+          },
+          explanation: "Realty Income exhibits excellent stability with lower volatility (2.0%) compared to the real estate sector average of 2.5%. Its beta of 0.82 indicates reduced market sensitivity. The company maintains excellent dividend consistency, providing reliable monthly income for investors."
+        },
+        value: { 
+          value: "Average", 
+          color: "yellow",
+          details: {
+            peRatio: 57.6,
+            pbRatio: 1.29,
+            dividendYield: 5.7
+          },
+          explanation: "Realty Income trades at a premium with a PE ratio of 57.6, well above the real estate industry average of 36.0. However, its price-to-book ratio of 1.29 is significantly below the industry's 2.5, suggesting good value. Its generous 5.7% dividend yield significantly exceeds the sector's 4.0% average, offering substantial income potential."
+        },
+        momentum: { 
+          value: "Average", 
+          color: "yellow",
+          details: {
+            threeMonthReturn: 6.6,
             relativePerformance: -1.5,
             rsi: 49.3
           },
-          explanation: "Realty Income shows moderate momentum with a three-month return of 1.5%, slightly underperforming the broader market. Its relative performance of -1.5% indicates slight underperformance versus peers. With an RSI of 49.3, the stock is in balanced territory, suggesting stable trading patterns."
+          explanation: "Realty Income shows moderate momentum with a three-month return of 6.6%, outperforming the real estate industry average of 2.0%. Its relative performance of -1.5% indicates slight underperformance versus the broader index. With an RSI of 49.3, the stock is in balanced territory, suggesting stable trading patterns."
         }
       },
       synopsis: {
@@ -430,49 +489,49 @@ const hardcodedStocks: Record<string, StockData[]> = {
       ticker: "SPG",
       price: 166.12,
       change: 0.55,
-      rating: 3.2,
-      smartScore: "Poor",
+      rating: 3.0,
+      smartScore: "Average",
       description: "Simon Property Group is a retail REIT specializing in premium shopping, dining, and entertainment destinations.",
       metrics: {
         performance: { 
-          value: "Low", 
-          color: "red",
+          value: "Good", 
+          color: "green",
           details: {
-            revenueGrowth: 5.1,
-            profitMargin: 5.4,
+            revenueGrowth: 5.4,
+            profitMargin: 41.9,
             returnOnCapital: 9.97
           },
-          explanation: "Simon Property Group shows decent revenue growth at 5.1%, but its profit margin of 5.4% is significantly below the real estate industry average. The return on capital of 9.97% reflects ongoing challenges in the retail property sector despite premium locations."
+          explanation: "Simon Property Group shows solid revenue growth at 5.4%, slightly above the real estate industry average of 5.0%. Its profit margin of 41.9% significantly exceeds the industry benchmark of 25%, while its excellent 9.97% return on capital is more than double the 4.5% industry standard, reflecting the company's premium positioning in the retail sector."
         },
         stability: { 
-          value: "Unstable", 
+          value: "Poor", 
           color: "red",
           details: {
-            volatility: 1.49,
-            beta: 1.08,
-            dividendConsistency: "Medium"
+            volatility: 2.6,
+            beta: 1.49,
+            dividendConsistency: "Poor"
           },
-          explanation: "Simon Property Group exhibits higher volatility (1.49) than the real estate industry average. Its beta of 1.08 indicates slightly higher market sensitivity than peers. Medium dividend consistency reflects historical dividend adjustments during retail sector disruptions."
+          explanation: "Simon Property Group exhibits higher volatility (2.6%) than the real estate industry average of 2.5%. Its beta of 1.49 indicates significantly higher market sensitivity. Poor dividend consistency reflects historical dividend adjustments during retail sector disruptions, a concern for income-focused investors."
         },
         value: { 
-          value: "Fair", 
+          value: "Average", 
           color: "yellow",
           details: {
             peRatio: 22.0,
             pbRatio: 18.68,
             dividendYield: 5.1
           },
-          explanation: "Simon Property Group trades at a PE ratio of 22.0, higher than the real estate industry average. The price-to-book ratio of 18.68 is significantly above industry averages. However, its attractive 5.1% dividend yield provides substantial income potential."
+          explanation: "Simon Property Group trades at a favorable PE ratio of 22.0, below the real estate industry average of 36.0. However, its price-to-book ratio of 18.68 is significantly above the industry's 2.5. Its attractive 5.1% dividend yield exceeds the sector's 4.0% average, offering substantial income potential."
         },
         momentum: { 
-          value: "Weak", 
+          value: "Poor", 
           color: "red",
           details: {
             threeMonthReturn: -3.1,
             relativePerformance: -11.0,
             rsi: 41.9
           },
-          explanation: "Simon Property Group shows weak momentum with a negative three-month return of -3.1%, underperforming the broader market. Its relative performance of -11.0% indicates significant underperformance versus peers. With an RSI of 41.9, the stock is approaching oversold territory."
+          explanation: "Simon Property Group shows weak momentum with a negative three-month return of -3.1%, significantly underperforming the real estate industry average of 2.0%. Its relative performance of -11.0% indicates substantial underperformance versus the index. With an RSI of 41.9, the stock is approaching oversold territory."
         }
       },
       synopsis: {
@@ -480,8 +539,421 @@ const hardcodedStocks: Record<string, StockData[]> = {
         company: "Simon Property Group continues transforming its premium mall portfolio to adapt to changing consumer behavior",
         role: "Higher-risk opportunity in retail real estate with attractive dividend yield"
       },
-      overallAnalysis: "A major retail REIT facing challenges in an evolving retail landscape. While offering an attractive dividend yield, investment comes with higher volatility and uncertainty as the company navigates the continuing transformation of physical retail.",
+      overallAnalysis: "A major retail REIT facing challenges in an evolving retail landscape. While offering strong operational metrics and an attractive dividend yield, investment comes with higher volatility and uncertainty as the company navigates the continuing transformation of physical retail.",
       chartData: [169.5, 168.8, 168.2, 167.6, 166.9, 166.5, 166.2, 166.0, 165.8, 166.0, 166.08, 166.12],
+      industry: "Real Estate"
+    },
+    {
+      name: "AvalonBay Communities",
+      ticker: "AVB",
+      price: 214.36,
+      change: 0.82,
+      rating: 3.5,
+      smartScore: "Average",
+      description: "AvalonBay Communities is a residential REIT specializing in high-quality apartment communities in leading metropolitan areas.",
+      metrics: {
+        performance: { 
+          value: "Good", 
+          color: "green",
+          details: {
+            revenueGrowth: 4.9,
+            profitMargin: 36.5,
+            returnOnCapital: 5.6
+          },
+          explanation: "AvalonBay shows solid performance with 4.9% revenue growth, in line with the real estate industry average of 5.0%. Its strong profit margin of 36.5% is well above the industry benchmark of 25%, while its excellent 5.6% return on capital exceeds the 4.5% industry standard, reflecting efficient management of its apartment portfolio."
+        },
+        stability: { 
+          value: "Average", 
+          color: "yellow",
+          details: {
+            volatility: 2.0,
+            beta: 0.89,
+            dividendConsistency: "Good"
+          },
+          explanation: "AvalonBay exhibits good stability with lower volatility (2.0%) than the real estate industry average of 2.5%. Its beta of 0.89 indicates slightly reduced market sensitivity. The company maintains good dividend consistency, with a strong history of reliable distributions."
+        },
+        value: { 
+          value: "Average", 
+          color: "yellow",
+          details: {
+            peRatio: 28.2,
+            pbRatio: 2.55,
+            dividendYield: 3.3
+          },
+          explanation: "AvalonBay trades at a PE ratio of 28.2, below the real estate industry average of 36.0. Its price-to-book ratio of 2.55 is slightly higher than the industry's 2.5. Its dividend yield of 3.3% is below the sector's 4.0% average, offering moderate income potential."
+        },
+        momentum: { 
+          value: "Poor", 
+          color: "red",
+          details: {
+            threeMonthReturn: -2.4,
+            relativePerformance: -10.0,
+            rsi: 47.8
+          },
+          explanation: "AvalonBay shows weak momentum with a negative three-month return of -2.4%, underperforming the real estate industry average of 2.0%. Its relative performance of -10.0% indicates significant underperformance versus the index. With an RSI of 47.8, the stock is in neutral territory."
+        }
+      },
+      synopsis: {
+        price: "Stable with moderate growth as rental demand remains strong in key markets",
+        company: "AvalonBay benefits from urban migration trends and limited housing supply in coastal markets",
+        role: "Quality holding for residential real estate exposure with consistent dividend growth"
+      },
+      overallAnalysis: "A high-quality apartment REIT with properties in premium markets. Strong operational metrics and favorable demographics in its target markets provide resilience and long-term growth potential despite near-term interest rate pressures.",
+      chartData: [210.5, 211.2, 212.0, 212.5, 213.1, 213.5, 213.8, 214.0, 214.2, 214.25, 214.3, 214.36],
+      industry: "Real Estate"
+    },
+    {
+      name: "Public Storage",
+      ticker: "PSA",
+      price: 294.93,
+      change: 1.25,
+      rating: 3.3,
+      smartScore: "Average",
+      description: "Public Storage is the largest self-storage REIT in the United States with over 2,800 facilities nationwide.",
+      metrics: {
+        performance: { 
+          value: "Good", 
+          color: "green",
+          details: {
+            revenueGrowth: 3.9,
+            profitMargin: 39.9,
+            returnOnCapital: 10.2
+          },
+          explanation: "Public Storage shows moderate performance with 3.9% revenue growth, below the real estate industry average of 5.0%. However, its strong profit margin of 39.9% significantly exceeds the industry benchmark of 25%, while its excellent 10.2% return on capital is more than double the 4.5% industry standard, reflecting the operational efficiency of its self-storage portfolio."
+        },
+        stability: { 
+          value: "Average", 
+          color: "yellow",
+          details: {
+            volatility: 2.6,
+            beta: 0.8,
+            dividendConsistency: "Good"
+          },
+          explanation: "Public Storage exhibits slightly higher volatility (2.6%) than the real estate industry average of 2.5%. Its beta of 0.8 indicates reduced market sensitivity, which is positive. The company maintains high dividend consistency with a long track record of reliable distributions."
+        },
+        value: { 
+          value: "Poor", 
+          color: "red",
+          details: {
+            peRatio: 27.7,
+            pbRatio: 9.65,
+            dividendYield: 4.2
+          },
+          explanation: "Public Storage trades at a PE ratio of 27.7, below the real estate industry average of 36.0, which is positive. However, its price-to-book ratio of 9.65 is significantly above the industry's 2.5. Its dividend yield of 4.2% slightly exceeds the sector's 4.0% average, offering good income potential."
+        },
+        momentum: { 
+          value: "Poor", 
+          color: "red",
+          details: {
+            threeMonthReturn: -1.7,
+            relativePerformance: -9.7,
+            rsi: 43.5
+          },
+          explanation: "Public Storage shows weak momentum with a negative three-month return of -1.7%, underperforming the real estate industry average of 2.0%. Its relative performance of -9.7% indicates significant underperformance versus the index. With an RSI of 43.5, the stock is approaching oversold territory."
+        }
+      },
+      synopsis: {
+        price: "Trading steadily with strong fundamentals despite recent industry slowdown",
+        company: "Public Storage's dominant market position and scale provide competitive advantages in the self-storage space",
+        role: "Core holding for real estate portfolio with defensive characteristics and reliable income"
+      },
+      overallAnalysis: "A blue-chip storage REIT with industry-leading scale and operational efficiency. Strong balance sheet, brand recognition, and technological investments position it well for long-term growth despite near-term normalization in the storage market.",
+      chartData: [290.2, 291.5, 292.3, 293.1, 293.5, 293.8, 294.0, 294.3, 294.5, 294.7, 294.85, 294.93],
+      industry: "Real Estate"
+    },
+    {
+      name: "Digital Realty Trust",
+      ticker: "DLR",
+      price: 155.49,
+      change: 0.88,
+      rating: 2.5,
+      smartScore: "Poor",
+      description: "Digital Realty Trust is a global provider of data center and colocation solutions for technology companies and enterprises.",
+      metrics: {
+        performance: { 
+          value: "Poor", 
+          color: "red",
+          details: {
+            revenueGrowth: 1.4,
+            profitMargin: 10.1,
+            returnOnCapital: 1.43
+          },
+          explanation: "Digital Realty shows weak performance with 1.4% revenue growth, well below the real estate industry average of 5.0%. Its profit margin of 10.1% is significantly below the industry benchmark of 25%, while its return on capital of 1.43% is far below the 4.5% industry standard, reflecting ongoing heavy investments in expansion that have yet to yield proportionate returns."
+        },
+        stability: { 
+          value: "Poor", 
+          color: "red",
+          details: {
+            volatility: 3.1,
+            beta: 0.92,
+            dividendConsistency: "Good"
+          },
+          explanation: "Digital Realty exhibits higher volatility (3.1%) than the real estate industry average of 2.5%. However, its beta of 0.92 indicates slightly reduced market sensitivity, which is positive. The company maintains high dividend consistency with a solid history of dividend increases."
+        },
+        value: { 
+          value: "Poor", 
+          color: "red",
+          details: {
+            peRatio: 95.6,
+            pbRatio: 2.54,
+            dividendYield: 3.2
+          },
+          explanation: "Digital Realty trades at a very high PE ratio of 95.6, significantly above the real estate industry average of 36.0, reflecting significant premium valuation. Its price-to-book ratio of 2.54 is slightly above the industry's 2.5. Its dividend yield of 3.2% is below the sector's 4.0% average, offering moderate income potential."
+        },
+        momentum: { 
+          value: "Poor", 
+          color: "red",
+          details: {
+            threeMonthReturn: -12.1,
+            relativePerformance: -20.0,
+            rsi: 50.1
+          },
+          explanation: "Digital Realty shows very weak momentum with a significant negative three-month return of -12.1%, substantially underperforming the real estate industry average of 2.0%. Its relative performance of -20.0% indicates major underperformance versus the index. With an RSI of 50.1, the stock is in neutral territory despite recent weakness."
+        }
+      },
+      synopsis: {
+        price: "Under pressure as AI demand balances against higher interest rate concerns",
+        company: "Digital Realty's global data center footprint positions it well for cloud computing and AI growth",
+        role: "Strategic holding for technology exposure through real estate with dividend income"
+      },
+      overallAnalysis: "A leading global data center REIT with mixed investment characteristics. Despite near-term pressures and high valuation, long-term secular trends in digital transformation, cloud computing, and AI infrastructure support future demand for data center facilities.",
+      chartData: [161.5, 160.2, 159.0, 157.8, 156.5, 155.8, 155.3, 155.0, 154.8, 155.1, 155.3, 155.49],
+      industry: "Real Estate"
+    },
+    {
+      name: "American Tower Corp",
+      ticker: "AMT",
+      price: 212.80,
+      change: 1.45,
+      rating: 3.9,
+      smartScore: "Good",
+      description: "American Tower Corp is a global REIT that owns, operates, and develops communications real estate with a portfolio of over 220,000 sites worldwide.",
+      metrics: {
+        performance: { 
+          value: "Average", 
+          color: "yellow",
+          details: {
+            revenueGrowth: -3.0,
+            profitMargin: 20.9,
+            returnOnCapital: 5.24
+          },
+          explanation: "American Tower shows concerning revenue growth at -3.0%, well below the real estate industry average of 5.0%. Its profit margin of 20.9% is slightly below the industry benchmark of 25%, though its return on capital of 5.24% exceeds the 4.5% industry standard, reflecting the efficiency of its asset-light business model."
+        },
+        stability: { 
+          value: "Average", 
+          color: "yellow",
+          details: {
+            volatility: 2.6,
+            beta: 0.89,
+            dividendConsistency: "Good"
+          },
+          explanation: "American Tower exhibits slightly higher volatility (2.6%) than the real estate industry average of 2.5%. Its beta of 0.89 indicates reduced market sensitivity, which is positive. The company maintains high dividend consistency with a strong history of regular increases."
+        },
+        value: { 
+          value: "Poor", 
+          color: "red",
+          details: {
+            peRatio: 44.2,
+            pbRatio: 29.41,
+            dividendYield: 3.2
+          },
+          explanation: "American Tower trades at a high PE ratio of 44.2, above the real estate industry average of 36.0. Its price-to-book ratio of 29.41 is extremely high compared to the industry's 2.5, reflecting its asset-light business model and intangible value. Its dividend yield of 3.2% is below the sector's 4.0% average, offering moderate income potential."
+        },
+        momentum: { 
+          value: "Good", 
+          color: "green",
+          details: {
+            threeMonthReturn: 15.1,
+            relativePerformance: 7.1,
+            rsi: 61.1
+          },
+          explanation: "American Tower shows strong momentum with an exceptional three-month return of 15.1%, significantly outperforming the real estate industry average of 2.0%. Its relative performance of 7.1% indicates substantial outperformance versus the index. With an RSI of 61.1, the stock is showing strong buying interest while not yet reaching overbought levels."
+        }
+      },
+      synopsis: {
+        price: "Breaking out to new highs as 5G buildout accelerates globally",
+        company: "American Tower's global infrastructure portfolio benefits from increasing mobile data usage and network densification",
+        role: "Growth-oriented real estate holding with exposure to global telecommunications trends"
+      },
+      overallAnalysis: "A leading global communications REIT benefiting from 5G deployment and data consumption growth. Despite high valuation multiples, the company's essential infrastructure assets and global diversification provide resilience and long-term growth potential.",
+      chartData: [207.5, 208.3, 209.2, 210.1, 210.8, 211.5, 211.9, 212.2, 212.4, 212.6, 212.7, 212.8],
+      industry: "Real Estate"
+    },
+    {
+      name: "Welltower Inc",
+      ticker: "WELL",
+      price: 149.84,
+      change: 0.75,
+      rating: 3.2,
+      smartScore: "Average",
+      description: "Welltower is a healthcare REIT specializing in senior housing, post-acute care, and outpatient medical properties.",
+      metrics: {
+        performance: { 
+          value: "Poor", 
+          color: "red",
+          details: {
+            revenueGrowth: 20.4,
+            profitMargin: 6.3,
+            returnOnCapital: 1.06
+          },
+          explanation: "Welltower shows excellent revenue growth at 20.4%, significantly exceeding the real estate industry average of 5.0%. However, its profit margin of 6.3% is far below the industry benchmark of 25%, while its return on capital of 1.06% is substantially below the 4.5% industry standard, reflecting challenges in the senior housing sector that are only beginning to improve."
+        },
+        stability: { 
+          value: "Average", 
+          color: "yellow",
+          details: {
+            volatility: 2.2,
+            beta: 0.94,
+            dividendConsistency: "Poor"
+          },
+          explanation: "Welltower exhibits slightly lower volatility (2.2%) than the real estate industry average of 2.5%. Its beta of 0.94 indicates slightly reduced market sensitivity. However, poor dividend consistency reflects historical cuts during pandemic disruptions to its senior housing portfolio."
+        },
+        value: { 
+          value: "Poor", 
+          color: "red",
+          details: {
+            peRatio: 182.2,
+            pbRatio: 2.98,
+            dividendYield: 1.9
+          },
+          explanation: "Welltower trades at an extremely high PE ratio of 182.2, far above the real estate industry average of 36.0, reflecting expected earnings recovery. Its price-to-book ratio of 2.98 is slightly above the industry's 2.5. Its dividend yield of 1.9% is less than half the sector's 4.0% average, offering limited income potential."
+        },
+        momentum: { 
+          value: "Good", 
+          color: "green",
+          details: {
+            threeMonthReturn: 19.3,
+            relativePerformance: 11.3,
+            rsi: 54.7
+          },
+          explanation: "Welltower shows exceptional momentum with a three-month return of 19.3%, dramatically outperforming the real estate industry average of 2.0%. Its relative performance of 11.3% indicates substantial outperformance versus the index. With an RSI of 54.7, the stock shows moderate buying interest without reaching overbought levels."
+        }
+      },
+      synopsis: {
+        price: "Breaking out to new highs as senior housing sector recovery accelerates",
+        company: "Welltower's demographic tailwinds provide long-term growth as aging population drives healthcare demand",
+        role: "Thematic play on aging demographics with recovery potential from pandemic disruptions"
+      },
+      overallAnalysis: "A leading healthcare REIT benefiting from demographic tailwinds with a focus on senior housing. Despite operational challenges during the pandemic, the company's portfolio is well-positioned for recovery and long-term growth as population aging trends accelerate.",
+      chartData: [146.5, 147.2, 147.8, 148.3, 148.7, 149.1, 149.3, 149.5, 149.6, 149.7, 149.8, 149.84],
+      industry: "Real Estate"
+    },
+    {
+      name: "Boston Properties",
+      ticker: "BXP",
+      price: 69.48,
+      change: -0.35,
+      rating: 2.8,
+      smartScore: "Poor",
+      description: "Boston Properties is an office REIT that owns, manages, and develops Class A office properties in major U.S. markets.",
+      metrics: {
+        performance: { 
+          value: "Poor", 
+          color: "red",
+          details: {
+            revenueGrowth: 4.1,
+            profitMargin: 0.4,
+            returnOnCapital: 0.06
+          },
+          explanation: "Boston Properties shows modest revenue growth at 4.1%, slightly below the real estate industry average of 5.0%. Its profit margin of 0.4% is extremely low compared to the industry benchmark of 25%, while its return on capital of 0.06% is negligible compared to the 4.5% industry standard, reflecting severe challenges in the office property sector."
+        },
+        stability: { 
+          value: "Average", 
+          color: "yellow",
+          details: {
+            volatility: 3.0,
+            beta: 1.08,
+            dividendConsistency: "Poor"
+          },
+          explanation: "Boston Properties exhibits higher volatility (3.0%) than the real estate industry average of 2.5%. Its beta of 1.08 indicates slightly higher market sensitivity. Poor dividend consistency reflects concerns about the sustainability of its distribution given office sector challenges."
+        },
+        value: { 
+          value: "Average", 
+          color: "yellow",
+          details: {
+            peRatio: 785.0,
+            pbRatio: 2.03,
+            dividendYield: 5.7
+          },
+          explanation: "Boston Properties trades at an extremely high PE ratio of 785.0, far above the real estate industry average of 36.0, reflecting severely depressed earnings. However, its price-to-book ratio of 2.03 is below the industry's 2.5, suggesting some value based on assets. Its generous 5.7% dividend yield significantly exceeds the sector's 4.0% average, though sustainability may be a concern."
+        },
+        momentum: { 
+          value: "Poor", 
+          color: "red",
+          details: {
+            threeMonthReturn: -6.4,
+            relativePerformance: -14.4,
+            rsi: 52.5
+          },
+          explanation: "Boston Properties shows negative momentum with a three-month return of -6.4%, significantly underperforming the real estate industry average of 2.0%. Its relative performance of -14.4% indicates substantial underperformance versus the index. With an RSI of 52.5, the stock is in neutral territory despite recent weakness."
+        }
+      },
+      synopsis: {
+        price: "Under significant pressure as return-to-office trends remain uncertain",
+        company: "Boston Properties focusing on upgrading office spaces to attract tenants in competitive environment",
+        role: "High-risk contrarian play on the future of urban office space with high income potential"
+      },
+      overallAnalysis: "A major office REIT facing significant challenges in the post-pandemic work environment. Despite quality assets in premium locations, ongoing shifts in work patterns create substantial uncertainty regarding long-term demand for traditional office space.",
+      chartData: [71.5, 71.1, 70.7, 70.3, 70.1, 69.9, 69.7, 69.6, 69.5, 69.45, 69.4, 69.48],
+      industry: "Real Estate"
+    },
+    {
+      name: "Equity Residential",
+      ticker: "EQR",
+      price: 71.36,
+      change: 0.42,
+      rating: 3.5,
+      smartScore: "Average",
+      description: "Equity Residential is a multifamily REIT focused on owning and operating apartment properties in urban and high-density suburban areas.",
+      metrics: {
+        performance: { 
+          value: "Good", 
+          color: "green",
+          details: {
+            revenueGrowth: 3.8,
+            profitMargin: 34.9,
+            returnOnCapital: 5.59
+          },
+          explanation: "Equity Residential shows moderate revenue growth at 3.8%, slightly below the real estate industry average of 5.0%. However, its profit margin of 34.9% significantly exceeds the industry benchmark of 25%, while its return on capital of 5.59% is well above the 4.5% industry standard, reflecting efficient management of its apartment portfolio in high-barrier-to-entry markets."
+        },
+        stability: { 
+          value: "Average", 
+          color: "yellow",
+          details: {
+            volatility: 2.3,
+            beta: 0.88,
+            dividendConsistency: "Medium"
+          },
+          explanation: "Equity Residential exhibits slightly lower volatility (2.3%) than the real estate industry average of 2.5%. Its beta of 0.88 indicates reduced market sensitivity. Medium dividend consistency reflects a generally reliable distribution history with occasional adjustments."
+        },
+        value: { 
+          value: "Average", 
+          color: "yellow",
+          details: {
+            peRatio: 26.8,
+            pbRatio: 2.46,
+            dividendYield: 3.9
+          },
+          explanation: "Equity Residential trades at a PE ratio of 26.8, below the real estate industry average of 36.0. Its price-to-book ratio of 2.46 is in line with the industry's 2.5. Its dividend yield of 3.9% is slightly below the sector's 4.0% average, offering moderate income potential."
+        },
+        momentum: { 
+          value: "Poor", 
+          color: "red",
+          details: {
+            threeMonthReturn: 1.7,
+            relativePerformance: -6.3,
+            rsi: 52.8
+          },
+          explanation: "Equity Residential shows weak momentum with a modest three-month return of 1.7%, slightly underperforming the real estate industry average of 2.0%. Its relative performance of -6.3% indicates underperformance versus the index. With an RSI of 52.8, the stock is in neutral territory."
+        }
+      },
+      synopsis: {
+        price: "Trading steadily as stable rental demand balances against higher interest rates",
+        company: "Equity Residential's focus on affluent renters in coastal markets provides resilience",
+        role: "Quality holding for residential real estate exposure with good dividend security"
+      },
+      overallAnalysis: "A high-quality apartment REIT with properties targeting affluent renters in coastal markets. Strong operational metrics and demographic tailwinds provide resilience, though the company faces near-term challenges from interest rate pressures and economic uncertainty.",
+      chartData: [70.8, 70.9, 71.0, 71.1, 71.2, 71.25, 71.3, 71.32, 71.34, 71.35, 71.35, 71.36],
       industry: "Real Estate"
     },
     {

@@ -1,7 +1,6 @@
 import React from "react";
 import { X, Info, TrendingUp, ArrowRight, PlusCircle, CircleDot, ChevronUp, ChevronDown, Minus } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { getComparisonStatus, getComparisonSymbol } from "../../lib/industry-data";
 
 interface MetricPopupProps {
   isOpen: boolean;
