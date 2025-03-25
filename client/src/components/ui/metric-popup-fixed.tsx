@@ -1,5 +1,5 @@
 import React from "react";
-import { X, Info, TrendingUp, ArrowRight, PlusCircle, CircleDot, ChevronUp, ChevronDown, Minus, HelpCircle } from "lucide-react";
+import { X, Info, TrendingUp, ArrowRight, PlusCircle, CircleDot, ChevronUp, ChevronDown, Minus, HelpCircle, DollarSign, Shield, Zap } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -310,7 +310,15 @@ export default function MetricPopup({
                       metricColor === 'yellow' ? 'bg-gradient-to-br from-amber-400 to-amber-600' :
                       'bg-gradient-to-br from-red-400 to-red-600'
                     } text-white`}>
-                      <TrendingUp size={18} />
+                      {metricName === 'Performance' ? (
+                        <TrendingUp size={18} />
+                      ) : metricName === 'Value' ? (
+                        <DollarSign size={18} />
+                      ) : metricName === 'Stability' ? (
+                        <Shield size={18} />
+                      ) : (
+                        <Zap size={18} />
+                      )}
                     </div>
                     <div>
                       <h2 className="text-lg font-semibold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
@@ -483,7 +491,15 @@ export default function MetricPopup({
                   {/* Overall Explanation */}
                   <div className="mt-6 bg-slate-50 rounded-xl p-4 border border-slate-100 shadow-sm">
                     <h3 className="text-slate-800 font-bold flex items-center mb-3">
-                      <TrendingUp size={16} className={`${colorClass} mr-2`} />
+                      {metricName === 'Performance' ? (
+                        <TrendingUp size={16} className={`${colorClass} mr-2`} />
+                      ) : metricName === 'Value' ? (
+                        <DollarSign size={16} className={`${colorClass} mr-2`} />
+                      ) : metricName === 'Stability' ? (
+                        <Shield size={16} className={`${colorClass} mr-2`} />
+                      ) : (
+                        <Zap size={16} className={`${colorClass} mr-2`} />
+                      )}
                       What This Means Overall
                     </h3>
                     <p className="text-sm text-slate-600 leading-relaxed">
