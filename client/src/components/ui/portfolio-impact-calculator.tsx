@@ -300,17 +300,21 @@ export default function PortfolioImpactCalculator({
                         const colors = ["#06b6d4", "#8b5cf6", "#fbbf24", "#34d399", "#f87171"];
                         const color = colors[index % colors.length];
                         
-                        // Only show legend items with actual values and handle Real Estate positioning separately
+                        // Only show legend items with actual values
                         return allocation.new > 0 ? (
                           <div 
                             key={industry} 
                             className={cn(
-                              "flex items-center px-2 py-1 rounded-md shadow-sm font-medium",
-                              industry === "Real Estate" ? "bg-white/90 border border-slate-100" : "bg-white/90 border border-slate-100"
+                              "flex items-center px-2 py-1 rounded-md shadow-sm font-medium m-1",
+                              industry === "Real Estate" ? "bg-white border border-slate-200" : "bg-white border border-slate-200"
                             )}
                             style={{
-                              // Adjust Real Estate position to not cover the pie chart
-                              marginLeft: industry === "Real Estate" ? "-10px" : "0px"
+                              // Position Real Estate bubble to the left of the chart
+                              position: industry === "Real Estate" ? "absolute" : "relative",
+                              top: industry === "Real Estate" ? "-30px" : "auto",
+                              left: industry === "Real Estate" ? "-120px" : "auto",
+                              height: industry === "Real Estate" ? "auto" : "auto",
+                              zIndex: 10
                             }}
                           >
                             <div className="w-3 h-3 rounded-full mr-1.5" style={{ backgroundColor: color }}></div>
@@ -356,8 +360,8 @@ export default function PortfolioImpactCalculator({
                       <div className="flex items-center justify-between">
                         <div className="flex items-center">
                           <span className="text-xs text-slate-500 mr-1">From</span>
-                          <div className="font-semibold">
-                            {impact.currentMetrics[metric as keyof typeof impact.currentMetrics].toFixed(1)}/100
+                          <div className="font-semibold bg-slate-50 px-2 py-1 rounded-md shadow-sm border border-slate-100">
+                            {impact.currentMetrics[metric as keyof typeof impact.currentMetrics].toFixed(1)}
                           </div>
                         </div>
                         
@@ -365,8 +369,8 @@ export default function PortfolioImpactCalculator({
                         
                         <div className="flex items-center">
                           <span className="text-xs text-slate-500 mr-1">To</span>
-                          <div className="font-semibold">
-                            {impact.newMetrics[metric as keyof typeof impact.newMetrics].toFixed(1)}/100
+                          <div className="font-semibold bg-slate-50 px-2 py-1 rounded-md shadow-sm border border-slate-100">
+                            {impact.newMetrics[metric as keyof typeof impact.newMetrics].toFixed(1)}
                           </div>
                         </div>
                         
