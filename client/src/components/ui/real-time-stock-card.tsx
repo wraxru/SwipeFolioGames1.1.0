@@ -194,21 +194,24 @@ export default function RealTimeStockCard({
     setTimeout(() => setIsRefreshing(false), 1000); // Add a small delay for the animation
   };
 
+  // Add a direct button for easier testing/accessibility
+  const openPortfolioCalculator = () => {
+    setIsPortfolioImpactOpen(true);
+  };
+
   const handleDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
     const threshold = 100;
 
     if (info.offset.x > threshold) {
       setSwipeDirection("right");
+      // Immediately open the portfolio calculator without animation
+      setIsPortfolioImpactOpen(true);
       cardControls.start({
-        x: 500,
-        opacity: 0,
-        transition: { duration: 0.3 }
-      }).then(() => {
-        // Open portfolio impact calculator instead of going to previous card
-        setIsPortfolioImpactOpen(true);
-        cardControls.set({ x: 0, opacity: 1 });
-        setSwipeDirection(null);
+        x: 0,
+        opacity: 1,
+        transition: { type: "spring", stiffness: 300, damping: 20 }
       });
+      setSwipeDirection(null);
     } else if (info.offset.x < -threshold) {
       setSwipeDirection("left");
       cardControls.start({
@@ -343,8 +346,27 @@ export default function RealTimeStockCard({
         </div>
       </div>
       
-      {/* Refresh button */}
-      <div className="absolute top-2 right-4 z-10">
+      {/* Refresh and Portfolio buttons */}
+      <div className="absolute top-2 right-4 z-10 flex space-x-2">
+        <button 
+          onClick={openPortfolioCalculator}
+          className="glass-effect rounded-full p-2 text-xs shadow-sm hover:bg-white transition-all"
+        >
+          <svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            width="14" 
+            height="14" 
+            viewBox="0 0 24 24" 
+            fill="none" 
+            stroke="currentColor" 
+            strokeWidth="2" 
+            strokeLinecap="round" 
+            strokeLinejoin="round" 
+            className="text-blue-500"
+          >
+            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+          </svg>
+        </button>
         <button 
           onClick={refreshData} 
           disabled={isRefreshing || isLoadingQuote || isLoadingIntraday}
