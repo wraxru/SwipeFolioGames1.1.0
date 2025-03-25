@@ -348,11 +348,16 @@ export default function MetricPopup({
                                 <Info size={18} className={`${textColorClass} mr-2 hover:scale-110 transition-transform`} />
                                 {item.label}
                                 
-                                <div className="absolute z-50 invisible group-hover:visible opacity-0 group-hover:opacity-100 
-                                  transition-opacity duration-300 ease-in-out bottom-full left-0 mb-2 p-2 bg-white rounded-md
-                                  shadow-lg border border-slate-200 text-xs text-slate-600 w-64">
+                                <div className="fixed z-50 invisible group-hover:visible opacity-0 group-hover:opacity-100 
+                                  transition-opacity duration-300 ease-in-out p-3 bg-white rounded-md
+                                  shadow-lg border border-slate-200 text-xs text-slate-600 w-64"
+                                  style={{ 
+                                    transform: 'translate(-20px, -110%)',
+                                    maxWidth: '250px',
+                                    pointerEvents: 'none'
+                                  }}>
                                   {getMetricDescription(item.label)}
-                                  <div className="absolute -bottom-2 left-2 w-3 h-3 bg-white border-b border-r border-slate-200 transform rotate-45"></div>
+                                  <div className="absolute -bottom-2 left-5 w-3 h-3 bg-white border-b border-r border-slate-200 transform rotate-45"></div>
                                 </div>
                               </div>
                             </div>
@@ -408,13 +413,13 @@ export default function MetricPopup({
                                     } else if (isMetricBetterWhenLower(item.label)) {
                                       // For metrics where lower is better (like P/E ratio, volatility)
                                       return numValue < numIndustry 
-                                        ? <ArrowRight size={30} className={getColorClass(comparisonColor)} /> // pointing right toward company (good)
-                                        : <ArrowRight size={30} className={`${getColorClass(comparisonColor)} transform rotate-180`} />; // pointing left toward industry (bad)
+                                        ? <span className={`${getColorClass(comparisonColor)} text-3xl font-semibold`}>&lt;</span> // less than is good
+                                        : <span className={`${getColorClass(comparisonColor)} text-3xl font-semibold`}>&gt;</span>; // greater than is bad
                                     } else {
                                       // For metrics where higher is better (like revenue growth)
                                       return numValue > numIndustry 
-                                        ? <ArrowRight size={30} className={getColorClass(comparisonColor)} /> // pointing right toward company (good)
-                                        : <ArrowRight size={30} className={`${getColorClass(comparisonColor)} transform rotate-180`} />; // pointing left toward industry (bad)
+                                        ? <span className={`${getColorClass(comparisonColor)} text-3xl font-semibold`}>&gt;</span> // greater than is good
+                                        : <span className={`${getColorClass(comparisonColor)} text-3xl font-semibold`}>&lt;</span>; // less than is bad
                                     }
                                   })()}
                                 </div>
