@@ -614,6 +614,8 @@ const hardcodedStocks: Record<string, StockData[]> = {
       price: 294.93,
       change: -0.3,
       rating: 6.9,
+      oneYearReturn: "6.94%",
+      predictedPrice: "$338",
       description: "The world's largest owner and operator of self-storage facilities.",
       metrics: {
         performance: {
@@ -672,6 +674,8 @@ const hardcodedStocks: Record<string, StockData[]> = {
       price: 155.49,
       change: 0.88,
       rating: 5.8,
+      oneYearReturn: "12.81%",
+      predictedPrice: "$179.95",
       description: "A leading global provider of data center, colocation and interconnection solutions.",
       metrics: {
         performance: {
@@ -730,6 +734,8 @@ const hardcodedStocks: Record<string, StockData[]> = {
       price: 212.8,
       change: 1.5,
       rating: 7.3,
+      oneYearReturn: "15.42%",
+      predictedPrice: "$245.35",
       description: "The largest global owner and operator of wireless communications infrastructure.",
       metrics: {
         performance: {

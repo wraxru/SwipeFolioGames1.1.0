@@ -548,6 +548,101 @@ export default function ImprovedSwipeStockCard({
               </div>
             </div>
           </div>
+          
+          {/* Premium Insights Section */}
+          {(stock.oneYearReturn || stock.predictedPrice) && (
+            <div className="mt-4">
+              <div className="bg-gradient-to-br from-gray-800 to-gray-900 p-4 rounded-xl border border-gray-700 shadow-lg mb-0 flex items-center justify-between">
+                <div className="flex items-center">
+                  <div className="text-yellow-400 w-10 h-10 min-w-10 flex items-center justify-center bg-gradient-to-br from-gray-700 to-gray-800 rounded-lg shadow-lg border border-yellow-800/30 mr-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                      <path d="m19 2 2 2-2 2"></path>
+                      <path d="m19 20 2 2-2 2"></path>
+                    </svg>
+                  </div>
+                  <h3 className="font-bold text-lg text-white drop-shadow-sm">Premium Insights</h3>
+                </div>
+                <span className="text-xs text-yellow-300 bg-gray-800/50 px-2 py-1 rounded-full border border-gray-700/50 shadow-inner flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1">
+                    <path d="M20.42 4.58a5.4 5.4 0 0 0-7.65 0l-.77.78-.77-.78a5.4 5.4 0 0 0-7.65 0C1.46 6.7 1.33 10.28 4 13l8 8 8-8c2.67-2.72 2.54-6.3.42-8.42z"></path>
+                  </svg>
+                  AI Predictions
+                </span>
+              </div>
+              
+              <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl border border-gray-700 shadow-lg overflow-hidden">
+                {/* 1-Year Return */}
+                {stock.oneYearReturn && (
+                  <div className="border-b border-gray-700/70">
+                    <div className="flex gap-3 p-4">
+                      <div className={`${parseFloat(stock.oneYearReturn) >= 0 ? "text-green-400" : "text-red-400"} w-12 h-12 min-w-12 flex items-center justify-center bg-gradient-to-br from-gray-700 to-gray-800 rounded-lg shadow-lg border ${parseFloat(stock.oneYearReturn) >= 0 ? "border-green-700/30" : "border-red-700/30"}`}
+                        style={{
+                          boxShadow: parseFloat(stock.oneYearReturn) >= 0 ? '0 0 15px rgba(34, 197, 94, 0.1)' : '0 0 15px rgba(239, 68, 68, 0.1)'
+                        }}
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="drop-shadow-lg">
+                          <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
+                          <polyline points="16 7 22 7 22 13"></polyline>
+                        </svg>
+                      </div>
+                      <div className="flex-1">
+                        <div className="font-bold text-white text-base drop-shadow-sm flex items-center">
+                          1-Year Return
+                          <span className={`ml-2 text-xs px-2 py-0.5 rounded-full ${parseFloat(stock.oneYearReturn) >= 0 ? "text-green-300 bg-green-900/30 border border-green-700/30" : "text-red-300 bg-red-900/30 border border-red-700/30"}`}>
+                            {stock.oneYearReturn}
+                          </span>
+                        </div>
+                        <div className="text-sm text-gray-300 mt-1 leading-relaxed">
+                          Historical performance over the past 12 months shows {parseFloat(stock.oneYearReturn) >= 0 ? "positive" : "negative"} returns.
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
+                {/* Predicted Price - Blurred as premium feature */}
+                {stock.predictedPrice && (
+                  <div>
+                    <div className="flex gap-3 p-4">
+                      <div className="text-blue-400 w-12 h-12 min-w-12 flex items-center justify-center bg-gradient-to-br from-gray-700 to-gray-800 rounded-lg shadow-lg border border-blue-700/30"
+                        style={{
+                          boxShadow: '0 0 15px rgba(59, 130, 246, 0.1)'
+                        }}
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="drop-shadow-lg">
+                          <circle cx="12" cy="12" r="10"/>
+                          <path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/>
+                          <path d="M12 18V6"/>
+                        </svg>
+                      </div>
+                      <div className="flex-1">
+                        <div className="font-bold text-white text-base drop-shadow-sm flex items-center">
+                          Expected Price Target
+                          <span className="ml-2 text-xs px-2 py-0.5 rounded-full text-yellow-300 bg-yellow-900/30 border border-yellow-700/30">
+                            PREMIUM
+                          </span>
+                        </div>
+                        <div className="flex items-center mt-1">
+                          <div className="text-lg font-bold text-gray-300 blur-sm hover:blur-none transition-all duration-300 bg-blue-500/10 rounded px-3 py-1">
+                            {stock.predictedPrice}
+                          </div>
+                          <div className="ml-2 text-yellow-400 text-xs">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="inline mr-1">
+                              <circle cx="12" cy="12" r="10"></circle>
+                              <path d="M12 8v4"></path>
+                              <path d="M12 16h.01"></path>
+                            </svg>
+                            Unlock with premium
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Overall Analysis */}

@@ -677,6 +677,98 @@ export default function RealTimeStockCard({
               </div>
             </div>
           </div>
+          
+          {/* Premium Insights Section */}
+          {(stock.oneYearReturn || stock.predictedPrice) && (
+            <div className="mt-5 mb-1 px-4">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center">
+                  <div className="text-yellow-600 w-8 h-8 min-w-8 flex items-center justify-center bg-gradient-to-r from-yellow-50 to-amber-100 rounded-md shadow-sm border border-yellow-200 mr-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                      <path d="m19 2 2 2-2 2"></path>
+                      <path d="m19 20 2 2-2 2"></path>
+                    </svg>
+                  </div>
+                  <h3 className="font-bold text-lg text-slate-800">Premium Insights</h3>
+                </div>
+                <div className="flex items-center text-xs bg-gradient-to-r from-amber-400 to-yellow-500 text-white px-3 py-1 rounded-full shadow-sm">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1">
+                    <path d="M20.42 4.58a5.4 5.4 0 0 0-7.65 0l-.77.78-.77-.78a5.4 5.4 0 0 0-7.65 0C1.46 6.7 1.33 10.28 4 13l8 8 8-8c2.67-2.72 2.54-6.3.42-8.42z"></path>
+                  </svg>
+                  AI Predictions
+                </div>
+              </div>
+              
+              <div className="bg-white rounded-xl border border-slate-200 shadow-md overflow-hidden mb-4">
+                {/* Common background with slight highlight */}
+                <div className="absolute inset-0 bg-gradient-to-br from-amber-50/20 to-yellow-50/20 rounded-xl opacity-30"></div>
+                
+                {/* 1-Year Return */}
+                {stock.oneYearReturn && (
+                  <div className="p-4 border-b border-slate-100 relative">
+                    <div className="flex items-center gap-4">
+                      <div className={`${parseFloat(stock.oneYearReturn) >= 0 ? 'text-white bg-gradient-to-br from-green-400 to-green-600' : 'text-white bg-gradient-to-br from-red-400 to-red-600'} 
+                        w-12 h-12 min-w-12 flex items-center justify-center rounded-lg shadow-md`}>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
+                          <polyline points="16 7 22 7 22 13"></polyline>
+                        </svg>
+                      </div>
+                      <div className="flex-1 relative">
+                        <div className="font-bold text-slate-800 text-base flex items-center">
+                          1-Year Return
+                          <div className={`ml-2 text-xs px-2 py-0.5 rounded-full ${parseFloat(stock.oneYearReturn) >= 0 ? 'text-green-600 bg-green-50 border border-green-100' : 'text-red-600 bg-red-50 border border-red-100'}`}>
+                            {stock.oneYearReturn}
+                          </div>
+                        </div>
+                        <div className="text-sm text-slate-600 mt-1.5 leading-relaxed">
+                          Historical performance over the past 12 months shows {parseFloat(stock.oneYearReturn) >= 0 ? "positive" : "negative"} returns.
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
+                {/* Predicted Price - Blurred as premium feature */}
+                {stock.predictedPrice && (
+                  <div className="p-4 relative">
+                    <div className="flex items-center gap-4">
+                      <div className="text-white bg-gradient-to-br from-blue-400 to-blue-600 
+                        w-12 h-12 min-w-12 flex items-center justify-center rounded-lg shadow-md">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <circle cx="12" cy="12" r="10"/>
+                          <path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/>
+                          <path d="M12 18V6"/>
+                        </svg>
+                      </div>
+                      <div className="flex-1 relative">
+                        <div className="font-bold text-slate-800 text-base flex items-center">
+                          Expected Price Target
+                          <div className="ml-2 text-xs px-2 py-0.5 rounded-full text-amber-600 bg-amber-50 border border-amber-100">
+                            PREMIUM
+                          </div>
+                        </div>
+                        <div className="flex items-center mt-1.5">
+                          <div className="text-lg font-bold text-slate-800 blur-sm hover:blur-none transition-all duration-300 bg-blue-50 rounded px-3 py-1">
+                            {stock.predictedPrice}
+                          </div>
+                          <div className="ml-2 text-amber-600 text-xs flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1">
+                              <circle cx="12" cy="12" r="10"></circle>
+                              <path d="M12 8v4"></path>
+                              <path d="M12 16h.01"></path>
+                            </svg>
+                            Unlock with premium
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Overall Analysis - Enhanced with consistent spacing */}
