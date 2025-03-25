@@ -451,74 +451,100 @@ export default function ImprovedSwipeStockCard({
           })}
         </div>
 
-        {/* Stock Synopsis */}
+        {/* Stock Synopsis - Enhanced with unified appearance */}
         <div className="p-4 bg-gradient-to-br from-gray-900 via-gray-900 to-black border-b border-gray-800">
-          <h3 className="font-bold text-lg mb-4 flex items-center text-white drop-shadow-sm">
-            Stock Synopsis
-            <span className="ml-2 text-xs text-green-300 bg-gray-800/50 px-2 py-1 rounded-full border border-gray-700/50 shadow-inner">
-              AI-generated
+          <div className="bg-gradient-to-br from-gray-800 to-gray-900 p-4 rounded-xl border border-gray-700 shadow-lg mb-4 flex items-center justify-between">
+            <div className="flex items-center">
+              <div className="text-cyan-400 w-10 h-10 min-w-10 flex items-center justify-center bg-gradient-to-br from-gray-700 to-gray-800 rounded-lg shadow-lg border border-cyan-800/30 mr-3">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                  <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                </svg>
+              </div>
+              <h3 className="font-bold text-lg text-white drop-shadow-sm">Stock Synopsis</h3>
+            </div>
+            <span className="text-xs text-cyan-300 bg-gray-800/50 px-2 py-1 rounded-full border border-gray-700/50 shadow-inner flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                <path d="M12 17h.01"></path>
+              </svg>
+              AI Analysis
             </span>
-          </h3>
-          <div className="space-y-4">
-            {/* Price */}
-            <div className="flex gap-3 bg-gradient-to-br from-gray-800/50 to-gray-900/70 p-4 rounded-xl border border-gray-700/50 hover:border-green-800/30 transition-all shadow-lg hover:shadow-green-900/5">
-              <div className={`text-${stock.change >= 0 ? 'green' : 'red'}-400 w-12 h-12 min-w-12 flex items-center justify-center bg-gradient-to-br from-gray-800 to-gray-900 rounded-full shadow-lg border border-${stock.change >= 0 ? 'green' : 'red'}-700/30`}
-                style={{
-                  boxShadow: stock.change >= 0 ? '0 0 15px rgba(34, 197, 94, 0.1)' : '0 0 15px rgba(239, 68, 68, 0.1)'
-                }}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="drop-shadow-lg">
-                  <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-                </svg>
-              </div>
-              <div className="flex-1">
-                <div className="font-bold text-white text-base drop-shadow-sm">Price Trend</div>
-                <div className="text-sm text-gray-300 mt-1 leading-relaxed">{stock.synopsis.price}</div>
-              </div>
-            </div>
-            
-            {/* Company */}
-            <div className="flex gap-3 bg-gradient-to-br from-gray-800/50 to-gray-900/70 p-4 rounded-xl border border-gray-700/50 hover:border-green-800/30 transition-all shadow-lg hover:shadow-green-900/5">
-              <div className="text-green-400 w-12 h-12 min-w-12 flex items-center justify-center bg-gradient-to-br from-gray-800 to-gray-900 rounded-full shadow-lg border border-green-700/30"
-                style={{
-                  boxShadow: '0 0 15px rgba(34, 197, 94, 0.1)'
-                }}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="drop-shadow-lg">
-                  <rect width="16" height="20" x="4" y="2" rx="2" ry="2" />
-                  <path d="M9 22v-4h6v4" />
-                  <path d="M8 6h.01" />
-                  <path d="M16 6h.01" />
-                  <path d="M12 6h.01" />
-                  <path d="M12 10h.01" />
-                  <path d="M12 14h.01" />
-                  <path d="M16 10h.01" />
-                  <path d="M16 14h.01" />
-                  <path d="M8 10h.01" />
-                  <path d="M8 14h.01" />
-                </svg>
-              </div>
-              <div className="flex-1">
-                <div className="font-bold text-white text-base drop-shadow-sm">Company News</div>
-                <div className="text-sm text-gray-300 mt-1 leading-relaxed">{stock.synopsis.company}</div>
+          </div>
+          
+          {/* Unified card with sections divided by borders */}
+          <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl border border-gray-700 shadow-lg overflow-hidden">
+            {/* Price Trend */}
+            <div className="border-b border-gray-700/70">
+              <div className="flex gap-3 p-4">
+                <div className={`text-${stock.change >= 0 ? 'green' : 'red'}-400 w-12 h-12 min-w-12 flex items-center justify-center bg-gradient-to-br from-gray-700 to-gray-800 rounded-lg shadow-lg border border-${stock.change >= 0 ? 'green' : 'red'}-700/30`}
+                  style={{
+                    boxShadow: stock.change >= 0 ? '0 0 15px rgba(34, 197, 94, 0.1)' : '0 0 15px rgba(239, 68, 68, 0.1)'
+                  }}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="drop-shadow-lg">
+                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <div className="font-bold text-white text-base drop-shadow-sm flex items-center">
+                    Price Trend
+                    <span className={`ml-2 text-xs px-2 py-0.5 rounded-full ${stock.change >= 0 ? 'text-green-300 bg-green-900/30 border border-green-700/30' : 'text-red-300 bg-red-900/30 border border-red-700/30'}`}>
+                      {stock.change >= 0 ? '+' : ''}{stock.change}%
+                    </span>
+                  </div>
+                  <div className="text-sm text-gray-300 mt-1 leading-relaxed">{stock.synopsis.price}</div>
+                </div>
               </div>
             </div>
             
-            {/* Role */}
-            <div className="flex gap-3 bg-gradient-to-br from-gray-800/50 to-gray-900/70 p-4 rounded-xl border border-gray-700/50 hover:border-green-800/30 transition-all shadow-lg hover:shadow-green-900/5">
-              <div className="text-green-400 w-12 h-12 min-w-12 flex items-center justify-center bg-gradient-to-br from-gray-800 to-gray-900 rounded-full shadow-lg border border-green-700/30"
-                style={{
-                  boxShadow: '0 0 15px rgba(34, 197, 94, 0.1)'
-                }}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="drop-shadow-lg">
-                  <path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7Z" />
-                  <path d="M16.5 16 15 20h-6l-1.5-4" />
-                </svg>
+            {/* Company News */}
+            <div className="border-b border-gray-700/70">
+              <div className="flex gap-3 p-4">
+                <div className="text-blue-400 w-12 h-12 min-w-12 flex items-center justify-center bg-gradient-to-br from-gray-700 to-gray-800 rounded-lg shadow-lg border border-blue-700/30"
+                  style={{
+                    boxShadow: '0 0 15px rgba(59, 130, 246, 0.1)'
+                  }}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="drop-shadow-lg">
+                    <rect width="16" height="20" x="4" y="2" rx="2" ry="2" />
+                    <path d="M9 22v-4h6v4" />
+                    <path d="M8 6h.01" />
+                    <path d="M16 6h.01" />
+                    <path d="M12 6h.01" />
+                    <path d="M12 10h.01" />
+                    <path d="M12 14h.01" />
+                    <path d="M16 10h.01" />
+                    <path d="M16 14h.01" />
+                    <path d="M8 10h.01" />
+                    <path d="M8 14h.01" />
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <div className="font-bold text-white text-base drop-shadow-sm">Company News</div>
+                  <div className="text-sm text-gray-300 mt-1 leading-relaxed">{stock.synopsis.company}</div>
+                </div>
               </div>
-              <div className="flex-1">
-                <div className="font-bold text-white text-base drop-shadow-sm">Portfolio Role</div>
-                <div className="text-sm text-gray-300 mt-1 leading-relaxed">{stock.synopsis.role}</div>
+            </div>
+            
+            {/* Portfolio Role */}
+            <div>
+              <div className="flex gap-3 p-4">
+                <div className="text-purple-400 w-12 h-12 min-w-12 flex items-center justify-center bg-gradient-to-br from-gray-700 to-gray-800 rounded-lg shadow-lg border border-purple-700/30"
+                  style={{
+                    boxShadow: '0 0 15px rgba(168, 85, 247, 0.1)'
+                  }}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="drop-shadow-lg">
+                    <path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7Z" />
+                    <path d="M16.5 16 15 20h-6l-1.5-4" />
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <div className="font-bold text-white text-base drop-shadow-sm">Portfolio Role</div>
+                  <div className="text-sm text-gray-300 mt-1 leading-relaxed">{stock.synopsis.role}</div>
+                </div>
               </div>
             </div>
           </div>

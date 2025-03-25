@@ -589,7 +589,7 @@ export default function RealTimeStockCard({
             <div className="absolute inset-0 bg-gradient-to-r from-cyan-100/20 to-blue-100/20 transform scale-[0.99] translate-y-[2px] blur-md rounded-lg"></div>
             <div className="bg-white p-4 rounded-xl shadow-lg border border-slate-200 relative z-10 flex justify-between items-center">
               <div className="flex items-center">
-                <div className="bg-gradient-to-br from-cyan-500 to-blue-600 text-white p-2 rounded-lg mr-3 shadow-md">
+                <div className="bg-gradient-to-br from-cyan-500 to-blue-600 text-white p-2 rounded-lg mr-3 shadow-md flex items-center justify-center w-10 h-10">
                   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
                     <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
@@ -608,15 +608,17 @@ export default function RealTimeStockCard({
             </div>
           </div>
 
-          <div className="grid grid-cols-1 gap-3">
-            {/* Price - Enhanced with shadows and gradients */}
-            <div className="relative group transition-all duration-300">
-              <div className="absolute inset-0 bg-gradient-to-r from-green-100/30 to-emerald-100/30 rounded-xl blur-sm transform scale-[0.98] translate-y-1 opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
-              <div className="flex gap-4 bg-white p-4 rounded-xl border border-slate-200 shadow-md hover:shadow-lg transition-all duration-300 relative z-10 overflow-hidden group-hover:border-green-200">
-                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-green-400 to-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          {/* Unified cards with consistent styling */}
+          <div className="bg-white rounded-xl border border-slate-200 shadow-md overflow-hidden mb-4">
+            {/* Common background with slight highlight */}
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 to-indigo-50/30 rounded-xl opacity-30"></div>
+            
+            {/* Price Trend */}
+            <div className="p-4 border-b border-slate-100 relative">
+              <div className="flex items-center gap-4">
                 <div className={`${realTimeChange >= 0 ? 'text-white bg-gradient-to-br from-green-400 to-green-600' : 'text-white bg-gradient-to-br from-red-400 to-red-600'} 
                   w-12 h-12 min-w-12 flex items-center justify-center rounded-lg shadow-md`}>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
                   </svg>
                 </div>
@@ -632,14 +634,12 @@ export default function RealTimeStockCard({
               </div>
             </div>
             
-            {/* Company - Enhanced with shadows and gradients */}
-            <div className="relative group transition-all duration-300">
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-100/30 to-indigo-100/30 rounded-xl blur-sm transform scale-[0.98] translate-y-1 opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
-              <div className="flex gap-4 bg-white p-4 rounded-xl border border-slate-200 shadow-md hover:shadow-lg transition-all duration-300 relative z-10 overflow-hidden group-hover:border-blue-200">
-                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-400 to-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            {/* Company News */}
+            <div className="p-4 border-b border-slate-100 relative">
+              <div className="flex items-center gap-4">
                 <div className="text-white bg-gradient-to-br from-blue-400 to-blue-600
                   w-12 h-12 min-w-12 flex items-center justify-center rounded-lg shadow-md">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <rect width="16" height="20" x="4" y="2" rx="2" ry="2" />
                     <path d="M9 22v-4h6v4" />
                     <path d="M8 6h.01" />
@@ -660,14 +660,12 @@ export default function RealTimeStockCard({
               </div>
             </div>
             
-            {/* Role - Enhanced with shadows and gradients */}
-            <div className="relative group transition-all duration-300">
-              <div className="absolute inset-0 bg-gradient-to-r from-purple-100/30 to-violet-100/30 rounded-xl blur-sm transform scale-[0.98] translate-y-1 opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
-              <div className="flex gap-4 bg-white p-4 rounded-xl border border-slate-200 shadow-md hover:shadow-lg transition-all duration-300 relative z-10 overflow-hidden group-hover:border-purple-200">
-                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-400 to-violet-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            {/* Portfolio Role */}
+            <div className="p-4 relative">
+              <div className="flex items-center gap-4">
                 <div className="text-white bg-gradient-to-br from-purple-400 to-purple-600
                   w-12 h-12 min-w-12 flex items-center justify-center rounded-lg shadow-md">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7Z" />
                     <path d="M16.5 16 15 20h-6l-1.5-4" />
                   </svg>
