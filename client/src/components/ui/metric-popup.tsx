@@ -6,21 +6,26 @@ import { motion, AnimatePresence } from "framer-motion";
 // Get comparison status (better, similar, worse)
 function getComparisonStatus(value: number | string, industry: number | string, 
                           isLowerBetter: boolean = false): "green" | "yellow" | "red" {
-  // Handle string values
-  if (typeof value === 'string' || typeof industry === 'string') {
-    return "yellow"; // Default to neutral for string comparisons
+  // Parse string values to numbers if possible
+  const numValue = typeof value === 'string' ? parseFloat(value) : value;
+  const numIndustry = typeof industry === 'string' ? parseFloat(industry) : industry;
+  
+  // If we couldn't parse numbers, return neutral
+  if (isNaN(numValue) || isNaN(numIndustry)) {
+    console.log("Could not parse values for comparison:", value, industry);
+    return "yellow"; // Default to neutral
   }
   
   // Handle numeric values
   if (isLowerBetter) {
     // For metrics where lower is better (like volatility, PE ratio)
-    if (value < industry * 0.9) return "green";
-    if (value > industry * 1.1) return "red";
+    if (numValue < numIndustry * 0.9) return "green";
+    if (numValue > numIndustry * 1.1) return "red";
     return "yellow";
   } else {
     // For metrics where higher is better (like revenue growth)
-    if (value > industry * 1.1) return "green";
-    if (value < industry * 0.9) return "red";
+    if (numValue > numIndustry * 1.1) return "green";
+    if (numValue < numIndustry * 0.9) return "red";
     return "yellow";
   }
 }
@@ -28,13 +33,18 @@ function getComparisonStatus(value: number | string, industry: number | string,
 // Get comparison symbol
 function getComparisonSymbol(value: number | string, industry: number | string, 
                         isLowerBetter: boolean = false): "<" | "=" | ">" {
-  // Handle string values
-  if (typeof value === 'string' || typeof industry === 'string') {
-    return "="; // Default for string comparisons
+  // Parse string values to numbers if possible
+  const numValue = typeof value === 'string' ? parseFloat(value) : value;
+  const numIndustry = typeof industry === 'string' ? parseFloat(industry) : industry;
+  
+  // If we couldn't parse numbers, return equals
+  if (isNaN(numValue) || isNaN(numIndustry)) {
+    console.log("Could not parse values for symbol:", value, industry);
+    return "="; // Default for non-numeric comparisons
   }
   
   // Handle numeric values with 5% threshold for equality
-  const ratio = value / industry;
+  const ratio = numValue / numIndustry;
   
   if (isLowerBetter) {
     // For metrics where lower is better
@@ -269,7 +279,8 @@ export default function MetricPopup({
                     // Determine color based on comparison
                     const comparisonColor = getComparisonStatus(
                       item.value, 
-                      item.industry || industryAvg
+                      item.industry || industryAvg,
+                      isMetricBetterWhenLower(item.label)
                     );
                     
                     const textColorClass = getColorClass(comparisonColor);
