@@ -3,7 +3,7 @@ import { StockData } from "@/lib/stock-data";
 import { getIndustryAverages } from "@/lib/industry-data";
 import { Star, Info, AlertCircle, ChevronLeft, ChevronRight, RefreshCw } from "lucide-react";
 import { motion, useAnimation, useMotionValue, useTransform, PanInfo } from "framer-motion";
-import MetricPopup from "./metric-popup";
+import MetricPopup from "./metric-popup-fixed";
 import OverallAnalysisCard from "@/components/overall-analysis-card";
 import { useStockQuote, useIntradayData, useCompanyOverview } from "@/hooks/use-stock-data";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -503,41 +503,84 @@ export default function RealTimeStockCard({
           </div>
         </div>
 
-        {/* Performance Metrics */}
-        <div className="grid grid-cols-2 gap-3 p-4 border-b border-slate-100 bg-white">
-          {Object.entries(stock.metrics).map(([key, metricObj]) => {
-            const metricName = key.charAt(0).toUpperCase() + key.slice(1);
-            
-            return (
-              <div 
-                key={key}
-                className={`p-4 rounded-xl relative ${
-                  metricObj.color === 'green' ? 'metric-high' :
-                  metricObj.color === 'yellow' ? 'metric-average' : 
-                  'metric-low'
-                } active:scale-95 transition-all duration-150 cursor-pointer shadow-sm hover:shadow-md hover:translate-y-[-2px]`}
-                onClick={() => handleMetricClick(metricName)}
-              >
-                <div className="absolute top-2 right-2">
-                  <Info size={16} className={`${
-                    metricObj.color === 'green' ? 'text-green-500' :
-                    metricObj.color === 'yellow' ? 'text-amber-500' : 
-                    'text-red-500'
-                  }`} />
-                </div>
-                <div 
-                  className={`text-lg font-bold ${
-                    metricObj.color === 'green' ? 'text-green-600' :
-                    metricObj.color === 'yellow' ? 'text-amber-600' : 
-                    'text-red-600'
-                  }`}
-                >
-                  {metricObj.value}
-                </div>
-                <div className="text-slate-700 text-sm font-medium capitalize mt-1">{metricName}</div>
+        {/* Performance Metrics - Enhanced with depth and visual appeal */}
+        <div className="p-5 bg-gradient-to-b from-white to-slate-50 border-b border-slate-100">
+          <div className="flex justify-between items-center mb-4">
+            <div className="flex items-center">
+              <div className="bg-gradient-to-br from-slate-700 to-slate-800 text-white p-1.5 rounded-lg mr-3 shadow-md">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                </svg>
               </div>
-            );
-          })}
+              <h3 className="font-semibold text-slate-800 text-lg bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">Performance Metrics</h3>
+            </div>
+            <div className="text-xs text-slate-500 bg-slate-100 px-3 py-1 rounded-full shadow-sm">
+              Tap for details
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-4">
+            {Object.entries(stock.metrics).map(([key, metricObj]) => {
+              const metricName = key.charAt(0).toUpperCase() + key.slice(1);
+              
+              return (
+                <div 
+                  key={key}
+                  className="relative group"
+                >
+                  {/* Shadow effect that appears on hover */}
+                  <div className={`absolute inset-0 rounded-xl blur-sm transform scale-[0.98] translate-y-1 opacity-0 group-hover:opacity-100 transition-all duration-300
+                    ${metricObj.color === 'green' ? 'bg-gradient-to-r from-green-100/30 to-emerald-100/30' :
+                    metricObj.color === 'yellow' ? 'bg-gradient-to-r from-amber-100/30 to-yellow-100/30' : 
+                    'bg-gradient-to-r from-red-100/30 to-rose-100/30'}`}>
+                  </div>
+                  
+                  {/* Metric Card */}
+                  <div 
+                    className={`p-4 rounded-xl border relative z-10 overflow-hidden active:scale-95 transition-all duration-150 cursor-pointer shadow-md hover:shadow-lg group-hover:translate-y-[-2px]
+                      ${metricObj.color === 'green' ? 'bg-white border-green-200 group-hover:border-green-300' :
+                      metricObj.color === 'yellow' ? 'bg-white border-amber-200 group-hover:border-amber-300' : 
+                      'bg-white border-red-200 group-hover:border-red-300'}`}
+                    onClick={() => handleMetricClick(metricName)}
+                  >
+                    {/* Top gradient bar that appears on hover */}
+                    <div className={`absolute top-0 left-0 w-full h-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300
+                      ${metricObj.color === 'green' ? 'bg-gradient-to-r from-green-400 to-emerald-500' :
+                      metricObj.color === 'yellow' ? 'bg-gradient-to-r from-amber-400 to-yellow-500' : 
+                      'bg-gradient-to-r from-red-400 to-rose-500'}`}>
+                    </div>
+                    
+                    {/* Info Icon */}
+                    <div className="absolute top-2 right-2">
+                      <Info size={16} className={`${
+                        metricObj.color === 'green' ? 'text-green-500' :
+                        metricObj.color === 'yellow' ? 'text-amber-500' : 
+                        'text-red-500'
+                      }`} />
+                    </div>
+                    
+                    {/* Decorative bubble in corner */}
+                    <div className={`absolute -right-6 -top-6 w-16 h-16 rounded-full opacity-20
+                      ${metricObj.color === 'green' ? 'bg-gradient-to-br from-green-100 via-emerald-100 to-transparent' :
+                      metricObj.color === 'yellow' ? 'bg-gradient-to-br from-amber-100 via-yellow-100 to-transparent' : 
+                      'bg-gradient-to-br from-red-100 via-rose-100 to-transparent'}`}>
+                    </div>
+                    
+                    {/* Metric Value and Name */}
+                    <div 
+                      className={`text-xl font-bold 
+                        ${metricObj.color === 'green' ? 'bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent' :
+                        metricObj.color === 'yellow' ? 'bg-gradient-to-r from-amber-600 to-yellow-600 bg-clip-text text-transparent' : 
+                        'bg-gradient-to-r from-red-600 to-rose-600 bg-clip-text text-transparent'}`}
+                    >
+                      {metricObj.value}
+                    </div>
+                    <div className="text-slate-700 text-sm font-semibold capitalize mt-2">{metricName}</div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
 
         {/* Stock Synopsis - Enhanced with depth and visual appeal */}
@@ -638,15 +681,17 @@ export default function RealTimeStockCard({
           </div>
         </div>
 
-        {/* Overall Analysis */}
+        {/* Overall Analysis - Enhanced with consistent spacing */}
         {stock.overallAnalysis && (
-          <div className="p-4 bg-white">
-            <OverallAnalysisCard
-              ticker={stock.ticker}
-              name={stock.name}
-              rating={stock.rating}
-              analysis={stock.overallAnalysis}
-            />
+          <div className="p-5 bg-gradient-to-b from-white to-slate-50">
+            <div className="mb-1">
+              <OverallAnalysisCard
+                ticker={stock.ticker}
+                name={stock.name}
+                rating={stock.rating}
+                analysis={stock.overallAnalysis}
+              />
+            </div>
           </div>
         )}
       </motion.div>

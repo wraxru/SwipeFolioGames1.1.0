@@ -335,173 +335,171 @@ export default function MetricPopup({
                     <X size={18} />
                   </button>
                 </div>
-              
-              {/* Content - Enhanced with depth and visual appeal */}
-              <div className="p-5 max-h-[70vh] overflow-y-auto bg-gradient-to-b from-white to-slate-50/60">
-                {/* Introduction section */}
-                <div className="mb-5 bg-white rounded-xl border border-slate-200 shadow-md p-4 relative overflow-hidden">
-                  <div className="absolute -right-6 -top-6 w-24 h-24 bg-gradient-to-br from-blue-50 via-indigo-50 to-transparent rounded-full opacity-70"></div>
-                  <div className="flex items-start mb-2">
-                    <div className="bg-blue-100 text-blue-600 p-1.5 rounded-md mr-2 shrink-0">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <circle cx="12" cy="12" r="10" />
-                        <path d="M12 16v-4" />
-                        <path d="M12 8h.01" />
-                      </svg>
-                    </div>
-                    <h3 className="font-semibold text-sm text-slate-800">Why These Metrics Matter</h3>
-                  </div>
-                  <p className="text-sm text-slate-700 leading-relaxed relative z-10 pl-1">
-                    These comparative metrics show how {metricData.name || "this company"} performs against industry standards. Key variations can indicate competitive advantages or potential risks.
-                  </p>
-                </div>
                 
-                {/* Integrated Metrics with Explanations */}
-                <div className="space-y-5">
-                  {metricData.values.map((item, index) => {
-                    // Match up industry average for this metric
-                    const industryAvg = metricData.industryAverage.find(
-                      indItem => indItem.label === item.label
-                    )?.value || "N/A";
-                    
-                    // Determine color based on comparison
-                    const comparisonColor = getComparisonStatus(
-                      item.value, 
-                      item.industry || industryAvg,
-                      isMetricBetterWhenLower(item.label)
-                    );
-                    
-                    const textColorClass = getColorClass(comparisonColor);
-                    const bgColorClass = getBgColorClass(comparisonColor);
-                    const borderColorClass = getBorderColorClass(comparisonColor);
-                    
-                    // Create a state for each metric's tooltip
-                    const [showTooltip, setShowTooltip] = useState(false);
-                    
-                    return (
-                      <div key={index} className="bg-white rounded-xl border border-slate-100 overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
-                        {/* Metric Header */}
-                        <div className={`p-3 ${bgColorClass} border-b ${borderColorClass}`}>
-                          <h3 className="text-slate-800 font-semibold flex items-center justify-between">
-                            <div className="flex items-center">
-                              <div className="flex items-center cursor-pointer relative group">
-                                <Info size={18} className={`${textColorClass} mr-2 hover:scale-110 transition-transform`} />
-                                {item.label}
+                {/* Content - Enhanced with depth and visual appeal */}
+                <div className="p-5 max-h-[70vh] overflow-y-auto bg-gradient-to-b from-white to-slate-50/60">
+                  {/* Introduction section */}
+                  <div className="mb-5 bg-white rounded-xl border border-slate-200 shadow-md p-4 relative overflow-hidden">
+                    <div className="absolute -right-6 -top-6 w-24 h-24 bg-gradient-to-br from-blue-50 via-indigo-50 to-transparent rounded-full opacity-70"></div>
+                    <div className="flex items-start mb-2">
+                      <div className="bg-blue-100 text-blue-600 p-1.5 rounded-md mr-2 shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <circle cx="12" cy="12" r="10" />
+                          <path d="M12 16v-4" />
+                          <path d="M12 8h.01" />
+                        </svg>
+                      </div>
+                      <h3 className="font-semibold text-sm text-slate-800">Why These Metrics Matter</h3>
+                    </div>
+                    <p className="text-sm text-slate-700 leading-relaxed relative z-10 pl-1">
+                      These comparative metrics show how {metricData.name || "this company"} performs against industry standards. Key variations can indicate competitive advantages or potential risks.
+                    </p>
+                  </div>
+                  
+                  {/* Integrated Metrics with Explanations */}
+                  <div className="space-y-5">
+                    {metricData.values.map((item, index) => {
+                      // Match up industry average for this metric
+                      const industryAvg = metricData.industryAverage.find(
+                        indItem => indItem.label === item.label
+                      )?.value || "N/A";
+                      
+                      // Determine color based on comparison
+                      const comparisonColor = getComparisonStatus(
+                        item.value, 
+                        item.industry || industryAvg,
+                        isMetricBetterWhenLower(item.label)
+                      );
+                      
+                      const textColorClass = getColorClass(comparisonColor);
+                      const bgColorClass = getBgColorClass(comparisonColor);
+                      const borderColorClass = getBorderColorClass(comparisonColor);
+                      
+                      // Create a state for each metric's tooltip
+                      const [showTooltip, setShowTooltip] = useState(false);
+                      
+                      return (
+                        <div key={index} className="bg-white rounded-xl border border-slate-100 overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
+                          {/* Metric Header */}
+                          <div className={`p-3 ${bgColorClass} border-b ${borderColorClass}`}>
+                            <h3 className="text-slate-800 font-semibold flex items-center justify-between">
+                              <div className="flex items-center">
+                                <div className="flex items-center cursor-pointer relative group">
+                                  <Info size={18} className={`${textColorClass} mr-2 hover:scale-110 transition-transform`} />
+                                  {item.label}
+                                  
+                                  <div className="fixed z-50 invisible group-hover:visible opacity-0 group-hover:opacity-100 
+                                    transition-opacity duration-300 ease-in-out p-3 bg-white rounded-md
+                                    shadow-lg border border-slate-200 text-xs text-slate-600 w-64"
+                                    style={{ 
+                                      transform: 'translate(-20px, -110%)',
+                                      maxWidth: '250px',
+                                      pointerEvents: 'none'
+                                    }}>
+                                    {getMetricDescription(item.label)}
+                                    <div className="absolute -bottom-2 left-5 w-3 h-3 bg-white border-b border-r border-slate-200 transform rotate-45"></div>
+                                  </div>
+                                </div>
+                              </div>
+                            </h3>
+                          </div>
+                          
+                          {/* Metric Content */}
+                          <div className="p-4">
+                            {/* Comparison Row */}
+                            <div className="flex flex-col gap-3 mb-3">
+                              <div className="flex justify-between items-center">
+                                {/* Status badge */}
+                                <div className={`px-3 py-1 rounded-full ${bgColorClass} text-xs font-medium uppercase ${textColorClass} shadow-sm border ${borderColorClass}`}>
+                                  {comparisonColor === "green" ? "Better than Industry" : 
+                                   comparisonColor === "yellow" ? "Industry Average" : "Below Industry Avg"}
+                                </div>
+                              </div>
+                              
+                              {/* Metric comparison */}
+                              <div className="flex items-center justify-between w-full mt-2">
+                                <div className="flex flex-col items-center">
+                                  <span className="text-xs text-slate-800 mb-1.5 font-semibold">{metricData.name || "Company"}</span>
+                                  <div className={`px-5 py-3 rounded-lg ${bgColorClass} ${textColorClass} font-bold text-2xl flex items-center justify-center min-w-24 shadow-md border ${borderColorClass} transform hover:scale-105 transition-all duration-150`}
+                                    style={{
+                                      boxShadow: comparisonColor === "green" ? "0 8px 16px rgba(34, 197, 94, 0.25), 0 2px 4px rgba(34, 197, 94, 0.15)" : 
+                                               comparisonColor === "yellow" ? "0 8px 16px rgba(245, 158, 11, 0.25), 0 2px 4px rgba(245, 158, 11, 0.15)" :
+                                               "0 8px 16px rgba(239, 68, 68, 0.25), 0 2px 4px rgba(239, 68, 68, 0.15)"
+                                    }}>
+                                    {item.value}{item.suffix || ""}
+                                  </div>
+                                </div>
                                 
-                                <div className="fixed z-50 invisible group-hover:visible opacity-0 group-hover:opacity-100 
-                                  transition-opacity duration-300 ease-in-out p-3 bg-white rounded-md
-                                  shadow-lg border border-slate-200 text-xs text-slate-600 w-64"
-                                  style={{ 
-                                    transform: 'translate(-20px, -110%)',
-                                    maxWidth: '250px',
-                                    pointerEvents: 'none'
-                                  }}>
-                                  {getMetricDescription(item.label)}
-                                  <div className="absolute -bottom-2 left-5 w-3 h-3 bg-white border-b border-r border-slate-200 transform rotate-45"></div>
+                                {/* Display comparison symbol with correct orientation */}
+                                <div className="flex flex-col items-center justify-center">
+                                  <div className={`${getColorClass(comparisonColor)} font-bold text-3xl flex items-center justify-center mx-2 p-1.5 rounded-full bg-white shadow-sm`}>
+                                    {(() => {
+                                      // Use correct arrows based on actual numeric values 
+                                      const numValue = typeof item.value === 'string' ? parseFloat(item.value) : item.value;
+                                      const industryValue = item.industry || industryAvg;
+                                      const numIndustry = typeof industryValue === 'string' ? parseFloat(industryValue) : 
+                                                          (typeof industryValue === 'number' ? industryValue : 0);
+                                      
+                                      if (isNaN(numValue) || isNaN(numIndustry)) {
+                                        return <Minus size={30} className={getColorClass(comparisonColor)} />;
+                                      }
+                                      
+                                      // Check if numbers are approximately equal (within 5%)
+                                      const ratio = numValue / numIndustry;
+                                      const isApproxEqual = ratio > 0.95 && ratio < 1.05;
+                                      
+                                      if (isApproxEqual) {
+                                        return <span className={`${getColorClass(comparisonColor)} text-3xl font-semibold`}>~</span>;
+                                      } else if (isMetricBetterWhenLower(item.label)) {
+                                        // For metrics where lower is better (like P/E ratio, volatility)
+                                        return numValue < numIndustry 
+                                          ? <span className={`${getColorClass(comparisonColor)} text-3xl font-semibold`}>&lt;</span> // less than is good
+                                          : <span className={`${getColorClass(comparisonColor)} text-3xl font-semibold`}>&gt;</span>; // greater than is bad
+                                      } else {
+                                        // For metrics where higher is better (like revenue growth)
+                                        return numValue > numIndustry 
+                                          ? <span className={`${getColorClass(comparisonColor)} text-3xl font-semibold`}>&gt;</span> // greater than is good
+                                          : <span className={`${getColorClass(comparisonColor)} text-3xl font-semibold`}>&lt;</span>; // less than is bad
+                                      }
+                                    })()}
+                                  </div>
+                                </div>
+                                
+                                <div className="flex flex-col items-center">
+                                  <span className="text-xs text-slate-800 mb-1.5 font-semibold">Industry Average</span>
+                                  <div className="px-5 py-3 rounded-lg bg-slate-50 text-slate-600 font-bold text-2xl flex items-center justify-center min-w-24 shadow-md border border-slate-200 transform hover:scale-105 transition-all duration-150"
+                                    style={{ boxShadow: "0 8px 16px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.05)" }}>
+                                    {item.industry || industryAvg}{item.suffix || ""}
+                                  </div>
                                 </div>
                               </div>
                             </div>
-                          </h3>
-                        </div>
-                        
-                        {/* Metric Content */}
-                        <div className="p-4">
-                          {/* Comparison Row */}
-                          <div className="flex flex-col gap-3 mb-3">
-                            <div className="flex justify-between items-center">
-                              {/* Status badge */}
-                              <div className={`px-3 py-1 rounded-full ${bgColorClass} text-xs font-medium uppercase ${textColorClass} shadow-sm border ${borderColorClass}`}>
-                                {comparisonColor === "green" ? "Better than Industry" : 
-                                 comparisonColor === "yellow" ? "Industry Average" : "Below Industry Avg"}
-                              </div>
-                            </div>
-                            
-                            {/* Metric comparison */}
-                            <div className="flex items-center justify-between w-full mt-2">
-                              <div className="flex flex-col items-center">
-                                <span className="text-xs text-slate-800 mb-1.5 font-semibold">{metricData.name || "Company"}</span>
-                                <div className={`px-5 py-3 rounded-lg ${bgColorClass} ${textColorClass} font-bold text-2xl flex items-center justify-center min-w-24 shadow-md border ${borderColorClass} transform hover:scale-105 transition-all duration-150`}
-                                  style={{
-                                    boxShadow: comparisonColor === "green" ? "0 8px 16px rgba(34, 197, 94, 0.25), 0 2px 4px rgba(34, 197, 94, 0.15)" : 
-                                             comparisonColor === "yellow" ? "0 8px 16px rgba(245, 158, 11, 0.25), 0 2px 4px rgba(245, 158, 11, 0.15)" :
-                                             "0 8px 16px rgba(239, 68, 68, 0.25), 0 2px 4px rgba(239, 68, 68, 0.15)"
-                                  }}>
-                                  {item.value}{item.suffix || ""}
-                                </div>
-                              </div>
-                              
-                              {/* Display comparison symbol with correct orientation */}
-                              <div className="flex flex-col items-center justify-center">
-                                <div className={`${getColorClass(comparisonColor)} font-bold text-3xl flex items-center justify-center mx-2 p-1.5 rounded-full bg-white shadow-sm`}>
-                                  {(() => {
-                                    // Use correct arrows based on actual numeric values 
-                                    const numValue = typeof item.value === 'string' ? parseFloat(item.value) : item.value;
-                                    const industryValue = item.industry || industryAvg;
-                                    const numIndustry = typeof industryValue === 'string' ? parseFloat(industryValue) : 
-                                                        (typeof industryValue === 'number' ? industryValue : 0);
-                                    
-                                    if (isNaN(numValue) || isNaN(numIndustry)) {
-                                      return <Minus size={30} className={getColorClass(comparisonColor)} />;
-                                    }
-                                    
-                                    // Check if numbers are approximately equal (within 5%)
-                                    const ratio = numValue / numIndustry;
-                                    const isApproxEqual = ratio > 0.95 && ratio < 1.05;
-                                    
-                                    if (isApproxEqual) {
-                                      return <span className={`${getColorClass(comparisonColor)} text-3xl font-semibold`}>~</span>;
-                                    } else if (isMetricBetterWhenLower(item.label)) {
-                                      // For metrics where lower is better (like P/E ratio, volatility)
-                                      return numValue < numIndustry 
-                                        ? <span className={`${getColorClass(comparisonColor)} text-3xl font-semibold`}>&lt;</span> // less than is good
-                                        : <span className={`${getColorClass(comparisonColor)} text-3xl font-semibold`}>&gt;</span>; // greater than is bad
-                                    } else {
-                                      // For metrics where higher is better (like revenue growth)
-                                      return numValue > numIndustry 
-                                        ? <span className={`${getColorClass(comparisonColor)} text-3xl font-semibold`}>&gt;</span> // greater than is good
-                                        : <span className={`${getColorClass(comparisonColor)} text-3xl font-semibold`}>&lt;</span>; // less than is bad
-                                    }
-                                  })()}
-                                </div>
-                              </div>
-                              
-                              <div className="flex flex-col items-center">
-                                <span className="text-xs text-slate-800 mb-1.5 font-semibold">Industry Average</span>
-                                <div className="px-5 py-3 rounded-lg bg-slate-50 text-slate-600 font-bold text-2xl flex items-center justify-center min-w-24 shadow-md border border-slate-200 transform hover:scale-105 transition-all duration-150"
-                                  style={{ boxShadow: "0 8px 16px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.05)" }}>
-                                  {item.industry || industryAvg}{item.suffix || ""}
-                                </div>
-                              </div>
-                            </div>
-                            
-
                           </div>
                         </div>
-                      </div>
-                    );
-                  })}
-                </div>
-                
-                {/* Overall Explanation */}
-                <div className="mt-6 bg-slate-50 rounded-xl p-4 border border-slate-100 shadow-sm">
-                  <h3 className="text-slate-800 font-bold flex items-center mb-3">
-                    <TrendingUp size={16} className={`${colorClass} mr-2`} />
-                    What This Means Overall
-                  </h3>
-                  <p className="text-sm text-slate-600 leading-relaxed">
-                    {getExplanation()}
-                  </p>
-                </div>
-                
-                {/* Footer */}
-                <div className="mt-6 pt-3 border-t border-slate-100">
-                  <p className="text-xs text-slate-500 italic">
-                    These metrics are based on both historical data and forward-looking indicators. 
-                    They should be used as one of many tools in your investment decision-making.
-                  </p>
+                      );
+                    })}
+                  </div>
+                  
+                  {/* Overall Explanation */}
+                  <div className="mt-6 bg-slate-50 rounded-xl p-4 border border-slate-100 shadow-sm">
+                    <h3 className="text-slate-800 font-bold flex items-center mb-3">
+                      <TrendingUp size={16} className={`${colorClass} mr-2`} />
+                      What This Means Overall
+                    </h3>
+                    <p className="text-sm text-slate-600 leading-relaxed">
+                      {getExplanation()}
+                    </p>
+                  </div>
+                  
+                  {/* Footer */}
+                  <div className="mt-6 pt-3 border-t border-slate-100">
+                    <p className="text-xs text-slate-500 italic">
+                      These metrics are based on both historical data and forward-looking indicators. 
+                      They should be used as one of many tools in your investment decision-making.
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
             </div>
           </motion.div>
         </>
