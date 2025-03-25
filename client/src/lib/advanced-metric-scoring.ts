@@ -262,7 +262,7 @@ export const calculateMomentumScore = (
   console.log(`- 3-Month Return contribution: ${threeMonthContribution.toFixed(2)}`);
   console.log(`- RSI contribution: ${rsiContribution.toFixed(2)}`);
   
-  const weightedScore = threeMonthContribution + rsiContribution;bution + rsiContribution + relPerfContribution;
+  const weightedScore = threeMonthContribution + rsiContribution;
   
   // Return final score on a 0-100 scale, capped at 100
   const finalScore = Math.min(100, Math.round(weightedScore * 100));
