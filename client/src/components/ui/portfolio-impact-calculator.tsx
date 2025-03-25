@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { X, DollarSign, ChevronDown, ChevronUp, ChevronRight, Info, TrendingUp, Shield, Zap } from "lucide-react";
+import React, { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence, useMotionValue, useTransform, useSpring } from "framer-motion";
+import { X, DollarSign, ChevronDown, ChevronUp, ChevronRight, Info, TrendingUp, Shield, Zap, ArrowRight, Check } from "lucide-react";
 import { StockData } from "@/lib/stock-data";
 import { usePortfolio } from "@/contexts/portfolio-context";
 import { cn } from "@/lib/utils";
@@ -23,6 +23,43 @@ export default function PortfolioImpactCalculator({
   // State for investment amount - start with min $1
   const [investmentAmount, setInvestmentAmount] = useState<number>(1);
   const [showValueShares, setShowValueShares] = useState<boolean>(true); // true for value, false for shares
+  
+  // Slide-to-invest state variables
+  const slideTrackRef = useRef<HTMLDivElement>(null);
+  const [slideTrackWidth, setSlideTrackWidth] = useState(0);
+  const [slidingInProgress, setSlidingInProgress] = useState(false);
+  const [slideSuccess, setSlideSuccess] = useState(false);
+  const slideX = useMotionValue(0);
+  const successOpacity = useTransform(
+    slideX,
+    [0, slideTrackWidth * 0.7, slideTrackWidth],
+    [0, 0.5, 1]
+  );
+  
+  // Update track width on mount and when ref changes
+  useEffect(() => {
+    if (slideTrackRef.current) {
+      setSlideTrackWidth(slideTrackRef.current.clientWidth - 80); // Subtract thumb width for accurate completion point
+    }
+  }, [slideTrackRef, isOpen]);
+  
+  // Handle slide end
+  const handleSlideEnd = () => {
+    setSlidingInProgress(false);
+    
+    // If slid more than 80% of the way, trigger success
+    if (slideX.get() > slideTrackWidth * 0.8) {
+      setSlideSuccess(true);
+      
+      // Delay before triggering actual invest action to allow animation to play
+      setTimeout(() => {
+        handleInvest();
+      }, 500);
+    } else {
+      // Spring back to start
+      slideX.set(0);
+    }
+  };
   
   // Calculate max investment (limited by cash)
   const maxInvestment = Math.min(cash, 100);
