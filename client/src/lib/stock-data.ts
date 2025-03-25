@@ -31,6 +31,8 @@ export interface StockData {
   rating: number;
   smartScore?: string;
   description: string;
+  oneYearReturn?: string; // 1-year return percentage (e.g., "13.27%")
+  predictedPrice?: string; // Predicted future price (e.g., "$128.79")
   metrics: {
     performance: {
       value: string;
@@ -372,6 +374,8 @@ const hardcodedStocks: Record<string, StockData[]> = {
       price: 110.26,
       change: 0.8,
       rating: 3.6,
+      oneYearReturn: "-13.27%",
+      predictedPrice: "$128.79",
       metrics: {
         performance: {
           value: "Average",
@@ -430,6 +434,8 @@ const hardcodedStocks: Record<string, StockData[]> = {
       price: 56.28,
       change: 1.29,
       rating: 4.0,
+      oneYearReturn: "7.88%",
+      predictedPrice: "$62.04",
       description: "A monthly dividend paying REIT focused on single-tenant commercial properties.",
       metrics: {
         performance: {
@@ -488,6 +494,8 @@ const hardcodedStocks: Record<string, StockData[]> = {
       price: 166.12,
       change: 0.55,
       rating: 3.2,
+      oneYearReturn: "9.97%",
+      predictedPrice: "$180.33",
       description: "The largest owner and operator of shopping malls and premium outlets in the US.",
       metrics: {
         performance: {
@@ -546,6 +554,8 @@ const hardcodedStocks: Record<string, StockData[]> = {
       price: 214.36,
       change: 0.82,
       rating: 4.1,
+      oneYearReturn: "17.77%",
+      predictedPrice: "$238.64",
       description: "A leading apartment REIT focused on high-quality properties in premium coastal markets.",
       metrics: {
         performance: {
