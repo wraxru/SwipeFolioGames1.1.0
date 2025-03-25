@@ -257,12 +257,21 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
   
   // Calculate impact of adding a new stock
   const calculateImpact = (stock: StockData, amount: number) => {
-    // Current metrics
+    // For first investment, set baseline metrics based on stock
+    const hasExistingHoldings = holdings.length > 0;
+    const stockMetricScore = {
+      performance: getMetricScore(stock, 'performance'),
+      stability: getMetricScore(stock, 'stability'),
+      value: getMetricScore(stock, 'value'),
+      momentum: getMetricScore(stock, 'momentum')
+    };
+    
+    // Current metrics - ensure positive baseline values for first investment
     const currentMetrics = {
-      performance: portfolioMetrics.performance,
-      stability: portfolioMetrics.stability,
-      value: portfolioMetrics.value,
-      momentum: portfolioMetrics.momentum
+      performance: hasExistingHoldings ? portfolioMetrics.performance : 5.0,
+      stability: hasExistingHoldings ? portfolioMetrics.stability : 5.0,
+      value: hasExistingHoldings ? portfolioMetrics.value : 5.0,
+      momentum: hasExistingHoldings ? portfolioMetrics.momentum : 5.0
     };
     
     // Create simulated portfolio with new stock
@@ -293,14 +302,22 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
     
     // Calculate new metrics
     const newMetrics = {
-      performance: calculateNewMetricScore('performance', simulatedHoldings, stock),
-      stability: calculateNewMetricScore('stability', simulatedHoldings, stock),
-      value: calculateNewMetricScore('value', simulatedHoldings, stock),
-      momentum: calculateNewMetricScore('momentum', simulatedHoldings, stock)
+      performance: hasExistingHoldings ? 
+        calculateNewMetricScore('performance', simulatedHoldings, stock) : 
+        stockMetricScore.performance,
+      stability: hasExistingHoldings ? 
+        calculateNewMetricScore('stability', simulatedHoldings, stock) : 
+        stockMetricScore.stability,
+      value: hasExistingHoldings ? 
+        calculateNewMetricScore('value', simulatedHoldings, stock) : 
+        stockMetricScore.value,
+      momentum: hasExistingHoldings ? 
+        calculateNewMetricScore('momentum', simulatedHoldings, stock) : 
+        stockMetricScore.momentum
     };
     
     // Calculate industry allocation (current and new)
-    const currentTotal = portfolioValue;
+    const currentTotal = Math.max(portfolioValue, 0.01); // Avoid division by zero
     const newTotal = currentTotal + amount;
     
     const industries = new Set<string>();
@@ -314,19 +331,24 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
       industryAllocation[industry] = { current: 0, new: 0 };
     });
     
-    // Calculate current allocation
-    holdings.forEach(holding => {
-      const industry = holding.stock.industry;
-      industryAllocation[industry].current += (holding.value / currentTotal) * 100;
-    });
+    // For first investment, set 100% allocation to new stock's industry
+    if (!hasExistingHoldings) {
+      industryAllocation[stock.industry].new = 100;
+    } else {
+      // Calculate current allocation
+      holdings.forEach(holding => {
+        const industry = holding.stock.industry;
+        industryAllocation[industry].current += (holding.value / currentTotal) * 100;
+      });
+      
+      // Calculate new allocation
+      simulatedHoldings.forEach(holding => {
+        const industry = holding.stock.industry;
+        industryAllocation[industry].new += (holding.value / newTotal) * 100;
+      });
+    }
     
-    // Calculate new allocation
-    simulatedHoldings.forEach(holding => {
-      const industry = holding.stock.industry;
-      industryAllocation[industry].new += (holding.value / newTotal) * 100;
-    });
-    
-    // Calculate impact
+    // Calculate impact - ensure small changes for first investment
     const impact = {
       performance: parseFloat((newMetrics.performance - currentMetrics.performance).toFixed(1)),
       stability: parseFloat((newMetrics.stability - currentMetrics.stability).toFixed(1)),

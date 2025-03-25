@@ -20,22 +20,22 @@ export default function PortfolioImpactCalculator({
 }: PortfolioImpactCalculatorProps) {
   const { cash, calculateImpact, buyStock, isLoading } = usePortfolio();
   
-  // State for investment amount
-  const [investmentAmount, setInvestmentAmount] = useState<number>(5);
+  // State for investment amount - start with min $1
+  const [investmentAmount, setInvestmentAmount] = useState<number>(1);
   const [showValueShares, setShowValueShares] = useState<boolean>(true); // true for value, false for shares
   
   // Calculate max investment (limited by cash)
-  const maxInvestment = Math.min(cash, 50);
+  const maxInvestment = Math.min(cash, 100);
   
-  // Calculate shares based on investment amount
-  const shares = investmentAmount / stock.price;
+  // Calculate shares based on investment amount (minimum 0.001 shares)
+  const shares = Math.max(investmentAmount / stock.price, 0.001);
   
   // Estimated value in 1 year (based on oneYearReturn if available)
   const estimatedValue = stock.oneYearReturn 
     ? investmentAmount * (1 + parseFloat(stock.oneYearReturn.replace("%", "")) / 100)
     : investmentAmount * 1.08; // Default 8% growth if no return data
   
-  // Calculate portfolio impact
+  // Calculate portfolio impact with validation
   const impact = calculateImpact(stock, investmentAmount);
   
   // Function to format metric change with colored arrow
@@ -182,66 +182,93 @@ export default function PortfolioImpactCalculator({
                 <div className="relative h-48 mb-4">
                   <div className="absolute inset-0 flex items-center justify-center">
                     <svg viewBox="0 0 100 100" width="200" height="200">
-                      <circle cx="50" cy="50" r="40" fill="none" stroke="#e5e7eb" strokeWidth="20" />
+                      {/* Background circle - lighter when empty */}
+                      <circle 
+                        cx="50" 
+                        cy="50" 
+                        r="40" 
+                        fill="none" 
+                        stroke={Object.keys(impact.industryAllocation).length === 0 ? "#f3f4f6" : "#e5e7eb"} 
+                        strokeWidth="20" 
+                      />
                       
-                      {/* Dynamic segments - in a real implementation, these would be calculated */}
-                      {Object.entries(impact.industryAllocation).map(([industry, allocation], index) => {
-                        // Calculate segment parameters
-                        const colors = ["#06b6d4", "#8b5cf6", "#fbbf24", "#34d399", "#f87171"];
-                        const color = colors[index % colors.length];
-                        const segmentPct = allocation.new;
-                        const circumference = 2 * Math.PI * 40;
-                        const offset = circumference * (1 - segmentPct / 100);
-                        const previousSegments = Object.entries(impact.industryAllocation)
-                          .slice(0, index)
-                          .reduce((sum, [_, alloc]) => sum + alloc.new, 0);
-                        const rotation = (previousSegments * 3.6) - 90; // -90 to start at top
-                        
-                        return (
-                          <circle 
-                            key={industry}
-                            cx="50" 
-                            cy="50" 
-                            r="40" 
-                            fill="none" 
-                            stroke={color} 
-                            strokeWidth="20"
-                            strokeDasharray={`${circumference * (segmentPct / 100)} ${circumference}`}
-                            transform={`rotate(${rotation} 50 50)`}
-                            strokeLinecap="butt"
-                          />
-                        );
-                      })}
+                      {/* Dynamic segments - only rendered when data exists */}
+                      {Object.entries(impact.industryAllocation).length > 0 && 
+                        Object.entries(impact.industryAllocation).map(([industry, allocation], index) => {
+                          // Calculate segment parameters
+                          const colors = ["#06b6d4", "#8b5cf6", "#fbbf24", "#34d399", "#f87171"];
+                          const color = colors[index % colors.length];
+                          const segmentPct = allocation.new;
+                          const circumference = 2 * Math.PI * 40;
+                          const previousSegments = Object.entries(impact.industryAllocation)
+                            .slice(0, index)
+                            .reduce((sum, [_, alloc]) => sum + alloc.new, 0);
+                          const rotation = (previousSegments * 3.6) - 90; // -90 to start at top
+                          
+                          // Only render segments with actual percentage values
+                          return segmentPct > 0 ? (
+                            <circle 
+                              key={industry}
+                              cx="50" 
+                              cy="50" 
+                              r="40" 
+                              fill="none" 
+                              stroke={color} 
+                              strokeWidth="20"
+                              strokeDasharray={`${circumference * (segmentPct / 100)} ${circumference}`}
+                              transform={`rotate(${rotation} 50 50)`}
+                              strokeLinecap="butt"
+                            />
+                          ) : null;
+                        })
+                      }
                       
                       {/* Central circle */}
                       <circle cx="50" cy="50" r="30" fill="white" />
+                      
+                      {/* If no allocations, show empty state text */}
+                      {Object.entries(impact.industryAllocation).length === 0 && (
+                        <text 
+                          x="50" 
+                          y="53" 
+                          textAnchor="middle" 
+                          fontSize="8" 
+                          fill="#6b7280"
+                        >
+                          First investment
+                        </text>
+                      )}
                     </svg>
                   </div>
                   
-                  {/* Legend */}
-                  <div className="absolute right-0 top-0 text-xs">
-                    {Object.entries(impact.industryAllocation).map(([industry, allocation], index) => {
-                      const colors = ["#06b6d4", "#8b5cf6", "#fbbf24", "#34d399", "#f87171"];
-                      const color = colors[index % colors.length];
-                      
-                      return (
-                        <div key={industry} className="flex items-center mb-1">
-                          <div className="w-3 h-3 rounded-sm mr-2" style={{ backgroundColor: color }}></div>
-                          <span className="mr-2">{industry}:</span>
-                          <span className="font-semibold">{formatPercentage(allocation.new)}</span>
-                          {allocation.new !== allocation.current && (
-                            <span className={cn(
-                              "ml-1 text-[10px]",
-                              allocation.new > allocation.current ? "text-green-500" : "text-red-500"
-                            )}>
-                              {allocation.new > allocation.current ? "+" : ""}
-                              {formatPercentage(allocation.new - allocation.current)}
-                            </span>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
+                  {/* Legend - only show when there are industries */}
+                  {Object.entries(impact.industryAllocation).length > 0 && (
+                    <div className="absolute right-0 top-0 text-xs">
+                      {Object.entries(impact.industryAllocation).map(([industry, allocation], index) => {
+                        const colors = ["#06b6d4", "#8b5cf6", "#fbbf24", "#34d399", "#f87171"];
+                        const color = colors[index % colors.length];
+                        
+                        // Only show legend items with actual values
+                        return allocation.new > 0 ? (
+                          <div key={industry} className="flex items-center mb-1">
+                            <div className="w-3 h-3 rounded-sm mr-2" style={{ backgroundColor: color }}></div>
+                            <span className="mr-2">{industry}:</span>
+                            <span className="font-semibold">{formatPercentage(allocation.new)}</span>
+                            {/* Only show change indicator when there's a difference */}
+                            {allocation.new !== allocation.current && Math.abs(allocation.new - allocation.current) > 0.1 && (
+                              <span className={cn(
+                                "ml-1 text-[10px]",
+                                allocation.new > allocation.current ? "text-green-500" : "text-red-500"
+                              )}>
+                                {allocation.new > allocation.current ? "+" : ""}
+                                {formatPercentage(allocation.new - allocation.current)}
+                              </span>
+                            )}
+                          </div>
+                        ) : null;
+                      })}
+                    </div>
+                  )}
                 </div>
                 
                 {/* Metric Comparisons */}
