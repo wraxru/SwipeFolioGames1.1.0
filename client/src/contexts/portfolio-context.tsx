@@ -1,7 +1,8 @@
-import React, { createContext, ReactNode, useContext, useState, useEffect } from "react";
-import { StockData } from "@/lib/stock-data";
+import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
+import { StockData } from '@/lib/stock-data';
+import { useToast } from '@/hooks/use-toast';
 
-// Define portfolio holding structure
+// Define types
 export interface PortfolioHolding {
   stock: StockData;
   shares: number;
@@ -10,7 +11,6 @@ export interface PortfolioHolding {
   purchaseDate: string;
 }
 
-// Define portfolio context type
 interface PortfolioContextProps {
   cash: number;
   holdings: PortfolioHolding[];
@@ -48,341 +48,348 @@ interface PortfolioContextProps {
   isLoading: boolean;
 }
 
-// Create the context
+// Create context
 export const PortfolioContext = createContext<PortfolioContextProps | null>(null);
 
-// Calculate numeric score from string rating
-const getRatingScore = (rating: string): number => {
-  switch (rating) {
-    case "Strong":
-    case "High":
-    case "Good":
-      return 90;
-    case "Average":
-    case "Fair":
-      return 50;
-    case "Poor":
-    case "Weak":
-    case "Low":
-    case "Unstable":
-      return 30;
-    default:
-      return 50;
-  }
-};
-
-// Helper function to convert metric values to normalized scores
-const calculateMetricScore = (metric: any): number => {
-  // If metric value is a string (like "Strong", "Good", etc)
-  if (typeof metric.value === "string") {
-    return getRatingScore(metric.value);
-  }
-  
-  // For numeric metrics, we'll use a score of 50 as the default
-  return 50;
-};
-
+// Provider component
 export function PortfolioProvider({ children }: { children: ReactNode }) {
-  // Initialize state for cash, holdings, and portfolio metrics
-  const [cash, setCash] = useState<number>(100); // Start with $100
+  const { toast } = useToast();
+  
+  // State
+  const [cash, setCash] = useState<number>(100);
   const [holdings, setHoldings] = useState<PortfolioHolding[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   
-  // Calculate portfolio value
+  // Derived state
   const portfolioValue = holdings.reduce((total, holding) => total + holding.value, 0);
-  const totalValue = portfolioValue + cash;
+  const totalValue = cash + portfolioValue;
   
-  // Calculate portfolio metrics based on holdings
+  // Portfolio metrics
   const portfolioMetrics = {
-    performance: calculatePortfolioMetric("performance"),
-    stability: calculatePortfolioMetric("stability"),
-    value: calculatePortfolioMetric("value"),
-    momentum: calculatePortfolioMetric("momentum"),
+    performance: calculatePortfolioMetric('performance'),
+    stability: calculatePortfolioMetric('stability'),
+    value: calculatePortfolioMetric('value'),
+    momentum: calculatePortfolioMetric('momentum')
   };
   
-  // Function to calculate weighted metric for the portfolio
+  // Calculate individual portfolio metric score
   function calculatePortfolioMetric(metricName: "performance" | "stability" | "value" | "momentum"): number {
-    if (holdings.length === 0) return 50; // Default value for empty portfolio
+    if (holdings.length === 0) return 5.0; // Default baseline score
     
-    let weightedSum = 0;
+    let weightedScore = 0;
     let totalWeight = 0;
     
-    for (const holding of holdings) {
-      const weight = holding.value / portfolioValue;
-      const metricScore = calculateMetricScore(holding.stock.metrics[metricName]);
-      weightedSum += weight * metricScore;
+    holdings.forEach(holding => {
+      const metricScore = getMetricScore(holding.stock, metricName);
+      const weight = holding.value; // Weight by value in portfolio
+      
+      weightedScore += metricScore * weight;
       totalWeight += weight;
-    }
+    });
     
-    return totalWeight > 0 ? weightedSum / totalWeight : 50;
+    return totalWeight > 0 ? parseFloat((weightedScore / totalWeight).toFixed(1)) : 5.0;
   }
   
-  // Function to buy a stock
-  const buyStock = (stock: StockData, amount: number) => {
-    if (amount <= 0 || amount > cash) return;
+  // Helper to get numeric score from metric
+  function getMetricScore(stock: StockData, metricName: string): number {
+    const metricValue = stock.metrics[metricName as keyof typeof stock.metrics].value;
     
+    // Convert rating strings to numeric scores
+    switch (metricValue) {
+      case "Strong":
+      case "High":
+      case "Good":
+        return 7.5;
+      case "Fair":
+      case "Average":
+        return 5.0;
+      case "Unstable":
+      case "Weak":
+      case "Low":
+      case "Poor":
+        return 2.5;
+      default:
+        return 5.0;
+    }
+  }
+  
+  // Buy a stock
+  const buyStock = (stock: StockData, amount: number) => {
     setIsLoading(true);
     
     try {
-      // Calculate shares based on amount and stock price
+      // Validate transaction
+      if (amount <= 0) {
+        throw new Error("Investment amount must be positive");
+      }
+      
+      if (amount > cash) {
+        throw new Error("Not enough cash available");
+      }
+      
+      // Calculate shares
       const shares = amount / stock.price;
       
-      // Check if stock already exists in portfolio
-      const existingHoldingIndex = holdings.findIndex(
-        holding => holding.stock.ticker === stock.ticker
-      );
+      // Update state
+      setCash(prevCash => prevCash - amount);
       
-      const newHoldings = [...holdings];
+      // Check if already holding this stock
+      const existingHoldingIndex = holdings.findIndex(h => h.stock.ticker === stock.ticker);
       
       if (existingHoldingIndex >= 0) {
         // Update existing holding
-        const existingHolding = newHoldings[existingHoldingIndex];
-        const newShares = existingHolding.shares + shares;
-        const newValue = newShares * stock.price;
-        
-        // Calculate new average purchase price
-        const totalCost = 
-          existingHolding.shares * existingHolding.purchasePrice + amount;
-        const newPurchasePrice = totalCost / newShares;
-        
-        newHoldings[existingHoldingIndex] = {
-          ...existingHolding,
-          shares: newShares,
-          value: newValue,
-          purchasePrice: newPurchasePrice,
-        };
+        setHoldings(prevHoldings => {
+          const updatedHoldings = [...prevHoldings];
+          const existing = updatedHoldings[existingHoldingIndex];
+          
+          // Calculate new average purchase price
+          const totalShares = existing.shares + shares;
+          const totalCost = (existing.shares * existing.purchasePrice) + amount;
+          const newAvgPrice = totalCost / totalShares;
+          
+          updatedHoldings[existingHoldingIndex] = {
+            ...existing,
+            shares: totalShares,
+            value: totalShares * stock.price,
+            purchasePrice: newAvgPrice
+          };
+          
+          return updatedHoldings;
+        });
       } else {
         // Add new holding
-        const todayDate = new Date().toISOString().split("T")[0];
-        
-        newHoldings.push({
-          stock,
-          shares,
-          value: amount,
-          purchasePrice: stock.price,
-          purchaseDate: todayDate,
-        });
+        setHoldings(prevHoldings => [
+          ...prevHoldings,
+          {
+            stock,
+            shares,
+            value: amount,
+            purchasePrice: stock.price,
+            purchaseDate: new Date().toISOString().split('T')[0]
+          }
+        ]);
       }
       
-      // Update state
-      setHoldings(newHoldings);
-      setCash(prev => prev - amount);
+      // Show success message
+      toast({
+        title: "Stock purchased",
+        description: `You purchased ${shares.toFixed(4)} shares of ${stock.ticker} for $${amount.toFixed(2)}`,
+        variant: "default",
+      });
+    } catch (error) {
+      // Handle errors
+      toast({
+        title: "Transaction failed",
+        description: error instanceof Error ? error.message : "Unknown error occurred",
+        variant: "destructive",
+      });
     } finally {
       setIsLoading(false);
     }
   };
   
-  // Function to sell a stock
+  // Sell a stock
   const sellStock = (stockId: string, sharesToSell: number) => {
-    if (sharesToSell <= 0) return;
-    
     setIsLoading(true);
     
     try {
       // Find the holding
-      const holdingIndex = holdings.findIndex(
-        holding => holding.stock.ticker === stockId
-      );
+      const holdingIndex = holdings.findIndex(h => h.stock.ticker === stockId);
       
-      if (holdingIndex === -1) return;
+      if (holdingIndex === -1) {
+        throw new Error("Stock not found in portfolio");
+      }
       
       const holding = holdings[holdingIndex];
       
-      // Check if selling all shares
-      if (sharesToSell >= holding.shares) {
-        // Remove the holding entirely
-        const newHoldings = holdings.filter((_, i) => i !== holdingIndex);
-        setHoldings(newHoldings);
-        
-        // Return cash
-        setCash(prev => prev + holding.value);
-      } else {
-        // Sell partial position
-        const newShares = holding.shares - sharesToSell;
-        const soldValue = sharesToSell * holding.stock.price;
-        const newValue = newShares * holding.stock.price;
-        
-        const newHoldings = [...holdings];
-        newHoldings[holdingIndex] = {
-          ...holding,
-          shares: newShares,
-          value: newValue,
-        };
-        
-        setHoldings(newHoldings);
-        setCash(prev => prev + soldValue);
+      // Validate shares
+      if (sharesToSell <= 0) {
+        throw new Error("Shares to sell must be positive");
       }
+      
+      if (sharesToSell > holding.shares) {
+        throw new Error("Not enough shares to sell");
+      }
+      
+      // Calculate sale amount
+      const saleAmount = sharesToSell * holding.stock.price;
+      
+      // Update cash
+      setCash(prevCash => prevCash + saleAmount);
+      
+      // Update holdings
+      setHoldings(prevHoldings => {
+        const updatedHoldings = [...prevHoldings];
+        const remainingShares = holding.shares - sharesToSell;
+        
+        if (remainingShares > 0.0001) { // Account for floating point errors
+          // Update holding
+          updatedHoldings[holdingIndex] = {
+            ...holding,
+            shares: remainingShares,
+            value: remainingShares * holding.stock.price
+          };
+        } else {
+          // Remove holding completely
+          updatedHoldings.splice(holdingIndex, 1);
+        }
+        
+        return updatedHoldings;
+      });
+      
+      // Show success message
+      toast({
+        title: "Stock sold",
+        description: `You sold ${sharesToSell.toFixed(4)} shares of ${stockId} for $${saleAmount.toFixed(2)}`,
+        variant: "default",
+      });
+    } catch (error) {
+      // Handle errors
+      toast({
+        title: "Transaction failed",
+        description: error instanceof Error ? error.message : "Unknown error occurred",
+        variant: "destructive",
+      });
     } finally {
       setIsLoading(false);
     }
   };
   
-  // Calculate impact of adding a new stock to portfolio
+  // Calculate impact of adding a new stock
   const calculateImpact = (stock: StockData, amount: number) => {
     // Current metrics
     const currentMetrics = {
       performance: portfolioMetrics.performance,
       stability: portfolioMetrics.stability,
       value: portfolioMetrics.value,
-      momentum: portfolioMetrics.momentum,
+      momentum: portfolioMetrics.momentum
     };
     
-    // Current industry allocation
-    const currentIndustryAllocation: Record<string, number> = {};
-    let currentTotalValue = portfolioValue;
+    // Create simulated portfolio with new stock
+    const simulatedHoldings = [...holdings];
+    const existingHoldingIndex = holdings.findIndex(h => h.stock.ticker === stock.ticker);
     
-    // Calculate current industry allocation
-    holdings.forEach(holding => {
-      const industry = holding.stock.industry;
-      if (!currentIndustryAllocation[industry]) {
-        currentIndustryAllocation[industry] = 0;
-      }
-      currentIndustryAllocation[industry] += holding.value;
+    if (existingHoldingIndex >= 0) {
+      // Update existing holding in simulation
+      const existing = simulatedHoldings[existingHoldingIndex];
+      const shares = amount / stock.price;
+      const totalShares = existing.shares + shares;
+      
+      simulatedHoldings[existingHoldingIndex] = {
+        ...existing,
+        shares: totalShares,
+        value: totalShares * stock.price
+      };
+    } else {
+      // Add new holding in simulation
+      simulatedHoldings.push({
+        stock,
+        shares: amount / stock.price,
+        value: amount,
+        purchasePrice: stock.price,
+        purchaseDate: new Date().toISOString().split('T')[0]
+      });
+    }
+    
+    // Calculate new metrics
+    const newMetrics = {
+      performance: calculateNewMetricScore('performance', simulatedHoldings, stock),
+      stability: calculateNewMetricScore('stability', simulatedHoldings, stock),
+      value: calculateNewMetricScore('value', simulatedHoldings, stock),
+      momentum: calculateNewMetricScore('momentum', simulatedHoldings, stock)
+    };
+    
+    // Calculate industry allocation (current and new)
+    const currentTotal = portfolioValue;
+    const newTotal = currentTotal + amount;
+    
+    const industries = new Set<string>();
+    holdings.forEach(h => industries.add(h.stock.industry));
+    industries.add(stock.industry);
+    
+    const industryAllocation: Record<string, {current: number, new: number}> = {};
+    
+    // Initialize with zeros
+    Array.from(industries).forEach(industry => {
+      industryAllocation[industry] = { current: 0, new: 0 };
     });
     
-    // Convert to percentages
-    const industryAllocation: Record<string, { current: number; new: number }> = {};
+    // Calculate current allocation
+    holdings.forEach(holding => {
+      const industry = holding.stock.industry;
+      industryAllocation[industry].current += (holding.value / currentTotal) * 100;
+    });
     
-    for (const [industry, value] of Object.entries(currentIndustryAllocation)) {
-      industryAllocation[industry] = {
-        current: (value / currentTotalValue) * 100,
-        new: 0, // Will be calculated below
-      };
-    }
+    // Calculate new allocation
+    simulatedHoldings.forEach(holding => {
+      const industry = holding.stock.industry;
+      industryAllocation[industry].new += (holding.value / newTotal) * 100;
+    });
     
-    // Add new stock's industry if it doesn't exist
-    if (!industryAllocation[stock.industry]) {
-      industryAllocation[stock.industry] = {
-        current: 0,
-        new: 0,
-      };
-    }
-    
-    // Calculate new metrics with the potential investment
-    const newTotalValue = currentTotalValue + amount;
-    
-    // Calculate new metrics considering the new stock
-    const newPerformanceScore = calculateNewMetricScore("performance", stock, amount, newTotalValue);
-    const newStabilityScore = calculateNewMetricScore("stability", stock, amount, newTotalValue);
-    const newValueScore = calculateNewMetricScore("value", stock, amount, newTotalValue);
-    const newMomentumScore = calculateNewMetricScore("momentum", stock, amount, newTotalValue);
-    
-    // Calculate new industry allocation
-    for (const [industry, values] of Object.entries(industryAllocation)) {
-      let newIndustryValue = currentIndustryAllocation[industry] || 0;
-      
-      // Add the new investment to its industry
-      if (industry === stock.industry) {
-        newIndustryValue += amount;
-      }
-      
-      // Calculate new percentage
-      industryAllocation[industry].new = (newIndustryValue / newTotalValue) * 100;
-    }
-    
-    const newMetrics = {
-      performance: newPerformanceScore,
-      stability: newStabilityScore,
-      value: newValueScore,
-      momentum: newMomentumScore,
-    };
-    
+    // Calculate impact
     const impact = {
-      performance: newPerformanceScore - currentMetrics.performance,
-      stability: newStabilityScore - currentMetrics.stability,
-      value: newValueScore - currentMetrics.value,
-      momentum: newMomentumScore - currentMetrics.momentum,
+      performance: parseFloat((newMetrics.performance - currentMetrics.performance).toFixed(1)),
+      stability: parseFloat((newMetrics.stability - currentMetrics.stability).toFixed(1)),
+      value: parseFloat((newMetrics.value - currentMetrics.value).toFixed(1)),
+      momentum: parseFloat((newMetrics.momentum - currentMetrics.momentum).toFixed(1))
     };
     
     return {
       currentMetrics,
       newMetrics,
       impact,
-      industryAllocation,
+      industryAllocation
     };
   };
   
-  // Helper function to calculate new metric score after adding a stock
   function calculateNewMetricScore(
     metricName: "performance" | "stability" | "value" | "momentum",
-    newStock: StockData,
-    investmentAmount: number,
-    newTotalValue: number
-  ) {
-    // If portfolio is empty, just return the new stock's metric
-    if (holdings.length === 0) {
-      return calculateMetricScore(newStock.metrics[metricName]);
-    }
+    simulatedHoldings: PortfolioHolding[],
+    newStock: StockData
+  ): number {
+    if (simulatedHoldings.length === 0) return getMetricScore(newStock, metricName);
     
-    // Calculate current portfolio's contribution
-    const currentValue = portfolioValue;
-    const newStockWeight = investmentAmount / newTotalValue;
-    const currentPortfolioWeight = currentValue / newTotalValue;
+    let weightedScore = 0;
+    let totalWeight = 0;
     
-    // Calculate weighted score
-    const currentScore = portfolioMetrics[metricName];
-    const newStockScore = calculateMetricScore(newStock.metrics[metricName]);
+    simulatedHoldings.forEach(holding => {
+      const metricScore = getMetricScore(holding.stock, metricName);
+      const weight = holding.value;
+      
+      weightedScore += metricScore * weight;
+      totalWeight += weight;
+    });
     
-    // Weighted average
-    return (currentScore * currentPortfolioWeight) + 
-           (newStockScore * newStockWeight);
+    return totalWeight > 0 ? parseFloat((weightedScore / totalWeight).toFixed(1)) : 5.0;
   }
   
-  // Load portfolio data from localStorage on initial render
-  useEffect(() => {
-    const loadPortfolio = () => {
-      try {
-        const savedCash = localStorage.getItem("portfolio_cash");
-        const savedHoldings = localStorage.getItem("portfolio_holdings");
-        
-        if (savedCash) {
-          setCash(parseFloat(savedCash));
-        }
-        
-        if (savedHoldings) {
-          setHoldings(JSON.parse(savedHoldings));
-        }
-      } catch (error) {
-        console.error("Error loading portfolio data:", error);
-      }
-    };
-    
-    loadPortfolio();
-  }, []);
-  
-  // Save portfolio data to localStorage when it changes
-  useEffect(() => {
-    try {
-      localStorage.setItem("portfolio_cash", cash.toString());
-      localStorage.setItem("portfolio_holdings", JSON.stringify(holdings));
-    } catch (error) {
-      console.error("Error saving portfolio data:", error);
-    }
-  }, [cash, holdings]);
+  // Context value
+  const contextValue: PortfolioContextProps = {
+    cash,
+    holdings,
+    portfolioValue,
+    totalValue,
+    portfolioMetrics,
+    buyStock,
+    sellStock,
+    calculateImpact,
+    isLoading
+  };
   
   return (
-    <PortfolioContext.Provider
-      value={{
-        cash,
-        holdings,
-        portfolioValue,
-        totalValue,
-        portfolioMetrics,
-        buyStock,
-        sellStock,
-        calculateImpact,
-        isLoading,
-      }}
-    >
+    <PortfolioContext.Provider value={contextValue}>
       {children}
     </PortfolioContext.Provider>
   );
 }
 
+// Custom hook for using the context
 export function usePortfolio() {
   const context = useContext(PortfolioContext);
+  
   if (!context) {
-    throw new Error("usePortfolio must be used within a PortfolioProvider");
+    throw new Error('usePortfolio must be used within a PortfolioProvider');
   }
+  
   return context;
 }

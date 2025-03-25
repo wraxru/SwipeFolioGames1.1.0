@@ -826,6 +826,17 @@ export default function RealTimeStockCard({
           metricData={selectedMetric.data}
         />
       )}
+      
+      {/* Portfolio Impact Calculator */}
+      <PortfolioImpactCalculator
+        isOpen={isPortfolioImpactOpen}
+        onClose={() => setIsPortfolioImpactOpen(false)}
+        onInvest={() => {
+          // Handle successful investment
+          onNext(); // Move to next stock after investing
+        }}
+        stock={stock}
+      />
     </div>
   );
 }
