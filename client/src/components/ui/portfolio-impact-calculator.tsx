@@ -408,7 +408,6 @@ export default function PortfolioImpactCalculator({
                       
                       <div className="flex items-center justify-between">
                         <div className="flex items-center">
-                          <span className="text-xs text-slate-500 mr-1">From</span>
                           <div className="font-semibold bg-slate-50 px-2 py-1 rounded-md shadow-sm border border-slate-100">
                             {impact.currentMetrics[metric as keyof typeof impact.currentMetrics].toFixed(1)}
                           </div>
@@ -417,13 +416,17 @@ export default function PortfolioImpactCalculator({
                         <div className="font-bold text-lg mx-2">→</div>
                         
                         <div className="flex items-center">
-                          <span className="text-xs text-slate-500 mr-1">To</span>
-                          <div className="font-semibold bg-slate-50 px-2 py-1 rounded-md shadow-sm border border-slate-100">
+                          <div className={cn(
+                            "font-semibold px-2 py-1 rounded-md shadow-sm border",
+                            change > 0 ? "bg-green-50 text-green-700 border-green-100" : 
+                            change < 0 ? "bg-red-50 text-red-700 border-red-100" :
+                            "bg-slate-50 text-slate-700 border-slate-100"
+                          )}>
                             {impact.newMetrics[metric as keyof typeof impact.newMetrics].toFixed(1)}
                           </div>
                         </div>
                         
-                        <div className="ml-3 font-bold">
+                        <div className="ml-2 font-bold">
                           {formatMetricChange(change)}
                         </div>
                       </div>

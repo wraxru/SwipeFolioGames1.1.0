@@ -412,14 +412,35 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
   
   // Calculate impact of adding a new stock
   const calculateImpact = (stock: StockData, amount: number) => {
+    // Debug information
+    console.log('---- PORTFOLIO IMPACT CALCULATION ----');
+    console.log(`Adding ${stock.ticker} (${stock.industry}) with $${amount}`);
+    
     // For first investment, set baseline metrics based on stock
     const hasExistingHoldings = holdings.length > 0;
+    console.log('Has existing holdings:', hasExistingHoldings);
+    
+    // Calculate and log individual metric scores for this stock
+    console.log(`Calculating raw scores for ${stock.ticker}:`);
+    const performanceScore = getMetricScore(stock, 'performance');
+    console.log(`- Performance score: ${performanceScore} (Raw data:`, stock.metrics.performance.details, ')');
+    
+    const stabilityScore = getMetricScore(stock, 'stability');
+    console.log(`- Stability score: ${stabilityScore} (Raw data:`, stock.metrics.stability.details, ')');
+    
+    const valueScore = getMetricScore(stock, 'value');
+    console.log(`- Value score: ${valueScore} (Raw data:`, stock.metrics.value.details, ')');
+    
+    const momentumScore = getMetricScore(stock, 'momentum');
+    console.log(`- Momentum score: ${momentumScore} (Raw data:`, stock.metrics.momentum.details, ')');
+    
     const stockMetricScore = {
-      performance: getMetricScore(stock, 'performance'),
-      stability: getMetricScore(stock, 'stability'),
-      value: getMetricScore(stock, 'value'),
-      momentum: getMetricScore(stock, 'momentum')
+      performance: performanceScore,
+      stability: stabilityScore,
+      value: valueScore,
+      momentum: momentumScore
     };
+    console.log(`Stock ${stock.ticker} overall scores:`, stockMetricScore);
     
     // Current metrics - use 0 for empty portfolio (0-100 scale)
     const currentMetrics = {
@@ -428,6 +449,7 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
       value: hasExistingHoldings ? portfolioMetrics.value : 0,
       momentum: hasExistingHoldings ? portfolioMetrics.momentum : 0
     };
+    console.log('Current portfolio metrics:', currentMetrics);
     
     // Create simulated portfolio with new stock
     const simulatedHoldings = [...holdings];
@@ -455,29 +477,49 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
       });
     }
     
-    // Calculate new metrics
+    // Calculate new metrics with debugging
+    console.log('Calculating new portfolio metrics with this stock added:');
+    
+    let newPerformance, newStability, newValue, newMomentum;
+    
+    if (hasExistingHoldings) {
+      console.log('Adding to existing portfolio - calculating weighted averages');
+      newPerformance = calculateNewMetricScore('performance', simulatedHoldings, stock);
+      newStability = calculateNewMetricScore('stability', simulatedHoldings, stock);
+      newValue = calculateNewMetricScore('value', simulatedHoldings, stock);
+      newMomentum = calculateNewMetricScore('momentum', simulatedHoldings, stock);
+    } else {
+      console.log('First investment - using stock metrics directly');
+      newPerformance = stockMetricScore.performance;
+      newStability = stockMetricScore.stability;
+      newValue = stockMetricScore.value;
+      newMomentum = stockMetricScore.momentum;
+    }
+    
+    console.log('New portfolio metrics calculated:');
+    console.log(`- Performance: ${newPerformance}`);
+    console.log(`- Stability: ${newStability}`);
+    console.log(`- Value: ${newValue}`);
+    console.log(`- Momentum: ${newMomentum}`);
+    
     const newMetrics = {
-      performance: hasExistingHoldings ? 
-        calculateNewMetricScore('performance', simulatedHoldings, stock) : 
-        stockMetricScore.performance,
-      stability: hasExistingHoldings ? 
-        calculateNewMetricScore('stability', simulatedHoldings, stock) : 
-        stockMetricScore.stability,
-      value: hasExistingHoldings ? 
-        calculateNewMetricScore('value', simulatedHoldings, stock) : 
-        stockMetricScore.value,
-      momentum: hasExistingHoldings ? 
-        calculateNewMetricScore('momentum', simulatedHoldings, stock) : 
-        stockMetricScore.momentum
+      performance: newPerformance,
+      stability: newStability,
+      value: newValue,
+      momentum: newMomentum
     };
     
     // Calculate industry allocation (current and new)
     const currentTotal = Math.max(portfolioValue, 0.01); // Avoid division by zero
     const newTotal = currentTotal + amount;
     
+    console.log(`Portfolio value: Current $${currentTotal} → New $${newTotal}`);
+    
     const industries = new Set<string>();
     holdings.forEach(h => industries.add(h.stock.industry));
     industries.add(stock.industry);
+    
+    console.log('Industries in portfolio:', Array.from(industries));
     
     const industryAllocation: Record<string, {current: number, new: number}> = {};
     
@@ -488,28 +530,49 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
     
     // For first investment, set 100% allocation to new stock's industry
     if (!hasExistingHoldings) {
+      console.log(`First investment: Setting 100% allocation to ${stock.industry}`);
       industryAllocation[stock.industry].new = 100;
     } else {
+      console.log('Calculating industry allocations:');
+      
       // Calculate current allocation
       holdings.forEach(holding => {
         const industry = holding.stock.industry;
-        industryAllocation[industry].current += (holding.value / currentTotal) * 100;
+        const allocation = (holding.value / currentTotal) * 100;
+        industryAllocation[industry].current += allocation;
+        console.log(`Current: ${industry} = $${holding.value.toFixed(2)} (${allocation.toFixed(1)}%)`);
       });
       
       // Calculate new allocation
       simulatedHoldings.forEach(holding => {
         const industry = holding.stock.industry;
-        industryAllocation[industry].new += (holding.value / newTotal) * 100;
+        const allocation = (holding.value / newTotal) * 100;
+        industryAllocation[industry].new += allocation;
+        console.log(`New: ${industry} = $${holding.value.toFixed(2)} (${allocation.toFixed(1)}%)`);
       });
     }
     
     // Calculate impact - ensure small changes for first investment
+    const performanceImpact = parseFloat((newMetrics.performance - currentMetrics.performance).toFixed(1));
+    const stabilityImpact = parseFloat((newMetrics.stability - currentMetrics.stability).toFixed(1));
+    const valueImpact = parseFloat((newMetrics.value - currentMetrics.value).toFixed(1));
+    const momentumImpact = parseFloat((newMetrics.momentum - currentMetrics.momentum).toFixed(1));
+    
+    console.log('Impact on metrics:');
+    console.log(`- Performance: ${currentMetrics.performance} → ${newMetrics.performance} (${performanceImpact > 0 ? '+' : ''}${performanceImpact})`);
+    console.log(`- Stability: ${currentMetrics.stability} → ${newMetrics.stability} (${stabilityImpact > 0 ? '+' : ''}${stabilityImpact})`);
+    console.log(`- Value: ${currentMetrics.value} → ${newMetrics.value} (${valueImpact > 0 ? '+' : ''}${valueImpact})`);
+    console.log(`- Momentum: ${currentMetrics.momentum} → ${newMetrics.momentum} (${momentumImpact > 0 ? '+' : ''}${momentumImpact})`);
+    
     const impact = {
-      performance: parseFloat((newMetrics.performance - currentMetrics.performance).toFixed(1)),
-      stability: parseFloat((newMetrics.stability - currentMetrics.stability).toFixed(1)),
-      value: parseFloat((newMetrics.value - currentMetrics.value).toFixed(1)),
-      momentum: parseFloat((newMetrics.momentum - currentMetrics.momentum).toFixed(1))
+      performance: performanceImpact,
+      stability: stabilityImpact,
+      value: valueImpact,
+      momentum: momentumImpact
     };
+    
+    console.log('Final industry allocation:', industryAllocation);
+    console.log('---- END CALCULATION ----');
     
     return {
       currentMetrics,
