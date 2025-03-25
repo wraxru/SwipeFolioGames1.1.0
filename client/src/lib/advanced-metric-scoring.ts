@@ -132,10 +132,10 @@ export const calculateStabilityScore = (
   console.log(`- Beta market weight: ${betaMarketWeight.toFixed(2)}`);
   console.log(`- Div Consistency market weight: ${divConsistencyMarketWeight.toFixed(2)}`);
   
-  // Step 3: Apply weightings according to formula (55% volatility, 25% beta, 20% div consistency)
-  const volatilityContribution = 0.55 * volatilityNormalized * volatilityMarketWeight;
-  const betaContribution = 0.25 * betaNormalized * betaMarketWeight;
-  const divConsistencyContribution = 0.20 * divConsistencyNormalized * divConsistencyMarketWeight;
+  // Step 3: Apply weightings: 55% volatility, 25% beta, 20% dividend consistency
+  const volatilityContribution = 0.55 * volatilityNormalized * (marketAverages.stability.volatility / industryAvgs.volatility);
+  const betaContribution = 0.25 * betaNormalized * (industryAvgs.beta / marketAverages.stability.beta);
+  const divConsistencyContribution = 0.20 * divConsistencyNormalized * (industryDivConsistency / marketAverages.stability.dividendConsistency);
   
   console.log(`- Volatility contribution: ${volatilityContribution.toFixed(2)}`);
   console.log(`- Beta contribution: ${betaContribution.toFixed(2)}`);
@@ -200,10 +200,10 @@ export const calculateValueScore = (
   console.log(`- P/B market weight: ${pbRatioMarketWeight.toFixed(2)}`);
   console.log(`- Div Yield market weight: ${divYieldMarketWeight.toFixed(2)}`);
   
-  // Step 3: Apply weightings according to formula (50% P/E, 30% P/B, 20% dividend yield)
-  const peContribution = 0.5 * peRatioNormalized * peRatioMarketWeight;
-  const pbContribution = 0.3 * pbRatioNormalized * pbRatioMarketWeight;
-  const divYieldContribution = 0.2 * divYieldNormalized * divYieldMarketWeight;
+  // Step 3: Apply weightings: 50% P/E, 30% P/B, 20% dividend yield
+  const peContribution = 0.5 * peRatioNormalized * (marketAverages.value.peRatio / industryAvgs.peRatio);
+  const pbContribution = 0.3 * pbRatioNormalized * (marketAverages.value.pbRatio / industryAvgs.pbRatio);
+  const divYieldContribution = 0.2 * divYieldNormalized * (industryAvgs.dividendYield / marketAverages.value.dividendYield);
   
   console.log(`- P/E contribution: ${peContribution.toFixed(2)}`);
   console.log(`- P/B contribution: ${pbContribution.toFixed(2)}`);
@@ -255,10 +255,9 @@ export const calculateMomentumScore = (
   console.log(`- 3-Month Return market weight: ${threeMonthReturnMarketWeight.toFixed(2)}`);
   console.log(`- RSI market weight: ${rsiMarketWeight.toFixed(2)}`);
   
-  // Step 3: Apply weightings according to formula (50% 3-month return, 30% RSI, 20% relative performance)
-  const threeMonthContribution = 0.5 * threeMonthReturnNormalized * threeMonthReturnMarketWeight;
-  const rsiContribution = 0.3 * rsiNormalized * rsiMarketWeight;
-  const relPerfContribution = 0.2 * relPerfNormalized;
+  // Step 3: Apply weightings: 50% 3-month return, 50% RSI
+  const threeMonthContribution = 0.5 * threeMonthReturnNormalized * (industryAvgs.threeMonthReturn / marketAverages.momentum.threeMonthReturn);
+  const rsiContribution = 0.5 * rsiNormalized * (industryAvgs.rsi / marketAverages.momentum.rsi);
   
   console.log(`- 3-Month Return contribution: ${threeMonthContribution.toFixed(2)}`);
   console.log(`- RSI contribution: ${rsiContribution.toFixed(2)}`);
