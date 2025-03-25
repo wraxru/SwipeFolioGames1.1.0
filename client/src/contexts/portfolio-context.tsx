@@ -90,27 +90,173 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
     return totalWeight > 0 ? parseFloat((weightedScore / totalWeight).toFixed(1)) : 5.0;
   }
   
-  // Helper to get numeric score from metric
+  // Helper to get numeric score from metric on a 0-100 scale
   function getMetricScore(stock: StockData, metricName: string): number {
-    const metricValue = stock.metrics[metricName as keyof typeof stock.metrics].value;
+    const metricData = stock.metrics[metricName as keyof typeof stock.metrics];
+    const metricValue = metricData.value;
+    const industryAvgs = getIndustryAverages(stock.industry);
     
-    // Convert rating strings to numeric scores
-    switch (metricValue) {
-      case "Strong":
-      case "High":
-      case "Good":
-        return 7.5;
-      case "Fair":
-      case "Average":
-        return 5.0;
-      case "Unstable":
-      case "Weak":
-      case "Low":
-      case "Poor":
-        return 2.5;
+    // Get detailed metrics data
+    let detailedMetrics;
+    switch(metricName) {
+      case 'performance':
+        detailedMetrics = stock.metrics.performance.details;
+        break;
+      case 'stability':
+        detailedMetrics = stock.metrics.stability.details;
+        break;
+      case 'value':
+        detailedMetrics = stock.metrics.value.details;
+        break;
+      case 'momentum':
+        detailedMetrics = stock.metrics.momentum.details;
+        break;
       default:
-        return 5.0;
+        detailedMetrics = {};
     }
+    
+    // Calculate detailed score based on industry comparisons
+    // This follows the logic from category-scoring.ts
+    let subScores: number[] = [];
+    let totalWeight = 0;
+    let weightedScore = 0;
+    
+    switch(metricName) {
+      case 'performance': {
+        // Revenue Growth (40% weight, higher is better)
+        const revenueGrowthScore = Math.min(100, Math.max(0, 
+          (detailedMetrics.revenueGrowth / industryAvgs.performance.revenueGrowth) * 100));
+        weightedScore += revenueGrowthScore * 0.4;
+        totalWeight += 0.4;
+        
+        // Profit Margin (30% weight, higher is better)
+        const profitMarginScore = Math.min(100, Math.max(0, 
+          (detailedMetrics.profitMargin / industryAvgs.performance.profitMargin) * 100));
+        weightedScore += profitMarginScore * 0.3;
+        totalWeight += 0.3;
+        
+        // Return on Capital (30% weight, higher is better)
+        const rocScore = Math.min(100, Math.max(0, 
+          (detailedMetrics.returnOnCapital / industryAvgs.performance.returnOnCapital) * 100));
+        weightedScore += rocScore * 0.3;
+        totalWeight += 0.3;
+        break;
+      }
+      
+      case 'value': {
+        // P/E Ratio (50% weight, lower is better)
+        const peScore = Math.min(100, Math.max(0, 
+          100 - ((detailedMetrics.peRatio / industryAvgs.value.peRatio) * 50)));
+        weightedScore += peScore * 0.5;
+        totalWeight += 0.5;
+        
+        // P/B Ratio (30% weight, lower is better)
+        const pbScore = Math.min(100, Math.max(0, 
+          100 - ((detailedMetrics.pbRatio / industryAvgs.value.pbRatio) * 50)));
+        weightedScore += pbScore * 0.3;
+        totalWeight += 0.3;
+        
+        // Dividend Yield (20% weight, higher is better)
+        let dividendYield = detailedMetrics.dividendYield;
+        if (typeof dividendYield === 'string') {
+          dividendYield = parseFloat(dividendYield.replace('%', ''));
+        }
+        
+        if (!isNaN(dividendYield)) {
+          const divYieldScore = Math.min(100, Math.max(0, 
+            (dividendYield / industryAvgs.value.dividendYield) * 100));
+          weightedScore += divYieldScore * 0.2;
+          totalWeight += 0.2;
+        }
+        break;
+      }
+      
+      case 'stability': {
+        // Volatility (50% weight, lower is better)
+        const volatilityScore = Math.min(100, Math.max(0, 
+          100 - ((detailedMetrics.volatility / industryAvgs.stability.volatility) * 50)));
+        weightedScore += volatilityScore * 0.5;
+        totalWeight += 0.5;
+        
+        // Beta (30% weight, best when close to 1)
+        const betaScore = Math.min(100, Math.max(0, 
+          100 - (Math.abs(1 - detailedMetrics.beta) * 50)));
+        weightedScore += betaScore * 0.3;
+        totalWeight += 0.3;
+        
+        // Dividend Consistency (20% weight)
+        let divConsistencyScore = 0;
+        switch(detailedMetrics.dividendConsistency) {
+          case "High":
+          case "Good":
+            divConsistencyScore = 90;
+            break;
+          case "Medium":
+            divConsistencyScore = 60;
+            break;
+          case "Low":
+          case "Poor":
+            divConsistencyScore = 30;
+            break;
+          default:
+            divConsistencyScore = 0;
+        }
+        weightedScore += divConsistencyScore * 0.2;
+        totalWeight += 0.2;
+        break;
+      }
+      
+      case 'momentum': {
+        // 3-Month Return (50% weight, higher is better)
+        const threeMonthScore = Math.min(100, Math.max(0, 
+          (detailedMetrics.threeMonthReturn / industryAvgs.momentum.threeMonthReturn) * 100));
+        weightedScore += threeMonthScore * 0.5;
+        totalWeight += 0.5;
+        
+        // Relative Performance (30% weight, higher is better)
+        const relPerfScore = Math.min(100, Math.max(0, 
+          50 + (detailedMetrics.relativePerformance * 5)));
+        weightedScore += relPerfScore * 0.3;
+        totalWeight += 0.3;
+        
+        // RSI (20% weight, where a value closer to 50 is best)
+        const rsiScore = Math.min(100, Math.max(0, 
+          100 - (Math.abs(50 - detailedMetrics.rsi) * 2)));
+        weightedScore += rsiScore * 0.2;
+        totalWeight += 0.2;
+        break;
+      }
+      
+      default: {
+        // Convert string rating to numeric score as fallback
+        let stringScore = 0;
+        switch (metricValue) {
+          case "Strong":
+          case "High":
+            stringScore = 90;
+            break;
+          case "Good":
+            stringScore = 70;
+            break;
+          case "Fair":
+          case "Average":
+            stringScore = 50;
+            break;
+          case "Weak":
+          case "Poor":
+          case "Unstable":
+            stringScore = 30;
+            break;
+          default:
+            stringScore = 0;
+        }
+        
+        return stringScore;
+      }
+    }
+    
+    // Normalize the score if we have weights
+    return totalWeight > 0 ? weightedScore / totalWeight : 0;
   }
   
   // Buy a stock
