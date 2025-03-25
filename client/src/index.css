@@ -158,15 +158,15 @@
 }
 
 .metric-high {
-  @apply bg-gradient-to-br from-green-50 to-white border-green-100;
+  @apply bg-gradient-to-br from-green-50 to-white border border-green-200 shadow-[0_2px_10px_rgba(0,0,0,0.05)];
 }
 
 .metric-average {
-  @apply bg-gradient-to-br from-amber-50 to-white border-amber-100;
+  @apply bg-gradient-to-br from-amber-50 to-white border border-amber-200 shadow-[0_2px_10px_rgba(0,0,0,0.05)];
 }
 
 .metric-low {
-  @apply bg-gradient-to-br from-red-50 to-white border-red-100;
+  @apply bg-gradient-to-br from-red-50 to-white border border-red-200 shadow-[0_2px_10px_rgba(0,0,0,0.05)];
 }
 
 .stat-value {

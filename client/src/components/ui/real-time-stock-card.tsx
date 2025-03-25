@@ -404,12 +404,12 @@ export default function RealTimeStockCard({
                 <svg viewBox="0 0 300 80" width="100%" height="100%" preserveAspectRatio="none">
                   <defs>
                     <linearGradient id={`chartGradient-${stock.ticker}`} x1="0%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" stopColor={realTimeChange >= 0 ? "rgba(14, 165, 233, 0.3)" : "rgba(239, 68, 68, 0.3)"} />
-                      <stop offset="100%" stopColor={realTimeChange >= 0 ? "rgba(14, 165, 233, 0)" : "rgba(239, 68, 68, 0)"} />
+                      <stop offset="0%" stopColor={realTimeChange >= 0 ? "rgba(34, 197, 94, 0.2)" : "rgba(239, 68, 68, 0.2)"} />
+                      <stop offset="100%" stopColor={realTimeChange >= 0 ? "rgba(34, 197, 94, 0)" : "rgba(239, 68, 68, 0)"} />
                     </linearGradient>
                     {/* Add a subtle glow effect */}
                     <filter id={`glow-${stock.ticker}`}>
-                      <feGaussianBlur stdDeviation="1.5" result="blur" />
+                      <feGaussianBlur stdDeviation="0.8" result="blur" />
                       <feComposite in="SourceGraphic" in2="blur" operator="over" />
                     </filter>
                   </defs>
@@ -424,12 +424,12 @@ export default function RealTimeStockCard({
                           return `L ${x},${y}`;
                         }).join(" ")}`}
                         fill="none"
-                        stroke={realTimeChange >= 0 ? "#0ea5e9" : "#ef4444"}
-                        strokeWidth="2"
+                        stroke={realTimeChange >= 0 ? "#22c55e" : "#ef4444"}
+                        strokeWidth="1.5"
                         filter={`url(#glow-${stock.ticker})`}
                       />
                       
-                      {/* Area fill */}
+                      {/* Area fill - making it very subtle */}
                       <path
                         d={`M 0,${80 - ((chartData[0] - minValue) / (maxValue - minValue)) * 80} ${chartData.map((point, i) => {
                           const x = (i / (chartData.length - 1)) * 300;
@@ -437,52 +437,47 @@ export default function RealTimeStockCard({
                           return `L ${x},${y}`;
                         }).join(" ")} L 300,80 L 0,80 Z`}
                         fill={`url(#chartGradient-${stock.ticker})`}
+                        opacity="0.15"
                       />
                     </>
                   )}
                 </svg>
               </div>
               
-              {/* Time scale */}
-              <div className="ml-10 flex justify-between text-xs text-slate-500 mt-4 py-1 px-2 rounded-md">
-                {timeScaleLabels.map((label, index) => (
-                  <span key={index} className="font-medium">{label}</span>
-                ))}
-              </div>
+              {/* Removed time scale as these are not timed stocks */}
             </>
           )}
         </div>
 
         {/* Stock Info */}
         <div className="px-4 py-4 border-b border-slate-100 bg-white">
-          {/* Header with name, ticker, and price side by side */}
-          <div className="flex items-center justify-between mb-2">
-            <div>
-              <h2 className="text-xl font-bold text-slate-800">
-                {stock.name} <span className="text-slate-500">({stock.ticker})</span>
-              </h2>
-            </div>
+          {/* Stock Name and Ticker */}
+          <div className="mb-3">
+            <h2 className="text-2xl font-bold text-slate-800">
+              {stock.name} <span className="text-slate-500 text-lg">({stock.ticker})</span>
+            </h2>
             
-            {/* Price bubble horizontal to the name */}
-            <div className={`flex items-center ${realTimeChange >= 0 ? 'bg-green-50' : 'bg-red-50'} rounded-full px-3 py-1.5 border ${realTimeChange >= 0 ? 'border-green-200' : 'border-red-200'} shadow-sm`}
-            >
+            {/* Price under stock name with change on the right */}
+            <div className="flex justify-between items-center mt-2">
               {isLoadingQuote ? (
-                <Skeleton className="h-6 w-20 bg-slate-100" />
+                <Skeleton className="h-8 w-32 bg-slate-100" />
               ) : (
-                <>
-                  <span className="text-xl font-bold text-slate-800">${displayPrice}</span>
-                  <span className={`ml-2 text-sm ${realTimeChange >= 0 ? 'text-green-600' : 'text-red-600'} flex items-center font-medium`}>
+                <div className="flex items-baseline">
+                  <span className="text-2xl font-bold text-slate-800 mr-2">${displayPrice}</span>
+                </div>
+              )}
+              
+              {isLoadingQuote ? (
+                <Skeleton className="h-6 w-16 bg-slate-100" />
+              ) : (
+                <div className={`text-sm px-3 py-1 rounded-full font-medium ${realTimeChange >= 0 ? 'text-green-600 bg-green-50 border border-green-100' : 'text-red-600 bg-red-50 border border-red-100'}`}>
+                  <span className="flex items-center">
                     <span className={`inline-block w-2 h-2 rounded-full mr-1 ${realTimeChange >= 0 ? 'bg-green-500' : 'bg-red-500'}`}></span>
                     {realTimeChange >= 0 ? '+' : ''}{realTimeChange}%
                   </span>
-                </>
+                </div>
               )}
             </div>
-          </div>
-          
-          {/* Latest trading day info */}
-          <div className="text-xs text-slate-500 mb-2">
-            Last updated: {latestTradingDay}
           </div>
           
           {/* Description bubble */}
