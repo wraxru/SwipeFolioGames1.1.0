@@ -1,6 +1,7 @@
 import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
-import { StockData } from '@/lib/stock-data';
+import { StockData, PerformanceDetails, StabilityDetails, ValueDetails, MomentumDetails } from '@/lib/stock-data';
 import { useToast } from '@/hooks/use-toast';
+import { getIndustryAverages } from '@/lib/industry-data';
 
 // Define types
 export interface PortfolioHolding {
@@ -72,9 +73,9 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
     momentum: calculatePortfolioMetric('momentum')
   };
   
-  // Calculate individual portfolio metric score
+  // Calculate individual portfolio metric score using the 0-100 scale
   function calculatePortfolioMetric(metricName: "performance" | "stability" | "value" | "momentum"): number {
-    if (holdings.length === 0) return 5.0; // Default baseline score
+    if (holdings.length === 0) return 0; // Empty portfolio starts at 0
     
     let weightedScore = 0;
     let totalWeight = 0;
@@ -96,23 +97,23 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
     const metricValue = metricData.value;
     const industryAvgs = getIndustryAverages(stock.industry);
     
-    // Get detailed metrics data
-    let detailedMetrics;
+    // Get detailed metrics data with proper typing
+    let detailedMetrics: PerformanceDetails | StabilityDetails | ValueDetails | MomentumDetails;
     switch(metricName) {
       case 'performance':
-        detailedMetrics = stock.metrics.performance.details;
+        detailedMetrics = stock.metrics.performance.details as PerformanceDetails;
         break;
       case 'stability':
-        detailedMetrics = stock.metrics.stability.details;
+        detailedMetrics = stock.metrics.stability.details as StabilityDetails;
         break;
       case 'value':
-        detailedMetrics = stock.metrics.value.details;
+        detailedMetrics = stock.metrics.value.details as ValueDetails;
         break;
       case 'momentum':
-        detailedMetrics = stock.metrics.momentum.details;
+        detailedMetrics = stock.metrics.momentum.details as MomentumDetails;
         break;
       default:
-        detailedMetrics = {};
+        return 0; // Default to 0 score if we can't determine the metric type
     }
     
     // Calculate detailed score based on industry comparisons
@@ -123,41 +124,45 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
     
     switch(metricName) {
       case 'performance': {
+        const perfMetrics = detailedMetrics as PerformanceDetails;
+        
         // Revenue Growth (40% weight, higher is better)
         const revenueGrowthScore = Math.min(100, Math.max(0, 
-          (detailedMetrics.revenueGrowth / industryAvgs.performance.revenueGrowth) * 100));
+          (perfMetrics.revenueGrowth / industryAvgs.performance.revenueGrowth) * 100));
         weightedScore += revenueGrowthScore * 0.4;
         totalWeight += 0.4;
         
         // Profit Margin (30% weight, higher is better)
         const profitMarginScore = Math.min(100, Math.max(0, 
-          (detailedMetrics.profitMargin / industryAvgs.performance.profitMargin) * 100));
+          (perfMetrics.profitMargin / industryAvgs.performance.profitMargin) * 100));
         weightedScore += profitMarginScore * 0.3;
         totalWeight += 0.3;
         
         // Return on Capital (30% weight, higher is better)
         const rocScore = Math.min(100, Math.max(0, 
-          (detailedMetrics.returnOnCapital / industryAvgs.performance.returnOnCapital) * 100));
+          (perfMetrics.returnOnCapital / industryAvgs.performance.returnOnCapital) * 100));
         weightedScore += rocScore * 0.3;
         totalWeight += 0.3;
         break;
       }
       
       case 'value': {
+        const valueMetrics = detailedMetrics as ValueDetails;
+        
         // P/E Ratio (50% weight, lower is better)
         const peScore = Math.min(100, Math.max(0, 
-          100 - ((detailedMetrics.peRatio / industryAvgs.value.peRatio) * 50)));
+          100 - ((valueMetrics.peRatio / industryAvgs.value.peRatio) * 50)));
         weightedScore += peScore * 0.5;
         totalWeight += 0.5;
         
         // P/B Ratio (30% weight, lower is better)
         const pbScore = Math.min(100, Math.max(0, 
-          100 - ((detailedMetrics.pbRatio / industryAvgs.value.pbRatio) * 50)));
+          100 - ((valueMetrics.pbRatio / industryAvgs.value.pbRatio) * 50)));
         weightedScore += pbScore * 0.3;
         totalWeight += 0.3;
         
         // Dividend Yield (20% weight, higher is better)
-        let dividendYield = detailedMetrics.dividendYield;
+        let dividendYield = valueMetrics.dividendYield;
         if (typeof dividendYield === 'string') {
           dividendYield = parseFloat(dividendYield.replace('%', ''));
         }
@@ -172,21 +177,23 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
       }
       
       case 'stability': {
+        const stabilityMetrics = detailedMetrics as StabilityDetails;
+        
         // Volatility (50% weight, lower is better)
         const volatilityScore = Math.min(100, Math.max(0, 
-          100 - ((detailedMetrics.volatility / industryAvgs.stability.volatility) * 50)));
+          100 - ((stabilityMetrics.volatility / industryAvgs.stability.volatility) * 50)));
         weightedScore += volatilityScore * 0.5;
         totalWeight += 0.5;
         
         // Beta (30% weight, best when close to 1)
         const betaScore = Math.min(100, Math.max(0, 
-          100 - (Math.abs(1 - detailedMetrics.beta) * 50)));
+          100 - (Math.abs(1 - stabilityMetrics.beta) * 50)));
         weightedScore += betaScore * 0.3;
         totalWeight += 0.3;
         
         // Dividend Consistency (20% weight)
         let divConsistencyScore = 0;
-        switch(detailedMetrics.dividendConsistency) {
+        switch(stabilityMetrics.dividendConsistency) {
           case "High":
           case "Good":
             divConsistencyScore = 90;
@@ -207,21 +214,23 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
       }
       
       case 'momentum': {
+        const momentumMetrics = detailedMetrics as MomentumDetails;
+        
         // 3-Month Return (50% weight, higher is better)
         const threeMonthScore = Math.min(100, Math.max(0, 
-          (detailedMetrics.threeMonthReturn / industryAvgs.momentum.threeMonthReturn) * 100));
+          (momentumMetrics.threeMonthReturn / industryAvgs.momentum.threeMonthReturn) * 100));
         weightedScore += threeMonthScore * 0.5;
         totalWeight += 0.5;
         
         // Relative Performance (30% weight, higher is better)
         const relPerfScore = Math.min(100, Math.max(0, 
-          50 + (detailedMetrics.relativePerformance * 5)));
+          50 + (momentumMetrics.relativePerformance * 5)));
         weightedScore += relPerfScore * 0.3;
         totalWeight += 0.3;
         
         // RSI (20% weight, where a value closer to 50 is best)
         const rsiScore = Math.min(100, Math.max(0, 
-          100 - (Math.abs(50 - detailedMetrics.rsi) * 2)));
+          100 - (Math.abs(50 - momentumMetrics.rsi) * 2)));
         weightedScore += rsiScore * 0.2;
         totalWeight += 0.2;
         break;
@@ -412,12 +421,12 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
       momentum: getMetricScore(stock, 'momentum')
     };
     
-    // Current metrics - ensure positive baseline values for first investment
+    // Current metrics - use 0 for empty portfolio (0-100 scale)
     const currentMetrics = {
-      performance: hasExistingHoldings ? portfolioMetrics.performance : 5.0,
-      stability: hasExistingHoldings ? portfolioMetrics.stability : 5.0,
-      value: hasExistingHoldings ? portfolioMetrics.value : 5.0,
-      momentum: hasExistingHoldings ? portfolioMetrics.momentum : 5.0
+      performance: hasExistingHoldings ? portfolioMetrics.performance : 0,
+      stability: hasExistingHoldings ? portfolioMetrics.stability : 0,
+      value: hasExistingHoldings ? portfolioMetrics.value : 0,
+      momentum: hasExistingHoldings ? portfolioMetrics.momentum : 0
     };
     
     // Create simulated portfolio with new stock
