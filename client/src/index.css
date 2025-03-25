@@ -251,8 +251,8 @@
 }
 
 .calculator-modal {
-  @apply fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-[450px]
-  max-h-[85vh] overflow-auto rounded-2xl bg-white z-50 border border-slate-200 shadow-2xl
+  @apply fixed left-[50%] top-[50%] transform -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-[450px]
+  max-h-[90vh] overflow-auto rounded-2xl bg-white z-50 border border-slate-200 shadow-2xl
   transition-all duration-300 text-slate-800;
 }
 

@@ -241,24 +241,24 @@ export default function PortfolioImpactCalculator({
                     </svg>
                   </div>
                   
-                  {/* Legend - only show when there are industries */}
+                  {/* Legend - positioned on left for better visibility */}
                   {Object.entries(impact.industryAllocation).length > 0 && (
-                    <div className="absolute right-0 top-0 text-xs">
+                    <div className="absolute left-2 top-2 text-sm bg-white/90 p-2 rounded-md shadow-sm border border-slate-100">
                       {Object.entries(impact.industryAllocation).map(([industry, allocation], index) => {
                         const colors = ["#06b6d4", "#8b5cf6", "#fbbf24", "#34d399", "#f87171"];
                         const color = colors[index % colors.length];
                         
                         // Only show legend items with actual values
                         return allocation.new > 0 ? (
-                          <div key={industry} className="flex items-center mb-1">
-                            <div className="w-3 h-3 rounded-sm mr-2" style={{ backgroundColor: color }}></div>
-                            <span className="mr-2">{industry}:</span>
-                            <span className="font-semibold">{formatPercentage(allocation.new)}</span>
+                          <div key={industry} className="flex items-center mb-1 font-medium">
+                            <div className="w-4 h-4 rounded-sm mr-2" style={{ backgroundColor: color }}></div>
+                            <span className="mr-2 text-slate-800">{industry}:</span>
+                            <span className="font-bold text-slate-900">{formatPercentage(allocation.new)}</span>
                             {/* Only show change indicator when there's a difference */}
                             {allocation.new !== allocation.current && Math.abs(allocation.new - allocation.current) > 0.1 && (
                               <span className={cn(
-                                "ml-1 text-[10px]",
-                                allocation.new > allocation.current ? "text-green-500" : "text-red-500"
+                                "ml-1 font-medium",
+                                allocation.new > allocation.current ? "text-green-600" : "text-red-600"
                               )}>
                                 {allocation.new > allocation.current ? "+" : ""}
                                 {formatPercentage(allocation.new - allocation.current)}
