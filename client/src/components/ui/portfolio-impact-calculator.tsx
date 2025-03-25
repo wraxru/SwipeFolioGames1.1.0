@@ -38,25 +38,44 @@ export default function PortfolioImpactCalculator({
   
   // Update track width on mount and when ref changes
   useEffect(() => {
-    if (slideTrackRef.current) {
-      setSlideTrackWidth(slideTrackRef.current.clientWidth - 80); // Subtract thumb width for accurate completion
-    }
+    const updateTrackWidth = () => {
+      if (slideTrackRef.current) {
+        const thumbWidth = 80; // Approximate width of the slider thumb
+        setSlideTrackWidth(slideTrackRef.current.clientWidth - thumbWidth);
+      }
+    };
+    
+    // Initial update
+    updateTrackWidth();
+    
+    // Add resize listener to handle window size changes
+    window.addEventListener('resize', updateTrackWidth);
+    
+    // Cleanup
+    return () => window.removeEventListener('resize', updateTrackWidth);
   }, [slideTrackRef, isOpen]);
   
   // Handle slide end
   const handleSlideEnd = () => {
     setSlidingInProgress(false);
     
-    // If slid more than 80% of the way, trigger success
-    if (slideX.get() > slideTrackWidth * 0.8) {
+    // If slid more than 70% of the way, trigger success (making it easier to complete)
+    if (slideX.get() > slideTrackWidth * 0.7) {
+      // Animate to completion
+      slideX.set(slideTrackWidth);
       setSlideSuccess(true);
+      
+      // Haptic feedback if supported
+      if (navigator.vibrate) {
+        navigator.vibrate(100);
+      }
       
       // Delay before triggering actual invest action to allow animation to play
       setTimeout(() => {
         handleInvest();
-      }, 500);
+      }, 600);
     } else {
-      // Spring back to start
+      // Spring back to start with animation
       slideX.set(0);
     }
   };
@@ -293,34 +312,64 @@ export default function PortfolioImpactCalculator({
                     </svg>
                   </div>
                   
-                  {/* Legend - moved to the left for better visibility and with background labels */}
+                  {/* Better positioned industry legends with improved styling */}
                   {Object.entries(impact.industryAllocation).length > 0 && (
-                    <div className="absolute top-[50%] -translate-y-1/2 left-2 text-sm flex flex-col gap-2">
+                    <div className="absolute inset-0 pointer-events-none">
                       {Object.entries(impact.industryAllocation).map(([industry, allocation], index) => {
                         const colors = ["#06b6d4", "#8b5cf6", "#fbbf24", "#34d399", "#f87171"];
                         const color = colors[index % colors.length];
+                        
+                        // Calculate positions around the pie chart for better spacing
+                        let positionStyle = {};
+                        
+                        if (industry === "Real Estate") {
+                          positionStyle = {
+                            top: '20%',
+                            right: '65%',
+                          };
+                        } else if (industry === "Technology") {
+                          positionStyle = {
+                            top: '20%',
+                            left: '65%',
+                          };
+                        } else if (industry === "Healthcare") {
+                          positionStyle = {
+                            bottom: '20%',
+                            left: '65%',
+                          };
+                        } else if (industry === "Financial") {
+                          positionStyle = {
+                            bottom: '20%',
+                            right: '65%',
+                          };
+                        } else {
+                          // Position other industries in a clean layout
+                          const positions = [
+                            { top: '10%', left: '50%', transform: 'translateX(-50%)' },
+                            { bottom: '10%', left: '50%', transform: 'translateX(-50%)' },
+                            { left: '10%', top: '50%', transform: 'translateY(-50%)' },
+                            { right: '10%', top: '50%', transform: 'translateY(-50%)' },
+                          ];
+                          
+                          positionStyle = positions[index % positions.length];
+                        }
                         
                         // Only show legend items with actual values
                         return allocation.new > 0 ? (
                           <div 
                             key={industry} 
-                            className={cn(
-                              "flex items-center px-2 py-1 rounded-md shadow-sm font-medium m-1",
-                              industry === "Real Estate" ? "bg-white border border-slate-200" : "bg-white border border-slate-200"
-                            )}
+                            className="absolute flex items-center px-2 py-1 rounded-lg shadow-md bg-white border border-slate-200"
                             style={{
-                              // Position Real Estate bubble to the left of the chart
-                              position: industry === "Real Estate" ? "absolute" : "relative",
-                              top: industry === "Real Estate" ? "-30px" : "auto",
-                              left: industry === "Real Estate" ? "-120px" : "auto",
-                              height: industry === "Real Estate" ? "auto" : "auto",
-                              zIndex: 10
+                              ...positionStyle,
+                              zIndex: 10,
+                              maxWidth: '120px',
+                              opacity: 0.95,
                             }}
                           >
                             <div className="w-3 h-3 rounded-full mr-1.5" style={{ backgroundColor: color }}></div>
                             <div className="flex flex-col items-start">
                               <div className="flex items-center">
-                                <span className="mr-1 text-xs text-slate-700 font-medium">{industry}</span>
+                                <span className="mr-1 text-xs text-slate-700 font-medium truncate">{industry}</span>
                                 <span className="font-bold text-xs text-slate-900">{formatPercentage(allocation.new)}</span>
                               </div>
                               {/* Only show change indicator when there's a difference */}
