@@ -44,24 +44,51 @@ export const calculatePerformanceScore = (
 ): number => {
   const industryAvgs = getIndustryAverages(industry).performance;
   
-  // Step 1: Normalize stock metrics against industry averages
-  const revGrowthNormalized = normalizeHigherBetter(stockMetrics.revenueGrowth, industryAvgs.revenueGrowth);
-  const profitMarginNormalized = normalizeHigherBetter(stockMetrics.profitMargin, industryAvgs.profitMargin);
-  const rocNormalized = normalizeHigherBetter(stockMetrics.returnOnCapital, industryAvgs.returnOnCapital);
+  // For debugging - log raw values
+  console.log(`Performance calculation for stock in ${industry} industry:`);
+  console.log(`- Revenue Growth: Stock ${stockMetrics.revenueGrowth}%, Industry ${industryAvgs.revenueGrowth}%, Market ${marketAverages.performance.revenueGrowth}%`);
+  console.log(`- Profit Margin: Stock ${stockMetrics.profitMargin}%, Industry ${industryAvgs.profitMargin}%, Market ${marketAverages.performance.profitMargin}%`);
+  console.log(`- Return on Capital: Stock ${stockMetrics.returnOnCapital}%, Industry ${industryAvgs.returnOnCapital}%, Market ${marketAverages.performance.returnOnCapital}%`);
   
-  // Step 2: Calculate industry-to-market weightings
-  const revGrowthMarketWeight = industryAvgs.revenueGrowth / marketAverages.performance.revenueGrowth;
-  const profitMarginMarketWeight = industryAvgs.profitMargin / marketAverages.performance.profitMargin;
-  const rocMarketWeight = industryAvgs.returnOnCapital / marketAverages.performance.returnOnCapital;
+  // Step 1: Normalize stock metrics against industry averages (0-1 scale)
+  const revGrowthNormalized = stockMetrics.revenueGrowth / industryAvgs.revenueGrowth;
+  const profitMarginNormalized = stockMetrics.profitMargin / industryAvgs.profitMargin;
+  const rocNormalized = stockMetrics.returnOnCapital / industryAvgs.returnOnCapital;
+  
+  // Cap normalized values at 0-1 for calculation
+  const revGrowthCapped = normalizeValue(revGrowthNormalized);
+  const profitMarginCapped = normalizeValue(profitMarginNormalized);
+  const rocCapped = normalizeValue(rocNormalized);
+  
+  console.log(`- Rev Growth normalized: ${revGrowthNormalized.toFixed(2)}, capped: ${revGrowthCapped.toFixed(2)}`);
+  console.log(`- Profit Margin normalized: ${profitMarginNormalized.toFixed(2)}, capped: ${profitMarginCapped.toFixed(2)}`);
+  console.log(`- ROC normalized: ${rocNormalized.toFixed(2)}, capped: ${rocCapped.toFixed(2)}`);
+  
+  // Step 2: Calculate industry-to-market weightings (0-1 scale)
+  const revGrowthMarketWeight = normalizeValue(industryAvgs.revenueGrowth / marketAverages.performance.revenueGrowth);
+  const profitMarginMarketWeight = normalizeValue(industryAvgs.profitMargin / marketAverages.performance.profitMargin);
+  const rocMarketWeight = normalizeValue(industryAvgs.returnOnCapital / marketAverages.performance.returnOnCapital);
+  
+  console.log(`- Rev Growth market weight: ${revGrowthMarketWeight.toFixed(2)}`);
+  console.log(`- Profit Margin market weight: ${profitMarginMarketWeight.toFixed(2)}`);
+  console.log(`- ROC market weight: ${rocMarketWeight.toFixed(2)}`);
   
   // Step 3: Apply weightings according to formula (40% rev growth, 30% profit margin, 30% ROC)
-  const weightedScore = 
-    0.4 * revGrowthNormalized * revGrowthMarketWeight +
-    0.3 * profitMarginNormalized * profitMarginMarketWeight +
-    0.3 * rocNormalized * rocMarketWeight;
+  const revContribution = 0.4 * revGrowthCapped * revGrowthMarketWeight;
+  const profitContribution = 0.3 * profitMarginCapped * profitMarginMarketWeight;
+  const rocContribution = 0.3 * rocCapped * rocMarketWeight;
+  
+  console.log(`- Rev Growth contribution: ${revContribution.toFixed(2)}`);
+  console.log(`- Profit Margin contribution: ${profitContribution.toFixed(2)}`);
+  console.log(`- ROC contribution: ${rocContribution.toFixed(2)}`);
+  
+  const weightedScore = revContribution + profitContribution + rocContribution;
   
   // Return final score on a 0-100 scale
-  return Math.round(weightedScore * 100);
+  const finalScore = Math.min(100, Math.round(weightedScore * 100));
+  console.log(`- Final performance score: ${finalScore}`);
+  
+  return finalScore;
 };
 
 // Calculate stability score (volatility, beta, dividend consistency)
@@ -71,28 +98,56 @@ export const calculateStabilityScore = (
 ): number => {
   const industryAvgs = getIndustryAverages(industry).stability;
   
+  // For debugging - log raw values
+  console.log(`Stability calculation for stock in ${industry} industry:`);
+  console.log(`- Volatility: Stock ${stockMetrics.volatility}%, Industry ${industryAvgs.volatility}%, Market ${marketAverages.stability.volatility}%`);
+  console.log(`- Beta: Stock ${stockMetrics.beta}, Industry ${industryAvgs.beta}, Market ${marketAverages.stability.beta}`);
+  console.log(`- Dividend Consistency: Stock ${stockMetrics.dividendConsistency}, Industry ${industryAvgs.dividendConsistency}`);
+  
   // Step 1: Normalize stock metrics against industry averages
-  const volatilityNormalized = normalizeLowerBetter(stockMetrics.volatility, industryAvgs.volatility);
-  const betaNormalized = normalizeBeta(stockMetrics.beta);
+  // For volatility, lower is better, so we invert the comparison
+  const volatilityRelative = industryAvgs.volatility / stockMetrics.volatility;
+  const volatilityNormalized = normalizeValue(volatilityRelative);
+  
+  // For beta, closest to 1 is best
+  const betaScore = 1 - Math.min(0.5, Math.abs(1 - stockMetrics.beta)) / 0.5;
+  const betaNormalized = normalizeValue(betaScore);
   
   // For dividend consistency, convert string ratings to numeric scores
   const stockDivConsistency = getDividendConsistencyScore(stockMetrics.dividendConsistency);
   const industryDivConsistency = getDividendConsistencyScore(industryAvgs.dividendConsistency);
-  const divConsistencyNormalized = normalizeHigherBetter(stockDivConsistency, industryDivConsistency);
+  const divConsistencyRelative = stockDivConsistency / industryDivConsistency;
+  const divConsistencyNormalized = normalizeValue(divConsistencyRelative);
   
-  // Step 2: Calculate industry-to-market weightings
-  const volatilityMarketWeight = industryAvgs.volatility / marketAverages.stability.volatility;
-  const betaMarketWeight = industryAvgs.beta / marketAverages.stability.beta;
-  const divConsistencyMarketWeight = industryDivConsistency / marketAverages.stability.dividendConsistency;
+  console.log(`- Volatility normalized: ${volatilityNormalized.toFixed(2)}`);
+  console.log(`- Beta normalized: ${betaNormalized.toFixed(2)}`);
+  console.log(`- Div Consistency normalized: ${divConsistencyNormalized.toFixed(2)}`);
+  
+  // Step 2: Calculate industry-to-market weightings (normalized to 0-1)
+  const volatilityMarketWeight = normalizeValue(marketAverages.stability.volatility / industryAvgs.volatility);
+  const betaMarketWeight = normalizeValue(industryAvgs.beta);
+  const divConsistencyMarketWeight = normalizeValue(industryDivConsistency / marketAverages.stability.dividendConsistency);
+  
+  console.log(`- Volatility market weight: ${volatilityMarketWeight.toFixed(2)}`);
+  console.log(`- Beta market weight: ${betaMarketWeight.toFixed(2)}`);
+  console.log(`- Div Consistency market weight: ${divConsistencyMarketWeight.toFixed(2)}`);
   
   // Step 3: Apply weightings according to formula (55% volatility, 25% beta, 20% div consistency)
-  const weightedScore = 
-    0.55 * volatilityNormalized * volatilityMarketWeight +
-    0.25 * betaNormalized * betaMarketWeight +
-    0.20 * divConsistencyNormalized * divConsistencyMarketWeight;
+  const volatilityContribution = 0.55 * volatilityNormalized * volatilityMarketWeight;
+  const betaContribution = 0.25 * betaNormalized * betaMarketWeight;
+  const divConsistencyContribution = 0.20 * divConsistencyNormalized * divConsistencyMarketWeight;
   
-  // Return final score on a 0-100 scale
-  return Math.round(weightedScore * 100);
+  console.log(`- Volatility contribution: ${volatilityContribution.toFixed(2)}`);
+  console.log(`- Beta contribution: ${betaContribution.toFixed(2)}`);
+  console.log(`- Div Consistency contribution: ${divConsistencyContribution.toFixed(2)}`);
+  
+  const weightedScore = volatilityContribution + betaContribution + divConsistencyContribution;
+  
+  // Return final score on a 0-100 scale, capped at 100
+  const finalScore = Math.min(100, Math.round(weightedScore * 100));
+  console.log(`- Final stability score: ${finalScore}`);
+  
+  return finalScore;
 };
 
 // Calculate value score (P/E ratio, P/B ratio, dividend yield)
@@ -102,9 +157,22 @@ export const calculateValueScore = (
 ): number => {
   const industryAvgs = getIndustryAverages(industry).value;
   
-  // Step 1: Normalize stock metrics against industry averages
-  const peRatioNormalized = normalizeLowerBetter(stockMetrics.peRatio, industryAvgs.peRatio);
-  const pbRatioNormalized = normalizeLowerBetter(stockMetrics.pbRatio, industryAvgs.pbRatio);
+  // For debugging - log raw values
+  console.log(`Value calculation for stock in ${industry} industry:`);
+  console.log(`- P/E Ratio: Stock ${stockMetrics.peRatio}, Industry ${industryAvgs.peRatio}, Market ${marketAverages.value.peRatio}`);
+  console.log(`- P/B Ratio: Stock ${stockMetrics.pbRatio}, Industry ${industryAvgs.pbRatio}, Market ${marketAverages.value.pbRatio}`);
+  
+  // Step 1: Calculate normalized values for P/E and P/B (lower is better)
+  // For P/E and P/B ratios, lower values are better, so we invert the comparison
+  let peRatio = stockMetrics.peRatio;
+  let peIndustry = industryAvgs.peRatio;
+  const peRatioRelative = peIndustry / peRatio; // Value > 1 means better than industry
+  const peRatioNormalized = normalizeValue(peRatioRelative);
+  
+  let pbRatio = stockMetrics.pbRatio;
+  let pbIndustry = industryAvgs.pbRatio;
+  const pbRatioRelative = pbIndustry / pbRatio; // Value > 1 means better than industry
+  const pbRatioNormalized = normalizeValue(pbRatioRelative);
   
   // Handle dividend yield which might be a string with %
   let divYield = stockMetrics.dividendYield;
@@ -112,23 +180,42 @@ export const calculateValueScore = (
     divYield = parseFloat(divYield.replace('%', ''));
   }
   
-  const divYieldNormalized = !isNaN(divYield as number) 
-    ? normalizeHigherBetter(divYield as number, industryAvgs.dividendYield)
-    : 0;
+  console.log(`- Dividend Yield: Stock ${divYield}%, Industry ${industryAvgs.dividendYield}%, Market ${marketAverages.value.dividendYield}%`);
   
-  // Step 2: Calculate industry-to-market weightings
-  const peRatioMarketWeight = industryAvgs.peRatio / marketAverages.value.peRatio;
-  const pbRatioMarketWeight = industryAvgs.pbRatio / marketAverages.value.pbRatio;
-  const divYieldMarketWeight = industryAvgs.dividendYield / marketAverages.value.dividendYield;
+  const divYieldRelative = !isNaN(divYield as number) 
+    ? (divYield as number) / industryAvgs.dividendYield
+    : 0;
+  const divYieldNormalized = normalizeValue(divYieldRelative);
+  
+  console.log(`- P/E relative to industry: ${peRatioRelative.toFixed(2)}, normalized: ${peRatioNormalized.toFixed(2)}`);
+  console.log(`- P/B relative to industry: ${pbRatioRelative.toFixed(2)}, normalized: ${pbRatioNormalized.toFixed(2)}`);
+  console.log(`- Div Yield relative to industry: ${divYieldRelative.toFixed(2)}, normalized: ${divYieldNormalized.toFixed(2)}`);
+  
+  // Step 2: Calculate industry-to-market weightings (normalized to 0-1)
+  const peRatioMarketWeight = normalizeValue(marketAverages.value.peRatio / industryAvgs.peRatio);
+  const pbRatioMarketWeight = normalizeValue(marketAverages.value.pbRatio / industryAvgs.pbRatio);
+  const divYieldMarketWeight = normalizeValue(industryAvgs.dividendYield / marketAverages.value.dividendYield);
+  
+  console.log(`- P/E market weight: ${peRatioMarketWeight.toFixed(2)}`);
+  console.log(`- P/B market weight: ${pbRatioMarketWeight.toFixed(2)}`);
+  console.log(`- Div Yield market weight: ${divYieldMarketWeight.toFixed(2)}`);
   
   // Step 3: Apply weightings according to formula (50% P/E, 30% P/B, 20% dividend yield)
-  const weightedScore = 
-    0.5 * peRatioNormalized * peRatioMarketWeight +
-    0.3 * pbRatioNormalized * pbRatioMarketWeight +
-    0.2 * divYieldNormalized * divYieldMarketWeight;
+  const peContribution = 0.5 * peRatioNormalized * peRatioMarketWeight;
+  const pbContribution = 0.3 * pbRatioNormalized * pbRatioMarketWeight;
+  const divYieldContribution = 0.2 * divYieldNormalized * divYieldMarketWeight;
   
-  // Return final score on a 0-100 scale
-  return Math.round(weightedScore * 100);
+  console.log(`- P/E contribution: ${peContribution.toFixed(2)}`);
+  console.log(`- P/B contribution: ${pbContribution.toFixed(2)}`);
+  console.log(`- Div Yield contribution: ${divYieldContribution.toFixed(2)}`);
+  
+  const weightedScore = peContribution + pbContribution + divYieldContribution;
+  
+  // Return final score on a 0-100 scale, capped at 100
+  const finalScore = Math.min(100, Math.round(weightedScore * 100));
+  console.log(`- Final value score: ${finalScore}`);
+  
+  return finalScore;
 };
 
 // Calculate momentum score (3-month return, RSI)
@@ -138,27 +225,52 @@ export const calculateMomentumScore = (
 ): number => {
   const industryAvgs = getIndustryAverages(industry).momentum;
   
+  // For debugging - log raw values
+  console.log(`Momentum calculation for stock in ${industry} industry:`);
+  console.log(`- 3-Month Return: Stock ${stockMetrics.threeMonthReturn}%, Industry ${industryAvgs.threeMonthReturn}%, Market ${marketAverages.momentum.threeMonthReturn}%`);
+  console.log(`- Relative Performance: Stock ${stockMetrics.relativePerformance}`);
+  console.log(`- RSI: Stock ${stockMetrics.rsi}, Industry ${industryAvgs.rsi}, Market ${marketAverages.momentum.rsi}`);
+  
   // Step 1: Normalize stock metrics against industry averages
-  const threeMonthReturnNormalized = normalizeHigherBetter(
-    stockMetrics.threeMonthReturn, 
-    industryAvgs.threeMonthReturn
-  );
+  // For 3-month return, higher is better
+  const threeMonthReturnRelative = stockMetrics.threeMonthReturn / industryAvgs.threeMonthReturn;
+  const threeMonthReturnNormalized = normalizeValue(threeMonthReturnRelative);
   
-  const rsiNormalized = normalizeRSI(stockMetrics.rsi, industryAvgs.rsi);
+  // For RSI, best when close to 50
+  const rsiIdeal = 50;
+  const rsiDeviation = Math.abs(stockMetrics.rsi - rsiIdeal) / 25; // Scale by 25, so 25 point deviation = 1.0
+  const rsiNormalized = normalizeValue(1 - rsiDeviation); 
   
-  // Step 2: Calculate industry-to-market weightings
-  const threeMonthReturnMarketWeight = 
-    industryAvgs.threeMonthReturn / marketAverages.momentum.threeMonthReturn;
+  // For relative performance, this is already relative to industry
+  const relPerfNormalized = normalizeValue(0.5 + (stockMetrics.relativePerformance / 5));
   
-  const rsiMarketWeight = industryAvgs.rsi / marketAverages.momentum.rsi;
+  console.log(`- 3-Month Return normalized: ${threeMonthReturnNormalized.toFixed(2)}`);
+  console.log(`- RSI normalized: ${rsiNormalized.toFixed(2)}`);
+  console.log(`- Relative Performance normalized: ${relPerfNormalized.toFixed(2)}`);
   
-  // Step 3: Apply weightings according to formula (50% 3-month return, 50% RSI)
-  const weightedScore = 
-    0.5 * threeMonthReturnNormalized * threeMonthReturnMarketWeight +
-    0.5 * rsiNormalized * rsiMarketWeight;
+  // Step 2: Calculate industry-to-market weightings (normalized to 0-1)
+  const threeMonthReturnMarketWeight = normalizeValue(industryAvgs.threeMonthReturn / marketAverages.momentum.threeMonthReturn);
+  const rsiMarketWeight = normalizeValue(0.5); // Market weight for RSI is set at 0.5 as a neutral value
   
-  // Return final score on a 0-100 scale
-  return Math.round(weightedScore * 100);
+  console.log(`- 3-Month Return market weight: ${threeMonthReturnMarketWeight.toFixed(2)}`);
+  console.log(`- RSI market weight: ${rsiMarketWeight.toFixed(2)}`);
+  
+  // Step 3: Apply weightings according to formula (50% 3-month return, 30% RSI, 20% relative performance)
+  const threeMonthContribution = 0.5 * threeMonthReturnNormalized * threeMonthReturnMarketWeight;
+  const rsiContribution = 0.3 * rsiNormalized * rsiMarketWeight;
+  const relPerfContribution = 0.2 * relPerfNormalized;
+  
+  console.log(`- 3-Month Return contribution: ${threeMonthContribution.toFixed(2)}`);
+  console.log(`- RSI contribution: ${rsiContribution.toFixed(2)}`);
+  console.log(`- Relative Performance contribution: ${relPerfContribution.toFixed(2)}`);
+  
+  const weightedScore = threeMonthContribution + rsiContribution + relPerfContribution;
+  
+  // Return final score on a 0-100 scale, capped at 100
+  const finalScore = Math.min(100, Math.round(weightedScore * 100));
+  console.log(`- Final momentum score: ${finalScore}`);
+  
+  return finalScore;
 };
 
 // Main function to get a metric score from a stock on a 0-100 scale
