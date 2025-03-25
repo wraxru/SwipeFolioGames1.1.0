@@ -481,11 +481,25 @@ export default function RealTimeStockCard({
             </div>
           </div>
           
-          {/* Description bubble - Cleaner style */}
-          <div className="mt-2 p-3 bg-slate-50/70 rounded-lg border border-slate-100">
-            <p className="text-xs text-slate-600 leading-relaxed">
-              {companyData?.Description || stock.description}
-            </p>
+          {/* Description bubble - Enhanced with depth and visual appeal */}
+          <div className="mt-3 relative">
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-100/20 to-indigo-100/20 rounded-xl blur-md transform scale-[0.98] translate-y-1"></div>
+            <div className="p-4 bg-white rounded-xl border border-slate-200 shadow-lg relative overflow-hidden z-10">
+              <div className="absolute -right-6 -top-6 w-24 h-24 bg-gradient-to-br from-blue-50 via-indigo-50 to-transparent rounded-full opacity-70"></div>
+              <div className="flex items-start mb-2">
+                <div className="bg-blue-100 text-blue-600 p-1.5 rounded-md mr-2 shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M12 16v-4" />
+                    <path d="M12 8h.01" />
+                  </svg>
+                </div>
+                <h3 className="font-semibold text-sm text-slate-800">Company Overview</h3>
+              </div>
+              <p className="text-sm text-slate-700 leading-relaxed relative z-10 pl-1">
+                {companyData?.Description || stock.description}
+              </p>
+            </div>
           </div>
         </div>
 
@@ -526,62 +540,99 @@ export default function RealTimeStockCard({
           })}
         </div>
 
-        {/* Stock Synopsis - Cleaner Robinhood-style */}
-        <div className="p-4 border-b border-slate-100 bg-white">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="font-semibold text-base text-slate-800">Stock Synopsis</h3>
-            <span className="text-xs text-sky-500 bg-sky-50 px-2 py-0.5 rounded-full border border-sky-100">
-              AI Analysis
-            </span>
+        {/* Stock Synopsis - Enhanced with depth and visual appeal */}
+        <div className="p-5 bg-gradient-to-b from-white to-slate-50 border-b border-slate-100">
+          <div className="relative overflow-hidden mb-4">
+            <div className="absolute inset-0 bg-gradient-to-r from-cyan-100/20 to-blue-100/20 transform scale-[0.99] translate-y-[2px] blur-md rounded-lg"></div>
+            <div className="bg-white p-4 rounded-xl shadow-lg border border-slate-200 relative z-10 flex justify-between items-center">
+              <div className="flex items-center">
+                <div className="bg-gradient-to-br from-cyan-500 to-blue-600 text-white p-2 rounded-lg mr-3 shadow-md">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                  </svg>
+                </div>
+                <h3 className="font-semibold text-slate-800 text-lg bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">Stock Synopsis</h3>
+              </div>
+              <div className="flex items-center text-xs bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-3 py-1 rounded-full shadow-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                  <path d="M12 17h.01"></path>
+                </svg>
+                AI Analysis
+              </div>
+            </div>
           </div>
-          <div className="space-y-3">
-            {/* Price - Minimalist with clean lines */}
-            <div className="flex gap-3 bg-white p-3 rounded-lg border border-slate-100 hover:border-slate-200 transition-all duration-200">
-              <div className={`${realTimeChange >= 0 ? 'text-green-500 bg-green-50 border-green-100' : 'text-red-500 bg-red-50 border-red-100'} w-10 h-10 min-w-10 flex items-center justify-center rounded-full border`}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-                </svg>
-              </div>
-              <div className="flex-1">
-                <div className="font-medium text-slate-800 text-sm">Price Trend</div>
-                <div className="text-xs text-slate-600 mt-1 leading-relaxed">{stock.synopsis.price}</div>
-              </div>
-            </div>
-            
-            {/* Company - Minimalist with clean lines */}
-            <div className="flex gap-3 bg-white p-3 rounded-lg border border-slate-100 hover:border-slate-200 transition-all duration-200">
-              <div className="text-sky-500 bg-sky-50 border-sky-100 w-10 h-10 min-w-10 flex items-center justify-center rounded-full border">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <rect width="16" height="20" x="4" y="2" rx="2" ry="2" />
-                  <path d="M9 22v-4h6v4" />
-                  <path d="M8 6h.01" />
-                  <path d="M16 6h.01" />
-                  <path d="M12 6h.01" />
-                  <path d="M12 10h.01" />
-                  <path d="M12 14h.01" />
-                  <path d="M16 10h.01" />
-                  <path d="M16 14h.01" />
-                  <path d="M8 10h.01" />
-                  <path d="M8 14h.01" />
-                </svg>
-              </div>
-              <div className="flex-1">
-                <div className="font-medium text-slate-800 text-sm">Company News</div>
-                <div className="text-xs text-slate-600 mt-1 leading-relaxed">{stock.synopsis.company}</div>
+
+          <div className="grid grid-cols-1 gap-3">
+            {/* Price - Enhanced with shadows and gradients */}
+            <div className="relative group transition-all duration-300">
+              <div className="absolute inset-0 bg-gradient-to-r from-green-100/30 to-emerald-100/30 rounded-xl blur-sm transform scale-[0.98] translate-y-1 opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
+              <div className="flex gap-4 bg-white p-4 rounded-xl border border-slate-200 shadow-md hover:shadow-lg transition-all duration-300 relative z-10 overflow-hidden group-hover:border-green-200">
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-green-400 to-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div className={`${realTimeChange >= 0 ? 'text-white bg-gradient-to-br from-green-400 to-green-600' : 'text-white bg-gradient-to-br from-red-400 to-red-600'} 
+                  w-12 h-12 min-w-12 flex items-center justify-center rounded-lg shadow-md`}>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                  </svg>
+                </div>
+                <div className="flex-1 relative">
+                  <div className="font-bold text-slate-800 text-base flex items-center">
+                    Price Trend
+                    <div className={`ml-2 text-xs px-2 py-0.5 rounded-full ${realTimeChange >= 0 ? 'text-green-600 bg-green-50 border border-green-100' : 'text-red-600 bg-red-50 border border-red-100'}`}>
+                      {realTimeChange >= 0 ? '+' : ''}{realTimeChange}%
+                    </div>
+                  </div>
+                  <div className="text-sm text-slate-700 mt-1.5 leading-relaxed font-medium">{stock.synopsis.price}</div>
+                </div>
               </div>
             </div>
             
-            {/* Role - Minimalist with clean lines */}
-            <div className="flex gap-3 bg-white p-3 rounded-lg border border-slate-100 hover:border-slate-200 transition-all duration-200">
-              <div className="text-sky-500 bg-sky-50 border-sky-100 w-10 h-10 min-w-10 flex items-center justify-center rounded-full border">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7Z" />
-                  <path d="M16.5 16 15 20h-6l-1.5-4" />
-                </svg>
+            {/* Company - Enhanced with shadows and gradients */}
+            <div className="relative group transition-all duration-300">
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-100/30 to-indigo-100/30 rounded-xl blur-sm transform scale-[0.98] translate-y-1 opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
+              <div className="flex gap-4 bg-white p-4 rounded-xl border border-slate-200 shadow-md hover:shadow-lg transition-all duration-300 relative z-10 overflow-hidden group-hover:border-blue-200">
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-400 to-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div className="text-white bg-gradient-to-br from-blue-400 to-blue-600
+                  w-12 h-12 min-w-12 flex items-center justify-center rounded-lg shadow-md">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect width="16" height="20" x="4" y="2" rx="2" ry="2" />
+                    <path d="M9 22v-4h6v4" />
+                    <path d="M8 6h.01" />
+                    <path d="M16 6h.01" />
+                    <path d="M12 6h.01" />
+                    <path d="M12 10h.01" />
+                    <path d="M12 14h.01" />
+                    <path d="M16 10h.01" />
+                    <path d="M16 14h.01" />
+                    <path d="M8 10h.01" />
+                    <path d="M8 14h.01" />
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <div className="font-bold text-slate-800 text-base">Company News</div>
+                  <div className="text-sm text-slate-700 mt-1.5 leading-relaxed font-medium">{stock.synopsis.company}</div>
+                </div>
               </div>
-              <div className="flex-1">
-                <div className="font-medium text-slate-800 text-sm">Portfolio Role</div>
-                <div className="text-xs text-slate-600 mt-1 leading-relaxed">{stock.synopsis.role}</div>
+            </div>
+            
+            {/* Role - Enhanced with shadows and gradients */}
+            <div className="relative group transition-all duration-300">
+              <div className="absolute inset-0 bg-gradient-to-r from-purple-100/30 to-violet-100/30 rounded-xl blur-sm transform scale-[0.98] translate-y-1 opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
+              <div className="flex gap-4 bg-white p-4 rounded-xl border border-slate-200 shadow-md hover:shadow-lg transition-all duration-300 relative z-10 overflow-hidden group-hover:border-purple-200">
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-400 to-violet-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div className="text-white bg-gradient-to-br from-purple-400 to-purple-600
+                  w-12 h-12 min-w-12 flex items-center justify-center rounded-lg shadow-md">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7Z" />
+                    <path d="M16.5 16 15 20h-6l-1.5-4" />
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <div className="font-bold text-slate-800 text-base">Portfolio Role</div>
+                  <div className="text-sm text-slate-700 mt-1.5 leading-relaxed font-medium">{stock.synopsis.role}</div>
+                </div>
               </div>
             </div>
           </div>

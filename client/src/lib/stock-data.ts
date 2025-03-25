@@ -371,35 +371,35 @@ const hardcodedStocks: Record<string, StockData[]> = {
       ticker: "PLD",
       price: 110.26,
       change: 0.8,
-      rating: 7.2,
+      rating: 3.6,
       metrics: {
         performance: {
-          value: "Good",
-          color: "green",
+          value: "Average",
+          color: "yellow",
           details: {
-            revenueGrowth: 8.5,
-            profitMargin: 45.2,
-            returnOnCapital: 6.8
+            revenueGrowth: 2.2,
+            profitMargin: 45.4,
+            returnOnCapital: 4.3
           },
           explanation: "Strong revenue growth exceeding industry average with excellent profit margins. Returns on capital are solid and slightly above the REIT industry benchmark."
         },
         stability: {
-          value: "Strong",
-          color: "green",
+          value: "Poor",
+          color: "red",
           details: {
-            volatility: 0.85,
-            beta: 0.92,
-            dividendConsistency: "High"
+            volatility: 2.50,
+            beta: 1.24,
+            dividendConsistency: "Medium"
           },
           explanation: "Below average volatility and beta indicate less market sensitivity than peers. Strong history of consistent dividend increases even during economic downturns."
         },
         value: {
-          value: "Fair",
+          value: "Average",
           color: "yellow",
           details: {
-            peRatio: 22.5,
-            pbRatio: 2.1,
-            dividendYield: 2.8
+            peRatio: 28.0,
+            pbRatio: 1.9,
+            dividendYield: 3.7
           },
           explanation: "Trading at a modest premium to earnings and book value compared to REIT averages. Dividend yield is slightly below sector average but offset by better growth profile."
         },
@@ -407,9 +407,9 @@ const hardcodedStocks: Record<string, StockData[]> = {
           value: "Average",
           color: "yellow",
           details: {
-            threeMonthReturn: 4.2,
-            relativePerformance: -0.5,
-            rsi: 52.5
+            threeMonthReturn: 6.1,
+            relativePerformance: -2.0,
+            rsi: 37.4
           },
           explanation: "Solid recent price performance with minimal underperformance versus peers. Neutral RSI suggests balanced buying and selling pressure."
         }
@@ -428,17 +428,17 @@ const hardcodedStocks: Record<string, StockData[]> = {
       name: "Realty Income Corp",
       ticker: "O",
       price: 56.28,
-      change: -0.4,
-      rating: 6.8,
+      change: 1.29,
+      rating: 4.0,
       description: "A monthly dividend paying REIT focused on single-tenant commercial properties.",
       metrics: {
         performance: {
           value: "Average",
           color: "yellow",
           details: {
-            revenueGrowth: 29.5,
-            profitMargin: 16.0,
-            returnOnCapital: 1.3
+            revenueGrowth: 5.7,
+            profitMargin: 29.5,
+            returnOnCapital: 1.30
           },
           explanation: "Strong revenue growth driven by acquisitions, but below-average profit margins and returns on capital compared to peers. Scale benefits are partially offset by efficiency challenges."
         },
@@ -458,7 +458,7 @@ const hardcodedStocks: Record<string, StockData[]> = {
           details: {
             peRatio: 57.6,
             pbRatio: 1.29,
-            dividendYield: "5.7%"
+            dividendYield: 5.7
           },
           explanation: "High P/E ratio is partially offset by reasonable price-to-book value. Above-average dividend yield makes this attractive for income-focused investors despite the premium valuation multiple."
         },
@@ -486,8 +486,8 @@ const hardcodedStocks: Record<string, StockData[]> = {
       name: "Simon Property Group",
       ticker: "SPG",
       price: 166.12,
-      change: 1.2,
-      rating: 6.5,
+      change: 0.55,
+      rating: 3.2,
       description: "The largest owner and operator of shopping malls and premium outlets in the US.",
       metrics: {
         performance: {
@@ -516,7 +516,7 @@ const hardcodedStocks: Record<string, StockData[]> = {
           details: {
             peRatio: 22,
             pbRatio: 18.68,
-            dividendYield: "5.1%"
+            dividendYield: 5.1
           },
           explanation: "Reasonable P/E ratio combined with a high price-to-book value shows market confidence but potential overvaluation of assets. Above-average dividend yield provides compelling income."
         },
@@ -544,8 +544,8 @@ const hardcodedStocks: Record<string, StockData[]> = {
       name: "AvalonBay Communities",
       ticker: "AVB",
       price: 214.36,
-      change: 0.6,
-      rating: 7.0,
+      change: 0.82,
+      rating: 4.1,
       description: "A leading apartment REIT focused on high-quality properties in premium coastal markets.",
       metrics: {
         performance: {
@@ -574,7 +574,7 @@ const hardcodedStocks: Record<string, StockData[]> = {
           details: {
             peRatio: 28.2,
             pbRatio: 2.55,
-            dividendYield: "3.3%"
+            dividendYield: 3.3
           },
           explanation: "Trades at a modest premium to earnings and book value compared to REIT averages. Dividend yield is slightly below sector average but compensated by growth potential in high-barrier-to-entry markets."
         },
@@ -660,7 +660,7 @@ const hardcodedStocks: Record<string, StockData[]> = {
       name: "Digital Realty Trust",
       ticker: "DLR",
       price: 155.49,
-      change: 2.1,
+      change: 0.88,
       rating: 5.8,
       description: "A leading global provider of data center, colocation and interconnection solutions.",
       metrics: {
@@ -690,7 +690,7 @@ const hardcodedStocks: Record<string, StockData[]> = {
           details: {
             peRatio: 95.6,
             pbRatio: 2.54,
-            dividendYield: "3.2%"
+            dividendYield: 3.2
           },
           explanation: "Very high P/E ratio and moderate price-to-book suggests premium valuation with growth expectations. Below-average dividend yield for a REIT reflects the market's focus on future growth over current income."
         },
@@ -748,7 +748,7 @@ const hardcodedStocks: Record<string, StockData[]> = {
           details: {
             peRatio: 44.2,
             pbRatio: 29.41,
-            dividendYield: "3.2%"
+            dividendYield: 3.2
           },
           explanation: "High P/E ratio and extremely high price-to-book value indicate significant premium to asset value. Below-average dividend yield for a REIT suggests investors are paying for expected future growth."
         },
@@ -806,7 +806,7 @@ const hardcodedStocks: Record<string, StockData[]> = {
           details: {
             peRatio: 182.2,
             pbRatio: 2.98,
-            dividendYield: "1.9%"
+            dividendYield: 1.9
           },
           explanation: "Extremely high P/E ratio and average price-to-book value indicate significant premium valuation. Very low dividend yield for a REIT reflects both valuation and lower payout ratio focused on growth."
         },
@@ -864,7 +864,7 @@ const hardcodedStocks: Record<string, StockData[]> = {
           details: {
             peRatio: 785,
             pbRatio: 2.03,
-            dividendYield: "5.7%"
+            dividendYield: 5.7
           },
           explanation: "Extremely high P/E ratio due to depressed earnings, but reasonable price-to-book value suggests potential value. Very attractive dividend yield offers compelling income if sustainable."
         },
@@ -922,7 +922,7 @@ const hardcodedStocks: Record<string, StockData[]> = {
           details: {
             peRatio: 26.8,
             pbRatio: 2.46,
-            dividendYield: "3.9%"
+            dividendYield: 3.9
           },
           explanation: "Trades at a reasonable P/E multiple with typical price-to-book value for apartment REITs. Slightly below-average dividend yield is balanced by superior property quality and locations."
         },
