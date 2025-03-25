@@ -88,7 +88,7 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
       totalWeight += weight;
     });
     
-    return totalWeight > 0 ? parseFloat((weightedScore / totalWeight).toFixed(1)) : 5.0;
+    return totalWeight > 0 ? parseFloat((weightedScore / totalWeight).toFixed(1)) : 0;
   }
   
   // Helper to get numeric score from metric on a 0-100 scale
@@ -537,7 +537,7 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
       totalWeight += weight;
     });
     
-    return totalWeight > 0 ? parseFloat((weightedScore / totalWeight).toFixed(1)) : 5.0;
+    return totalWeight > 0 ? parseFloat((weightedScore / totalWeight).toFixed(1)) : 0;
   }
   
   // Context value

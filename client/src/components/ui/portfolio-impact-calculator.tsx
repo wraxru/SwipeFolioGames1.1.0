@@ -357,7 +357,7 @@ export default function PortfolioImpactCalculator({
                         <div className="flex items-center">
                           <span className="text-xs text-slate-500 mr-1">From</span>
                           <div className="font-semibold">
-                            {impact.currentMetrics[metric as keyof typeof impact.currentMetrics].toFixed(1)}
+                            {impact.currentMetrics[metric as keyof typeof impact.currentMetrics].toFixed(1)}/100
                           </div>
                         </div>
                         
@@ -366,7 +366,7 @@ export default function PortfolioImpactCalculator({
                         <div className="flex items-center">
                           <span className="text-xs text-slate-500 mr-1">To</span>
                           <div className="font-semibold">
-                            {impact.newMetrics[metric as keyof typeof impact.newMetrics].toFixed(1)}
+                            {impact.newMetrics[metric as keyof typeof impact.newMetrics].toFixed(1)}/100
                           </div>
                         </div>
                         
