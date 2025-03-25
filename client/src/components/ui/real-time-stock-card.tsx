@@ -302,7 +302,8 @@ export default function RealTimeStockCard({
         rating: metricObj.value,
         industryAverage,
         industry: stock.industry,
-        explanation: metricObj.explanation || ""
+        explanation: metricObj.explanation || "",
+        name: stock.name
       }
     });
     
