@@ -14,7 +14,7 @@ export interface StabilityDetails {
 export interface ValueDetails {
   peRatio: number;
   pbRatio: number;
-  dividendYield: number;
+  dividendYield: number | string;
 }
 
 export interface MomentumDetails {
