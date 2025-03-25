@@ -375,46 +375,46 @@ export default function RealTimeStockCard({
           ))}
         </div>
 
-        {/* Chart */}
-        <div className="px-4 pt-8 pb-8 border-b border-slate-100 h-60 relative mt-2 bg-white">
+        {/* Chart - updated to be thinner and sleeker */}
+        <div className="px-4 pt-4 pb-6 border-b border-slate-100 h-48 relative bg-white">
           {isLoadingIntraday && timeFrame === "1D" ? (
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="text-center">
-                <RefreshCw size={24} className="animate-spin mx-auto text-sky-500 mb-2" />
-                <p className="text-sm text-slate-500">Loading chart data...</p>
+                <RefreshCw size={20} className="animate-spin mx-auto text-sky-500 mb-2" />
+                <p className="text-xs text-slate-400">Loading chart...</p>
               </div>
             </div>
           ) : (
             <>
-              {/* Y-axis values - fixed positioning to avoid sticking out */}
-              <div className="absolute left-1 top-0 bottom-16 flex flex-col justify-between text-xs text-slate-500 w-8 text-right">
-                <div className="w-full px-1 py-0.5 rounded bg-white text-right font-medium">${priceRangeMax}</div>
-                <div className="w-full px-1 py-0.5 rounded bg-white text-right font-medium">${Math.round((priceRangeMax + priceRangeMin) / 2 * 100) / 100}</div>
-                <div className="w-full px-1 py-0.5 rounded bg-white text-right font-medium">${priceRangeMin}</div>
+              {/* Y-axis values - minimalist styling */}
+              <div className="absolute left-1 top-2 bottom-12 flex flex-col justify-between text-xs text-slate-400 w-8 text-right">
+                <div className="px-1 font-medium">${priceRangeMax}</div>
+                <div className="px-1 opacity-0">-</div>
+                <div className="px-1 font-medium">${priceRangeMin}</div>
               </div>
               
-              {/* Chart grid lines */}
-              <div className="absolute left-10 right-0 top-0 bottom-16 flex flex-col justify-between pointer-events-none">
-                <div className="border-t border-slate-100 w-full h-0"></div>
-                <div className="border-t border-slate-100 w-full h-0"></div>
-                <div className="border-t border-slate-100 w-full h-0"></div>
+              {/* Chart grid lines - very subtle */}
+              <div className="absolute left-10 right-0 top-2 bottom-12 flex flex-col justify-between pointer-events-none">
+                <div className="border-t border-slate-50 w-full h-0"></div>
+                <div className="opacity-0 w-full h-0"></div>
+                <div className="border-t border-slate-50 w-full h-0"></div>
               </div>
               
-              <div className="ml-10 chart-container h-[calc(100%-30px)]">
+              <div className="ml-10 chart-container h-[calc(100%-20px)]">
                 <svg viewBox="0 0 300 80" width="100%" height="100%" preserveAspectRatio="none">
                   <defs>
                     <linearGradient id={`chartGradient-${stock.ticker}`} x1="0%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" stopColor={realTimeChange >= 0 ? "rgba(34, 197, 94, 0.2)" : "rgba(239, 68, 68, 0.2)"} />
+                      <stop offset="0%" stopColor={realTimeChange >= 0 ? "rgba(34, 197, 94, 0.1)" : "rgba(239, 68, 68, 0.1)"} />
                       <stop offset="100%" stopColor={realTimeChange >= 0 ? "rgba(34, 197, 94, 0)" : "rgba(239, 68, 68, 0)"} />
                     </linearGradient>
                     {/* Add a subtle glow effect */}
                     <filter id={`glow-${stock.ticker}`}>
-                      <feGaussianBlur stdDeviation="0.8" result="blur" />
+                      <feGaussianBlur stdDeviation="0.5" result="blur" />
                       <feComposite in="SourceGraphic" in2="blur" operator="over" />
                     </filter>
                   </defs>
                   
-                  {/* Line chart */}
+                  {/* Line chart - thinner line for Robinhood style */}
                   {chartData.length > 0 && (
                     <>
                       <path
@@ -425,11 +425,11 @@ export default function RealTimeStockCard({
                         }).join(" ")}`}
                         fill="none"
                         stroke={realTimeChange >= 0 ? "#22c55e" : "#ef4444"}
-                        strokeWidth="1.5"
+                        strokeWidth="1.2" /* Thinner line */
                         filter={`url(#glow-${stock.ticker})`}
                       />
                       
-                      {/* Area fill - making it very subtle */}
+                      {/* Area fill - very subtle gradient */}
                       <path
                         d={`M 0,${80 - ((chartData[0] - minValue) / (maxValue - minValue)) * 80} ${chartData.map((point, i) => {
                           const x = (i / (chartData.length - 1)) * 300;
@@ -437,14 +437,14 @@ export default function RealTimeStockCard({
                           return `L ${x},${y}`;
                         }).join(" ")} L 300,80 L 0,80 Z`}
                         fill={`url(#chartGradient-${stock.ticker})`}
-                        opacity="0.15"
+                        opacity="0.1" /* More subtle */
                       />
                     </>
                   )}
                 </svg>
               </div>
               
-              {/* Removed time scale as these are not timed stocks */}
+              {/* Removed time scale labels */}
             </>
           )}
         </div>
@@ -496,11 +496,11 @@ export default function RealTimeStockCard({
             return (
               <div 
                 key={key}
-                className={`p-3 rounded-xl relative ${
+                className={`p-4 rounded-xl relative ${
                   metricObj.color === 'green' ? 'metric-high' :
                   metricObj.color === 'yellow' ? 'metric-average' : 
                   'metric-low'
-                } active:scale-95 transition-all duration-150 cursor-pointer shadow-sm hover:shadow-md`}
+                } active:scale-95 transition-all duration-150 cursor-pointer shadow-sm hover:shadow-md hover:translate-y-[-2px]`}
                 onClick={() => handleMetricClick(metricName)}
               >
                 <div className="absolute top-2 right-2">
