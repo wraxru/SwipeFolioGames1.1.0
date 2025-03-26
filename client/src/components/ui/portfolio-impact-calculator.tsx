@@ -324,8 +324,8 @@ export default function PortfolioImpactCalculator({
                         
                         if (industry === "Real Estate") {
                           positionStyle = {
-                            top: '20%',
-                            right: '65%',
+                            top: '10%',
+                            right: '75%',
                           };
                         } else if (industry === "Technology") {
                           positionStyle = {
@@ -390,44 +390,61 @@ export default function PortfolioImpactCalculator({
                   )}
                 </div>
                 
-                {/* Metric Comparisons */}
-                <div className="grid grid-cols-2 gap-3 mb-5">
+                {/* Metric Comparisons - Modernized with equal sized buttons */}
+                <div className="grid grid-cols-2 gap-4 mb-5">
                   {Object.entries(impact.impact).map(([metric, change]) => (
                     <div 
                       key={metric} 
-                      className="p-3 bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow"
+                      className="p-4 bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-all duration-200 hover:border-sky-200"
                     >
-                      <div className="flex items-center mb-2">
-                        <div className={`p-1.5 rounded-md mr-2 ${
-                          change >= 0 ? "bg-green-100 text-green-600" : "bg-red-100 text-red-600"
-                        }`}>
-                          {getMetricIcon(metric)}
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center">
+                          <div className={`p-1.5 rounded-md mr-2 ${
+                            change > 0 ? "bg-green-100 text-green-600" : 
+                            change < 0 ? "bg-red-100 text-red-600" : 
+                            "bg-slate-100 text-slate-600"
+                          }`}>
+                            {getMetricIcon(metric)}
+                          </div>
+                          <h4 className="font-semibold text-sm capitalize">{metric}</h4>
                         </div>
-                        <h4 className="font-semibold text-sm capitalize">{metric}</h4>
+                        
+                        <div className={`text-xs font-medium px-2 py-0.5 rounded-full ${
+                          change > 0 ? "bg-green-100 text-green-700" : 
+                          change < 0 ? "bg-red-100 text-red-700" : 
+                          "bg-slate-100 text-slate-700"
+                        }`}>
+                          {change > 0 ? "+" : ""}{change.toFixed(1)}
+                        </div>
                       </div>
                       
                       <div className="flex items-center justify-between">
-                        <div className="flex items-center">
-                          <div className="font-semibold bg-slate-50 px-2 py-1 rounded-md shadow-sm border border-slate-100">
+                        {/* Current value */}
+                        <div className="flex-1">
+                          <div className="text-xs text-slate-500 mb-1 text-center">Current</div>
+                          <div className="font-semibold text-center bg-slate-50 px-2 py-1.5 rounded-md shadow-sm border border-slate-100 w-full">
                             {impact.currentMetrics[metric as keyof typeof impact.currentMetrics].toFixed(1)}
                           </div>
                         </div>
                         
-                        <div className="font-bold text-lg mx-2">→</div>
-                        
-                        <div className="flex items-center">
-                          <div className={cn(
-                            "font-semibold px-2 py-1 rounded-md shadow-sm border",
-                            change > 0 ? "bg-green-50 text-green-700 border-green-100" : 
-                            change < 0 ? "bg-red-50 text-red-700 border-red-100" :
-                            "bg-slate-50 text-slate-700 border-slate-100"
-                          )}>
-                            {impact.newMetrics[metric as keyof typeof impact.newMetrics].toFixed(1)}
-                          </div>
+                        {/* Arrow indicator */}
+                        <div className="text-slate-400 px-2">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M5 12h14"></path>
+                            <path d="m12 5 7 7-7 7"></path>
+                          </svg>
                         </div>
                         
-                        <div className="ml-2 font-bold">
-                          {formatMetricChange(change)}
+                        {/* New value */}
+                        <div className="flex-1">
+                          <div className="text-xs text-slate-500 mb-1 text-center">New</div>
+                          <div className={`font-semibold text-center px-2 py-1.5 rounded-md shadow-sm border w-full ${
+                            change > 0 ? "bg-green-50 border-green-100" : 
+                            change < 0 ? "bg-red-50 border-red-100" : 
+                            "bg-slate-50 border-slate-100"
+                          }`}>
+                            {impact.newMetrics[metric as keyof typeof impact.newMetrics].toFixed(1)}
+                          </div>
                         </div>
                       </div>
                     </div>
