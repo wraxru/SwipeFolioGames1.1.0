@@ -24,6 +24,17 @@ export default function PortfolioImpactCalculator({
   const [investmentAmount, setInvestmentAmount] = useState<number>(1);
   const [showValueShares, setShowValueShares] = useState<boolean>(true); // true for value, false for shares
   
+  // State for metric info tooltips
+  const [activeTooltip, setActiveTooltip] = useState<string | null>(null);
+  
+  // Metric explanations
+  const metricExplanations = {
+    performance: "Shows how much your portfolio has grown over time through stock price increases and dividends.",
+    stability: "Measures how consistent your portfolio's value remains during market ups and downs.",
+    value: "Indicates whether the companies in your portfolio are reasonably priced compared to what they're actually worth.",
+    momentum: "Shows the strength and direction of your portfolio's recent price movements."
+  };
+  
   // Slide-to-invest state variables
   const slideTrackRef = useRef<HTMLDivElement>(null);
   const [slideTrackWidth, setSlideTrackWidth] = useState(0);
@@ -413,6 +424,25 @@ export default function PortfolioImpactCalculator({
                             {getMetricIcon(metric)}
                           </div>
                           <h4 className="font-semibold text-sm capitalize">{metric}</h4>
+                          <button 
+                            className="ml-1.5 text-slate-400 hover:text-slate-600 transition-colors"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setActiveTooltip(activeTooltip === metric ? null : metric);
+                            }}
+                            aria-label={`Info about ${metric}`}
+                          >
+                            <Info size={14} />
+                          </button>
+                          {activeTooltip === metric && (
+                            <div 
+                              className="absolute z-50 bg-white p-3 rounded-lg shadow-lg border border-slate-200 text-xs text-slate-700 max-w-[200px] mt-2 left-1/2 transform -translate-x-1/2"
+                              style={{ top: '100%' }}
+                            >
+                              {(metricExplanations as any)[metric.toLowerCase()]}
+                              <div className="absolute w-2 h-2 bg-white transform rotate-45 left-1/2 -mt-5 -ml-1 border-t border-l border-slate-200"></div>
+                            </div>
+                          )}
                         </div>
                         
                         <div className={`text-xs font-medium px-2 py-0.5 rounded-full ${

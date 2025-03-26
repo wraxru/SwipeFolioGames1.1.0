@@ -377,22 +377,19 @@ export default function RealTimeStockCard({
   return (
     <div className="relative h-full">
       {/* Blurred background stock (next in stack) - visible during swipes */}
-      {onNext && (
-        <div 
-          className="absolute inset-0 overflow-hidden blur-xl pointer-events-none opacity-20"
-          style={{
-            clipPath: x.get() > 0 ? 'inset(0 0 0 100%)' : 'inset(0 0 0 0)',
-            opacity: Math.abs(x.get()) > 50 ? 0.2 : 0,
-            transform: `translateX(${x.get() < 0 ? '60px' : '-60px'})`,
-          }}
-        >
-          {/* This would ideally be the next stock's preview, simplified here */}
-          <div className="w-full h-full bg-gradient-to-br from-slate-100 to-blue-50 flex items-center justify-center">
-            <div className="w-32 h-32 rounded-full bg-gradient-to-tr from-blue-400/20 to-indigo-300/20"></div>
-          </div>
+      <div 
+        className="absolute inset-0 overflow-hidden blur-xl pointer-events-none opacity-20"
+        style={{
+          clipPath: x.get() > 0 ? 'inset(0 0 0 100%)' : 'inset(0 0 0 0)',
+          opacity: Math.abs(x.get()) > 50 ? 0.2 : 0,
+          transform: `translateX(${x.get() < 0 ? '60px' : '-60px'})`
+        }}
+      >
+        {/* This would ideally be the next stock's preview, simplified here */}
+        <div className="w-full h-full bg-gradient-to-br from-slate-100 to-blue-50 flex items-center justify-center">
+          <div className="w-32 h-32 rounded-full bg-gradient-to-tr from-blue-400/20 to-indigo-300/20"></div>
         </div>
-      )}
-      
+      </div>
       {/* Skipped message - shows when swiping left */}
       {showSkippedMessage && (
         <motion.div
