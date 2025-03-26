@@ -442,8 +442,8 @@ const hardcodedStocks: Record<string, StockData[]> = {
           value: "Average",
           color: "yellow",
           details: {
-            revenueGrowth: 5.7,
-            profitMargin: 29.5,
+            revenueGrowth: 29.5,
+            profitMargin: 16.0,
             returnOnCapital: 1.30
           },
           explanation: "Strong revenue growth driven by acquisitions, but below-average profit margins and returns on capital compared to peers. Scale benefits are partially offset by efficiency challenges."
