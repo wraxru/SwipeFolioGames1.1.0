@@ -208,8 +208,32 @@ export default function RealTimeStockCard({
   const handleDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
     const threshold = 100;
 
-    // Left swipe - Show skipped message and go to next card
-    if (info.offset.x < -threshold) {
+    // Right swipe - Open portfolio impact calculator
+    if (info.offset.x > threshold) {
+      setSwipeDirection("right");
+      // Haptic feedback if available
+      if (navigator.vibrate) {
+        navigator.vibrate(50);
+      }
+      // Open portfolio calculator
+      setIsPortfolioImpactOpen(true);
+      
+      // Spring back animation
+      cardControls.start({
+        x: 0,
+        opacity: 1,
+        scale: 1,
+        transition: { 
+          type: "spring", 
+          stiffness: 400, 
+          damping: 30,
+          duration: 0.4
+        }
+      });
+      setSwipeDirection(null);
+    } 
+    // Left swipe - Show skipped message but STAY on current card
+    else if (info.offset.x < -threshold) {
       setSwipeDirection("left");
       // Haptic feedback if available
       if (navigator.vibrate) {
@@ -218,45 +242,25 @@ export default function RealTimeStockCard({
       // Show skipped message
       setShowSkippedMessage(true);
       
-      // Smoother exit animation
+      // Spring back to center with animation
       cardControls.start({
-        x: -500,
-        opacity: 0,
-        scale: 0.9,
+        x: 0,
+        opacity: 1,
+        scale: 1,
         transition: { 
-          type: "tween", 
-          ease: "easeInOut",
-          duration: 0.4 
+          type: "spring", 
+          stiffness: 400, 
+          damping: 30,
+          duration: 0.4
         }
-      }).then(() => {
-        onNext();
-        // Reset after animation
-        setTimeout(() => {
-          setShowSkippedMessage(false);
-          cardControls.set({ x: 0, opacity: 1, scale: 1 });
-          setSwipeDirection(null);
-        }, 100);
       });
-    }
-    // Right swipe - Open portfolio impact calculator (only on right swipe)
-      // Check if we need to swap the directions
-      console.log("Drag offset:", info.offset.x); // Add this to debug
-
-      // If the console shows positive values when dragging left, swap these conditions
-      if (info.offset.x < -threshold) {
-        // This is your RIGHT swipe logic now
-        setSwipeDirection("right");
-        if (navigator.vibrate) {
-          navigator.vibrate(50);
-        }
-        setIsPortfolioImpactOpen(true);
-        // ...animation...
-      }
-      else if (info.offset.x > threshold) {
-        // This becomes your LEFT swipe logic
-        setSwipeDirection("left");
-        // ...skipped message and animation...
-      }
+      
+      // Hide skipped message after a delay
+      setTimeout(() => {
+        setShowSkippedMessage(false);
+        setSwipeDirection(null);
+      }, 1500);
+    } 
     // Not enough drag - Spring back
     else {
       cardControls.start({
