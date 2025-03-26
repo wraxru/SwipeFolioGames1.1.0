@@ -126,13 +126,18 @@ export default function RealTimeStockCard({
 }: RealTimeStockCardProps) {
   const cardControls = useAnimation();
   const x = useMotionValue(0);
-  const cardOpacity = useTransform(x, [-200, 0, 200], [0, 1, 0]);
-  const cardRotate = useTransform(x, [-200, 0, 200], [-10, 0, 10]);
+  // Smoother opacity transform for better visual experience
+  const cardOpacity = useTransform(x, [-300, -100, 0, 100, 300], [0, 0.9, 1, 0.9, 0]);
+  // Smoother rotation transform for more natural feel
+  const cardRotate = useTransform(x, [-300, 0, 300], [-6, 0, 6]);
+  // Scale effect for better tactile feel
+  const cardScale = useTransform(x, [-300, -150, 0, 150, 300], [0.95, 0.97, 1, 0.97, 0.95]);
   const cardRef = useRef<HTMLDivElement>(null);
   
   const [timeFrame, setTimeFrame] = useState<TimeFrame>("1D");
   const [swipeDirection, setSwipeDirection] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [showSkippedMessage, setShowSkippedMessage] = useState(false);
   
   // State for metric popup
   const [isMetricPopupOpen, setIsMetricPopupOpen] = useState(false);
@@ -199,35 +204,75 @@ export default function RealTimeStockCard({
     setIsPortfolioImpactOpen(true);
   };
 
+  // Enhanced drag handler with smoother transitions and feedback
   const handleDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
     const threshold = 100;
 
+    // Right swipe - Open portfolio impact calculator (only on right swipe)
     if (info.offset.x > threshold) {
       setSwipeDirection("right");
-      // Immediately open the portfolio calculator without animation
+      // Haptic feedback if available
+      if (navigator.vibrate) {
+        navigator.vibrate(50);
+      }
+      // Open portfolio calculator
       setIsPortfolioImpactOpen(true);
+      // Spring back with smoother animation
       cardControls.start({
         x: 0,
         opacity: 1,
-        transition: { type: "spring", stiffness: 300, damping: 20 }
+        scale: 1,
+        transition: { 
+          type: "spring", 
+          stiffness: 400, 
+          damping: 30,
+          duration: 0.4
+        }
       });
       setSwipeDirection(null);
-    } else if (info.offset.x < -threshold) {
+    } 
+    // Left swipe - Show skipped message and go to next card
+    else if (info.offset.x < -threshold) {
       setSwipeDirection("left");
+      // Haptic feedback if available
+      if (navigator.vibrate) {
+        navigator.vibrate(30);
+      }
+      // Show skipped message
+      setShowSkippedMessage(true);
+      
+      // Smoother exit animation
       cardControls.start({
         x: -500,
         opacity: 0,
-        transition: { duration: 0.3 }
+        scale: 0.9,
+        transition: { 
+          type: "tween", 
+          ease: "easeInOut",
+          duration: 0.4 
+        }
       }).then(() => {
         onNext();
-        cardControls.set({ x: 0, opacity: 1 });
-        setSwipeDirection(null);
+        // Reset after animation
+        setTimeout(() => {
+          setShowSkippedMessage(false);
+          cardControls.set({ x: 0, opacity: 1, scale: 1 });
+          setSwipeDirection(null);
+        }, 100);
       });
-    } else {
+    } 
+    // Not enough drag - Spring back
+    else {
       cardControls.start({
         x: 0,
         opacity: 1,
-        transition: { type: "spring", stiffness: 300, damping: 20 }
+        scale: 1,
+        transition: { 
+          type: "spring", 
+          stiffness: 500, 
+          damping: 30,
+          duration: 0.3
+        }
       });
       setSwipeDirection(null);
     }
@@ -331,6 +376,42 @@ export default function RealTimeStockCard({
   
   return (
     <div className="relative h-full">
+      {/* Blurred background stock (next in stack) - visible during swipes */}
+      {onNext && (
+        <div 
+          className="absolute inset-0 overflow-hidden blur-xl pointer-events-none opacity-20"
+          style={{
+            clipPath: x.get() > 0 ? 'inset(0 0 0 100%)' : 'inset(0 0 0 0)',
+            opacity: Math.abs(x.get()) > 50 ? 0.2 : 0,
+            transform: `translateX(${x.get() < 0 ? '60px' : '-60px'})`,
+          }}
+        >
+          {/* This would ideally be the next stock's preview, simplified here */}
+          <div className="w-full h-full bg-gradient-to-br from-slate-100 to-blue-50 flex items-center justify-center">
+            <div className="w-32 h-32 rounded-full bg-gradient-to-tr from-blue-400/20 to-indigo-300/20"></div>
+          </div>
+        </div>
+      )}
+      
+      {/* Skipped message - shows when swiping left */}
+      {showSkippedMessage && (
+        <motion.div
+          className="absolute inset-0 z-30 flex items-center justify-center pointer-events-none"
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.8 }}
+        >
+          <div className="glass-effect px-6 py-3 rounded-xl bg-white/90 shadow-lg border border-slate-100 flex items-center">
+            <div className="text-slate-700 font-semibold flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-slate-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+              </svg>
+              Skipped!
+            </div>
+          </div>
+        </motion.div>
+      )}
+      
       {/* Swipe indicators - Enhanced */}
       <motion.div 
         className="swipe-indicator swipe-left"
@@ -405,7 +486,7 @@ export default function RealTimeStockCard({
         dragElastic={0.7}
         onDragEnd={handleDragEnd}
         animate={cardControls}
-        style={{ x, opacity: cardOpacity, rotateZ: cardRotate }}
+        style={{ x, opacity: cardOpacity, rotateZ: cardRotate, scale: cardScale }}
       >
         {/* Time Frame Selector - Updated with Robinhood style */}
         <div className="flex justify-center space-x-1 px-4 py-3 border-b border-slate-100 bg-white">
