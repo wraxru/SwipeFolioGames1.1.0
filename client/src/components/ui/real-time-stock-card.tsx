@@ -208,31 +208,8 @@ export default function RealTimeStockCard({
   const handleDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
     const threshold = 100;
 
-    // Right swipe - Open portfolio impact calculator (only on right swipe)
-    if (info.offset.x > threshold) {
-      setSwipeDirection("right");
-      // Haptic feedback if available
-      if (navigator.vibrate) {
-        navigator.vibrate(50);
-      }
-      // Open portfolio calculator
-      setIsPortfolioImpactOpen(true);
-      // Spring back with smoother animation
-      cardControls.start({
-        x: 0,
-        opacity: 1,
-        scale: 1,
-        transition: { 
-          type: "spring", 
-          stiffness: 400, 
-          damping: 30,
-          duration: 0.4
-        }
-      });
-      setSwipeDirection(null);
-    } 
     // Left swipe - Show skipped message and go to next card
-    else if (info.offset.x < -threshold) {
+    if (info.offset.x < -threshold) {
       setSwipeDirection("left");
       // Haptic feedback if available
       if (navigator.vibrate) {
@@ -260,6 +237,29 @@ export default function RealTimeStockCard({
           setSwipeDirection(null);
         }, 100);
       });
+    }
+    // Right swipe - Open portfolio impact calculator (only on right swipe)
+    else if (info.offset.x > threshold) {
+      setSwipeDirection("right");
+      // Haptic feedback if available
+      if (navigator.vibrate) {
+        navigator.vibrate(50);
+      }
+      // Open portfolio calculator
+      setIsPortfolioImpactOpen(true);
+      // Spring back with smoother animation
+      cardControls.start({
+        x: 0,
+        opacity: 1,
+        scale: 1,
+        transition: { 
+          type: "spring", 
+          stiffness: 400, 
+          damping: 30,
+          duration: 0.4
+        }
+      });
+      setSwipeDirection(null);
     } 
     // Not enough drag - Spring back
     else {
