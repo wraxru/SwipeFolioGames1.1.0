@@ -216,27 +216,35 @@ export default function PortfolioImpactCalculator({
               maxWidth: '450px'
             }}
           >
-            {/* Header */}
-            <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-gradient-to-b from-white to-slate-50">
+            {/* Enhanced Modern Header */}
+            <div className="p-5 border-b border-slate-100 flex justify-between items-center bg-gradient-to-b from-white to-slate-50">
               <div className="flex items-center">
-                <div className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white p-2 rounded-lg mr-3 shadow-md flex items-center justify-center w-10 h-10">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <div className="bg-gradient-to-br from-green-500 to-emerald-600 text-white p-2.5 rounded-xl mr-4 shadow-lg flex items-center justify-center w-12 h-12">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-                    <path d="M12 22V4"></path>
                   </svg>
                 </div>
                 <div>
-                  <h2 className="text-lg font-semibold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
-                    Portfolio: {formatCurrency(cash)}
+                  <h2 className="text-lg font-bold bg-gradient-to-r from-slate-800 to-slate-700 bg-clip-text text-transparent mb-0.5">
+                    Portfolio Impact
                   </h2>
-                  <p className="text-sm text-slate-600">
-                    {stock.name} ({stock.ticker})
-                  </p>
+                  <div className="flex items-center">
+                    <span className="text-sm font-semibold text-green-600 mr-3">
+                      {formatCurrency(cash)}
+                    </span>
+                    <span className="text-sm text-slate-600 flex items-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="mr-1">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                      </svg>
+                      {stock.name} ({stock.ticker})
+                    </span>
+                  </div>
                 </div>
               </div>
               <button 
                 onClick={onClose}
-                className="p-2 rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+                className="p-2.5 rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-all duration-200"
+                aria-label="Close"
               >
                 <X size={18} />
               </button>
@@ -244,10 +252,8 @@ export default function PortfolioImpactCalculator({
             
             {/* Content */}
             <div className="p-5">
-              <div className="mb-6">
-                <h3 className="text-center font-bold text-lg text-slate-800 mb-4">
-                  Portfolio Impact Calculator
-                </h3>
+              <div className="mb-4">
+                {/* Title removed as it's redundant with the header */}
                 
                 {/* Pie Chart showing industry allocation */}
                 <div className="relative h-48 mb-4">
@@ -521,11 +527,12 @@ export default function PortfolioImpactCalculator({
                   </div>
                 </div>
                 
-                {/* Slide-to-Invest Component - More interactive and engaging */}
-                <div className="mt-4">
+                {/* Clickable Invest Button - Modern and clean alternative to slider */}
+                <div className="mt-6">
                   {isLoading ? (
-                    <motion.div 
-                      className="invest-button flex items-center justify-center"
+                    <motion.button 
+                      disabled
+                      className="w-full h-14 rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold text-lg shadow-lg flex items-center justify-center"
                       animate={{ 
                         scale: [1, 1.02, 1],
                         opacity: [0.9, 1, 0.9]
@@ -540,61 +547,31 @@ export default function PortfolioImpactCalculator({
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                       </svg>
                       Processing...
-                    </motion.div>
+                    </motion.button>
                   ) : (
-                    <div className="slide-to-invest-container">
-                      {/* Track */}
-                      <motion.div 
-                        className="slide-track"
-                        ref={slideTrackRef}
-                      >
-                        {/* Hint text */}
-                        <div className="slider-hint">
-                          {slidingInProgress ? "Keep going..." : "← Slide to invest →"}
-                        </div>
-                        
-                        {/* Draggable thumb */}
-                        <motion.div
-                          className="slider-thumb"
-                          drag="x"
-                          dragElastic={0}
-                          dragMomentum={false}
-                          dragConstraints={slideTrackRef}
-                          style={{ x: slideX }}
-                          onDragStart={() => setSlidingInProgress(true)}
-                          onDragEnd={handleSlideEnd}
-                          whileDrag={{ scale: 1.05 }}
-                          animate={slideSuccess ? { x: slideTrackWidth } : {}}
-                        >
-                          <motion.div
-                            animate={{ 
-                              x: slidingInProgress ? [0, 5, 0] : [0, 0, 0],
-                            }}
-                            transition={{ 
-                              repeat: Infinity,
-                              duration: 0.7,
-                              ease: "easeInOut"
-                            }}
-                          >
-                            {slideSuccess ? <Check size={20} /> : <ArrowRight size={20} />}
-                          </motion.div>
-                        </motion.div>
-                        
-                        {/* Success overlay */}
-                        <motion.div 
-                          className="slide-success"
-                          style={{ opacity: successOpacity }}
-                        >
-                          <motion.div
-                            animate={{ scale: slideSuccess ? [0.8, 1.1, 1] : 1 }}
-                            transition={{ duration: 0.4 }}
-                          >
-                            Investing!
-                          </motion.div>
-                        </motion.div>
-                      </motion.div>
-                    </div>
+                    <motion.button
+                      onClick={handleInvest}
+                      className="w-full h-14 rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold text-lg shadow-lg
+                      flex items-center justify-center space-x-2 transition-all duration-300
+                      hover:shadow-xl hover:from-green-400 hover:to-emerald-500 hover:scale-[1.02] active:scale-[0.98]"
+                      whileTap={{ scale: 0.98 }}
+                      whileHover={{ 
+                        boxShadow: "0 10px 25px -5px rgba(16, 185, 129, 0.4), 0 8px 10px -6px rgba(16, 185, 129, 0.2)"
+                      }}
+                    >
+                      <span>Invest {formatCurrency(investmentAmount)}</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M5 12h14" />
+                        <path d="m12 5 7 7-7 7" />
+                      </svg>
+                    </motion.button>
                   )}
+                  
+                  {/* Paper trading disclaimer */}
+                  <div className="text-center text-xs text-slate-500 mt-3">
+                    This is paper trading with virtual money.
+                    <br />No real transactions will be processed.
+                  </div>
                 </div>
               </div>
             </div>
