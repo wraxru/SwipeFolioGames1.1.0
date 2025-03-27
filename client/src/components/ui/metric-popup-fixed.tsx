@@ -482,6 +482,13 @@ export default function MetricPopup({
                                 </div>
                               </div>
                             </div>
+                            
+                            {/* Add 1-liner explanation if available */}
+                            {item.explanation && (
+                              <div className="mt-3 pt-3 border-t border-slate-100">
+                                <p className="text-sm text-slate-600">{item.explanation}</p>
+                              </div>
+                            )}
                           </div>
                         </div>
                       );

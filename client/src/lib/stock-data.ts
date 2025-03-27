@@ -3,24 +3,40 @@ export interface PerformanceDetails {
   revenueGrowth: number;
   profitMargin: number;
   returnOnCapital: number;
+  // Individual metric 1-liners
+  revenueGrowthExplanation?: string;
+  profitMarginExplanation?: string;
+  returnOnCapitalExplanation?: string;
 }
 
 export interface StabilityDetails {
   volatility: number;
   beta: number;
   dividendConsistency: string;
+  // Individual metric 1-liners
+  volatilityExplanation?: string;
+  betaExplanation?: string;
+  dividendConsistencyExplanation?: string;
 }
 
 export interface ValueDetails {
   peRatio: number;
   pbRatio: number;
   dividendYield: number | string;
+  // Individual metric 1-liners
+  peRatioExplanation?: string;
+  pbRatioExplanation?: string;
+  dividendYieldExplanation?: string;
 }
 
 export interface MomentumDetails {
   threeMonthReturn: number;
   relativePerformance: number;
   rsi: number;
+  // Individual metric 1-liners
+  threeMonthReturnExplanation?: string;
+  relativePerformanceExplanation?: string;
+  rsiExplanation?: string;
 }
 
 export interface StockData {
@@ -383,7 +399,10 @@ const hardcodedStocks: Record<string, StockData[]> = {
           details: {
             revenueGrowth: 2.2,
             profitMargin: 45.4,
-            returnOnCapital: 4.3
+            returnOnCapital: 4.3,
+            revenueGrowthExplanation: "Prologis isn't making much more money than last year (2.2% growth is sluggish).",
+            profitMarginExplanation: "Prologis keeps $45 of every $100 it makes - very profitable for real estate.",
+            returnOnCapitalExplanation: "Average return on investment - getting $4.30 for every $100 invested."
           },
           explanation: "Prologis isn't making much more money than last year (growth is OK, not great)."
         },
@@ -393,7 +412,10 @@ const hardcodedStocks: Record<string, StockData[]> = {
           details: {
             volatility: 8.6,
             beta: 1.24,
-            dividendConsistency: "Medium"
+            dividendConsistency: "Medium",
+            volatilityExplanation: "Price moves are moderate - not too wild but not super steady either.",
+            betaExplanation: "When the market drops 10%, Prologis often falls a bit more (about 12%).",
+            dividendConsistencyExplanation: "Prologis reliably pays dividends but sometimes changes the amount."
           },
           explanation: "Prologis is one of the steadier REITs with consistent payouts. It doesn't swing wildly."
         },
@@ -403,7 +425,10 @@ const hardcodedStocks: Record<string, StockData[]> = {
           details: {
             peRatio: 28.0,
             pbRatio: 1.9,
-            dividendYield: 3.7
+            dividendYield: 3.7,
+            peRatioExplanation: "You pay $28 for every $1 of yearly earnings - slightly expensive.",
+            pbRatioExplanation: "The stock costs less than twice the value of the company's assets.",
+            dividendYieldExplanation: "Prologis pays you $3.70 per year for every $100 invested."
           },
           explanation: "Prologis is fairly priced for what you get - a solid company with decent income."
         },
@@ -413,7 +438,10 @@ const hardcodedStocks: Record<string, StockData[]> = {
           details: {
             threeMonthReturn: 6.1,
             relativePerformance: -2.0,
-            rsi: 37.4
+            rsi: 37.4,
+            threeMonthReturnExplanation: "Prologis has grown 6.1% over the last three months - better than most REITs.",
+            relativePerformanceExplanation: "It's falling slightly behind the wider market by about 2%.",
+            rsiExplanation: "Buying interest is a bit weak right now - could be ready for a comeback."
           },
           explanation: "Prologis isn't making big moves either way lately. It's just coasting."
         }
