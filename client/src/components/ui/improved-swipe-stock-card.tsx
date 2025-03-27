@@ -122,10 +122,20 @@ export default function ImprovedSwipeStockCard({
   const cardRotate = useTransform(x, [-300, 0, 300], [-8, 0, 8]);
   
   // Transform values for the next stock preview effects
-  const nextStockOpacity = useTransform(x, [-200, -100, 0, 100, 200], [0.9, 0.6, 0.3, 0.6, 0.9]);
-  // When x is negative (swiping left), show the next card to the right
-  // When x is positive (swiping right), show the next card to the left
-  const nextStockX = useTransform(x, [-300, 0, 300], [60, 0, -60]);
+  // Next card is more visible the further you swipe
+  const nextStockOpacity = useTransform(
+    x, 
+    [-300, -200, -100, 0, 100, 200, 300], 
+    [0.95, 0.8, 0.5, 0, 0.5, 0.8, 0.95]
+  );
+  
+  // Initial position for the next card: right side for left swipe, left side for right swipe
+  // Move it into the center as you swipe left/right
+  const nextStockX = useTransform(
+    x, 
+    [-300, -200, -100, 0, 100, 200, 300], 
+    [50, 100, 200, 400, -200, -100, -50]
+  );
   const cardRef = useRef<HTMLDivElement>(null);
   
   const [timeFrame, setTimeFrame] = useState<TimeFrame>("1M");
@@ -283,14 +293,45 @@ export default function ImprovedSwipeStockCard({
   
   return (
     <div className="relative h-full overflow-hidden">
-      {/* Next Card - visible to the side during swipes */}
+      {/* Background gradient that changes based on swipe direction */}
+      <motion.div 
+        className="absolute inset-0 z-0 bg-gradient-to-b from-gray-900 to-black"
+        animate={{
+          background: swipeDirection === "left" 
+            ? "linear-gradient(to right, rgba(20, 20, 30, 0.7), rgba(10, 10, 15, 1))" 
+            : swipeDirection === "right"
+              ? "linear-gradient(to left, rgba(20, 20, 30, 0.7), rgba(10, 10, 15, 1))"
+              : "linear-gradient(to bottom, rgb(17, 24, 39), rgb(0, 0, 0))"
+        }}
+      />
+      
+      {/* Swipe direction indicator overlay */}
+      {swipeDirection && (
+        <div className={`absolute inset-0 z-0 flex items-center justify-${swipeDirection === "left" ? "end" : "start"} px-12 opacity-30`}>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.7 }}
+            animate={{ opacity: 0.7, scale: 1 }}
+            className={`flex items-center text-4xl text-${swipeDirection === "left" ? "cyan" : "white"}-300`}
+          >
+            {swipeDirection === "left" ? (
+              <span className="font-medium">Next</span>
+            ) : (
+              <span className="font-medium">Invest</span>
+            )}
+          </motion.div>
+        </div>
+      )}
+      
+      {/* Next stock preview */}
       {nextStock && (
         <motion.div 
-          className="absolute w-[90%] h-[90%] top-[5%] z-0 bg-gradient-to-br from-gray-900 to-black rounded-xl shadow-xl border border-gray-700/30"
+          className="absolute w-[85%] h-[85%] top-[7.5%] z-0 bg-gradient-to-br from-gray-900 to-black rounded-xl shadow-2xl border border-gray-600/20"
           style={{
             opacity: nextStockOpacity,
             x: nextStockX,
-            transition: 'opacity 0.15s ease-out'
+            left: '7.5%',
+            transition: 'all 0.2s ease-out',
+            zIndex: 0
           }}
         >
           <div className="w-full h-full p-4">
