@@ -12,6 +12,7 @@ interface SwipeStockCardProps {
   onPrevious: () => void;
   currentIndex: number;
   totalCount: number;
+  nextStock?: StockData; // Optional next stock to show during swipes
 }
 
 type TimeFrame = "1D" | "5D" | "1M" | "6M" | "YTD" | "1Y" | "5Y" | "MAX";
@@ -111,12 +112,15 @@ export default function ImprovedSwipeStockCard({
   onNext, 
   onPrevious, 
   currentIndex, 
-  totalCount 
+  totalCount,
+  nextStock
 }: SwipeStockCardProps) {
   const cardControls = useAnimation();
   const x = useMotionValue(0);
-  const cardOpacity = useTransform(x, [-200, 0, 200], [0, 1, 0]);
-  const cardRotate = useTransform(x, [-200, 0, 200], [-10, 0, 10]);
+  // Enhanced transformations for smoother animations
+  const cardOpacity = useTransform(x, [-300, -200, 0, 200, 300], [0.2, 0.8, 1, 0.8, 0.2]);
+  const cardRotate = useTransform(x, [-300, 0, 300], [-8, 0, 8]);
+  const nextStockOpacity = useTransform(x, [-300, -100, -20, 0, 20, 100, 300], [0.5, 0.3, 0, 0, 0, 0.3, 0.5]);
   const cardRef = useRef<HTMLDivElement>(null);
   
   const [timeFrame, setTimeFrame] = useState<TimeFrame>("1M");
@@ -274,6 +278,50 @@ export default function ImprovedSwipeStockCard({
   
   return (
     <div className="relative h-full">
+      {/* Next Stock Preview - visible during swipes */}
+      {nextStock && (
+        <motion.div 
+          className="absolute inset-0 overflow-hidden pointer-events-none z-0"
+          style={{
+            opacity: nextStockOpacity,
+            transform: `translateX(${x.get() < 0 ? '60px' : '-60px'})`,
+          }}
+        >
+          <div className="w-full h-full bg-gradient-to-br from-gray-900 to-black p-4">
+            {/* Simple preview of next stock */}
+            <div className="rounded-xl overflow-hidden h-full flex flex-col opacity-60">
+              <div className="p-4 border-b border-gray-800">
+                <h2 className="text-lg font-bold text-white">{nextStock.name} <span className="text-gray-400">({nextStock.ticker})</span></h2>
+                <div className={`inline-flex items-center mt-1 ${nextStock.change >= 0 ? 'text-green-300' : 'text-red-300'}`}>
+                  <span className="text-lg font-semibold">${nextStock.price.toFixed(2)}</span>
+                  <span className="ml-2 text-sm">{nextStock.change >= 0 ? '+' : ''}{nextStock.change}%</span>
+                </div>
+              </div>
+              <div className="flex-1 bg-gradient-to-b from-gray-900 to-black relative overflow-hidden">
+                {/* Simple chart preview */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="h-24 w-full px-6">
+                    <svg viewBox="0 0 300 80" width="100%" height="100%" preserveAspectRatio="none">
+                      <path
+                        d={`M 0,40 ${nextStock.chartData.map((point, i) => {
+                          const x = (i / (nextStock.chartData.length - 1)) * 300;
+                          const y = 80 - (point / Math.max(...nextStock.chartData) * 60);
+                          return `L ${x},${y}`;
+                        }).join(" ")}`}
+                        fill="none"
+                        stroke={nextStock.change >= 0 ? "#22c55e" : "#ef4444"}
+                        strokeWidth="2"
+                        strokeOpacity="0.5"
+                      />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
+      
       {/* Swipe indicators */}
       <div className="absolute top-1/2 left-4 z-10 transform -translate-y-1/2 opacity-50">
         <ChevronLeft size={40} className={`text-white/30 ${currentIndex === 0 ? 'invisible' : ''}`} />

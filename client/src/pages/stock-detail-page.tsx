@@ -79,6 +79,11 @@ export default function StockDetailPage() {
   }
 
   const currentStock = stocks[currentStockIndex];
+  
+  // Get next stock for preview during swipes
+  const nextStock = currentStockIndex < stocks.length - 1 
+    ? stocks[currentStockIndex + 1] 
+    : stocks[0]; // Loop back to the first stock if we're at the end
 
   return (
     <div className="flex flex-col min-h-screen bg-black text-white">
@@ -124,6 +129,7 @@ export default function StockDetailPage() {
               onPrevious={handlePreviousStock}
               currentIndex={currentStockIndex}
               totalCount={stocks.length}
+              nextStock={nextStock}
             />
           )
         )}
