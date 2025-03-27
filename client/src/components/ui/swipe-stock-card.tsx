@@ -165,8 +165,21 @@ export default function SwipeStockCard({
         dragConstraints={{ left: 0, right: 0 }}
         dragElastic={0.7}
         onDragEnd={handleDragEnd}
-        animate={cardControls}
-        style={{ x, opacity: cardOpacity, rotateZ: cardRotate }}
+        initial={{ scale: 1, y: 0, zIndex: 2 }}
+        animate={{
+          x: swipeDirection === "left" ? -500 : swipeDirection === "right" ? 500 : 0,
+          rotate: swipeDirection === "left" ? -10 : swipeDirection === "right" ? 10 : 0,
+          scale: 1,
+          y: 0,
+          zIndex: 2,
+          opacity: swipeDirection ? 0 : 1
+        }}
+        transition={{ duration: 0.3 }}
+        style={{ 
+          position: 'absolute',
+          width: '100%',
+          height: '100%'
+        }}
       >
         {/* Time Frame Selector */}
         <div className="flex justify-between px-4 py-2 border-b border-gray-800">
