@@ -5,8 +5,7 @@ import { Stack } from "@shared/schema";
 import { ArrowLeft, BellRing, Zap } from "lucide-react";
 import { getQueryFn } from "@/lib/queryClient";
 import { StockData, getIndustryStocks } from "@/lib/stock-data";
-import SimpleStackCard from "@/components/ui/simple-stack-card";
-import RealTimeStockCard from "@/components/ui/real-time-stock-card";
+import StockCard from "@/components/ui/stock-card";
 import StackCompletedModal from "@/components/stack-completed-modal";
 
 export default function StockDetailPage() {
@@ -107,24 +106,15 @@ export default function StockDetailPage() {
       {/* Main content */}
       <div className="flex-1 relative">
         {stocks.length > 0 && (
-          useRealTimeData ? (
-            <RealTimeStockCard
-              stock={currentStock}
-              onNext={handleNextStock}
-              onPrevious={handlePreviousStock}
-              currentIndex={currentStockIndex}
-              totalCount={stocks.length}
-            />
-          ) : (
-            <SimpleStackCard
-              stock={currentStock}
-              onNext={handleNextStock}
-              onPrevious={handlePreviousStock}
-              currentIndex={currentStockIndex}
-              totalCount={stocks.length}
-              nextStock={nextStock}
-            />
-          )
+          <StockCard
+            stock={currentStock}
+            onNext={handleNextStock}
+            onPrevious={handlePreviousStock}
+            currentIndex={currentStockIndex}
+            totalCount={stocks.length}
+            nextStock={nextStock}
+            displayMode={useRealTimeData ? 'realtime' : 'simple'}
+          />
         )}
       </div>
 
