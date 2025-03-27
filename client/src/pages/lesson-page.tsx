@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useLocation, useParams } from "wouter";
-import { Card, Stack } from "@shared/schema";
+import { Card, Stack, UserProgress } from "@shared/schema";
 import { useAuth } from "@/hooks/use-auth";
 import { useUserProgress } from "@/contexts/user-progress-context";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { X, Info, AlertCircle, Loader2 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
-import SwipeableCard from "@/components/ui/swipeable-card";
+import LessonCard from "@/components/lesson-card";
 import QuizCard from "@/components/quiz-card";
 import StackCompleteCard from "@/components/stack-complete-card";
 
@@ -34,7 +34,7 @@ export default function LessonPage() {
   });
   
   // Get user progress for this stack
-  const { data: userProgress, isLoading: isLoadingProgress } = useQuery({
+  const { data: userProgress, isLoading: isLoadingProgress } = useQuery<UserProgress>({
     queryKey: [`/api/user-progress/${stackId}`],
     enabled: !!stackId && !!user,
   });
@@ -163,7 +163,7 @@ export default function LessonPage() {
                     onNextCard={() => handleNextCard(10)}
                   />
                 ) : (
-                  <SwipeableCard 
+                  <LessonCard 
                     card={cards[currentCardIndex]} 
                     onNextCard={handleNextCard}
                   />

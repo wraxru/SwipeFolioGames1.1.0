@@ -272,32 +272,120 @@ export default function RealTimeStockCard({
     // Format metric values for display
     const metricValues = [];
     if (metricName === "Performance") {
-      const perfDetails = metricDetails as { revenueGrowth: number; profitMargin: number; returnOnCapital: number };
+      const perfDetails = metricDetails as { 
+        revenueGrowth: number; 
+        profitMargin: number; 
+        returnOnCapital: number;
+        revenueGrowthExplanation?: string;
+        profitMarginExplanation?: string;
+        returnOnCapitalExplanation?: string;
+      };
       metricValues.push(
-        { label: "Revenue Growth", value: perfDetails.revenueGrowth, suffix: "%" },
-        { label: "Profit Margin", value: perfDetails.profitMargin, suffix: "%" },
-        { label: "Return on Capital", value: perfDetails.returnOnCapital, suffix: "%" }
+        { 
+          label: "Revenue Growth", 
+          value: perfDetails.revenueGrowth, 
+          suffix: "%",
+          explanation: perfDetails.revenueGrowthExplanation || "How much the company's total sales have grown compared to last year."
+        },
+        { 
+          label: "Profit Margin", 
+          value: perfDetails.profitMargin, 
+          suffix: "%",
+          explanation: perfDetails.profitMarginExplanation || "The percentage of sales that become profit after all expenses."
+        },
+        { 
+          label: "Return on Capital", 
+          value: perfDetails.returnOnCapital, 
+          suffix: "%",
+          explanation: perfDetails.returnOnCapitalExplanation || "How efficiently the company uses its investments to generate profits."
+        }
       );
     } else if (metricName === "Stability") {
-      const stabDetails = metricDetails as { volatility: number; beta: number; dividendConsistency: string };
+      const stabDetails = metricDetails as { 
+        volatility: number; 
+        beta: number; 
+        dividendConsistency: string;
+        volatilityExplanation?: string;
+        betaExplanation?: string;
+        dividendConsistencyExplanation?: string;
+      };
       metricValues.push(
-        { label: "Volatility", value: stabDetails.volatility, suffix: "" },
-        { label: "Beta", value: stabDetails.beta, suffix: "" },
-        { label: "Dividend Consistency", value: stabDetails.dividendConsistency, suffix: "" }
+        { 
+          label: "Volatility", 
+          value: stabDetails.volatility, 
+          suffix: "",
+          explanation: stabDetails.volatilityExplanation || "How dramatically the stock price fluctuates; lower means more stable."
+        },
+        { 
+          label: "Beta", 
+          value: stabDetails.beta, 
+          suffix: "",
+          explanation: stabDetails.betaExplanation || "How much the stock moves relative to the market. 1.0 means it moves with the market."
+        },
+        { 
+          label: "Dividend Consistency", 
+          value: stabDetails.dividendConsistency, 
+          suffix: "",
+          explanation: stabDetails.dividendConsistencyExplanation || "How reliably the company pays and increases its dividends over time."
+        }
       );
     } else if (metricName === "Value") {
-      const valDetails = metricDetails as { peRatio: number; pbRatio: number; dividendYield: number | "N/A" };
+      const valDetails = metricDetails as { 
+        peRatio: number; 
+        pbRatio: number; 
+        dividendYield: number | "N/A";
+        peRatioExplanation?: string;
+        pbRatioExplanation?: string;
+        dividendYieldExplanation?: string;
+      };
       metricValues.push(
-        { label: "P/E Ratio", value: valDetails.peRatio, suffix: "" },
-        { label: "P/B Ratio", value: valDetails.pbRatio, suffix: "" },
-        { label: "Dividend Yield", value: valDetails.dividendYield === "N/A" ? "N/A" : valDetails.dividendYield, suffix: valDetails.dividendYield === "N/A" ? "" : "%" }
+        { 
+          label: "P/E Ratio", 
+          value: valDetails.peRatio, 
+          suffix: "",
+          explanation: valDetails.peRatioExplanation || "The price you pay for each dollar of company earnings."
+        },
+        { 
+          label: "P/B Ratio", 
+          value: valDetails.pbRatio, 
+          suffix: "",
+          explanation: valDetails.pbRatioExplanation || "The price compared to the company's accounting book value."
+        },
+        { 
+          label: "Dividend Yield", 
+          value: valDetails.dividendYield === "N/A" ? "N/A" : valDetails.dividendYield, 
+          suffix: valDetails.dividendYield === "N/A" ? "" : "%",
+          explanation: valDetails.dividendYieldExplanation || "The percentage return you receive annually from dividends."
+        }
       );
     } else if (metricName === "Momentum") {
-      const momDetails = metricDetails as { threeMonthReturn: number; relativePerformance: number; rsi: number };
+      const momDetails = metricDetails as { 
+        threeMonthReturn: number; 
+        relativePerformance: number; 
+        rsi: number;
+        threeMonthReturnExplanation?: string;
+        relativePerformanceExplanation?: string;
+        rsiExplanation?: string;
+      };
       metricValues.push(
-        { label: "3-Month Return", value: momDetails.threeMonthReturn, suffix: "%" },
-        { label: "Relative Performance", value: momDetails.relativePerformance, suffix: "%" },
-        { label: "RSI", value: momDetails.rsi, suffix: "" }
+        { 
+          label: "3-Month Return", 
+          value: momDetails.threeMonthReturn, 
+          suffix: "%",
+          explanation: momDetails.threeMonthReturnExplanation || "How much the stock price has changed in the last three months."
+        },
+        { 
+          label: "Relative Performance", 
+          value: momDetails.relativePerformance, 
+          suffix: "%",
+          explanation: momDetails.relativePerformanceExplanation || "How the stock has performed compared to the overall market."
+        },
+        { 
+          label: "RSI", 
+          value: momDetails.rsi, 
+          suffix: "",
+          explanation: momDetails.rsiExplanation || "Technical indicator showing if a stock is potentially oversold or overbought."
+        }
       );
     }
     

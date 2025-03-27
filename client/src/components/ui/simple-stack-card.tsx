@@ -103,33 +103,93 @@ export default function SimpleStackCard({
     const metricValues = [];
     
     if (metricName === "Performance") {
+      const details = stock.metrics.performance.details;
       metricValues.push(
-        { label: "Revenue Growth", value: stock.metrics.performance.details.revenueGrowth, suffix: "%" },
-        { label: "Profit Margin", value: stock.metrics.performance.details.profitMargin, suffix: "%" },
-        { label: "Return on Capital", value: stock.metrics.performance.details.returnOnCapital, suffix: "%" }
+        { 
+          label: "Revenue Growth", 
+          value: details.revenueGrowth, 
+          suffix: "%",
+          explanation: details.revenueGrowthExplanation || "How much the company's total sales have grown compared to last year."
+        },
+        { 
+          label: "Profit Margin", 
+          value: details.profitMargin, 
+          suffix: "%",
+          explanation: details.profitMarginExplanation || "The percentage of sales that become profit after all expenses."
+        },
+        { 
+          label: "Return on Capital", 
+          value: details.returnOnCapital, 
+          suffix: "%",
+          explanation: details.returnOnCapitalExplanation || "How efficiently the company uses its investments to generate profits."
+        }
       );
     } else if (metricName === "Stability") {
+      const details = stock.metrics.stability.details;
       metricValues.push(
-        { label: "Volatility", value: stock.metrics.stability.details.volatility, suffix: "" },
-        { label: "Beta", value: stock.metrics.stability.details.beta, suffix: "" },
-        { label: "Dividend Consistency", value: stock.metrics.stability.details.dividendConsistency, suffix: "" }
+        { 
+          label: "Volatility", 
+          value: details.volatility, 
+          suffix: "",
+          explanation: details.volatilityExplanation || "How dramatically the stock price fluctuates; lower means more stable."
+        },
+        { 
+          label: "Beta", 
+          value: details.beta, 
+          suffix: "",
+          explanation: details.betaExplanation || "How much the stock moves relative to the market. 1.0 means it moves with the market."
+        },
+        { 
+          label: "Dividend Consistency", 
+          value: details.dividendConsistency, 
+          suffix: "",
+          explanation: details.dividendConsistencyExplanation || "How reliably the company pays and increases its dividends over time."
+        }
       );
     } else if (metricName === "Value") {
-      const dividendYield = stock.metrics.value.details.dividendYield;
+      const details = stock.metrics.value.details;
+      const dividendYield = details.dividendYield;
       metricValues.push(
-        { label: "P/E Ratio", value: stock.metrics.value.details.peRatio, suffix: "" },
-        { label: "P/B Ratio", value: stock.metrics.value.details.pbRatio, suffix: "" },
+        { 
+          label: "P/E Ratio", 
+          value: details.peRatio, 
+          suffix: "",
+          explanation: details.peRatioExplanation || "The price you pay for each dollar of company earnings."
+        },
+        { 
+          label: "P/B Ratio", 
+          value: details.pbRatio, 
+          suffix: "",
+          explanation: details.pbRatioExplanation || "The price compared to the company's accounting book value."
+        },
         { 
           label: "Dividend Yield", 
           value: dividendYield === "N/A" ? "N/A" : dividendYield, 
-          suffix: dividendYield === "N/A" ? "" : "%" 
+          suffix: dividendYield === "N/A" ? "" : "%",
+          explanation: details.dividendYieldExplanation || "The percentage return you receive annually from dividends."
         }
       );
     } else if (metricName === "Momentum") {
+      const details = stock.metrics.momentum.details;
       metricValues.push(
-        { label: "3-Month Return", value: stock.metrics.momentum.details.threeMonthReturn, suffix: "%" },
-        { label: "Relative Performance", value: stock.metrics.momentum.details.relativePerformance, suffix: "%" },
-        { label: "RSI", value: stock.metrics.momentum.details.rsi, suffix: "" }
+        { 
+          label: "3-Month Return", 
+          value: details.threeMonthReturn, 
+          suffix: "%",
+          explanation: details.threeMonthReturnExplanation || "How much the stock price has changed in the last three months."
+        },
+        { 
+          label: "Relative Performance", 
+          value: details.relativePerformance, 
+          suffix: "%",
+          explanation: details.relativePerformanceExplanation || "How the stock has performed compared to the overall market."
+        },
+        { 
+          label: "RSI", 
+          value: details.rsi, 
+          suffix: "",
+          explanation: details.rsiExplanation || "Technical indicator showing if a stock is potentially oversold or overbought."
+        }
       );
     }
     

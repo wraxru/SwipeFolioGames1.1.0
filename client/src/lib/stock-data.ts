@@ -472,7 +472,10 @@ const hardcodedStocks: Record<string, StockData[]> = {
           details: {
             revenueGrowth: 29.5,
             profitMargin: 16.0,
-            returnOnCapital: 1.30
+            returnOnCapital: 1.30,
+            revenueGrowthExplanation: "Sales grew nearly 30% - much faster than most REITs due to acquisitions.",
+            profitMarginExplanation: "Keeps $16 of every $100 it makes - decent but not stellar for real estate.",
+            returnOnCapitalExplanation: "Gets only $1.30 back for every $100 invested - below average efficiency."
           },
           explanation: "Realty Income is expanding and profitable, but not very efficient with its money."
         },
@@ -482,7 +485,10 @@ const hardcodedStocks: Record<string, StockData[]> = {
           details: {
             volatility: 6.93,
             beta: 0.82,
-            dividendConsistency: "Good"
+            dividendConsistency: "Good",
+            volatilityExplanation: "Price moves are mild - this stock doesn't jump around much day-to-day.",
+            betaExplanation: "When markets fall 10%, Realty Income typically falls only about 8%.",
+            dividendConsistencyExplanation: "Famous for monthly dividends that have grown for 25+ consecutive years."
           },
           explanation: "Realty Income doesn't move around much and pays consistently. It's a safe pick for steady hands."
         },
@@ -492,7 +498,10 @@ const hardcodedStocks: Record<string, StockData[]> = {
           details: {
             peRatio: 57.6,
             pbRatio: 1.29,
-            dividendYield: 5.7
+            dividendYield: 5.7,
+            peRatioExplanation: "You pay nearly $58 for every $1 of yearly earnings - expensive by normal standards.",
+            pbRatioExplanation: "Trading at only 1.3x its book value - a reasonable price for its physical assets.",
+            dividendYieldExplanation: "Pays you $5.70 per year for every $100 invested - that's excellent income."
           },
           explanation: "Realty Income is all about slow, steady income. It won't skyrocket, but it'll keep delivering."
         },
@@ -502,7 +511,10 @@ const hardcodedStocks: Record<string, StockData[]> = {
           details: {
             threeMonthReturn: 6.6,
             relativePerformance: -1.5,
-            rsi: 49.3
+            rsi: 49.3,
+            threeMonthReturnExplanation: "Gained 6.6% in the last three months - decent but not spectacular.",
+            relativePerformanceExplanation: "Performing slightly worse than the broader market by about 1.5%.",
+            rsiExplanation: "Buying and selling pressure are balanced - the stock isn't overbought or oversold."
           },
           explanation: "Realty Income hasn't made big moves lately and isn't drawing much investor attention."
         }
