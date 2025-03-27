@@ -122,19 +122,31 @@ export default function ImprovedSwipeStockCard({
   const cardRotate = useTransform(x, [-300, 0, 300], [-8, 0, 8]);
 
   // Transform values for the next stock preview effects
-  // Next card is more visible the further you swipe
+  // Smoother opacity transition for the next card
   const nextStockOpacity = useTransform(
     x, 
     [-300, -200, -100, 0, 100, 200, 300], 
-    [0.95, 0.8, 0.5, 0, 0.5, 0.8, 0.95]
+    [1, 0.9, 0.7, 0.5, 0.7, 0.9, 1]
   );
 
-  // Initial position for the next card: right side for left swipe, left side for right swipe
-  // Move it into the center as you swipe left/right
+  // Keep the next card centered but scaled
+  const nextStockScale = useTransform(
+    x,
+    [-300, 0, 300],
+    [0.95, 0.9, 0.95]
+  );
+
+  // Add slight movement for depth
   const nextStockX = useTransform(
     x, 
-    [-300, -200, -100, 0, 100, 200, 300], 
-    [50, 100, 200, 400, -200, -100, -50]
+    [-300, 0, 300], 
+    [20, 0, -20]
+  );
+  // Add background color transition
+  const cardBackground = useTransform(
+    x,
+    [-300, 0, 300],
+    ['rgba(255,255,255,0.95)', 'rgba(255,255,255,0.8)', 'rgba(255,255,255,0.95)']
   );
   const cardRef = useRef<HTMLDivElement>(null);
 
@@ -332,7 +344,16 @@ export default function ImprovedSwipeStockCard({
             x: nextStockX,
             left: '7.5%',
             transition: 'all 0.2s ease-out',
-            zIndex: 0
+            zIndex: 0,
+            position: 'absolute',
+            width: '100%',
+            height: '100%',
+            background: cardBackground,
+            transform: `translateX(${nextStockX}px) scale(${nextStockScale})`,
+            borderRadius: '1rem',
+            overflow: 'hidden',
+            transition: 'background 0.3s ease'
+
           }}
         >
           <div className="w-full h-full p-4">
