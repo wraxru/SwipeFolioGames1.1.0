@@ -96,6 +96,16 @@ export default function StockDetailPage() {
         </button>
         <div className="flex items-center gap-2">
           <h1 className="text-xl font-bold text-green-400">Swipefolio</h1>
+          <button
+            onClick={() => setUseRealTimeData(!useRealTimeData)}
+            className={`ml-2 text-xs px-3 py-1 rounded-full transition-colors ${
+              useRealTimeData 
+                ? 'bg-green-800 text-green-200 hover:bg-green-700' 
+                : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+            }`}
+          >
+            {useRealTimeData ? 'Live Data' : 'Simple View'}
+          </button>
         </div>
         <button className="text-green-400 hover:bg-gray-800 p-2 rounded-full transition-colors relative">
           <div className="absolute top-1 right-1 w-2 h-2 bg-green-400 rounded-full"></div>

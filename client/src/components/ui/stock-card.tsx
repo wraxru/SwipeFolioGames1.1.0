@@ -742,22 +742,26 @@ export default function StockCard({
             
             {/* Chart visual */}
             <div className="absolute inset-0 px-10">
-              {/* Chart path - dynamically draw based on chartData */}
+              {/* Chart path - dynamically draw based on chartData with extension to edge */}
               <svg className="w-full h-full" viewBox={`0 0 100 100`} preserveAspectRatio="none">
                 <path
                   d={`M0,${100 - ((chartData[0] - minValue) / (maxValue - minValue)) * 100} ${chartData.map((point, i) => {
+                    // Use a different approach for mapping points to ensure smooth connection from origin
                     const x = (i / (chartData.length - 1)) * 100;
                     const y = 100 - ((point - minValue) / (maxValue - minValue)) * 100;
-                    return `L${x},${y}`;
+                    return i === 0 ? `L0,${y}` : `L${x},${y}`;
                   }).join(' ')}`}
-                  className={`${realTimeChange >= 0 ? 'stroke-green-500' : 'stroke-red-500'} fill-none stroke-2`}
+                  className={`${realTimeChange >= 0 ? 'stroke-green-500' : 'stroke-red-500'} fill-none`}
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 />
                 {/* Add area fill with gradient */}
                 <path
                   d={`M0,${100 - ((chartData[0] - minValue) / (maxValue - minValue)) * 100} ${chartData.map((point, i) => {
                     const x = (i / (chartData.length - 1)) * 100;
                     const y = 100 - ((point - minValue) / (maxValue - minValue)) * 100;
-                    return `L${x},${y}`;
+                    return i === 0 ? `L0,${y}` : `L${x},${y}`;
                   }).join(' ')} L100,100 L0,100 Z`}
                   className={`${realTimeChange >= 0 ? 'fill-green-100/50' : 'fill-red-100/50'} stroke-none`}
                 />
