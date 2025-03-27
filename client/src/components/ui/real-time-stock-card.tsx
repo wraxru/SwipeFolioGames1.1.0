@@ -208,7 +208,8 @@ export default function RealTimeStockCard({
   const handleDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
     const threshold = 100;
 
-    // Right swipe - Open portfolio impact calculator
+    // Physical drag RIGHT (move finger center to right) = "swipe left" in Tinder terms 
+    // This opens the portfolio impact calculator
     if (info.offset.x > threshold) {
       setSwipeDirection("right");
       // Haptic feedback if available
@@ -232,7 +233,8 @@ export default function RealTimeStockCard({
       });
       setSwipeDirection(null);
     } 
-    // Left swipe - Show skipped message but STAY on current card
+    // Physical drag LEFT (move finger center to left) = "swipe right" in Tinder terms
+    // Show skipped message but STAY on current card
     else if (info.offset.x < -threshold) {
       setSwipeDirection("left");
       // Haptic feedback if available
@@ -390,10 +392,10 @@ export default function RealTimeStockCard({
           <div className="w-32 h-32 rounded-full bg-gradient-to-tr from-blue-400/20 to-indigo-300/20"></div>
         </div>
       </div>
-      {/* Skipped message - shows when swiping left */}
+      {/* Skipped message - shows when swiping left (center-aligned) */}
       {showSkippedMessage && (
         <motion.div
-          className="absolute inset-0 z-30 flex items-center justify-center pointer-events-none"
+          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-30 pointer-events-none"
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.8 }}
