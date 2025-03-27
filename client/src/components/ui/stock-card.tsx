@@ -20,141 +20,33 @@ interface StockCardProps {
 
 type TimeFrame = "1D" | "5D" | "1M" | "6M" | "YTD" | "1Y" | "5Y" | "MAX";
 
-// Hardcoded chart data patterns for different timeframes
+// Helper to generate new chart data based on the selected time frame
 const generateTimeBasedData = (data: number[], timeFrame: TimeFrame) => {
-  // Create fixed patterns that look realistic but don't depend on the input data
-  const basePrice = 100;
-  
-  // Create data points based on timeframe - hardcoded to ensure visibility
+  // Create variations of the chart data based on timeframe
   switch(timeFrame) {
     case "1D":
-      // 1-day pattern with morning rise, lunch dip, afternoon rally
-      return [
-        basePrice * 0.98,
-        basePrice * 0.99,
-        basePrice * 1.01,
-        basePrice * 1.02,
-        basePrice * 1.01,
-        basePrice * 0.99,
-        basePrice * 0.98,
-        basePrice * 0.99,
-        basePrice * 1.00,
-        basePrice * 1.01,
-        basePrice * 1.02,
-        basePrice * 1.03,
-      ];
+      // 1-day data will be more volatile with hourly fluctuations
+      return data.map((point, i) => point * (1 + Math.sin(i * 0.5) * 0.03));
     case "5D":
-      // 5-day pattern with daily fluctuations
-      return [
-        basePrice * 0.97,
-        basePrice * 0.99,
-        basePrice * 1.01,
-        basePrice * 0.98,
-        basePrice * 1.00,
-        basePrice * 1.02,
-        basePrice * 1.03,
-        basePrice * 1.01,
-        basePrice * 1.00,
-        basePrice * 1.03,
-      ];
+      // 5-day data will have bigger swings
+      return data.map((point, i) => point * (1 + Math.sin(i * 0.3) * 0.05));
     case "1M":
-      // Monthly pattern with weekly cycles
-      return [
-        basePrice * 0.95,
-        basePrice * 0.97,
-        basePrice * 0.99,
-        basePrice * 1.01,
-        basePrice * 0.98,
-        basePrice * 1.00,
-        basePrice * 1.02,
-        basePrice * 1.04,
-        basePrice * 1.03,
-        basePrice * 1.05,
-      ];
+      // Default monthly data
+      return data;
     case "6M":
-      // 6-month uptrend with corrections
-      return [
-        basePrice * 0.90,
-        basePrice * 0.95,
-        basePrice * 0.93,
-        basePrice * 0.97,
-        basePrice * 1.00,
-        basePrice * 0.98,
-        basePrice * 1.02,
-        basePrice * 1.05,
-        basePrice * 1.03,
-        basePrice * 1.08,
-      ];
-    case "YTD":
-      // Year-to-date with earnings reports bumps
-      return [
-        basePrice * 0.92,
-        basePrice * 0.96,
-        basePrice * 1.00,
-        basePrice * 0.97,
-        basePrice * 1.02,
-        basePrice * 1.05,
-        basePrice * 1.03,
-        basePrice * 1.07,
-        basePrice * 1.06,
-        basePrice * 1.10,
-      ];
+      // 6-month data will be smoother with an overall trend
+      return data.map((point, i) => point * (1 + (i/data.length) * 0.1));
     case "1Y":
-      // 1-year with seasonal patterns
-      return [
-        basePrice * 0.85,
-        basePrice * 0.90,
-        basePrice * 0.95,
-        basePrice * 0.93,
-        basePrice * 0.97,
-        basePrice * 1.00,
-        basePrice * 0.98,
-        basePrice * 1.05,
-        basePrice * 1.10,
-        basePrice * 1.08,
-      ];
+      // 1-year data with more pronounced trends
+      return data.map((point, i) => point * (1 + Math.sin(i * 0.2) * 0.08 + (i/data.length) * 0.15));
     case "5Y":
-      // 5-year with business cycles
-      return [
-        basePrice * 0.70,
-        basePrice * 0.85,
-        basePrice * 0.80,
-        basePrice * 0.90,
-        basePrice * 1.00,
-        basePrice * 0.95,
-        basePrice * 1.05,
-        basePrice * 1.15,
-        basePrice * 1.10,
-        basePrice * 1.25,
-      ];
+      // 5-year data with longer cycles
+      return data.map((point, i) => point * (1 + Math.sin(i * 0.1) * 0.12 + (i/data.length) * 0.3));
     case "MAX":
-      // Long-term growth with market cycles
-      return [
-        basePrice * 0.50,
-        basePrice * 0.65,
-        basePrice * 0.60,
-        basePrice * 0.75,
-        basePrice * 0.90,
-        basePrice * 0.85,
-        basePrice * 1.00,
-        basePrice * 1.15,
-        basePrice * 1.25,
-        basePrice * 1.40,
-      ];
+      // Lifetime data with very long cycles 
+      return data.map((point, i) => point * (1 + Math.sin(i * 0.05) * 0.15 + (i/data.length) * 0.5));
     default:
-      // Fallback to a simple uptrend
-      return [
-        basePrice * 0.95,
-        basePrice * 0.97,
-        basePrice * 0.99,
-        basePrice * 0.98,
-        basePrice * 1.00,
-        basePrice * 1.02,
-        basePrice * 1.01,
-        basePrice * 1.03,
-        basePrice * 1.05,
-        basePrice * 1.08,
-      ];
+      return data;
   }
 };
 
@@ -254,15 +146,10 @@ export default function StockCard({
   const [isPortfolioImpactOpen, setIsPortfolioImpactOpen] = useState(false);
   
   // Use static data only
-  const chartData = useMemo(() => {
-    // For debugging
-    console.log('Stock Chart Data:', {
-      inputData: stock.chartData,
-      timeFrame,
-      generatedData: generateTimeBasedData(stock.chartData, timeFrame)
-    });
-    return generateTimeBasedData(stock.chartData, timeFrame);
-  }, [stock.chartData, timeFrame]);
+  const chartData = useMemo(() => 
+    generateTimeBasedData(stock.chartData, timeFrame),
+    [stock.chartData, timeFrame]
+  );
   
   // Format display price
   const displayPrice = stock.price.toFixed(2);
@@ -845,96 +732,40 @@ export default function StockCard({
             </span>
           </div>
           
-          {/* Chart - Enhanced for iOS display */}
-          <div className="relative mt-3 h-56 w-full overflow-hidden">
+          {/* Chart placeholder - visualize the data */}
+          <div className="relative mt-3 h-44 rounded-xl bg-slate-50 border border-slate-100 py-2">
             {/* Y-axis labels */}
-            <div className="absolute left-2 top-2 bottom-0 flex flex-col justify-between text-[10px] text-slate-500 font-medium pointer-events-none z-10">
-              <span>${Math.round(priceRangeMax)}</span>
-              <span className="my-auto">${Math.round((priceRangeMax + priceRangeMin) / 2)}</span>
-              <span className="mb-12">${Math.round(priceRangeMin)}</span>
+            <div className="absolute left-2 top-0 bottom-0 flex flex-col justify-between text-[10px] text-slate-400 pointer-events-none">
+              <span>${priceRangeMax}</span>
+              <span>${priceRangeMin}</span>
             </div>
             
-            {/* Chart visual - Full width and height */}
-            <div className="absolute inset-0">
-              {/* Background with subtle grid lines */}
-              <div className="absolute inset-0 bg-gradient-to-b from-slate-50 to-white">
-                {/* Horizontal grid lines */}
-                <div className="absolute inset-0 flex flex-col justify-between opacity-30">
-                  <div className="border-t border-slate-200 h-0 w-full mt-2"></div>
-                  <div className="border-t border-slate-200 h-0 w-full"></div>
-                  <div className="border-t border-slate-200 h-0 w-full mb-12"></div>
-                </div>
-              </div>
-              
-              {/* Chart SVG - Edge to edge */}
-              <svg className="w-full h-[calc(100%-10px)]" viewBox="0 0 100 100" preserveAspectRatio="none">
-                {/* Gradient definitions */}
-                <defs>
-                  <linearGradient id="greenGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stopColor="rgb(34, 197, 94)" stopOpacity="0.2" />
-                    <stop offset="100%" stopColor="rgb(34, 197, 94)" stopOpacity="0.05" />
-                  </linearGradient>
-                  <linearGradient id="redGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stopColor="rgb(239, 68, 68)" stopOpacity="0.2" />
-                    <stop offset="100%" stopColor="rgb(239, 68, 68)" stopOpacity="0.05" />
-                  </linearGradient>
-                </defs>
-                
-                {/* Only render if we have chart data */}
-                {chartData && chartData.length > 0 && (
-                  <>
-                    {/* Area fill with gradient */}
-                    <path
-                      d={`M0,${100 - ((chartData[0] - minValue) / (maxValue - minValue)) * 100} 
-                          ${chartData.map((point, i) => {
-                            const x = (i / (chartData.length - 1)) * 100;
-                            const y = 100 - ((point - minValue) / (maxValue - minValue)) * 100;
-                            return `L${x},${y}`;
-                          }).join(' ')} 
-                          L100,100 L0,100 Z`}
-                      fill={realTimeChange >= 0 ? "url(#greenGradient)" : "url(#redGradient)"}
-                      strokeWidth="0"
-                    />
-                    
-                    {/* Chart path with thicker strokes for better visibility */}
-                    <path
-                      d={`M0,${100 - ((chartData[0] - minValue) / (maxValue - minValue)) * 100} 
-                          ${chartData.map((point, i) => {
-                            const x = (i / (chartData.length - 1)) * 100;
-                            const y = 100 - ((point - minValue) / (maxValue - minValue)) * 100;
-                            return `L${x},${y}`;
-                          }).join(' ')}`}
-                      stroke={realTimeChange >= 0 ? "#22c55e" : "#ef4444"}
-                      strokeWidth="3"
-                      fill="none"
-                      strokeLinejoin="round"
-                      strokeLinecap="round"
-                    />
-                    
-                    {/* Data points - more visible dots at key points */}
-                    {chartData.map((point, i) => {
-                      const x = (i / (chartData.length - 1)) * 100;
-                      const y = 100 - ((point - minValue) / (maxValue - minValue)) * 100;
-                      // Show key points (first, last, and evenly spaced ones)
-                      return (i === 0 || i === chartData.length - 1 || i % 3 === 0) ? (
-                        <circle 
-                          key={i}
-                          cx={x}
-                          cy={y}
-                          r="2.5"
-                          stroke={realTimeChange >= 0 ? "#22c55e" : "#ef4444"}
-                          strokeWidth="1"
-                          fill="#ffffff"
-                        />
-                      ) : null;
-                    })}
-                  </>
-                )}
+            {/* Chart visual */}
+            <div className="absolute inset-0 px-10">
+              {/* Chart path - dynamically draw based on chartData */}
+              <svg className="w-full h-full" viewBox={`0 0 100 100`} preserveAspectRatio="none">
+                <path
+                  d={`M0,${100 - ((chartData[0] - minValue) / (maxValue - minValue)) * 100} ${chartData.map((point, i) => {
+                    const x = (i / (chartData.length - 1)) * 100;
+                    const y = 100 - ((point - minValue) / (maxValue - minValue)) * 100;
+                    return `L${x},${y}`;
+                  }).join(' ')}`}
+                  className={`${realTimeChange >= 0 ? 'stroke-green-500' : 'stroke-red-500'} fill-none stroke-2`}
+                />
+                {/* Add area fill with gradient */}
+                <path
+                  d={`M0,${100 - ((chartData[0] - minValue) / (maxValue - minValue)) * 100} ${chartData.map((point, i) => {
+                    const x = (i / (chartData.length - 1)) * 100;
+                    const y = 100 - ((point - minValue) / (maxValue - minValue)) * 100;
+                    return `L${x},${y}`;
+                  }).join(' ')} L100,100 L0,100 Z`}
+                  className={`${realTimeChange >= 0 ? 'fill-green-100/50' : 'fill-red-100/50'} stroke-none`}
+                />
               </svg>
             </div>
             
-            {/* X-axis labels - Positioned more clearly at the bottom with more space */}
-            <div className="absolute left-0 right-0 bottom-0 px-6 flex justify-between text-[10px] text-slate-500 font-medium pointer-events-none h-12 items-center">
+            {/* X-axis labels */}
+            <div className="absolute left-0 right-0 bottom-0 px-10 flex justify-between text-[10px] text-slate-400 pointer-events-none">
               {timeScaleLabels.map((label, index) => (
                 <span key={index}>{label}</span>
               ))}
