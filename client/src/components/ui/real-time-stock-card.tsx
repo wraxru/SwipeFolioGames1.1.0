@@ -208,9 +208,9 @@ export default function RealTimeStockCard({
   const handleDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
     const threshold = 100;
 
-    // Left swipe (negative x) - Open portfolio impact calculator
-    if (info.offset.x < -threshold) {
-      setSwipeDirection("left");
+    // Right swipe (positive x) - Open portfolio impact calculator
+    if (info.offset.x > threshold) {
+      setSwipeDirection("right");
       // Haptic feedback if available
       if (navigator.vibrate) {
         navigator.vibrate(50);
@@ -232,22 +232,17 @@ export default function RealTimeStockCard({
       });
       setSwipeDirection(null);
     } 
-    // Right swipe (positive x) - Skip to next card
-    else if (info.offset.x > threshold) {
+    // Left swipe (negative x) - Skip to next card
+    else if (info.offset.x < -threshold) {
       setSwipeDirection("left");
       // Haptic feedback if available
       if (navigator.vibrate) {
         navigator.vibrate(30);
       }
-      setSwipeDirection("right");
-      // Haptic feedback
-      if (navigator.vibrate) {
-        navigator.vibrate(30);
-      }
       
-      // Animate card off screen to the right
+      // Animate card off screen to the left
       cardControls.start({
-        x: 500,
+        x: -500,
         opacity: 0,
         transition: { duration: 0.3 }
       }).then(() => {
