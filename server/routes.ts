@@ -31,6 +31,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(cards);
   });
 
+  // Remove real-time stock endpoints
+  app.get("/api/stocks/overview", (req, res) => {
+    res.json({ message: "Using static data" });
+  });
+
+  app.get("/api/stocks/quote", (req, res) => {
+    res.json({ message: "Using static data" });
+  });
+
+  app.get("/api/stocks/intraday", (req, res) => {
+    res.json({ message: "Using static data" });
+  });
+
   // Protected routes - require authentication
   app.use("/api/user-progress", (req, res, next) => {
     if (!req.isAuthenticated()) {
