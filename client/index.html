@@ -26,8 +26,14 @@
         position: absolute;
         width: 100%;
         height: 100%;
-        transition: transform 0.5s ease, opacity 0.5s ease;
-        will-change: transform, opacity;
+        transition: all 0.5s ease;
+        will-change: transform, opacity, z-index;
+        backface-visibility: hidden;
+      }
+      .swipe-card.next-card {
+        z-index: -1;
+        transform: scale(0.95) translateY(10px);
+        opacity: 0.5;
       }
       .swipe-card.swipe-left {
         transform: translateX(-150%) rotate(-20deg);
