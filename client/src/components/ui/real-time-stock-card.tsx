@@ -208,9 +208,9 @@ export default function RealTimeStockCard({
   const handleDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
     const threshold = 100;
 
-    // Right swipe - Open portfolio impact calculator
-    if (info.offset.x > threshold) {
-      setSwipeDirection("right");
+    // Left swipe (negative x) - Open portfolio impact calculator
+    if (info.offset.x < -threshold) {
+      setSwipeDirection("left");
       // Haptic feedback if available
       if (navigator.vibrate) {
         navigator.vibrate(50);
@@ -232,34 +232,29 @@ export default function RealTimeStockCard({
       });
       setSwipeDirection(null);
     } 
-    // Left swipe - Show skipped message but STAY on current card
-    else if (info.offset.x < -threshold) {
+    // Right swipe (positive x) - Skip to next card
+    else if (info.offset.x > threshold) {
       setSwipeDirection("left");
       // Haptic feedback if available
       if (navigator.vibrate) {
         navigator.vibrate(30);
       }
-      // Show skipped message
-      setShowSkippedMessage(true);
+      setSwipeDirection("right");
+      // Haptic feedback
+      if (navigator.vibrate) {
+        navigator.vibrate(30);
+      }
       
-      // Spring back to center with animation
+      // Animate card off screen to the right
       cardControls.start({
-        x: 0,
-        opacity: 1,
-        scale: 1,
-        transition: { 
-          type: "spring", 
-          stiffness: 400, 
-          damping: 30,
-          duration: 0.4
-        }
-      });
-      
-      // Hide skipped message after a delay
-      setTimeout(() => {
-        setShowSkippedMessage(false);
+        x: 500,
+        opacity: 0,
+        transition: { duration: 0.3 }
+      }).then(() => {
+        onNext();
+        cardControls.set({ x: 0, opacity: 1 });
         setSwipeDirection(null);
-      }, 1500);
+      });
     } 
     // Not enough drag - Spring back
     else {
