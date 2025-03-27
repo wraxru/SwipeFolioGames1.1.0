@@ -841,24 +841,9 @@ export default function StockCard({
           </div>
           
           {/* Chart - Enhanced for iOS display */}
-          <div className="relative mt-3 h-56 w-full overflow-hidden chart-container">
+          <div className="relative mt-3 h-56 w-full overflow-hidden">
             {/* Y-axis labels */}
             <div className="absolute left-2 top-2 bottom-0 flex flex-col justify-between text-[10px] text-slate-500 font-medium pointer-events-none z-10">
-              {chartData.yAxisLabels?.map((label, i) => (
-                <span key={i}>{label}</span>
-              ))}
-            </div>
-            {/* Chart visualization */}
-            <div className="absolute inset-0 flex items-end justify-between px-2">
-              {chartData.data?.map((point, i) => (
-                <div key={i} className="h-full flex items-end">
-                  <div 
-                    className={`w-1 rounded-t ${realTimeChange >= 0 ? 'bg-green-500' : 'bg-red-500'}`}
-                    style={{ height: `${point.percentage}%` }}
-                  />
-                </div>
-              ))}
-            </div>10">
               <span>${Math.round(priceRangeMax)}</span>
               <span className="my-auto">${Math.round((priceRangeMax + priceRangeMin) / 2)}</span>
               <span className="mb-12">${Math.round(priceRangeMin)}</span>
