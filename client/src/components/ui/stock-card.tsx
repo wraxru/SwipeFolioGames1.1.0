@@ -735,10 +735,10 @@ export default function StockCard({
           {/* Chart - Enhanced for iOS display */}
           <div className="relative mt-3 h-56 w-full overflow-hidden">
             {/* Y-axis labels */}
-            <div className="absolute left-2 top-2 bottom-0 flex flex-col justify-between text-[10px] text-slate-400 pointer-events-none z-10">
-              <span>${priceRangeMax}</span>
-              <span className="my-auto">${((priceRangeMax + priceRangeMin) / 2).toFixed(2)}</span>
-              <span className="mb-6">${priceRangeMin}</span>
+            <div className="absolute left-2 top-2 bottom-0 flex flex-col justify-between text-[10px] text-slate-500 font-medium pointer-events-none z-10">
+              <span>${Math.round(priceRangeMax)}</span>
+              <span className="my-auto">${Math.round((priceRangeMax + priceRangeMin) / 2)}</span>
+              <span className="mb-12">${Math.round(priceRangeMin)}</span>
             </div>
             
             {/* Chart visual - Full width and height */}
@@ -749,37 +749,23 @@ export default function StockCard({
                 <div className="absolute inset-0 flex flex-col justify-between opacity-30">
                   <div className="border-t border-slate-200 h-0 w-full mt-2"></div>
                   <div className="border-t border-slate-200 h-0 w-full"></div>
-                  <div className="border-t border-slate-200 h-0 w-full mb-6"></div>
+                  <div className="border-t border-slate-200 h-0 w-full mb-12"></div>
                 </div>
               </div>
               
               {/* Chart SVG - Edge to edge */}
-              <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+              <svg className="w-full h-[calc(100%-10px)]" viewBox="0 0 100 100" preserveAspectRatio="none">
                 {/* Gradient definitions */}
                 <defs>
                   <linearGradient id="greenGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stopColor="rgb(34, 197, 94)" stopOpacity="0.3" />
+                    <stop offset="0%" stopColor="rgb(34, 197, 94)" stopOpacity="0.2" />
                     <stop offset="100%" stopColor="rgb(34, 197, 94)" stopOpacity="0.05" />
                   </linearGradient>
                   <linearGradient id="redGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stopColor="rgb(239, 68, 68)" stopOpacity="0.3" />
+                    <stop offset="0%" stopColor="rgb(239, 68, 68)" stopOpacity="0.2" />
                     <stop offset="100%" stopColor="rgb(239, 68, 68)" stopOpacity="0.05" />
                   </linearGradient>
                 </defs>
-                
-                {/* Chart path with thicker strokes for better visibility */}
-                <path
-                  d={`M0,${100 - ((chartData[0] - minValue) / (maxValue - minValue)) * 100} ${chartData.map((point, i) => {
-                    const x = (i / (chartData.length - 1)) * 100;
-                    const y = 100 - ((point - minValue) / (maxValue - minValue)) * 100;
-                    return `L${x},${y}`;
-                  }).join(' ')}`}
-                  className={`${realTimeChange >= 0 ? 'stroke-green-500' : 'stroke-red-500'}`}
-                  strokeWidth="2.5"
-                  fill="none"
-                  strokeLinejoin="round"
-                  strokeLinecap="round"
-                />
                 
                 {/* Area fill with gradient */}
                 <path
@@ -792,28 +778,44 @@ export default function StockCard({
                   strokeWidth="0"
                 />
                 
-                {/* Data points - small dots at each data point for visual interest */}
+                {/* Chart path with thicker strokes for better visibility */}
+                <path
+                  d={`M0,${100 - ((chartData[0] - minValue) / (maxValue - minValue)) * 100} ${chartData.map((point, i) => {
+                    const x = (i / (chartData.length - 1)) * 100;
+                    const y = 100 - ((point - minValue) / (maxValue - minValue)) * 100;
+                    return `L${x},${y}`;
+                  }).join(' ')}`}
+                  stroke={realTimeChange >= 0 ? "#22c55e" : "#ef4444"}
+                  strokeWidth="3"
+                  fill="none"
+                  strokeLinejoin="round"
+                  strokeLinecap="round"
+                />
+                
+                {/* Data points - more visible dots at key points */}
                 {chartData.map((point, i) => {
                   const x = (i / (chartData.length - 1)) * 100;
                   const y = 100 - ((point - minValue) / (maxValue - minValue)) * 100;
-                  // Only show every 4th point to avoid overcrowding
-                  return (i % 4 === 0 || i === chartData.length - 1) ? (
+                  // Show key points (first, last, and evenly spaced ones)
+                  return (i === 0 || i === chartData.length - 1 || i % 4 === 0) ? (
                     <circle 
                       key={i}
                       cx={x}
                       cy={y}
-                      r="1.2"
-                      className={`${realTimeChange >= 0 ? 'fill-green-500' : 'fill-red-500'}`}
+                      r="2.5"
+                      stroke={realTimeChange >= 0 ? "#22c55e" : "#ef4444"}
+                      strokeWidth="1"
+                      fill={realTimeChange >= 0 ? "#ffffff" : "#ffffff"}
                     />
                   ) : null;
                 })}
               </svg>
             </div>
             
-            {/* X-axis labels - Positioned clearly at the bottom */}
-            <div className="absolute left-0 right-0 bottom-0 px-6 flex justify-between text-[10px] text-slate-400 pointer-events-none bg-gradient-to-t from-white to-transparent h-8 pt-1">
+            {/* X-axis labels - Positioned more clearly at the bottom with more space */}
+            <div className="absolute left-0 right-0 bottom-0 px-6 flex justify-between text-[10px] text-slate-500 font-medium pointer-events-none h-12 items-center">
               {timeScaleLabels.map((label, index) => (
-                <span key={index} className="font-medium">{label}</span>
+                <span key={index}>{label}</span>
               ))}
             </div>
           </div>
