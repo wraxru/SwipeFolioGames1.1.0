@@ -589,11 +589,11 @@ export default function RealTimeStockCard({
                   {chartData.length > 0 && (
                     <>
                       <path
-                        d={`M 0,${80 - ((chartData[0] - minValue) / (maxValue - minValue)) * 80} ${chartData.map((point, i) => {
+                        d={chartData.map((point, i) => {
                           const x = (i / (chartData.length - 1)) * 300;
                           const y = 80 - ((point - minValue) / (maxValue - minValue)) * 80;
-                          return `L ${x},${y}`;
-                        }).join(" ")}`}
+                          return `${i === 0 ? 'M' : 'L'} ${x},${y}`;
+                        }).join(" ")}
                         fill="none"
                         stroke={realTimeChange >= 0 ? "#22c55e" : "#ef4444"}
                         strokeWidth="1.2" /* Thinner line */
