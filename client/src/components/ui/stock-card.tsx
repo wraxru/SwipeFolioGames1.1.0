@@ -254,10 +254,15 @@ export default function StockCard({
   const [isPortfolioImpactOpen, setIsPortfolioImpactOpen] = useState(false);
   
   // Use static data only
-  const chartData = useMemo(() => 
-    generateTimeBasedData(stock.chartData, timeFrame),
-    [stock.chartData, timeFrame]
-  );
+  const chartData = useMemo(() => {
+    // For debugging
+    console.log('Stock Chart Data:', {
+      inputData: stock.chartData,
+      timeFrame,
+      generatedData: generateTimeBasedData(stock.chartData, timeFrame)
+    });
+    return generateTimeBasedData(stock.chartData, timeFrame);
+  }, [stock.chartData, timeFrame]);
   
   // Format display price
   const displayPrice = stock.price.toFixed(2);
@@ -875,48 +880,56 @@ export default function StockCard({
                   </linearGradient>
                 </defs>
                 
-                {/* Area fill with gradient */}
-                <path
-                  d={`M0,${100 - ((chartData[0] - minValue) / (maxValue - minValue)) * 100} ${chartData.map((point, i) => {
-                    const x = (i / (chartData.length - 1)) * 100;
-                    const y = 100 - ((point - minValue) / (maxValue - minValue)) * 100;
-                    return `L${x},${y}`;
-                  }).join(' ')} L100,100 L0,100 Z`}
-                  fill={realTimeChange >= 0 ? "url(#greenGradient)" : "url(#redGradient)"}
-                  strokeWidth="0"
-                />
-                
-                {/* Chart path with thicker strokes for better visibility */}
-                <path
-                  d={`M0,${100 - ((chartData[0] - minValue) / (maxValue - minValue)) * 100} ${chartData.map((point, i) => {
-                    const x = (i / (chartData.length - 1)) * 100;
-                    const y = 100 - ((point - minValue) / (maxValue - minValue)) * 100;
-                    return `L${x},${y}`;
-                  }).join(' ')}`}
-                  stroke={realTimeChange >= 0 ? "#22c55e" : "#ef4444"}
-                  strokeWidth="3"
-                  fill="none"
-                  strokeLinejoin="round"
-                  strokeLinecap="round"
-                />
-                
-                {/* Data points - more visible dots at key points */}
-                {chartData.map((point, i) => {
-                  const x = (i / (chartData.length - 1)) * 100;
-                  const y = 100 - ((point - minValue) / (maxValue - minValue)) * 100;
-                  // Show key points (first, last, and evenly spaced ones)
-                  return (i === 0 || i === chartData.length - 1 || i % 4 === 0) ? (
-                    <circle 
-                      key={i}
-                      cx={x}
-                      cy={y}
-                      r="2.5"
-                      stroke={realTimeChange >= 0 ? "#22c55e" : "#ef4444"}
-                      strokeWidth="1"
-                      fill={realTimeChange >= 0 ? "#ffffff" : "#ffffff"}
+                {/* Only render if we have chart data */}
+                {chartData && chartData.length > 0 && (
+                  <>
+                    {/* Area fill with gradient */}
+                    <path
+                      d={`M0,${100 - ((chartData[0] - minValue) / (maxValue - minValue)) * 100} 
+                          ${chartData.map((point, i) => {
+                            const x = (i / (chartData.length - 1)) * 100;
+                            const y = 100 - ((point - minValue) / (maxValue - minValue)) * 100;
+                            return `L${x},${y}`;
+                          }).join(' ')} 
+                          L100,100 L0,100 Z`}
+                      fill={realTimeChange >= 0 ? "url(#greenGradient)" : "url(#redGradient)"}
+                      strokeWidth="0"
                     />
-                  ) : null;
-                })}
+                    
+                    {/* Chart path with thicker strokes for better visibility */}
+                    <path
+                      d={`M0,${100 - ((chartData[0] - minValue) / (maxValue - minValue)) * 100} 
+                          ${chartData.map((point, i) => {
+                            const x = (i / (chartData.length - 1)) * 100;
+                            const y = 100 - ((point - minValue) / (maxValue - minValue)) * 100;
+                            return `L${x},${y}`;
+                          }).join(' ')}`}
+                      stroke={realTimeChange >= 0 ? "#22c55e" : "#ef4444"}
+                      strokeWidth="3"
+                      fill="none"
+                      strokeLinejoin="round"
+                      strokeLinecap="round"
+                    />
+                    
+                    {/* Data points - more visible dots at key points */}
+                    {chartData.map((point, i) => {
+                      const x = (i / (chartData.length - 1)) * 100;
+                      const y = 100 - ((point - minValue) / (maxValue - minValue)) * 100;
+                      // Show key points (first, last, and evenly spaced ones)
+                      return (i === 0 || i === chartData.length - 1 || i % 3 === 0) ? (
+                        <circle 
+                          key={i}
+                          cx={x}
+                          cy={y}
+                          r="2.5"
+                          stroke={realTimeChange >= 0 ? "#22c55e" : "#ef4444"}
+                          strokeWidth="1"
+                          fill="#ffffff"
+                        />
+                      ) : null;
+                    })}
+                  </>
+                )}
               </svg>
             </div>
             
