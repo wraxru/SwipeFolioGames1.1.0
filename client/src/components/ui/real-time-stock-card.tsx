@@ -1,12 +1,11 @@
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useRef, useMemo } from "react";
 import { StockData } from "@/lib/stock-data";
 import { getIndustryAverages } from "@/lib/industry-data";
-import { Star, Info, AlertCircle, ChevronLeft, ChevronRight, RefreshCw, TrendingUp, DollarSign, Shield, Zap } from "lucide-react";
+import { Info, ChevronLeft, ChevronRight, RefreshCw, DollarSign, TrendingUp, Shield, Zap } from "lucide-react";
 import { motion, useAnimation, useMotionValue, useTransform, PanInfo } from "framer-motion";
 import MetricPopup from "./metric-popup-fixed";
 import PortfolioImpactCalculator from "./portfolio-impact-calculator";
 import OverallAnalysisCard from "@/components/overall-analysis-card";
-import { useStockQuote, useIntradayData, useCompanyOverview } from "@/hooks/use-stock-data";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface RealTimeStockCardProps {
@@ -109,14 +108,6 @@ const getIndustryAverageData = (stock: StockData, metricType: string) => {
   return [];
 };
 
-// Format the intraday data for chart display
-const formatIntradayForChart = (data: any[] | undefined) => {
-  if (!data || data.length === 0) return [];
-  
-  // Extract close prices and reverse to show oldest to newest
-  return data.map(point => point.close).reverse();
-};
-
 export default function RealTimeStockCard({ 
   stock, 
   onNext, 
@@ -147,37 +138,15 @@ export default function RealTimeStockCard({
     data: any;
   } | null>(null);
   
-  // Fetch real-time stock data
-  const { data: quoteData, isLoading: isLoadingQuote, refetch: refetchQuote } = useStockQuote(stock.ticker);
-  const { data: intradayData, isLoading: isLoadingIntraday, refetch: refetchIntraday } = useIntradayData(stock.ticker);
-  const { data: companyData, isLoading: isLoadingCompany } = useCompanyOverview(stock.ticker);
-  
-  // Format intraday data for chart
-  const formattedIntradayData = useMemo(() => 
-    formatIntradayForChart(intradayData),
-    [intradayData]
+  // Use static data only
+  const chartData = useMemo(() => 
+    generateTimeBasedData(stock.chartData, timeFrame),
+    [stock.chartData, timeFrame]
   );
   
-  // Choose chart data source - use real-time data if available, otherwise fallback to stock data
-  const chartData = useMemo(() => {
-    if (formattedIntradayData && formattedIntradayData.length > 0) {
-      return formattedIntradayData;
-    }
-    return generateTimeBasedData(stock.chartData, timeFrame);
-  }, [formattedIntradayData, stock.chartData, timeFrame]);
-  
-  // Parse real-time price and change percentage
-  const realTimePrice = quoteData?.["05. price"] 
-    ? parseFloat(quoteData["05. price"]) 
-    : stock.price;
-  
-  // Convert change percentage string (e.g. "1.85%") to number
-  const realTimeChange = quoteData?.["10. change percent"] 
-    ? parseFloat(quoteData["10. change percent"].replace('%', '')) 
-    : stock.change;
-    
   // Format display price
-  const displayPrice = realTimePrice.toFixed(2);
+  const displayPrice = stock.price.toFixed(2);
+  const realTimeChange = stock.change;
   
   // Calculate min/max for chart display
   const minValue = Math.min(...chartData) - 5;
@@ -192,10 +161,9 @@ export default function RealTimeStockCard({
   // State for portfolio impact calculator
   const [isPortfolioImpactOpen, setIsPortfolioImpactOpen] = useState(false);
   
-  // Function to refresh data
+  // Function to refresh data - now just a visual effect with no actual data refresh
   const refreshData = async () => {
     setIsRefreshing(true);
-    await Promise.all([refetchQuote(), refetchIntraday()]);
     setTimeout(() => setIsRefreshing(false), 1000); // Add a small delay for the animation
   };
 
@@ -359,10 +327,8 @@ export default function RealTimeStockCard({
   const priceRangeMin = Math.floor(minValue);
   const priceRangeMax = Math.ceil(maxValue);
   
-  // Get latest trading day from API or fallback to current date
-  const latestTradingDay = quoteData 
-    ? quoteData["07. latest trading day"] 
-    : new Date().toISOString().split('T')[0];
+  // Get current date for the trading day
+  const latestTradingDay = new Date().toISOString().split('T')[0];
   
   return (
     <div className="relative h-full">
@@ -458,7 +424,7 @@ export default function RealTimeStockCard({
         </button>
         <button 
           onClick={refreshData} 
-          disabled={isRefreshing || isLoadingQuote || isLoadingIntraday}
+          disabled={isRefreshing}
           className="glass-effect rounded-full p-2 text-xs shadow-sm hover:bg-white transition-all disabled:opacity-50"
         >
           <RefreshCw size={14} className={`text-sky-500 ${isRefreshing ? 'animate-spin' : ''}`} />
@@ -494,7 +460,7 @@ export default function RealTimeStockCard({
 
         {/* Chart - updated to be thinner and sleeker */}
         <div className="px-4 pt-4 pb-6 border-b border-slate-100 h-48 relative bg-white">
-          {isLoadingIntraday && timeFrame === "1D" ? (
+          {isRefreshing ? (
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="text-center">
                 <RefreshCw size={20} className="animate-spin mx-auto text-sky-500 mb-2" />
@@ -576,24 +542,16 @@ export default function RealTimeStockCard({
             
             {/* Price under stock name with change on the right */}
             <div className="flex justify-between items-center mt-2">
-              {isLoadingQuote ? (
-                <Skeleton className="h-8 w-32 bg-slate-100" />
-              ) : (
-                <div className="flex items-baseline">
-                  <span className="text-2xl font-bold text-slate-800 mr-2">${displayPrice}</span>
-                </div>
-              )}
+              <div className="flex items-baseline">
+                <span className="text-2xl font-bold text-slate-800 mr-2">${displayPrice}</span>
+              </div>
               
-              {isLoadingQuote ? (
-                <Skeleton className="h-6 w-16 bg-slate-100" />
-              ) : (
-                <div className={`text-sm px-3 py-1 rounded-full font-medium ${realTimeChange >= 0 ? 'text-green-600 bg-green-50 border border-green-100' : 'text-red-600 bg-red-50 border border-red-100'}`}>
-                  <span className="flex items-center">
-                    <span className={`inline-block w-2 h-2 rounded-full mr-1 ${realTimeChange >= 0 ? 'bg-green-500' : 'bg-red-500'}`}></span>
-                    {realTimeChange >= 0 ? '+' : ''}{realTimeChange}%
-                  </span>
-                </div>
-              )}
+              <div className={`text-sm px-3 py-1 rounded-full font-medium ${realTimeChange >= 0 ? 'text-green-600 bg-green-50 border border-green-100' : 'text-red-600 bg-red-50 border border-red-100'}`}>
+                <span className="flex items-center">
+                  <span className={`inline-block w-2 h-2 rounded-full mr-1 ${realTimeChange >= 0 ? 'bg-green-500' : 'bg-red-500'}`}></span>
+                  {realTimeChange >= 0 ? '+' : ''}{realTimeChange}%
+                </span>
+              </div>
             </div>
           </div>
           
@@ -613,7 +571,7 @@ export default function RealTimeStockCard({
                 <h3 className="font-semibold text-sm text-slate-800">Company Overview</h3>
               </div>
               <p className="text-sm text-slate-700 leading-relaxed relative z-10 pl-1">
-                {companyData?.Description || stock.description}
+                {stock.description}
               </p>
             </div>
           </div>
