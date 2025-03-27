@@ -15,7 +15,6 @@ interface RealTimeStockCardProps {
   onPrevious: () => void;
   currentIndex: number;
   totalCount: number;
-  previousStock?: StockData; // Added to access previous stock data
 }
 
 type TimeFrame = "1D" | "5D" | "1M" | "6M" | "YTD" | "1Y" | "5Y" | "MAX";
@@ -78,7 +77,7 @@ const getTimeScaleLabels = (timeFrame: TimeFrame): string[] => {
 const getIndustryAverageData = (stock: StockData, metricType: string) => {
   // Get industry averages from our centralized data
   const industryAvgs = getIndustryAverages(stock.industry);
-
+  
   // Format for display
   if (metricType === 'performance') {
     return [
@@ -105,7 +104,7 @@ const getIndustryAverageData = (stock: StockData, metricType: string) => {
       { label: "RSI", value: `${industryAvgs.momentum.rsi}` }
     ];
   }
-
+  
   // Default empty array if metric type is not recognized
   return [];
 };
@@ -113,7 +112,7 @@ const getIndustryAverageData = (stock: StockData, metricType: string) => {
 // Format the intraday data for chart display
 const formatIntradayForChart = (data: any[] | undefined) => {
   if (!data || data.length === 0) return [];
-
+  
   // Extract close prices and reverse to show oldest to newest
   return data.map(point => point.close).reverse();
 };
@@ -123,8 +122,7 @@ export default function RealTimeStockCard({
   onNext, 
   onPrevious, 
   currentIndex, 
-  totalCount,
-  previousStock
+  totalCount 
 }: RealTimeStockCardProps) {
   const cardControls = useAnimation();
   const x = useMotionValue(0);
@@ -135,12 +133,12 @@ export default function RealTimeStockCard({
   // Scale effect for better tactile feel
   const cardScale = useTransform(x, [-300, -150, 0, 150, 300], [0.95, 0.97, 1, 0.97, 0.95]);
   const cardRef = useRef<HTMLDivElement>(null);
-
+  
   const [timeFrame, setTimeFrame] = useState<TimeFrame>("1D");
   const [swipeDirection, setSwipeDirection] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [showSkippedMessage, setShowSkippedMessage] = useState(false);
-
+  
   // State for metric popup
   const [isMetricPopupOpen, setIsMetricPopupOpen] = useState(false);
   const [selectedMetric, setSelectedMetric] = useState<{
@@ -148,18 +146,18 @@ export default function RealTimeStockCard({
     color: "green" | "yellow" | "red";
     data: any;
   } | null>(null);
-
+  
   // Fetch real-time stock data
   const { data: quoteData, isLoading: isLoadingQuote, refetch: refetchQuote } = useStockQuote(stock.ticker);
   const { data: intradayData, isLoading: isLoadingIntraday, refetch: refetchIntraday } = useIntradayData(stock.ticker);
   const { data: companyData, isLoading: isLoadingCompany } = useCompanyOverview(stock.ticker);
-
+  
   // Format intraday data for chart
   const formattedIntradayData = useMemo(() => 
     formatIntradayForChart(intradayData),
     [intradayData]
   );
-
+  
   // Choose chart data source - use real-time data if available, otherwise fallback to stock data
   const chartData = useMemo(() => {
     if (formattedIntradayData && formattedIntradayData.length > 0) {
@@ -167,24 +165,24 @@ export default function RealTimeStockCard({
     }
     return generateTimeBasedData(stock.chartData, timeFrame);
   }, [formattedIntradayData, stock.chartData, timeFrame]);
-
+  
   // Parse real-time price and change percentage
   const realTimePrice = quoteData?.["05. price"] 
     ? parseFloat(quoteData["05. price"]) 
     : stock.price;
-
+  
   // Convert change percentage string (e.g. "1.85%") to number
   const realTimeChange = quoteData?.["10. change percent"] 
     ? parseFloat(quoteData["10. change percent"].replace('%', '')) 
     : stock.change;
-
+    
   // Format display price
   const displayPrice = realTimePrice.toFixed(2);
-
+  
   // Calculate min/max for chart display
   const minValue = Math.min(...chartData) - 5;
   const maxValue = Math.max(...chartData) + 5;
-
+  
   // Get time scale labels based on selected timeframe
   const timeScaleLabels = useMemo(() => 
     getTimeScaleLabels(timeFrame),
@@ -193,7 +191,7 @@ export default function RealTimeStockCard({
 
   // State for portfolio impact calculator
   const [isPortfolioImpactOpen, setIsPortfolioImpactOpen] = useState(false);
-
+  
   // Function to refresh data
   const refreshData = async () => {
     setIsRefreshing(true);
@@ -219,7 +217,7 @@ export default function RealTimeStockCard({
       }
       // Open portfolio calculator
       setIsPortfolioImpactOpen(true);
-
+      
       // Spring back animation
       cardControls.start({
         x: 0,
@@ -241,7 +239,7 @@ export default function RealTimeStockCard({
       if (navigator.vibrate) {
         navigator.vibrate(30);
       }
-
+      
       // Animate card off screen to the left
       cardControls.start({
         x: -500,
@@ -276,7 +274,7 @@ export default function RealTimeStockCard({
     let color: "green" | "yellow" | "red" = "green";
     let metricObj;
     let metricDetails;
-
+    
     switch(metricName) {
       case "Performance":
         metricObj = stock.metrics.performance;
@@ -297,12 +295,12 @@ export default function RealTimeStockCard({
       default:
         return;
     }
-
+    
     // Map color string to type
     if (metricObj.color === "green") color = "green";
     else if (metricObj.color === "yellow") color = "yellow";
     else if (metricObj.color === "red") color = "red";
-
+    
     // Format metric values for display
     const metricValues = [];
     if (metricName === "Performance") {
@@ -334,10 +332,10 @@ export default function RealTimeStockCard({
         { label: "RSI", value: momDetails.rsi, suffix: "" }
       );
     }
-
+    
     // Get industry average data
     const industryAverage = getIndustryAverageData(stock, metricName.toLowerCase());
-
+    
     // Set selected metric data and open popup
     setSelectedMetric({
       name: metricName,
@@ -351,21 +349,21 @@ export default function RealTimeStockCard({
         name: stock.name
       }
     });
-
+    
     setIsMetricPopupOpen(true);
   };
 
   // Price display format is defined above
-
+  
   // Determine price range to show on Y-axis
   const priceRangeMin = Math.floor(minValue);
   const priceRangeMax = Math.ceil(maxValue);
-
+  
   // Get latest trading day from API or fallback to current date
   const latestTradingDay = quoteData 
     ? quoteData["07. latest trading day"] 
     : new Date().toISOString().split('T')[0];
-
+  
   return (
     <div className="relative h-full">
       {/* Blurred background stock (next in stack) - visible during swipes */}
@@ -400,7 +398,7 @@ export default function RealTimeStockCard({
           </div>
         </motion.div>
       )}
-
+      
       {/* Swipe indicators - Enhanced */}
       <motion.div 
         className="swipe-indicator swipe-left"
@@ -415,7 +413,7 @@ export default function RealTimeStockCard({
           <span className="text-[10px] font-medium">Next</span>
         </div>
       </motion.div>
-
+      
       <motion.div 
         className="swipe-indicator swipe-right"
         animate={{
@@ -429,14 +427,14 @@ export default function RealTimeStockCard({
           <span className="text-[10px] font-medium">Invest</span>
         </div>
       </motion.div>
-
+      
       {/* Page indicator */}
       <div className="absolute top-2 left-0 right-0 flex justify-center z-10">
         <div className="glass-effect rounded-full px-3 py-1 text-xs font-medium text-slate-600 shadow-sm">
           {currentIndex + 1} / {totalCount}
         </div>
       </div>
-
+      
       {/* Refresh and Portfolio buttons */}
       <div className="absolute top-2 right-4 z-10 flex space-x-2">
         <button 
@@ -467,173 +465,159 @@ export default function RealTimeStockCard({
         </button>
       </div>
 
-      <div className="relative w-[85%] max-w-lg h-[70%]">
-        {/* Previous card (shown behind) */}
-        {previousStock && (
-          <motion.div
-            className="absolute top-0 left-0 bg-gray-100 rounded-xl shadow-sm w-full h-full opacity-30 pointer-events-none z-[-1]"
-            style={{ transform: `translateX(-10px)` }}
-          >
-             {/* Simplified previous stock preview */}
-            <div className="w-full h-full flex items-center justify-center">
-              <div className="text-gray-500 text-lg">{previousStock.name}</div>
-            </div>
-          </motion.div>
-        )}
+      <motion.div
+        className="h-full overflow-y-auto overflow-x-hidden pb-16 stock-card"
+        ref={cardRef}
+        drag="x"
+        dragConstraints={{ left: 0, right: 0 }}
+        dragElastic={0.7}
+        onDragEnd={handleDragEnd}
+        animate={cardControls}
+        style={{ x, opacity: cardOpacity, rotateZ: cardRotate, scale: cardScale }}
+      >
+        {/* Time Frame Selector - Updated with Robinhood style */}
+        <div className="flex justify-center space-x-1 px-4 py-3 border-b border-slate-100 bg-white">
+          {["1D", "5D", "1M", "6M", "YTD", "1Y", "5Y", "MAX"].map((period) => (
+            <button
+              key={period}
+              className={`px-3 py-1 text-xs rounded-full transition-all duration-200 ${
+                timeFrame === period 
+                  ? `${realTimeChange >= 0 ? 'text-green-600 bg-green-50 border border-green-100' : 'text-red-600 bg-red-50 border border-red-100'} font-medium` 
+                  : 'text-slate-500 hover:bg-slate-50 border border-transparent'
+              }`}
+              onClick={() => setTimeFrame(period as TimeFrame)}
+            >
+              {period}
+            </button>
+          ))}
+        </div>
 
-        <motion.div
-          className="h-full overflow-y-auto overflow-x-hidden pb-16 stock-card"
-          ref={cardRef}
-          drag="x"
-          dragConstraints={{ left: 0, right: 0 }}
-          dragElastic={0.7}
-          onDragEnd={handleDragEnd}
-          animate={cardControls}
-          style={{ x, opacity: cardOpacity, rotateZ: cardRotate, scale: cardScale }}
-        >
-          {/* Time Frame Selector - Updated with Robinhood style */}
-          <div className="flex justify-center space-x-1 px-4 py-3 border-b border-slate-100 bg-white">
-            {["1D", "5D", "1M", "6M", "YTD", "1Y", "5Y", "MAX"].map((period) => (
-              <button
-                key={period}
-                className={`px-3 py-1 text-xs rounded-full transition-all duration-200 ${
-                  timeFrame === period 
-                    ? `${realTimeChange >= 0 ? 'text-green-600 bg-green-50 border border-green-100' : 'text-red-600 bg-red-50 border border-red-100'} font-medium` 
-                    : 'text-slate-500 hover:bg-slate-50 border border-transparent'
-                }`}
-                onClick={() => setTimeFrame(period as TimeFrame)}
-              >
-                {period}
-              </button>
-            ))}
-          </div>
-
-          {/* Chart - updated to be thinner and sleeker */}
-          <div className="px-4 pt-4 pb-6 border-b border-slate-100 h-48 relative bg-white">
-            {isLoadingIntraday && timeFrame === "1D" ? (
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-center">
-                  <RefreshCw size={20} className="animate-spin mx-auto text-sky-500 mb-2" />
-                  <p className="text-xs text-slate-400">Loading chart...</p>
-                </div>
+        {/* Chart - updated to be thinner and sleeker */}
+        <div className="px-4 pt-4 pb-6 border-b border-slate-100 h-48 relative bg-white">
+          {isLoadingIntraday && timeFrame === "1D" ? (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="text-center">
+                <RefreshCw size={20} className="animate-spin mx-auto text-sky-500 mb-2" />
+                <p className="text-xs text-slate-400">Loading chart...</p>
               </div>
-            ) : (
-              <>
-                {/* Y-axis values - minimalist styling */}
-                <div className="absolute left-1 top-2 bottom-12 flex flex-col justify-between text-xs text-slate-400 w-8 text-right">
-                  <div className="px-1 font-medium">${priceRangeMax}</div>
-                  <div className="px-1 opacity-0">-</div>
-                  <div className="px-1 font-medium">${priceRangeMin}</div>
+            </div>
+          ) : (
+            <>
+              {/* Y-axis values - minimalist styling */}
+              <div className="absolute left-1 top-2 bottom-12 flex flex-col justify-between text-xs text-slate-400 w-8 text-right">
+                <div className="px-1 font-medium">${priceRangeMax}</div>
+                <div className="px-1 opacity-0">-</div>
+                <div className="px-1 font-medium">${priceRangeMin}</div>
+              </div>
+              
+              {/* Chart grid lines - very subtle */}
+              <div className="absolute left-10 right-0 top-2 bottom-12 flex flex-col justify-between pointer-events-none">
+                <div className="border-t border-slate-50 w-full h-0"></div>
+                <div className="opacity-0 w-full h-0"></div>
+                <div className="border-t border-slate-50 w-full h-0"></div>
+              </div>
+              
+              <div className="ml-10 chart-container h-[calc(100%-20px)]">
+                <svg viewBox="0 0 300 80" width="100%" height="100%" preserveAspectRatio="none">
+                  <defs>
+                    <linearGradient id={`chartGradient-${stock.ticker}`} x1="0%" y1="0%" x2="0%" y2="100%">
+                      <stop offset="0%" stopColor={realTimeChange >= 0 ? "rgba(34, 197, 94, 0.1)" : "rgba(239, 68, 68, 0.1)"} />
+                      <stop offset="100%" stopColor={realTimeChange >= 0 ? "rgba(34, 197, 94, 0)" : "rgba(239, 68, 68, 0)"} />
+                    </linearGradient>
+                    {/* Add a subtle glow effect */}
+                    <filter id={`glow-${stock.ticker}`}>
+                      <feGaussianBlur stdDeviation="0.5" result="blur" />
+                      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                    </filter>
+                  </defs>
+                  
+                  {/* Line chart - thinner line for Robinhood style */}
+                  {chartData.length > 0 && (
+                    <>
+                      <path
+                        d={`M 0,${80 - ((chartData[0] - minValue) / (maxValue - minValue)) * 80} ${chartData.map((point, i) => {
+                          const x = (i / (chartData.length - 1)) * 300;
+                          const y = 80 - ((point - minValue) / (maxValue - minValue)) * 80;
+                          return `L ${x},${y}`;
+                        }).join(" ")}`}
+                        fill="none"
+                        stroke={realTimeChange >= 0 ? "#22c55e" : "#ef4444"}
+                        strokeWidth="1.2" /* Thinner line */
+                        filter={`url(#glow-${stock.ticker})`}
+                      />
+                      
+                      {/* Area fill - very subtle gradient */}
+                      <path
+                        d={`M 0,${80 - ((chartData[0] - minValue) / (maxValue - minValue)) * 80} ${chartData.map((point, i) => {
+                          const x = (i / (chartData.length - 1)) * 300;
+                          const y = 80 - ((point - minValue) / (maxValue - minValue)) * 80;
+                          return `L ${x},${y}`;
+                        }).join(" ")} L 300,80 L 0,80 Z`}
+                        fill={`url(#chartGradient-${stock.ticker})`}
+                        opacity="0.1" /* More subtle */
+                      />
+                    </>
+                  )}
+                </svg>
+              </div>
+              
+              {/* Removed time scale labels */}
+            </>
+          )}
+        </div>
+
+        {/* Stock Info */}
+        <div className="px-4 py-4 border-b border-slate-100 bg-white">
+          {/* Stock Name and Ticker */}
+          <div className="mb-3">
+            <h2 className="text-2xl font-bold text-slate-800">
+              {stock.name} <span className="text-slate-500 text-lg">({stock.ticker})</span>
+            </h2>
+            
+            {/* Price under stock name with change on the right */}
+            <div className="flex justify-between items-center mt-2">
+              {isLoadingQuote ? (
+                <Skeleton className="h-8 w-32 bg-slate-100" />
+              ) : (
+                <div className="flex items-baseline">
+                  <span className="text-2xl font-bold text-slate-800 mr-2">${displayPrice}</span>
                 </div>
-
-                {/* Chart grid lines - very subtle */}
-                <div className="absolute left-10 right-0 top-2 bottom-12 flex flex-col justify-between pointer-events-none">
-                  <div className="border-t border-slate-50 w-full h-0"></div>
-                  <div className="opacity-0 w-full h-0"></div>
-                  <div className="border-t border-slate-50 w-full h-0"></div>
+              )}
+              
+              {isLoadingQuote ? (
+                <Skeleton className="h-6 w-16 bg-slate-100" />
+              ) : (
+                <div className={`text-sm px-3 py-1 rounded-full font-medium ${realTimeChange >= 0 ? 'text-green-600 bg-green-50 border border-green-100' : 'text-red-600 bg-red-50 border border-red-100'}`}>
+                  <span className="flex items-center">
+                    <span className={`inline-block w-2 h-2 rounded-full mr-1 ${realTimeChange >= 0 ? 'bg-green-500' : 'bg-red-500'}`}></span>
+                    {realTimeChange >= 0 ? '+' : ''}{realTimeChange}%
+                  </span>
                 </div>
-
-                <div className="ml-10 chart-container h-[calc(100%-20px)]">
-                  <svg viewBox="0 0 300 80" width="100%" height="100%" preserveAspectRatio="none">
-                    <defs>
-                      <linearGradient id={`chartGradient-${stock.ticker}`} x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" stopColor={realTimeChange >= 0 ? "rgba(34, 197, 94, 0.1)" : "rgba(239, 68, 68, 0.1)"} />
-                        <stop offset="100%" stopColor={realTimeChange >= 0 ? "rgba(34, 197, 94, 0)" : "rgba(239, 68, 68, 0)"} />
-                      </linearGradient>
-                      {/* Add a subtle glow effect */}
-                      <filter id={`glow-${stock.ticker}`}>
-                        <feGaussianBlur stdDeviation="0.5" result="blur" />
-                        <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                      </filter>
-                    </defs>
-
-                    {/* Line chart - thinner line for Robinhood style */}
-                    {chartData.length > 0 && (
-                      <>
-                        <path
-                          d={`M 0,${80 - ((chartData[0] - minValue) / (maxValue - minValue)) * 80} ${chartData.map((point, i) => {
-                            const x = (i / (chartData.length - 1)) * 300;
-                            const y = 80 - ((point - minValue) / (maxValue - minValue)) * 80;
-                            return `L ${x},${y}`;
-                          }).join(" ")}`}
-                          fill="none"
-                          stroke={realTimeChange >= 0 ? "#22c55e" : "#ef4444"}
-                          strokeWidth="1.2" /* Thinner line */
-                          filter={`url(#glow-${stock.ticker})`}
-                        />
-
-                        {/* Area fill - very subtle gradient */}
-                        <path
-                          d={`M 0,${80 - ((chartData[0] - minValue) / (maxValue - minValue)) * 80} ${chartData.map((point, i) => {
-                            const x = (i / (chartData.length - 1)) * 300;
-                            const y = 80 - ((point - minValue) / (maxValue - minValue)) * 80;
-                            return `L ${x},${y}`;
-                          }).join(" ")} L 300,80 L 0,80 Z`}
-                          fill={`url(#chartGradient-${stock.ticker})`}
-                          opacity="0.1" /* More subtle */
-                        />
-                      </>
-                    )}
+              )}
+            </div>
+          </div>
+          
+          {/* Description bubble - Enhanced with depth and visual appeal */}
+          <div className="mt-3 relative">
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-100/20 to-indigo-100/20 rounded-xl blur-md transform scale-[0.98] translate-y-1"></div>
+            <div className="p-4 bg-white rounded-xl border border-slate-200 shadow-lg relative overflow-hidden z-10">
+              <div className="absolute -right-6 -top-6 w-24 h-24 bg-gradient-to-br from-blue-50 via-indigo-50 to-transparent rounded-full opacity-70"></div>
+              <div className="flex items-start mb-2">
+                <div className="bg-blue-100 text-blue-600 p-1.5 rounded-md mr-2 shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M12 16v-4" />
+                    <path d="M12 8h.01" />
                   </svg>
                 </div>
-
-                {/* Removed time scale labels */}
-              </>
-            )}
-          </div>
-
-          {/* Stock Info */}
-          <div className="px-4 py-4 border-b border-slate-100 bg-white">
-            {/* Stock Name and Ticker */}
-            <div className="mb-3">
-              <h2 className="text-2xl font-bold text-slate-800">
-                {stock.name} <span className="text-slate-500 text-lg">({stock.ticker})</span>
-              </h2>
-
-              {/* Price under stock name with change on the right */}
-              <div className="flex justify-between items-center mt-2">
-                {isLoadingQuote ? (
-                  <Skeleton className="h-8 w-32 bg-slate-100" />
-                ) : (
-                  <div className="flex items-baseline">
-                    <span className="text-2xl font-bold text-slate-800 mr-2">${displayPrice}</span>
-                  </div>
-                )}
-
-                {isLoadingQuote ? (
-                  <Skeleton className="h-6 w-16 bg-slate-100" />
-                ) : (
-                  <div className={`text-sm px-3 py-1 rounded-full font-medium ${realTimeChange >= 0 ? 'text-green-600 bg-green-50 border border-green-100' : 'text-red-600 bg-red-50 border border-red-100'}`}>
-                    <span className="flex items-center">
-                      <span className={`inline-block w-2 h-2 rounded-full mr-1 ${realTimeChange >= 0 ? 'bg-green-500' : 'bg-red-500}`}></span>
-                      {realTimeChange >= 0 ? '+' : ''}{realTimeChange}%
-                    </span>
-                  </div>
-                )}
+                <h3 className="font-semibold text-sm text-slate-800">Company Overview</h3>
               </div>
-            </div>
-
-            {/* Description bubble - Enhanced with depth and visual appeal */}
-            <div className="mt-3 relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-100/20 to-indigo-100/20 rounded-xl blur-md transform scale-[0.98] translate-y-1"></div>
-              <div className="p-4 bg-white rounded-xl border border-slate-200 shadow-lg relative overflow-hidden z-10">
-                <div className="absolute -right-6 -top-6 w-24 h-24 bg-gradient-to-br from-blue-50 via-indigo-50 to-transparent rounded-full opacity-70"></div>
-                <div className="flex items-start mb-2">
-                  <div className="bg-blue-100 text-blue-600 p-1.5 rounded-md mr-2 shrink-0">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <circle cx="12" cy="12" r="10" />
-                      <path d="M12 16v-4" />
-                      <path d="M12 8h.01" />
-                    </svg>
-                  </div>
-                  <h3 className="font-semibold text-sm text-slate-800">Company Overview</h3>
-                </div>
-                <p className="text-sm text-slate-700 leading-relaxed relative z-10 pl-1">
-                  {companyData?.Description || stock.description}
-                </p>
-              </div>
+              <p className="text-sm text-slate-700 leading-relaxed relative z-10 pl-1">
+                {companyData?.Description || stock.description}
+              </p>
             </div>
           </div>
+        </div>
 
         {/* Performance Metrics - Enhanced with depth and visual appeal */}
         <div className="p-5 bg-gradient-to-b from-white to-slate-50 border-b border-slate-100">
@@ -650,11 +634,11 @@ export default function RealTimeStockCard({
               Tap for details
             </div>
           </div>
-
+          
           <div className="grid grid-cols-2 gap-4">
             {Object.entries(stock.metrics).map(([key, metricObj]) => {
               const metricName = key.charAt(0).toUpperCase() + key.slice(1);
-
+              
               return (
                 <div 
                   key={key}
@@ -666,7 +650,7 @@ export default function RealTimeStockCard({
                     metricObj.color === 'yellow' ? 'bg-gradient-to-r from-amber-100/30 to-yellow-100/30' : 
                     'bg-gradient-to-r from-red-100/30 to-rose-100/30'}`}>
                   </div>
-
+                  
                   {/* Metric Card */}
                   <div 
                     className={`p-4 rounded-xl border relative z-10 overflow-hidden active:scale-95 transition-all duration-150 cursor-pointer shadow-md hover:shadow-lg group-hover:translate-y-[-2px]
@@ -681,7 +665,7 @@ export default function RealTimeStockCard({
                       metricObj.color === 'yellow' ? 'bg-gradient-to-r from-amber-400 to-yellow-500' : 
                       'bg-gradient-to-r from-red-400 to-rose-500'}`}>
                     </div>
-
+                    
                     {/* Unique Icon for each metric type */}
                     <div className="absolute top-2 right-2">
                       {metricName === 'Performance' ? (
@@ -710,14 +694,14 @@ export default function RealTimeStockCard({
                         }`} />
                       )}
                     </div>
-
+                    
                     {/* Decorative bubble in corner */}
                     <div className={`absolute -right-6 -top-6 w-16 h-16 rounded-full opacity-20
                       ${metricObj.color === 'green' ? 'bg-gradient-to-br from-green-100 via-emerald-100 to-transparent' :
                       metricObj.color === 'yellow' ? 'bg-gradient-to-br from-amber-100 via-yellow-100 to-transparent' : 
                       'bg-gradient-to-br from-red-100 via-rose-100 to-transparent'}`}>
                     </div>
-
+                    
                     {/* Metric Value and Name */}
                     <div 
                       className={`text-xl font-bold 
@@ -764,7 +748,7 @@ export default function RealTimeStockCard({
           <div className="bg-white rounded-xl border border-slate-200 shadow-md overflow-hidden mb-4">
             {/* Common background with slight highlight */}
             <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 to-indigo-50/30 rounded-xl opacity-30"></div>
-
+            
             {/* Price Trend */}
             <div className="p-4 border-b border-slate-100 relative">
               <div className="flex items-center gap-4">
@@ -785,7 +769,7 @@ export default function RealTimeStockCard({
                 </div>
               </div>
             </div>
-
+            
             {/* Company News */}
             <div className="p-4 border-b border-slate-100 relative">
               <div className="flex items-center gap-4">
@@ -811,7 +795,7 @@ export default function RealTimeStockCard({
                 </div>
               </div>
             </div>
-
+            
             {/* Portfolio Role */}
             <div className="p-4 relative">
               <div className="flex items-center gap-4">
@@ -829,7 +813,7 @@ export default function RealTimeStockCard({
               </div>
             </div>
           </div>
-
+          
           {/* Premium Insights Section */}
           {(stock.oneYearReturn || stock.predictedPrice) && (
             <div className="mt-5 mb-1 px-4">
@@ -851,11 +835,11 @@ export default function RealTimeStockCard({
                   AI Predictions
                 </div>
               </div>
-
+              
               <div className="bg-white rounded-xl border border-slate-200 shadow-md overflow-hidden mb-4">
                 {/* Common background with slight highlight */}
                 <div className="absolute inset-0 bg-gradient-to-br from-amber-50/20 to-yellow-50/20 rounded-xl opacity-30"></div>
-
+                
                 {/* 1-Year Return - Redesigned for prominence */}
                 {stock.oneYearReturn && (
                   <div className="p-4 border-b border-slate-100 relative">
@@ -884,7 +868,7 @@ export default function RealTimeStockCard({
                     </div>
                   </div>
                 )}
-
+                
                 {/* Predicted Price - Blurred as premium feature */}
                 {stock.predictedPrice && (
                   <div className="p-4 relative">
@@ -941,9 +925,8 @@ export default function RealTimeStockCard({
             </div>
           </div>
         )}
-        </motion.div>
-      </div>
-
+      </motion.div>
+      
       {/* Metric Popup */}
       {selectedMetric && (
         <MetricPopup
@@ -954,7 +937,7 @@ export default function RealTimeStockCard({
           metricData={selectedMetric.data}
         />
       )}
-
+      
       {/* Portfolio Impact Calculator */}
       <PortfolioImpactCalculator
         isOpen={isPortfolioImpactOpen}
