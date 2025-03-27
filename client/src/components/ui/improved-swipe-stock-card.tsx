@@ -122,8 +122,10 @@ export default function ImprovedSwipeStockCard({
   const cardRotate = useTransform(x, [-300, 0, 300], [-8, 0, 8]);
   
   // Transform values for the next stock preview effects
-  const nextStockBlur = useTransform(x, [-200, -50, 0, 50, 200], [2, 5, 8, 5, 2]);
-  const nextStockScale = useTransform(x, [-200, 0, 200], [0.92, 0.85, 0.92]);
+  const nextStockOpacity = useTransform(x, [-200, -100, 0, 100, 200], [0.9, 0.6, 0.3, 0.6, 0.9]);
+  // When x is negative (swiping left), show the next card to the right
+  // When x is positive (swiping right), show the next card to the left
+  const nextStockX = useTransform(x, [-300, 0, 300], [60, 0, -60]);
   const cardRef = useRef<HTMLDivElement>(null);
   
   const [timeFrame, setTimeFrame] = useState<TimeFrame>("1M");
@@ -281,14 +283,14 @@ export default function ImprovedSwipeStockCard({
   
   return (
     <div className="relative h-full overflow-hidden">
-      {/* Next Card - always present in the background */}
+      {/* Next Card - visible to the side during swipes */}
       {nextStock && (
         <motion.div 
-          className="absolute inset-0 z-0 bg-gradient-to-br from-gray-900 to-black"
+          className="absolute w-[90%] h-[90%] top-[5%] z-0 bg-gradient-to-br from-gray-900 to-black rounded-xl shadow-xl border border-gray-700/30"
           style={{
-            filter: `blur(${nextStockBlur.get()}px)`,
-            scale: nextStockScale,
-            transition: 'filter 0.1s ease-out'
+            opacity: nextStockOpacity,
+            x: nextStockX,
+            transition: 'opacity 0.15s ease-out'
           }}
         >
           <div className="w-full h-full p-4">
