@@ -97,13 +97,6 @@ export default function StockDetailPage() {
         </button>
         <div className="flex items-center gap-2">
           <h1 className="text-xl font-bold text-green-400">Swipefolio</h1>
-          <button 
-            onClick={() => setUseRealTimeData(!useRealTimeData)}
-            className={`ml-2 text-xs ${useRealTimeData ? 'text-green-300 bg-green-900/40' : 'text-gray-400 bg-gray-800/50'} px-3 py-1 rounded-full border ${useRealTimeData ? 'border-green-500/50' : 'border-gray-700'} flex items-center gap-1 hover:bg-gray-700/30 transition-all`}
-          >
-            <Zap size={12} className={useRealTimeData ? "text-green-300" : "text-gray-400"} />
-            {useRealTimeData ? "Real-time" : "Static"} 
-          </button>
         </div>
         <button className="text-green-400 hover:bg-gray-800 p-2 rounded-full transition-colors relative">
           <div className="absolute top-1 right-1 w-2 h-2 bg-green-400 rounded-full"></div>
