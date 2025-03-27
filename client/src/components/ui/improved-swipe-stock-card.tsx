@@ -75,7 +75,7 @@ const getTimeScaleLabels = (timeFrame: TimeFrame): string[] => {
 const getIndustryAverageData = (stock: StockData, metricType: string) => {
   // Get industry averages from our centralized data
   const industryAvgs = getIndustryAverages(stock.industry);
-  
+
   // Format for display
   if (metricType === 'performance') {
     return [
@@ -102,7 +102,7 @@ const getIndustryAverageData = (stock: StockData, metricType: string) => {
       { label: "RSI", value: `${industryAvgs.momentum.rsi}` }
     ];
   }
-  
+
   // Default empty array if metric type is not recognized
   return [];
 };
@@ -120,7 +120,7 @@ export default function ImprovedSwipeStockCard({
   // Enhanced transformations for smoother animations
   const cardOpacity = useTransform(x, [-300, -200, 0, 200, 300], [0.2, 0.8, 1, 0.8, 0.2]);
   const cardRotate = useTransform(x, [-300, 0, 300], [-8, 0, 8]);
-  
+
   // Transform values for the next stock preview effects
   // Next card is more visible the further you swipe
   const nextStockOpacity = useTransform(
@@ -128,7 +128,7 @@ export default function ImprovedSwipeStockCard({
     [-300, -200, -100, 0, 100, 200, 300], 
     [0.95, 0.8, 0.5, 0, 0.5, 0.8, 0.95]
   );
-  
+
   // Initial position for the next card: right side for left swipe, left side for right swipe
   // Move it into the center as you swipe left/right
   const nextStockX = useTransform(
@@ -137,10 +137,10 @@ export default function ImprovedSwipeStockCard({
     [50, 100, 200, 400, -200, -100, -50]
   );
   const cardRef = useRef<HTMLDivElement>(null);
-  
+
   const [timeFrame, setTimeFrame] = useState<TimeFrame>("1M");
   const [swipeDirection, setSwipeDirection] = useState<string | null>(null);
-  
+
   // State for metric popup
   const [isMetricPopupOpen, setIsMetricPopupOpen] = useState(false);
   const [selectedMetric, setSelectedMetric] = useState<{
@@ -148,17 +148,17 @@ export default function ImprovedSwipeStockCard({
     color: "green" | "yellow" | "red";
     data: any;
   } | null>(null);
-  
+
   // Use timeframe-dependent chart data
   const chartData = useMemo(() => 
     generateTimeBasedData(stock.chartData, timeFrame),
     [stock.chartData, timeFrame]
   );
-  
+
   // Calculate min/max for chart display
   const minValue = Math.min(...chartData) - 5;
   const maxValue = Math.max(...chartData) + 5;
-  
+
   // Get time scale labels based on selected timeframe
   const timeScaleLabels = useMemo(() => 
     getTimeScaleLabels(timeFrame),
@@ -167,6 +167,7 @@ export default function ImprovedSwipeStockCard({
 
   const handleDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
     const threshold = 100;
+    console.log("Drag end event:", event, info); // Added debug logging
 
     if (info.offset.x > threshold) {
       setSwipeDirection("right");
@@ -206,7 +207,7 @@ export default function ImprovedSwipeStockCard({
     let color: "green" | "yellow" | "red" = "green";
     let metricObj;
     let metricDetails;
-    
+
     switch(metricName) {
       case "Performance":
         metricObj = stock.metrics.performance;
@@ -227,12 +228,12 @@ export default function ImprovedSwipeStockCard({
       default:
         return;
     }
-    
+
     // Map color string to type
     if (metricObj.color === "green") color = "green";
     else if (metricObj.color === "yellow") color = "yellow";
     else if (metricObj.color === "red") color = "red";
-    
+
     // Format metric values for display
     const metricValues = [];
     if (metricName === "Performance") {
@@ -264,10 +265,10 @@ export default function ImprovedSwipeStockCard({
         { label: "RSI", value: momDetails.rsi, suffix: "" }
       );
     }
-    
+
     // Get industry average data
     const industryAverage = getIndustryAverageData(stock, metricName.toLowerCase());
-    
+
     // Set selected metric data and open popup
     setSelectedMetric({
       name: metricName,
@@ -280,17 +281,17 @@ export default function ImprovedSwipeStockCard({
         explanation: metricObj.explanation || ""
       }
     });
-    
+
     setIsMetricPopupOpen(true);
   };
 
   // Convert price to display format
   const displayPrice = stock.price.toFixed(2);
-  
+
   // Determine price range to show on Y-axis
   const priceRangeMin = Math.floor(minValue);
   const priceRangeMax = Math.ceil(maxValue);
-  
+
   return (
     <div className="relative h-full overflow-hidden">
       {/* Background gradient that changes based on swipe direction */}
@@ -304,7 +305,7 @@ export default function ImprovedSwipeStockCard({
               : "linear-gradient(to bottom, rgb(17, 24, 39), rgb(0, 0, 0))"
         }}
       />
-      
+
       {/* Swipe direction indicator overlay */}
       {swipeDirection && (
         <div className={`absolute inset-0 z-0 flex items-center justify-${swipeDirection === "left" ? "end" : "start"} px-12 opacity-30`}>
@@ -321,7 +322,7 @@ export default function ImprovedSwipeStockCard({
           </motion.div>
         </div>
       )}
-      
+
       {/* Next stock preview */}
       {nextStock && (
         <motion.div 
@@ -344,7 +345,7 @@ export default function ImprovedSwipeStockCard({
                   <span className="ml-2 text-sm">{nextStock.change >= 0 ? '+' : ''}{nextStock.change}%</span>
                 </div>
               </div>
-              
+
               {/* Simplified chart preview */}
               <div className="flex-1 bg-gradient-to-b from-gray-900 to-black relative">
                 <div className="absolute inset-0 flex items-center justify-center">
@@ -368,7 +369,7 @@ export default function ImprovedSwipeStockCard({
           </div>
         </motion.div>
       )}
-      
+
       {/* Swipe indicators */}
       <div className="absolute top-1/2 left-4 z-10 transform -translate-y-1/2 opacity-50">
         <ChevronLeft size={40} className={`text-white/30 ${currentIndex === 0 ? 'invisible' : ''}`} />
@@ -376,7 +377,7 @@ export default function ImprovedSwipeStockCard({
       <div className="absolute top-1/2 right-4 z-10 transform -translate-y-1/2 opacity-50">
         <ChevronRight size={40} className="text-white/30" />
       </div>
-      
+
       {/* Page indicator */}
       <div className="absolute top-2 left-0 right-0 flex justify-center z-10">
         <div className="bg-gray-800/80 backdrop-blur-sm rounded-full px-3 py-1 text-xs border border-gray-700">
@@ -419,14 +420,14 @@ export default function ImprovedSwipeStockCard({
             <div className="w-full px-1 py-0.5 rounded bg-black/70 backdrop-blur-sm text-right">${Math.round((priceRangeMax + priceRangeMin) / 2 * 100) / 100}</div>
             <div className="w-full px-1 py-0.5 rounded bg-black/70 backdrop-blur-sm text-right">${priceRangeMin}</div>
           </div>
-          
+
           {/* Chart grid lines */}
           <div className="absolute left-10 right-0 top-0 bottom-16 flex flex-col justify-between pointer-events-none">
             <div className="border-t border-gray-800 w-full h-0"></div>
             <div className="border-t border-gray-800 w-full h-0"></div>
             <div className="border-t border-gray-800 w-full h-0"></div>
           </div>
-          
+
           <div className="ml-10 chart-container h-[calc(100%-30px)]">
             <svg viewBox="0 0 300 80" width="100%" height="100%" preserveAspectRatio="none">
               <defs>
@@ -440,7 +441,7 @@ export default function ImprovedSwipeStockCard({
                   <feComposite in="SourceGraphic" in2="blur" operator="over" />
                 </filter>
               </defs>
-              
+
               {/* Line chart */}
               <path
                 d={`M 0,${80 - ((chartData[0] - minValue) / (maxValue - minValue)) * 80} ${chartData.map((point, i) => {
@@ -453,7 +454,7 @@ export default function ImprovedSwipeStockCard({
                 strokeWidth="2.5"
                 filter={`url(#glow-${stock.ticker})`}
               />
-              
+
               {/* Area fill */}
               <path
                 d={`M 0,${80 - ((chartData[0] - minValue) / (maxValue - minValue)) * 80} ${chartData.map((point, i) => {
@@ -465,7 +466,7 @@ export default function ImprovedSwipeStockCard({
               />
             </svg>
           </div>
-          
+
           {/* Time scale */}
           <div className="ml-10 flex justify-between text-xs text-gray-400 mt-4 p-2 bg-black/40 backdrop-blur-sm rounded-md">
             {timeScaleLabels.map((label, index) => (
@@ -481,7 +482,7 @@ export default function ImprovedSwipeStockCard({
             <div>
               <h2 className="text-xl font-bold text-white drop-shadow-sm">{stock.name} <span className="text-gray-400">({stock.ticker})</span></h2>
             </div>
-            
+
             {/* Price bubble horizontal to the name */}
             <div className={`flex items-center ${stock.change >= 0 ? 'bg-gradient-to-r from-green-900/50 to-green-950/30' : 'bg-gradient-to-r from-red-900/50 to-red-950/30'} rounded-full px-3 py-1.5 border ${stock.change >= 0 ? 'border-green-500/30' : 'border-red-500/30'} shadow-lg`}
               style={{
@@ -495,7 +496,7 @@ export default function ImprovedSwipeStockCard({
               </span>
             </div>
           </div>
-          
+
           {/* Description bubble */}
           <div className="p-3 bg-gray-800/70 rounded-lg border border-gray-700/50 shadow-inner">
             <p className="text-sm text-gray-300">
@@ -508,7 +509,7 @@ export default function ImprovedSwipeStockCard({
         <div className="grid grid-cols-2 gap-3 p-4 border-b border-gray-800 bg-gradient-to-b from-gray-900 to-gray-900/80">
           {Object.entries(stock.metrics).map(([key, metricObj]) => {
             const metricName = key.charAt(0).toUpperCase() + key.slice(1);
-            
+
             return (
               <div 
                 key={key}
@@ -567,7 +568,7 @@ export default function ImprovedSwipeStockCard({
               AI Analysis
             </span>
           </div>
-          
+
           {/* Unified card with sections divided by borders */}
           <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl border border-gray-700 shadow-lg overflow-hidden">
             {/* Price Trend */}
@@ -593,7 +594,7 @@ export default function ImprovedSwipeStockCard({
                 </div>
               </div>
             </div>
-            
+
             {/* Company News */}
             <div className="border-b border-gray-700/70">
               <div className="flex gap-3 p-4">
@@ -622,7 +623,7 @@ export default function ImprovedSwipeStockCard({
                 </div>
               </div>
             </div>
-            
+
             {/* Portfolio Role */}
             <div>
               <div className="flex gap-3 p-4">
@@ -643,7 +644,7 @@ export default function ImprovedSwipeStockCard({
               </div>
             </div>
           </div>
-          
+
           {/* Premium Insights Section */}
           {(stock.oneYearReturn || stock.predictedPrice) && (
             <div className="mt-4">
@@ -665,7 +666,7 @@ export default function ImprovedSwipeStockCard({
                   AI Predictions
                 </span>
               </div>
-              
+
               <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl border border-gray-700 shadow-lg overflow-hidden">
                 {/* 1-Year Return */}
                 {stock.oneYearReturn && (
@@ -695,7 +696,7 @@ export default function ImprovedSwipeStockCard({
                     </div>
                   </div>
                 )}
-                
+
                 {/* Predicted Price - Blurred as premium feature */}
                 {stock.predictedPrice && (
                   <div>
@@ -752,7 +753,7 @@ export default function ImprovedSwipeStockCard({
           </div>
         )}
       </motion.div>
-      
+
       {/* Metric Popup */}
       {selectedMetric && (
         <MetricPopup
