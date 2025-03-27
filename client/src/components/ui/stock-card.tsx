@@ -734,42 +734,51 @@ export default function StockCard({
           
           {/* Chart placeholder - visualize the data */}
           <div className="relative mt-3 h-44 rounded-xl bg-slate-50 border border-slate-100 py-2">
-            {/* Y-axis labels */}
-            <div className="absolute left-2 top-0 bottom-0 flex flex-col justify-between text-[10px] text-slate-400 pointer-events-none">
-              <span>${priceRangeMax}</span>
-              <span>${priceRangeMin}</span>
-            </div>
-            
             {/* Chart visual */}
-            <div className="absolute inset-0 px-10">
+            <div className="absolute inset-0 px-4">
+              {/* Y-axis labels */}
+              <div className="absolute left-0 top-0 bottom-0 flex flex-col justify-between text-[10px] text-slate-400 pointer-events-none py-2">
+                <span>${priceRangeMax}</span>
+                <span>${priceRangeMin}</span>
+              </div>
+              
               {/* Chart path - dynamically draw based on chartData with extension to edge */}
               <svg className="w-full h-full" viewBox={`0 0 100 100`} preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="chartGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stopColor={realTimeChange >= 0 ? "rgb(34, 197, 94)" : "rgb(239, 68, 68)"} stopOpacity="0.1" />
+                    <stop offset="100%" stopColor={realTimeChange >= 0 ? "rgb(34, 197, 94)" : "rgb(239, 68, 68)"} stopOpacity="0.05" />
+                  </linearGradient>
+                </defs>
+                {/* Main chart line */}
                 <path
-                  d={`M0,${100 - ((chartData[0] - minValue) / (maxValue - minValue)) * 100} ${chartData.map((point, i) => {
-                    // Use a different approach for mapping points to ensure smooth connection from origin
-                    const x = (i / (chartData.length - 1)) * 100;
+                  d={`M-5,${100 - ((chartData[0] - minValue) / (maxValue - minValue)) * 100} ${chartData.map((point, i) => {
+                    // Plot points with x-coordinates extending beyond the visible area
+                    const x = (i / (chartData.length - 1)) * 110 - 5; // Extend from -5 to 105
                     const y = 100 - ((point - minValue) / (maxValue - minValue)) * 100;
-                    return i === 0 ? `L0,${y}` : `L${x},${y}`;
-                  }).join(' ')}`}
+                    return `L${x},${y}`;
+                  }).join(' ')} L105,${100 - ((chartData[chartData.length-1] - minValue) / (maxValue - minValue)) * 100}`}
                   className={`${realTimeChange >= 0 ? 'stroke-green-500' : 'stroke-red-500'} fill-none`}
                   strokeWidth="2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 />
-                {/* Add area fill with gradient */}
+                
+                {/* Area fill with gradient - extended to ensure coverage */}
                 <path
-                  d={`M0,${100 - ((chartData[0] - minValue) / (maxValue - minValue)) * 100} ${chartData.map((point, i) => {
-                    const x = (i / (chartData.length - 1)) * 100;
+                  d={`M-5,${100 - ((chartData[0] - minValue) / (maxValue - minValue)) * 100} ${chartData.map((point, i) => {
+                    const x = (i / (chartData.length - 1)) * 110 - 5; // Extend from -5 to 105
                     const y = 100 - ((point - minValue) / (maxValue - minValue)) * 100;
-                    return i === 0 ? `L0,${y}` : `L${x},${y}`;
-                  }).join(' ')} L100,100 L0,100 Z`}
-                  className={`${realTimeChange >= 0 ? 'fill-green-100/50' : 'fill-red-100/50'} stroke-none`}
+                    return `L${x},${y}`;
+                  }).join(' ')} L105,${100 - ((chartData[chartData.length-1] - minValue) / (maxValue - minValue)) * 100} L105,105 L-5,105 Z`}
+                  fill="url(#chartGradient)"
+                  className={`${realTimeChange >= 0 ? 'fill-green-100/50' : 'fill-red-100/50'}`}
                 />
               </svg>
             </div>
             
             {/* X-axis labels */}
-            <div className="absolute left-0 right-0 bottom-0 px-10 flex justify-between text-[10px] text-slate-400 pointer-events-none">
+            <div className="absolute left-0 right-0 bottom-0 px-4 flex justify-between text-[10px] text-slate-400 pointer-events-none">
               {timeScaleLabels.map((label, index) => (
                 <span key={index}>{label}</span>
               ))}
