@@ -385,7 +385,7 @@ const hardcodedStocks: Record<string, StockData[]> = {
             profitMargin: 45.4,
             returnOnCapital: 4.3
           },
-          explanation: "Strong revenue growth exceeding industry average with excellent profit margins. Returns on capital are solid and slightly above the REIT industry benchmark."
+          explanation: "Prologis isn't making much more money than last year (growth is OK, not great)."
         },
         stability: {
           value: "Poor",
@@ -395,7 +395,7 @@ const hardcodedStocks: Record<string, StockData[]> = {
             beta: 1.24,
             dividendConsistency: "Medium"
           },
-          explanation: "Below average volatility and beta indicate less market sensitivity than peers. Strong history of consistent dividend increases even during economic downturns."
+          explanation: "Prologis is one of the steadier REITs with consistent payouts. It doesn't swing wildly."
         },
         value: {
           value: "Average",
@@ -405,7 +405,7 @@ const hardcodedStocks: Record<string, StockData[]> = {
             pbRatio: 1.9,
             dividendYield: 3.7
           },
-          explanation: "Trading at a modest premium to earnings and book value compared to REIT averages. Dividend yield is slightly below sector average but offset by better growth profile."
+          explanation: "Prologis is fairly priced for what you get - a solid company with decent income."
         },
         momentum: {
           value: "Average",
@@ -415,7 +415,7 @@ const hardcodedStocks: Record<string, StockData[]> = {
             relativePerformance: -2.0,
             rsi: 37.4
           },
-          explanation: "Solid recent price performance with minimal underperformance versus peers. Neutral RSI suggests balanced buying and selling pressure."
+          explanation: "Prologis isn't making big moves either way lately. It's just coasting."
         }
       },
       description: "A leading global owner, operator and developer of logistics real estate.",
@@ -424,7 +424,7 @@ const hardcodedStocks: Record<string, StockData[]> = {
         company: "Global leader in logistics real estate with significant e-commerce exposure.",
         role: "Core holding for real estate allocation with balance of growth and income."
       },
-      overallAnalysis: "A high-quality logistics REIT benefiting from e-commerce growth with strong performance and stability. Offers a balanced opportunity with above-average growth, defensive characteristics, and reliable income.",
+      overallAnalysis: "Prologis brings in reliable income and holds its value over time. It's a strong option for people who prefer stability and are okay with slower movement.",
       chartData: [96, 101, 97, 104, 108, 96, 98, 103, 107, 109, 110.26],
       industry: "Real Estate"
     },
@@ -446,7 +446,7 @@ const hardcodedStocks: Record<string, StockData[]> = {
             profitMargin: 16.0,
             returnOnCapital: 1.30
           },
-          explanation: "Strong revenue growth driven by acquisitions, but below-average profit margins and returns on capital compared to peers. Scale benefits are partially offset by efficiency challenges."
+          explanation: "Realty Income is expanding and profitable, but not very efficient with its money."
         },
         stability: {
           value: "Average",
@@ -456,7 +456,7 @@ const hardcodedStocks: Record<string, StockData[]> = {
             beta: 0.82,
             dividendConsistency: "Good"
           },
-          explanation: "Below-average volatility and beta indicate more stability than most REITs. Exceptional dividend consistency with a track record of regular monthly increases makes this a reliable income generator."
+          explanation: "Realty Income doesn't move around much and pays consistently. It's a safe pick for steady hands."
         },
         value: {
           value: "Average",
@@ -466,7 +466,7 @@ const hardcodedStocks: Record<string, StockData[]> = {
             pbRatio: 1.29,
             dividendYield: 5.7
           },
-          explanation: "High P/E ratio is partially offset by reasonable price-to-book value. Above-average dividend yield makes this attractive for income-focused investors despite the premium valuation multiple."
+          explanation: "Realty Income is all about slow, steady income. It won't skyrocket, but it'll keep delivering."
         },
         momentum: {
           value: "Average",
@@ -476,7 +476,7 @@ const hardcodedStocks: Record<string, StockData[]> = {
             relativePerformance: -1.5,
             rsi: 49.3
           },
-          explanation: "Solid absolute price performance with moderate underperformance versus peers. Neutral RSI suggests balanced buying and selling pressure currently."
+          explanation: "Realty Income hasn't made big moves lately and isn't drawing much investor attention."
         }
       },
       synopsis: {
@@ -484,7 +484,7 @@ const hardcodedStocks: Record<string, StockData[]> = {
         company: "Premier monthly dividend REIT with diverse commercial property portfolio.",
         role: "Income cornerstone for dividend-focused investors seeking reliability."
       },
-      overallAnalysis: "Monthly dividend payer offering unmatched income reliability with triple-net leases that create highly predictable cash flows. Ideal for income-focused investors prioritizing consistent payments over maximum growth.",
+      overallAnalysis: "Realty Income is a slow-moving stock that focuses on steady, reliable income. It won't deliver fast gains, but it's great for investors who want monthly dividends and long-term stability.",
       chartData: [52, 54, 51, 54, 58, 56, 55, 57, 58, 56, 56.28],
       industry: "Real Estate"
     },
@@ -506,7 +506,7 @@ const hardcodedStocks: Record<string, StockData[]> = {
             profitMargin: 41.9,
             returnOnCapital: 9.97
           },
-          explanation: "Solid revenue growth considering retail headwinds, with exceptional profit margins and capital returns. Management effectively maximizes value from premium retail properties despite e-commerce challenges."
+          explanation: "Simon Property Group is profitable and efficient, even if growth is a bit slow."
         },
         stability: {
           value: "Poor",
@@ -516,7 +516,7 @@ const hardcodedStocks: Record<string, StockData[]> = {
             beta: 1.49,
             dividendConsistency: "Poor"
           },
-          explanation: "Higher volatility and beta reflect increased sensitivity to economic cycles compared to other REITs. Past dividend cuts during market stress periods indicate less reliability for income investors."
+          explanation: "Simon Property Group moves around a lot and doesn't always pay on time. It's not the safest option."
         },
         value: {
           value: "Average",
@@ -526,7 +526,7 @@ const hardcodedStocks: Record<string, StockData[]> = {
             pbRatio: 18.68,
             dividendYield: 5.1
           },
-          explanation: "Reasonable P/E ratio combined with a high price-to-book value shows market confidence but potential overvaluation of assets. Above-average dividend yield provides compelling income."
+          explanation: "Simon Property Group may look pricey on paper, but its dividend helps justify the value."
         },
         momentum: {
           value: "Poor",
@@ -536,7 +536,7 @@ const hardcodedStocks: Record<string, StockData[]> = {
             relativePerformance: -11,
             rsi: 41.9
           },
-          explanation: "Recent price weakness both on absolute basis and relative to peers. Moderately low RSI suggests some selling pressure but approaching levels that might attract contrarian investors."
+          explanation: "Simon Property Group hasn't had much recent action and is underperforming."
         }
       },
       synopsis: {
@@ -544,7 +544,7 @@ const hardcodedStocks: Record<string, StockData[]> = {
         company: "Dominant mall operator with premium locations and evolving business model.",
         role: "Value opportunity in retail real estate with above-average income potential."
       },
-      overallAnalysis: "Premium mall operator offering high income yield and value despite retail headwinds. Has shown resilience by transforming properties to maintain relevance in the evolving retail landscape.",
+      overallAnalysis: "Simon Property Group owns top-tier malls and shopping centers. While retail has challenges, their premium locations give them staying power and a solid income stream.",
       chartData: [158, 162, 155, 159, 163, 155, 157, 162, 167, 164, 166.12],
       industry: "Real Estate"
     },
@@ -566,7 +566,7 @@ const hardcodedStocks: Record<string, StockData[]> = {
             profitMargin: 36.5,
             returnOnCapital: 5.6
           },
-          explanation: "Healthy revenue growth in competitive apartment markets with strong profit margins and solid return on capital. Operational excellence in property management contributes to superior financial performance."
+          explanation: "AvalonBay is making good money from the high rents in its luxury apartments."
         },
         stability: {
           value: "Average",
@@ -576,7 +576,7 @@ const hardcodedStocks: Record<string, StockData[]> = {
             beta: 0.89,
             dividendConsistency: "Good"
           },
-          explanation: "Below-average volatility and beta indicate relative price stability. Consistent dividend growth history even during challenging rental markets demonstrates financial resilience."
+          explanation: "AvalonBay moves at its own pace and not by market swings too much. Its dividend is reliable."
         },
         value: {
           value: "Average",
@@ -586,7 +586,7 @@ const hardcodedStocks: Record<string, StockData[]> = {
             pbRatio: 2.55,
             dividendYield: 3.3
           },
-          explanation: "Trades at a modest premium to earnings and book value compared to REIT averages. Dividend yield is slightly below sector average but compensated by growth potential in high-barrier-to-entry markets."
+          explanation: "AvalonBay has a modest price tag and pays a fair dividend."
         },
         momentum: {
           value: "Poor",
@@ -596,7 +596,7 @@ const hardcodedStocks: Record<string, StockData[]> = {
             relativePerformance: -10,
             rsi: 47.8
           },
-          explanation: "Recent price weakness both on absolute basis and relative to broader real estate sector. Neutral RSI suggests balanced market sentiment despite underperformance."
+          explanation: "AvalonBay has been lagging behind other stocks lately."
         }
       },
       synopsis: {
@@ -604,7 +604,7 @@ const hardcodedStocks: Record<string, StockData[]> = {
         company: "Premium apartment owner/operator in supply-constrained coastal markets.",
         role: "Quality residential real estate exposure with inflation protection features."
       },
-      overallAnalysis: "Premium apartment REIT focused on supply-constrained coastal markets with persistent housing demand. Benefits from increasing affordability challenges that make renting necessary in high-cost metropolitan areas.",
+      overallAnalysis: "AvalonBay owns luxury apartments in places where it's expensive to buy a home. They do well when housing prices are high because more people need to rent instead of buy.",
       chartData: [205, 210, 202, 208, 215, 204, 207, 211, 219, 213, 214.36],
       industry: "Real Estate"
     },
@@ -626,7 +626,7 @@ const hardcodedStocks: Record<string, StockData[]> = {
             profitMargin: 39.9,
             returnOnCapital: 10.2
           },
-          explanation: "Modest but consistent revenue growth with exceptional profit margins and return on capital. Self-storage business model delivers superior profitability with minimal operational complexity."
+          explanation: "Public Storage makes good money with little effort - their business basically runs itself."
         },
         stability: {
           value: "Average",
@@ -636,7 +636,7 @@ const hardcodedStocks: Record<string, StockData[]> = {
             beta: 0.8,
             dividendConsistency: "Good"
           },
-          explanation: "Slightly higher volatility but low beta indicates less correlation with market movements. Strong dividend consistency provides reliable income through various market environments."
+          explanation: "Public Storage isn't too worried about what the market does - it follows its own path and pays steady dividends."
         },
         value: {
           value: "Poor",
@@ -646,7 +646,7 @@ const hardcodedStocks: Record<string, StockData[]> = {
             pbRatio: 9.65,
             dividendYield: "4.2%"
           },
-          explanation: "Reasonable P/E ratio but very high price-to-book value indicates potential overvaluation of assets. Attractive dividend yield partially compensates for the premium valuation."
+          explanation: "Public Storage is expensive compared to what it owns, but the 4.2% dividend helps make up for that."
         },
         momentum: {
           value: "Poor",
@@ -656,7 +656,7 @@ const hardcodedStocks: Record<string, StockData[]> = {
             relativePerformance: -9.7,
             rsi: 43.5
           },
-          explanation: "Modest price weakness both on absolute basis and compared to peers. Moderately low RSI suggests some recent selling pressure but not at extreme levels."
+          explanation: "Public Storage isn't attracting much attention lately and has slipped a bit compared to similar stocks."
         }
       },
       synopsis: {
@@ -664,7 +664,7 @@ const hardcodedStocks: Record<string, StockData[]> = {
         company: "Dominant self-storage operator with recession-resistant business model.",
         role: "Defensive real estate holding with steady income and inflation protection."
       },
-      overallAnalysis: "Exceptionally stable self-storage REIT with above-average income and minimal economic sensitivity. Low operating costs and flexible pricing power create consistent performance across market cycles.",
+      overallAnalysis: "Public Storage runs a simple business renting storage units, which keeps making money in good times and bad. It's a boring but reliable stock with good income.",
       chartData: [285, 290, 283, 288, 296, 287, 290, 295, 301, 296, 294.93],
       industry: "Real Estate"
     },
