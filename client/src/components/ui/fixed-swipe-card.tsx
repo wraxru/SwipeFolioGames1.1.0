@@ -249,32 +249,88 @@ export default function FixedSwipeCard({
     const metricValues = [];
     if (metricName === "Performance") {
       metricValues.push(
-        { label: "Revenue Growth", value: stock.metrics.performance.details.revenueGrowth, suffix: "%" },
-        { label: "Profit Margin", value: stock.metrics.performance.details.profitMargin, suffix: "%" },
-        { label: "Return on Capital", value: stock.metrics.performance.details.returnOnCapital, suffix: "%" }
+        { 
+          label: "Revenue Growth", 
+          value: stock.metrics.performance.details.revenueGrowth, 
+          suffix: "%",
+          explanation: stock.metrics.performance.details.revenueGrowthExplanation 
+        },
+        { 
+          label: "Profit Margin", 
+          value: stock.metrics.performance.details.profitMargin, 
+          suffix: "%",
+          explanation: stock.metrics.performance.details.profitMarginExplanation 
+        },
+        { 
+          label: "Return on Capital", 
+          value: stock.metrics.performance.details.returnOnCapital, 
+          suffix: "%",
+          explanation: stock.metrics.performance.details.returnOnCapitalExplanation 
+        }
       );
     } else if (metricName === "Stability") {
       metricValues.push(
-        { label: "Volatility", value: stock.metrics.stability.details.volatility, suffix: "" },
-        { label: "Beta", value: stock.metrics.stability.details.beta, suffix: "" },
-        { label: "Dividend Consistency", value: stock.metrics.stability.details.dividendConsistency, suffix: "" }
+        { 
+          label: "Volatility", 
+          value: stock.metrics.stability.details.volatility, 
+          suffix: "",
+          explanation: stock.metrics.stability.details.volatilityExplanation 
+        },
+        { 
+          label: "Beta", 
+          value: stock.metrics.stability.details.beta, 
+          suffix: "",
+          explanation: stock.metrics.stability.details.betaExplanation 
+        },
+        { 
+          label: "Dividend Consistency", 
+          value: stock.metrics.stability.details.dividendConsistency, 
+          suffix: "",
+          explanation: stock.metrics.stability.details.dividendConsistencyExplanation 
+        }
       );
     } else if (metricName === "Value") {
       const dividendYield = stock.metrics.value.details.dividendYield;
       metricValues.push(
-        { label: "P/E Ratio", value: stock.metrics.value.details.peRatio, suffix: "" },
-        { label: "P/B Ratio", value: stock.metrics.value.details.pbRatio, suffix: "" },
+        { 
+          label: "P/E Ratio", 
+          value: stock.metrics.value.details.peRatio, 
+          suffix: "",
+          explanation: stock.metrics.value.details.peRatioExplanation 
+        },
+        { 
+          label: "P/B Ratio", 
+          value: stock.metrics.value.details.pbRatio, 
+          suffix: "",
+          explanation: stock.metrics.value.details.pbRatioExplanation 
+        },
         { 
           label: "Dividend Yield", 
           value: dividendYield === "N/A" ? "N/A" : dividendYield, 
-          suffix: dividendYield === "N/A" ? "" : "%" 
+          suffix: dividendYield === "N/A" ? "" : "%",
+          explanation: stock.metrics.value.details.dividendYieldExplanation 
         }
       );
     } else if (metricName === "Momentum") {
       metricValues.push(
-        { label: "3-Month Return", value: stock.metrics.momentum.details.threeMonthReturn, suffix: "%" },
-        { label: "Relative Performance", value: stock.metrics.momentum.details.relativePerformance, suffix: "%" },
-        { label: "RSI", value: stock.metrics.momentum.details.rsi, suffix: "" }
+        { 
+          label: "3-Month Return", 
+          value: stock.metrics.momentum.details.threeMonthReturn, 
+          suffix: "%",
+          explanation: stock.metrics.momentum.details.threeMonthReturnExplanation 
+        },
+        { 
+          label: "Relative Performance", 
+          value: stock.metrics.momentum.details.relativePerformance, 
+          suffix: "%",
+          explanation: stock.metrics.momentum.details.relativePerformanceExplanation 
+        },
+        { 
+          label: "RSI", 
+          value: stock.metrics.momentum.details.rsi, 
+          suffix: "",
+          explanation: stock.metrics.momentum.details.rsiExplanation 
+        }
       );
     }
     
