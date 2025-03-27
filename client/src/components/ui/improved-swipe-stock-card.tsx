@@ -120,7 +120,10 @@ export default function ImprovedSwipeStockCard({
   // Enhanced transformations for smoother animations
   const cardOpacity = useTransform(x, [-300, -200, 0, 200, 300], [0.2, 0.8, 1, 0.8, 0.2]);
   const cardRotate = useTransform(x, [-300, 0, 300], [-8, 0, 8]);
-  const nextStockOpacity = useTransform(x, [-300, -100, -20, 0, 20, 100, 300], [0.5, 0.3, 0, 0, 0, 0.3, 0.5]);
+  
+  // Transform values for the next stock preview effects
+  const nextStockBlur = useTransform(x, [-200, -50, 0, 50, 200], [2, 5, 8, 5, 2]);
+  const nextStockScale = useTransform(x, [-200, 0, 200], [0.92, 0.85, 0.92]);
   const cardRef = useRef<HTMLDivElement>(null);
   
   const [timeFrame, setTimeFrame] = useState<TimeFrame>("1M");
@@ -277,28 +280,30 @@ export default function ImprovedSwipeStockCard({
   const priceRangeMax = Math.ceil(maxValue);
   
   return (
-    <div className="relative h-full">
-      {/* Next Stock Preview - visible during swipes */}
+    <div className="relative h-full overflow-hidden">
+      {/* Next Card - always present in the background */}
       {nextStock && (
         <motion.div 
-          className="absolute inset-0 overflow-hidden pointer-events-none z-0"
+          className="absolute inset-0 z-0 bg-gradient-to-br from-gray-900 to-black"
           style={{
-            opacity: nextStockOpacity,
-            transform: `translateX(${x.get() < 0 ? '60px' : '-60px'})`,
+            filter: `blur(${nextStockBlur.get()}px)`,
+            scale: nextStockScale,
+            transition: 'filter 0.1s ease-out'
           }}
         >
-          <div className="w-full h-full bg-gradient-to-br from-gray-900 to-black p-4">
-            {/* Simple preview of next stock */}
-            <div className="rounded-xl overflow-hidden h-full flex flex-col opacity-60">
+          <div className="w-full h-full p-4">
+            <div className="rounded-xl overflow-hidden h-full flex flex-col">
+              {/* Header with stock name and price */}
               <div className="p-4 border-b border-gray-800">
-                <h2 className="text-lg font-bold text-white">{nextStock.name} <span className="text-gray-400">({nextStock.ticker})</span></h2>
+                <h2 className="text-lg font-bold text-white">{nextStock.name} <span className="text-gray-500">({nextStock.ticker})</span></h2>
                 <div className={`inline-flex items-center mt-1 ${nextStock.change >= 0 ? 'text-green-300' : 'text-red-300'}`}>
                   <span className="text-lg font-semibold">${nextStock.price.toFixed(2)}</span>
                   <span className="ml-2 text-sm">{nextStock.change >= 0 ? '+' : ''}{nextStock.change}%</span>
                 </div>
               </div>
-              <div className="flex-1 bg-gradient-to-b from-gray-900 to-black relative overflow-hidden">
-                {/* Simple chart preview */}
+              
+              {/* Simplified chart preview */}
+              <div className="flex-1 bg-gradient-to-b from-gray-900 to-black relative">
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="h-24 w-full px-6">
                     <svg viewBox="0 0 300 80" width="100%" height="100%" preserveAspectRatio="none">
@@ -311,7 +316,6 @@ export default function ImprovedSwipeStockCard({
                         fill="none"
                         stroke={nextStock.change >= 0 ? "#22c55e" : "#ef4444"}
                         strokeWidth="2"
-                        strokeOpacity="0.5"
                       />
                     </svg>
                   </div>
