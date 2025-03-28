@@ -92,9 +92,7 @@ export default function ComparativeAnalysis({ currentStock }: ComparativeAnalysi
           <PriceForecast 
             ticker={currentStock.ticker}
             currentPrice={currentStock.price}
-            oneYearReturn={currentStock.oneYearReturn 
-              ? parseFloat(currentStock.oneYearReturn.replace('%', '')) 
-              : 5.2}
+            oneYearReturn={currentStock.oneYearReturn || 5.2}
             isPremium={false} 
           />
         </>

@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 interface PriceForecastProps {
   ticker: string;
   currentPrice: number;
-  oneYearReturn: number;
+  oneYearReturn: number | string;
   isPremium?: boolean;
 }
 
@@ -14,16 +14,21 @@ export default function PriceForecast({
   oneYearReturn, 
   isPremium = false 
 }: PriceForecastProps) {
+  // Parse the one year return to ensure it's a number
+  const parsedOneYearReturn = typeof oneYearReturn === 'string' 
+    ? parseFloat(oneYearReturn.replace('%', '')) 
+    : oneYearReturn;
+  
   // Calculate the predicted price
-  const predictedPrice = currentPrice * (1 + oneYearReturn / 100);
+  const predictedPrice = currentPrice * (1 + parsedOneYearReturn / 100);
   const formattedPredictedPrice = predictedPrice.toFixed(2);
   
   // Format year return display
-  const returnDisplay = oneYearReturn > 0 
-    ? `+${oneYearReturn.toFixed(2)}%` 
-    : `${oneYearReturn.toFixed(2)}%`;
+  const returnDisplay = parsedOneYearReturn > 0 
+    ? `+${parsedOneYearReturn.toFixed(2)}%` 
+    : `${parsedOneYearReturn.toFixed(2)}%`;
   
-  const returnColor = oneYearReturn >= 0 ? 'text-emerald-600' : 'text-red-500';
+  const returnColor = parsedOneYearReturn >= 0 ? 'text-emerald-600' : 'text-red-500';
   
   return (
     <div className="relative mb-4">
