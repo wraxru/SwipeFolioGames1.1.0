@@ -85,7 +85,7 @@ const IndustryPosition: React.FC<IndustryPositionProps> = ({
   };
 
   return (
-    <div className="mt-6">
+    <div className="mt-0">
       {/* Industry Position Card */}
       <div className="border border-gray-200 rounded-xl shadow-sm overflow-hidden bg-white">
         <div className="p-5 relative border-b border-gray-100">

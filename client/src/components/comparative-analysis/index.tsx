@@ -77,7 +77,7 @@ export default function ComparativeAnalysis({ currentStock }: ComparativeAnalysi
   }, [currentStock, industry]);
 
   return (
-    <div className="comparative-analysis">
+    <div className="comparative-analysis mb-4">
       {!isLoading && (
         <IndustryPosition 
           currentStock={currentStock}
