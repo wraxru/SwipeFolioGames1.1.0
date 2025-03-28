@@ -96,7 +96,7 @@ export default function ModernUserWelcome({ name, rank: initialRank = 10 }: Mode
               
               {/* Belford&Co avatar */}
               <img 
-                src="/belford-avatar.png" 
+                src="belford-avatar.png" 
                 alt="User avatar" 
                 className="w-full h-full object-cover"
                 onError={(e) => {
