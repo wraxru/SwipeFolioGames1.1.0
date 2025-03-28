@@ -7,6 +7,7 @@ import MetricPopup from "./metric-popup-fixed";
 import PortfolioImpactCalculator from "./portfolio-impact-calculator";
 import OverallAnalysisCard from "@/components/overall-analysis-card";
 import { Skeleton } from "@/components/ui/skeleton";
+import ComparativeAnalysis from "@/components/comparative-analysis";
 
 interface StockCardProps {
   stock: StockData;
@@ -910,27 +911,9 @@ export default function StockCard({
           </div>
         </div>
         
-        {/* Additional Stock Details */}
-        <div className="grid grid-cols-2 gap-4 p-4 bg-white border-t border-b border-slate-100">
-          <div className="p-3 rounded-xl border border-slate-200 shadow-sm">
-            <div className="text-sm font-medium text-slate-500 mb-1">52 Week Range</div>
-            <div className="font-bold text-slate-800">$80.00 - $120.00</div>
-          </div>
-          
-          <div className="p-3 rounded-xl border border-slate-200 shadow-sm">
-            <div className="text-sm font-medium text-slate-500 mb-1">Market Cap</div>
-            <div className="font-bold text-slate-800">{stock.name.includes("Large") ? "$50B+" : stock.name.includes("Small") ? "$2-10B" : "$10-50B"}</div>
-          </div>
-          
-          <div className="p-3 rounded-xl border border-slate-200 shadow-sm">
-            <div className="text-sm font-medium text-slate-500 mb-1">Volume</div>
-            <div className="font-bold text-slate-800">{Math.floor(Math.random() * 5 + 1)}M</div>
-          </div>
-          
-          <div className="p-3 rounded-xl border border-slate-200 shadow-sm">
-            <div className="text-sm font-medium text-slate-500 mb-1">Dividend Yield</div>
-            <div className="font-bold text-slate-800">{stock.metrics.value.details.dividendYield === "N/A" ? "N/A" : `${stock.metrics.value.details.dividendYield}%`}</div>
-          </div>
+        {/* Comparative Analysis Section */}
+        <div className="bg-white border-t border-b border-slate-100">
+          <ComparativeAnalysis currentStock={stock} />
         </div>
         
         {/* Bottom Action Bar */}
