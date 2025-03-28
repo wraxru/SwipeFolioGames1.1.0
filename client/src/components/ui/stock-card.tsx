@@ -15,6 +15,7 @@ interface StockCardProps {
   onPrevious: () => void;
   currentIndex: number;
   totalCount: number;
+  nextStock?: StockData;
   displayMode?: 'simple' | 'realtime';
 }
 
@@ -116,6 +117,7 @@ export default function StockCard({
   onPrevious, 
   currentIndex, 
   totalCount,
+  nextStock,
   displayMode = 'realtime'
 }: StockCardProps) {
   const cardControls = useAnimation();
@@ -470,10 +472,36 @@ export default function StockCard({
       <div className="relative h-full w-full overflow-hidden">
         {/* Card stack container */}
         <div className="absolute inset-0 flex items-center justify-center">
+          {/* Next card in stack (positioned behind) */}
+          {nextStock && (
+            <div 
+              className="absolute inset-0 z-0 flex flex-col rounded-xl overflow-hidden"
+              style={{
+                transform: 'scale(0.92) translateY(20px)',
+                opacity: 0.6,
+                filter: 'blur(3px)'
+              }}
+            >
+              {/* Very simple next card preview */}
+              <div className="w-full h-full bg-gray-900 py-12 px-4 flex flex-col items-center justify-center">
+                <div className="bg-black/40 rounded-xl p-6 border border-gray-700/40 shadow-xl backdrop-blur-sm w-11/12 max-w-md flex flex-col items-center text-center space-y-4">
+                  <h2 className="text-2xl font-bold text-white">{nextStock.name}</h2>
+                  <p className="text-xl font-medium text-gray-300">{nextStock.ticker}</p>
+                  <div className={`text-lg font-bold px-4 py-1 rounded-full ${nextStock.change >= 0 ? 'text-green-300 bg-green-900/30' : 'text-red-300 bg-red-900/30'}`}>
+                    ${nextStock.price.toFixed(2)} <span>{nextStock.change >= 0 ? '↑' : '↓'} {Math.abs(nextStock.change)}%</span>
+                  </div>
+
+                  {/* Blurred content suggestion */}
+                  <div className="w-3/4 h-2 bg-gray-700/50 rounded-full mt-2"></div>
+                  <div className="w-2/3 h-2 bg-gray-700/50 rounded-full"></div>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Main stock card */}
           <motion.div
-            className="absolute inset-0 z-10 bg-gradient-to-b from-gray-900 to-black overflow-y-auto"
+            className="absolute inset-0 z-10 bg-gradient-to-b from-gray-900 to-black rounded-xl overflow-y-auto"
             ref={cardRef}
             drag="x"
             dragConstraints={{ left: 0, right: 0 }}
@@ -481,12 +509,6 @@ export default function StockCard({
             onDragEnd={handleDragEnd}
             animate={cardControls}
             whileDrag={{ scale: 0.98 }}
-            style={{ 
-              touchAction: 'pan-y', // Allow vertical scrolling while still enabling horizontal drag
-              WebkitTouchAction: 'pan-y' as any, // For Safari support
-              height: '100%',
-              display: 'block'
-            }}
           >
             {/* Page indicator */}
             <div className="sticky top-2 left-0 right-0 z-20 flex justify-center">
@@ -639,6 +661,20 @@ export default function StockCard({
   // Real-time display mode
   return (
     <div className="relative h-full" data-testid="stock-card">
+      {/* Blurred background stock (next in stack) - visible during swipes */}
+      <div 
+        className="absolute inset-0 overflow-hidden blur-xl pointer-events-none opacity-20"
+        style={{
+          clipPath: x.get() > 0 ? 'inset(0 0 0 100%)' : 'inset(0 0 0 0)',
+          opacity: Math.abs(x.get()) > 50 ? 0.2 : 0,
+          transform: `translateX(${x.get() < 0 ? '60px' : '-60px'})`
+        }}
+      >
+        {/* This would ideally be the next stock's preview, simplified here */}
+        <div className="w-full h-full bg-gradient-to-br from-slate-100 to-blue-50 flex items-center justify-center">
+          <div className="w-32 h-32 rounded-full bg-gradient-to-tr from-blue-400/20 to-indigo-300/20"></div>
+        </div>
+      </div>
       {/* Skipped message - shows when swiping left */}
       {showSkippedMessage && (
         <motion.div
@@ -654,23 +690,14 @@ export default function StockCard({
       )}
 
       <motion.div
-        className="h-full overflow-y-auto overflow-x-hidden pb-16 stock-card bg-white"
+        className="h-full overflow-y-auto overflow-x-hidden pb-16 stock-card"
         ref={cardRef}
         drag="x"
         dragConstraints={{ left: 0, right: 0 }}
         dragElastic={0.7}
         onDragEnd={handleDragEnd}
         animate={cardControls}
-        style={{ 
-          x, 
-          opacity: cardOpacity, 
-          rotateZ: cardRotate, 
-          scale: cardScale,
-          touchAction: 'pan-y', // Allow vertical scrolling while still enabling horizontal drag
-          WebkitTouchAction: 'pan-y' as any, // For Safari support
-          height: '100%',
-          display: 'block'
-        }}
+        style={{ x, opacity: cardOpacity, rotateZ: cardRotate, scale: cardScale }}
       >
         {/* Time Frame Selector - Enhanced with better visual contrast */}
         <div className="flex justify-center space-x-1 px-4 py-3 border-b border-slate-100 bg-white shadow-sm">
@@ -834,9 +861,9 @@ export default function StockCard({
         </div>
 
         {/* Unified cards with consistent styling */}
-        <div className="bg-white overflow-hidden mb-4">
+        <div className="bg-white rounded-xl border border-slate-200 shadow-md overflow-hidden mb-4">
           {/* Common background with slight highlight */}
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 to-indigo-50/30 opacity-30"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 to-indigo-50/30 rounded-xl opacity-30"></div>
 
           {/* Price Trend */}
           <div className="p-4 border-b border-slate-100 relative">
