@@ -845,7 +845,7 @@ export default function StockCard({
         </div>
         
         {/* Comparative Analysis Section - Moved to the top */}
-        <div className="bg-white border-t border-b border-slate-100 mb-4">
+        <div className="bg-white border-t border-b border-slate-100">
           <ComparativeAnalysis currentStock={stock} />
         </div>
         
