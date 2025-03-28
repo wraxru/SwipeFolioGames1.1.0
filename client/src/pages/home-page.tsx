@@ -70,7 +70,7 @@ export default function HomePage() {
         
         <AnimatedContainer delay={0.4}>
           <SectionHeader 
-            title="Investment Lessons" 
+            title="Popular Picks" 
           />
           
           {isLoadingStacks ? (
