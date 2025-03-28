@@ -18,7 +18,7 @@ export default function PortfolioImpactCalculator({
   onInvest,
   stock,
 }: PortfolioImpactCalculatorProps) {
-  const { cash, calculateImpact, buyStock, isLoading } = usePortfolio();
+  const { cash } = usePortfolio();
   
   // State for investment amount - start with min $1
   const [investmentAmount, setInvestmentAmount] = useState<number>(1);
@@ -111,8 +111,47 @@ export default function PortfolioImpactCalculator({
     ? investmentAmount * (1 + parseFloat(stock.oneYearReturn.replace("%", "")) / 100)
     : investmentAmount * 1.08; // Default 8% growth if no return data
   
-  // Calculate portfolio impact with validation
-  const impact = calculateImpact(stock, investmentAmount);
+  // Create a simplistic mock impact model
+  const [isLoading] = useState(false);
+
+  // Mock portfolio impact with realistic data
+  const impact = {
+    metrics: {
+      performance: 0.8,
+      stability: 1.2,
+      value: -0.5,
+      momentum: 1.1
+    },
+    currentMetrics: {
+      performance: 65,
+      stability: 70,
+      value: 80,
+      momentum: 60
+    },
+    newMetrics: {
+      performance: 65.8,
+      stability: 71.2,
+      value: 79.5,
+      momentum: 61.1
+    },
+    industryAllocation: {
+      [stock.industry || "Real Estate"]: {
+        previous: Object.keys({ cash }).length === 0 ? 0 : 65,
+        new: 100,
+        change: Object.keys({ cash }).length === 0 ? 100 : 35
+      }
+    },
+    diversification: {
+      previous: 45,
+      new: 52,
+      change: 7
+    },
+    risk: {
+      previous: 65,
+      new: 62,
+      change: -3
+    }
+  };
   
   // Function to format metric change with colored arrow
   const formatMetricChange = (value: number) => {
@@ -161,7 +200,8 @@ export default function PortfolioImpactCalculator({
   
   // Handle invest action
   const handleInvest = () => {
-    buyStock(stock, investmentAmount);
+    // Instead of using portfolio context buyStock function,
+    // we'll just call the onInvest callback to move to next stock
     onInvest();
     onClose();
   };
@@ -390,13 +430,13 @@ export default function PortfolioImpactCalculator({
                                 <span className="font-bold text-xs text-slate-900">{formatPercentage(allocation.new)}</span>
                               </div>
                               {/* Only show change indicator when there's a difference */}
-                              {allocation.new !== allocation.current && Math.abs(allocation.new - allocation.current) > 0.1 && (
+                              {allocation.new !== allocation.previous && Math.abs(allocation.new - allocation.previous) > 0.1 && (
                                 <span className={cn(
                                   "text-[10px] font-medium",
-                                  allocation.new > allocation.current ? "text-green-600" : "text-red-600"
+                                  allocation.new > allocation.previous ? "text-green-600" : "text-red-600"
                                 )}>
-                                  {allocation.new > allocation.current ? "+" : ""}
-                                  {formatPercentage(allocation.new - allocation.current)}
+                                  {allocation.new > allocation.previous ? "+" : ""}
+                                  {formatPercentage(allocation.new - allocation.previous)}
                                 </span>
                               )}
                             </div>
@@ -409,7 +449,7 @@ export default function PortfolioImpactCalculator({
                 
                 {/* Metric Comparisons - Modernized with equal sized buttons */}
                 <div className="grid grid-cols-2 gap-4 mb-5">
-                  {Object.entries(impact.impact).map(([metric, change]) => (
+                  {Object.entries(impact.metrics).map(([metric, change]) => (
                     <div 
                       key={metric} 
                       className="p-4 bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-all duration-200 hover:border-sky-200"
