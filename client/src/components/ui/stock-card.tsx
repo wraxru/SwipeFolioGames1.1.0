@@ -683,7 +683,7 @@ export default function StockCard({
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.8 }}
         >
-          <div className="text-xl font-semibold bg-gray-900/90 text-red-400 px-6 py-3 rounded-xl border border-red-500/20 shadow-xl">
+          <div className="text-xl font-semibold bg-red-800/90 text-white px-6 py-3 rounded-xl border border-red-500/40 shadow-xl">
             Stock Skipped
           </div>
         </motion.div>
@@ -794,7 +794,7 @@ export default function StockCard({
           {/* Trading date and swipe instruction */}
           <div className="mt-4 flex items-center justify-between text-xs h-6">
             <span className="text-slate-900 font-medium">Last updated: {latestTradingDay}</span>
-            <span className="text-slate-700 italic">Swipe left to skip • Swipe right to invest</span>
+            <span className="text-slate-700 italic">Swipe <span className="text-red-600 font-medium">left to skip</span> • Swipe <span className="text-green-600 font-medium">right to invest</span></span>
           </div>
         </div>
 
@@ -943,7 +943,7 @@ export default function StockCard({
         {/* Bottom Swipe Instruction */}
         <div className="p-4 bg-white border-t border-b border-slate-100 mb-4">
           <div className="text-center text-sm font-medium text-slate-600 my-2">
-            Swipe left to skip • Swipe right to invest
+            Swipe <span className="text-red-600 font-medium">left to skip</span> • Swipe <span className="text-green-600 font-medium">right to invest</span>
           </div>
         </div>
 

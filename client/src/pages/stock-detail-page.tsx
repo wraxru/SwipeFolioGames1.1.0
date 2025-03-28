@@ -133,7 +133,7 @@ export default function StockDetailPage() {
         <div className="flex justify-between gap-4 max-w-md mx-auto">
           <button
             onClick={handlePreviousStock}
-            className="w-1/2 py-3 rounded-xl bg-gradient-to-r from-slate-700 to-slate-800 text-white font-medium shadow-lg transition transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="w-1/2 py-3 rounded-xl bg-gradient-to-r from-red-600 to-red-700 text-white font-medium shadow-lg transition transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             disabled={currentStockIndex === 0}
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
