@@ -93,25 +93,19 @@ export default function ModernUserWelcome({ name, rank: initialRank = 10 }: Mode
           transition={{ duration: 0.5, type: 'spring' }}
           className="relative"
         >
-          {/* Avatar with glow effect */}
+          {/* Avatar with glow effect - simplified */}
           <div className="avatar-container relative">
+            {/* Glow effect */}
             <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-400 to-violet-400 opacity-70 blur-md" />
+            
+            {/* Avatar container */}
             <div className="relative w-14 h-14 rounded-full overflow-hidden border-2 border-white shadow-lg">
-              <div className="absolute inset-0 bg-gradient-to-br from-slate-800 to-slate-900" />
-              
-              {/* Belford&Co avatar */}
+              {/* Businessman avatar image */}
               <img 
                 src={belfordAvatar} 
-                alt="User avatar" 
-                className="w-full h-full object-cover absolute inset-0 z-10"
-                style={{ objectFit: 'cover', objectPosition: 'center' }}
-                loading="eager"
+                alt="Belford avatar" 
+                className="w-full h-full object-cover"
               />
-              
-              {/* Fallback initial for the avatar (hidden when image loads) */}
-              <div className="absolute inset-0 flex items-center justify-center text-white text-xl font-bold bg-gradient-to-br from-blue-500 to-violet-600 z-0">
-                {name.charAt(0)}
-              </div>
             </div>
           </div>
         </motion.div>
