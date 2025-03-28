@@ -7,6 +7,7 @@ import { getQueryFn } from "@/lib/queryClient";
 import { StockData, getIndustryStocks } from "@/lib/stock-data";
 import StockCard from "@/components/ui/stock-card";
 import StackCompletedModal from "@/components/stack-completed-modal";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function StockDetailPage() {
   const { stackId } = useParams<{ stackId: string }>();
@@ -113,19 +114,54 @@ export default function StockDetailPage() {
         </button>
       </header>
 
-      {/* Main content */}
-      <div className="flex-1 relative">
-        {stocks.length > 0 && (
-          <StockCard
-            stock={currentStock}
-            onNext={handleNextStock}
-            onPrevious={handlePreviousStock}
-            currentIndex={currentStockIndex}
-            totalCount={stocks.length}
-            nextStock={nextStock}
-            displayMode={useRealTimeData ? 'realtime' : 'simple'}
-          />
-        )}
+      {/* Main content - Card Stacking Area */}
+      <div className="flex-1 relative overflow-hidden">
+        <AnimatePresence initial={false}>
+          {/* Render Next Card (if exists) - Positioned behind */}
+          {currentStockIndex + 1 < stocks.length && (
+            <motion.div
+              key={`stackcard-${currentStockIndex + 1}`}
+              className="absolute inset-0 p-4"
+              style={{ zIndex: 1 }}
+              initial={{ scale: 0.95, y: 15, opacity: 0.9 }}
+              animate={{ scale: 0.95, y: 15, opacity: 0.9 }}
+              exit={{ scale: 0.9, y: 30, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 500, damping: 50 }}
+            >
+              {/* This inner div prevents interaction with the card behind */}
+              <div style={{ pointerEvents: 'none', height: '100%', width: '100%' }}>
+                <StockCard
+                  stock={stocks[currentStockIndex + 1]}
+                  onNext={() => {}}
+                  onPrevious={() => {}}
+                  currentIndex={currentStockIndex + 1}
+                  totalCount={stocks.length}
+                  displayMode={useRealTimeData ? 'realtime' : 'simple'}
+                />
+              </div>
+            </motion.div>
+          )}
+
+          {/* Render Current Card - Positioned on top */}
+          {currentStock && (
+            <motion.div
+              key={`stackcard-${currentStockIndex}`}
+              className="absolute inset-0 p-4"
+              style={{ zIndex: 2 }}
+              initial={{ scale: 1, y: 0, opacity: 1 }}
+              animate={{ scale: 1, y: 0, opacity: 1 }}
+            >
+              <StockCard
+                stock={currentStock}
+                onNext={handleNextStock}
+                onPrevious={handlePreviousStock}
+                currentIndex={currentStockIndex}
+                totalCount={stocks.length}
+                displayMode={useRealTimeData ? 'realtime' : 'simple'}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* Modern Buy/Skip Buttons */}
@@ -144,12 +180,12 @@ export default function StockDetailPage() {
           </button>
           <button
             onClick={() => {
-              // Open portfolio impact calculator
-              const stockCardElement = document.querySelector('[data-testid="stock-card"]');
-              const buyButtonElement = stockCardElement?.querySelector('[data-testid="buy-button"]');
+              // Trigger the hidden buy button inside the CURRENT StockCard
+              const currentCardMotionDiv = document.querySelector<HTMLElement>(`[key='stackcard-${currentStockIndex}']`);
+              const buyButton = currentCardMotionDiv?.querySelector<HTMLButtonElement>('[data-testid="buy-button"]');
               
-              if (buyButtonElement && 'click' in buyButtonElement) {
-                (buyButtonElement as HTMLButtonElement).click();
+              if (buyButton) {
+                buyButton.click();
               } else {
                 // Fallback - just move to next stock
                 handleNextStock();
