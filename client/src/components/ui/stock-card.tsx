@@ -694,15 +694,15 @@ export default function StockCard({
         animate={cardControls}
         style={{ x, opacity: cardOpacity, rotateZ: cardRotate, scale: cardScale }}
       >
-        {/* Time Frame Selector - Updated with Robinhood style */}
-        <div className="flex justify-center space-x-1 px-4 py-3 border-b border-slate-100 bg-white">
+        {/* Time Frame Selector - Enhanced with better visual contrast */}
+        <div className="flex justify-center space-x-1 px-4 py-3 border-b border-slate-100 bg-white shadow-sm">
           {["1D", "5D", "1M", "6M", "YTD", "1Y", "5Y", "MAX"].map((period) => (
             <button
               key={period}
               className={`px-3 py-1 text-xs rounded-full transition-all duration-200 ${
                 timeFrame === period 
-                  ? `${realTimeChange >= 0 ? 'text-green-600 bg-green-50 border border-green-100' : 'text-red-600 bg-red-50 border border-red-100'} font-medium` 
-                  : 'text-slate-500 hover:bg-slate-50 border border-transparent'
+                  ? `${realTimeChange >= 0 ? 'text-green-600 bg-green-50 border border-green-200 shadow-sm' : 'text-red-600 bg-red-50 border border-red-200 shadow-sm'} font-medium` 
+                  : 'text-slate-600 hover:bg-slate-50 border border-transparent'
               }`}
               onClick={() => setTimeFrame(period as TimeFrame)}
             >
@@ -711,12 +711,12 @@ export default function StockCard({
           ))}
         </div>
 
-        {/* Stock Price and Chart */}
-        <div className="bg-white p-4 flex flex-col border-b border-slate-100">
+        {/* Stock Price and Chart - Enhanced with better visual hierarchy */}
+        <div className="bg-white p-4 flex flex-col border-b border-slate-100 shadow-sm">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1.5">
-              <h2 className="text-xl font-semibold text-slate-900">{stock.name}</h2>
-              <span className="text-slate-500 font-medium">{stock.ticker}</span>
+              <h2 className="text-xl font-bold text-slate-900">{stock.name}</h2>
+              <span className="text-slate-500 font-medium bg-slate-50 px-2 py-0.5 rounded-md">{stock.ticker}</span>
             </div>
             <div className="flex items-center">
               <button 
@@ -729,11 +729,22 @@ export default function StockCard({
             </div>
           </div>
 
-          <div className="mt-1 flex items-baseline">
-            <span className="text-2xl font-semibold text-slate-900">${displayPrice}</span>
-            <span className={`ml-2 text-sm font-medium ${realTimeChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-              {realTimeChange >= 0 ? '+' : ''}{realTimeChange}%
-            </span>
+          <div className="mt-2 flex items-center">
+            <span className="text-3xl font-bold text-slate-900 drop-shadow-sm">${displayPrice}</span>
+            <div className="ml-2 flex items-center">
+              <span className={`flex items-center text-sm font-semibold px-2 py-0.5 rounded-full ${realTimeChange >= 0 ? 'text-green-600 bg-green-50' : 'text-red-600 bg-red-50'}`}>
+                {realTimeChange >= 0 ? 
+                  <TrendingUp size={14} className="mr-1" /> : 
+                  <ChevronLeft size={14} className="mr-1 rotate-90" />}
+                {realTimeChange >= 0 ? '+' : ''}{realTimeChange}%
+              </span>
+            </div>
+          </div>
+          
+          {/* Day's range information */}
+          <div className="mt-1 flex items-center text-xs text-slate-500">
+            <span className="mr-2">Day's Range:</span>
+            <span className="font-medium">${(parseFloat(displayPrice) * 0.98).toFixed(2)} - ${(parseFloat(displayPrice) * 1.02).toFixed(2)}</span>
           </div>
 
           {/* Chart placeholder - visualize the data */}
