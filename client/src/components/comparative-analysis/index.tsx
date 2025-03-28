@@ -89,7 +89,14 @@ export default function ComparativeAnalysis({ currentStock }: ComparativeAnalysi
           />
           
           {/* Price Forecast Component - with blurred premium feature */}
-          <PriceForecast stock={currentStock} isPremium={false} />
+          <PriceForecast 
+            ticker={currentStock.ticker}
+            currentPrice={currentStock.price}
+            oneYearReturn={currentStock.oneYearReturn 
+              ? parseFloat(currentStock.oneYearReturn.replace('%', '')) 
+              : 5.2}
+            isPremium={false} 
+          />
         </>
       )}
     </div>

@@ -1,146 +1,126 @@
-import React, { useState, useEffect } from 'react';
-import { Lock, ArrowUpRight, Sparkles } from 'lucide-react';
-import { StockData } from '@/lib/stock-data';
+import { Lock, AlertCircle, Info } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 interface PriceForecastProps {
-  stock: StockData;
+  ticker: string;
+  currentPrice: number;
+  oneYearReturn: number;
   isPremium?: boolean;
 }
 
-/**
- * A component that displays the 1-year return and predicted price
- * with the predicted price blurred for non-premium users
- */
-const PriceForecast: React.FC<PriceForecastProps> = ({ 
-  stock,
-  isPremium = false // Default to non-premium
-}) => {
-  // Animation state for shimmer effect
-  const [showShimmer, setShowShimmer] = useState(true);
+export default function PriceForecast({ 
+  ticker, 
+  currentPrice, 
+  oneYearReturn, 
+  isPremium = false 
+}: PriceForecastProps) {
+  // Calculate the predicted price
+  const predictedPrice = currentPrice * (1 + oneYearReturn / 100);
+  const formattedPredictedPrice = predictedPrice.toFixed(2);
   
-  // Get the oneYearReturn and predictedPrice from the stock data
-  const { oneYearReturn, predictedPrice, ticker } = stock;
+  // Format year return display
+  const returnDisplay = oneYearReturn > 0 
+    ? `+${oneYearReturn.toFixed(2)}%` 
+    : `${oneYearReturn.toFixed(2)}%`;
   
-  // Calculate whether the 1-year return is positive
-  const isPositiveReturn = oneYearReturn && oneYearReturn.startsWith('+') || 
-    (oneYearReturn && !oneYearReturn.startsWith('-'));
+  const returnColor = oneYearReturn >= 0 ? 'text-emerald-600' : 'text-red-500';
   
-  // Shimmer effect animation
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setShowShimmer((prev) => !prev);
-    }, 2000);
-    
-    return () => clearInterval(interval);
-  }, []);
-  
-  // Return null if we don't have both data points
-  if (!oneYearReturn && !predictedPrice) {
-    return null;
-  }
-
   return (
-    <div className="mt-6 mb-2">
-      <div className="border border-gray-200 rounded-xl overflow-hidden bg-white shadow-md">
-        {/* Header with enhanced gradient */}
-        <div className="p-4 bg-gradient-to-r from-blue-50 via-indigo-50 to-blue-50 border-b border-gray-200 relative overflow-hidden">
-          {/* Subtle texture overlay */}
-          <div className="absolute inset-0 opacity-10 mix-blend-overlay" 
-               style={{ 
-                 backgroundImage: "url('data:image/svg+xml,%3Csvg width=\"100\" height=\"100\" viewBox=\"0 0 100 100\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cpath d=\"M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z\" fill=\"%232E3A59\" fill-opacity=\"0.15\" fill-rule=\"evenodd\"/%3E%3C/svg%3E')"
-               }}>
-          </div>
-          
-          {/* Custom telescope icon for forward-looking insights */}
-          <div className="flex items-center">
-            <div className="mr-3 p-2 bg-blue-100 rounded-full">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 16L18 10M18 10H14M18 10V14" stroke="#4F46E5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M12 8V16M12 16L6 10M12 16L8 20" stroke="#4F46E5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                <circle cx="12" cy="8" r="2" stroke="#4F46E5" strokeWidth="2"/>
-              </svg>
-            </div>
-            <h3 className="text-xl font-extrabold text-gray-800">Future Outlook</h3>
-          </div>
-          <p className="text-sm text-gray-600 mt-1 ml-11">Price prediction based on historical data and market trends</p>
-        </div>
-        
-        {/* Content */}
-        <div className="p-5 bg-gradient-to-b from-white to-blue-50/20">
-          <div className="grid grid-cols-2 gap-6">
-            {/* 1-Year Return */}
-            {oneYearReturn && (
-              <div className="flex flex-col">
-                <span className="text-sm font-medium text-gray-600 mb-1">1-Year Return</span>
-                <div className="flex items-center">
-                  <span className={`text-xl font-bold ${isPositiveReturn ? 'text-emerald-500' : 'text-red-500'}`}>
-                    {oneYearReturn}
-                  </span>
-                </div>
-                <p className="text-xs text-gray-500 mt-1">
-                  Historical return from the past year
-                </p>
-              </div>
-            )}
-            
-            {/* Predicted Price - Enhanced premium styling */}
-            {predictedPrice && (
-              <div className="flex flex-col">
-                <div className="flex items-center gap-1.5">
-                  <span className="text-sm font-medium text-gray-600">Predicted Price</span>
-                  <div className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white text-xs px-2 py-0.5 rounded-full font-medium flex items-center">
-                    <Sparkles className="h-3 w-3 mr-1" />
-                    Premium
-                  </div>
-                </div>
-                
-                <div className="flex items-center mt-1">
-                  {isPremium ? (
-                    <span className="text-xl font-bold text-indigo-600">{predictedPrice}</span>
-                  ) : (
-                    <div className="relative">
-                      {/* Blurred version with shimmer */}
-                      <div className={`filter blur-sm select-none text-xl font-bold text-indigo-600 relative ${showShimmer ? 'after:absolute after:inset-0 after:bg-gradient-to-r after:from-transparent after:via-white/30 after:to-transparent after:animate-shimmer' : ''}`}>
-                        {predictedPrice}
-                      </div>
-                      {/* Enhanced lock icon overlay */}
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="bg-indigo-100 rounded-full p-1">
-                          <Lock className="h-4 w-4 text-indigo-500" />
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-                
-                <p className="text-xs text-gray-500 mt-1">
-                  Expected price in 12 months
-                </p>
-              </div>
-            )}
-          </div>
-          
-          {/* Enhanced Premium Upgrade CTA for non-premium users */}
+    <div className="relative mb-4">
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="text-slate-800 font-medium flex items-center">
+          Price Forecast
+          <span className="ml-1.5 text-xs bg-slate-100 px-1.5 py-0.5 rounded text-slate-500">AI</span>
+        </h3>
+        <div className="flex items-center">
           {!isPremium && (
-            <div className="mt-4 pt-3 border-t border-gray-100">
-              <button 
-                className="group w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white text-sm font-medium py-2.5 px-4 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg relative overflow-hidden"
-              >
-                <span className="relative z-10 flex items-center justify-center">
-                  Upgrade to Premium
-                  <ArrowUpRight className="h-4 w-4 ml-1.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-                </span>
-                <span className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
-              </button>
-              <p className="text-xs text-gray-500 text-center mt-2">
-                Get access to price predictions and advanced insights
-              </p>
+            <div className="mr-2 bg-amber-100 text-amber-800 text-xs px-2 py-0.5 rounded-full flex items-center">
+              <Lock className="h-3 w-3 mr-1" />
+              <span>Premium</span>
             </div>
           )}
+          <Info className="h-4 w-4 text-slate-400" />
+        </div>
+      </div>
+      
+      <div className="bg-slate-50 rounded-xl p-4 border border-slate-200 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-50 to-slate-100 opacity-50" />
+        
+        {/* Decorative pattern */}
+        <div className="absolute inset-0 opacity-5">
+          {Array.from({ length: 10 }).map((_, i) => (
+            <div 
+              key={i}
+              className="absolute w-20 h-20 border border-slate-400 rounded-full"
+              style={{
+                top: `${Math.random() * 100}%`,
+                left: `${Math.random() * 100}%`,
+                transform: `scale(${Math.random() * 0.8 + 0.5})`,
+              }}
+            />
+          ))}
+        </div>
+        
+        <div className="relative z-10">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <p className="text-sm text-slate-500">1-year return</p>
+              <p className={`text-lg font-bold ${returnColor}`}>{returnDisplay}</p>
+            </div>
+            <div>
+              <p className="text-sm text-slate-500">Current price</p>
+              <p className="text-lg font-bold text-slate-800">${currentPrice.toFixed(2)}</p>
+            </div>
+          </div>
+          
+          {isPremium ? (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="bg-white rounded-lg p-3 border border-slate-200 shadow-sm"
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-slate-500">Expected price (1yr)</p>
+                  <p className="text-xl font-bold text-slate-800">${formattedPredictedPrice}</p>
+                </div>
+                <div className={`text-2xl font-bold ${returnColor}`}>
+                  {returnDisplay}
+                </div>
+              </div>
+            </motion.div>
+          ) : (
+            <div className="bg-white/40 backdrop-blur-sm rounded-lg p-3 border border-slate-200 shadow-sm relative">
+              <div className="absolute inset-0 flex items-center justify-center backdrop-blur-[6px] z-10 bg-white/60 rounded-lg">
+                <div className="text-center">
+                  <Lock className="h-5 w-5 mx-auto mb-2 text-slate-500" />
+                  <p className="text-sm font-medium text-slate-700">Unlock premium forecast</p>
+                  <button className="mt-2 bg-gradient-to-r from-indigo-500 to-violet-500 text-white text-sm py-1 px-3 rounded-full shadow-sm hover:shadow-md transition-shadow">
+                    Upgrade
+                  </button>
+                </div>
+              </div>
+              
+              {/* Blurred content */}
+              <div className="flex items-center justify-between opacity-70 blur-[3px]">
+                <div>
+                  <p className="text-sm text-slate-500">Expected price (1yr)</p>
+                  <p className="text-xl font-bold text-slate-800">$XXX.XX</p>
+                </div>
+                <div className={`text-2xl font-bold ${returnColor}`}>
+                  {returnDisplay}
+                </div>
+              </div>
+            </div>
+          )}
+          
+          <div className="mt-3 flex items-start text-xs text-slate-500">
+            <AlertCircle className="h-3.5 w-3.5 mt-0.5 mr-1.5 flex-shrink-0" />
+            <p>Based on historical performance and market conditions. Not financial advice.</p>
+          </div>
         </div>
       </div>
     </div>
   );
-};
-
-export default PriceForecast;
+}
