@@ -46,29 +46,44 @@ export default function PurchaseSuccessModal({
 
   // Create a portal to ensure the modal is not affected by parent stacking contexts
   return createPortal(
-    <AnimatePresence mode="wait" key="success-modal">
+    <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 flex items-center justify-center z-[9999]" style={{ isolation: 'isolate' }}>
-          {/* Semi-transparent backdrop */}
+        <div 
+          className="fixed inset-0 flex items-center justify-center z-[9999]" 
+          style={{ 
+            isolation: 'isolate',
+            // iOS optimizations
+            WebkitTransform: 'translateZ(0)',
+            transform: 'translateZ(0)',
+          }}
+        >
+          {/* Simplified backdrop for iOS performance */}
           <motion.div
+            key="backdrop"
             initial={{ opacity: 0 }}
             animate={{ opacity: 0.7 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
+            transition={{ duration: 0.15 }}
             className="absolute inset-0 bg-black z-[1]"
             onClick={onClose}
+            style={{ willChange: 'opacity' }}
           />
           
-          {/* Success modal with green background */}
+          {/* Success modal with green background - simplified animation for iOS */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.9, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            transition={{ type: "spring", damping: 25, stiffness: 300 }}
+            key="modal"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.2 }}
             className="w-[85%] max-w-xs rounded-xl overflow-hidden bg-gradient-to-b from-green-500 to-green-600 
                        shadow-2xl border border-green-400 z-[2] relative"
             style={{
-              boxShadow: '0 20px 60px -15px rgba(0, 0, 0, 0.25), 0 12px 25px -10px rgba(0, 0, 0, 0.1)'
+              boxShadow: '0 20px 60px -15px rgba(0, 0, 0, 0.25), 0 12px 25px -10px rgba(0, 0, 0, 0.1)',
+              // iOS optimizations
+              willChange: 'transform, opacity',
+              WebkitTransform: 'translateZ(0)',
+              transform: 'translateZ(0)'
             }}
           >
             {/* Header with close button */}

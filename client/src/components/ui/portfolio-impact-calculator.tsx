@@ -197,46 +197,61 @@ export default function PortfolioImpactCalculator({
     return `${value.toFixed(1)}%`;
   };
   
+  // Fix for iOS flickering - use conditional styles
+  const wrapperStyle = {
+    position: 'relative' as const,
+    zIndex: isOpen ? 50 : 0,
+    // Prevent iOS-specific repaints that may cause flickering
+    WebkitTransform: 'translateZ(0)',
+    transform: 'translateZ(0)', 
+    WebkitBackfaceVisibility: 'hidden' as const,
+    backfaceVisibility: 'hidden' as const,
+    // Reduce transparency effects on iOS that can cause performance issues
+    WebkitPerspective: 1000,
+    perspective: 1000
+  };
+  
   return (
-    <div className="portfolio-impact-wrapper" style={{ position: 'relative', zIndex: isOpen ? 50 : 0 }}>
-      {/* Calculator Modal */}
-      <AnimatePresence mode="wait" key="calculator-modal">
+    <div className="portfolio-impact-wrapper" style={wrapperStyle}>
+      {/* Calculator Modal - using key based on isOpen to force fresh render */}
+      <AnimatePresence mode="wait">
         {isOpen && !showSuccessModal && (
           <>
-            {/* Backdrop with blur effect */}
+            {/* Backdrop with blur effect - simplified for iOS */}
             <motion.div
+              key="backdrop"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
+              transition={{ duration: 0.25 }}
               className="calculator-overlay"
               onClick={onClose}
+              style={{ willChange: 'opacity' }}
             />
             
-            {/* Modal with enhanced animations and better centering */}
+            {/* Modal with simplified animations for iOS performance */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.92, y: 30 }}
+              key="modal-content"
+              initial={{ opacity: 0, scale: 0.95 }}
               animate={{ 
                 opacity: 1, 
-                scale: 1, 
-                y: 0,
+                scale: 1,
                 transition: { 
-                  type: "spring", 
-                  damping: 30, 
-                  stiffness: 350,
-                  duration: 0.4,
-                  ease: [0.23, 1, 0.32, 1]
+                  duration: 0.25
                 }
               }}
               exit={{ 
                 opacity: 0, 
-                scale: 0.95, 
-                y: 20,
-                transition: { duration: 0.25, ease: [0.32, 0, 0.67, 0] }
+                scale: 0.95,
+                transition: { duration: 0.2 }
               }}
               className="calculator-modal"
               style={{
-                boxShadow: '0 20px 60px -15px rgba(0, 0, 0, 0.25), 0 12px 25px -10px rgba(0, 0, 0, 0.1)'
+                boxShadow: '0 20px 60px -15px rgba(0, 0, 0, 0.25), 0 12px 25px -10px rgba(0, 0, 0, 0.1)',
+                // Optimize rendering for iOS
+                willChange: 'transform, opacity',
+                WebkitTransform: 'translateZ(0)',
+                transform: 'translateZ(0)'
               }}
             >
               {/* Enhanced Modern Header */}
@@ -592,10 +607,11 @@ export default function PortfolioImpactCalculator({
         )}
       </AnimatePresence>
       
-      {/* Purchase Success Modal - Completely separate from calculator UI */}
-      {stock && (
+      {/* Purchase Success Modal - Completely separated from calculator UI to prevent iOS flickering */}
+      {/* Only mount the PurchaseSuccessModal when needed */}
+      {showSuccessModal && stock && (
         <PurchaseSuccessModal
-          isOpen={showSuccessModal}
+          isOpen={true} // Always true when mounted to avoid animation conflicts
           onClose={handleSuccessModalClose}
           stock={stock}
           shares={shares}
