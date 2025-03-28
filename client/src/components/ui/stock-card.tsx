@@ -737,33 +737,34 @@ export default function StockCard({
             {/* Chart visual */}
             <div className="absolute inset-0 px-4">
               {/* Y-axis labels */}
-              <div className="absolute left-0 top-0 bottom-0 flex flex-col justify-between text-[10px] text-slate-900 font-medium pointer-events-none py-3 z-10">
+              <div className="absolute left-0 top-0 bottom-0 flex flex-col justify-between text-[10px] text-slate-900 font-medium pointer-events-none py-3 z-10 w-12">
                 <span>${Math.round(priceRangeMax)}</span>
                 <span>${Math.round((priceRangeMax + priceRangeMin) / 2)}</span>
                 <span>${Math.round(priceRangeMin)}</span>
               </div>
               
               {/* Chart path - dynamically draw based on chartData with extension to edge */}
-              <svg className="w-full h-full" viewBox={`0 0 100 100`} preserveAspectRatio="none">
-                
-                {/* Main chart line only - no fill */}
-                <path
-                  d={`M-5,${100 - ((chartData[0] - minValue) / (maxValue - minValue)) * 100} ${chartData.map((point, i) => {
-                    // Plot points with x-coordinates extending beyond the visible area
-                    const x = (i / (chartData.length - 1)) * 110 - 5; // Extend from -5 to 105
-                    const y = 100 - ((point - minValue) / (maxValue - minValue)) * 100;
-                    return `L${x},${y}`;
-                  }).join(' ')} L105,${100 - ((chartData[chartData.length-1] - minValue) / (maxValue - minValue)) * 100}`}
-                  className={`${realTimeChange >= 0 ? 'stroke-green-500' : 'stroke-red-500'} fill-none`}
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+              <div className="absolute inset-0 pl-12 pr-4">
+                <svg className="w-full h-full" viewBox={`0 0 100 100`} preserveAspectRatio="none">
+                  {/* Main chart line only - no fill */}
+                  <path
+                    d={`M-5,${100 - ((chartData[0] - minValue) / (maxValue - minValue)) * 100} ${chartData.map((point, i) => {
+                      // Plot points with x-coordinates extending beyond the visible area
+                      const x = (i / (chartData.length - 1)) * 110 - 5; // Extend from -5 to 105
+                      const y = 100 - ((point - minValue) / (maxValue - minValue)) * 100;
+                      return `L${x},${y}`;
+                    }).join(' ')} L105,${100 - ((chartData[chartData.length-1] - minValue) / (maxValue - minValue)) * 100}`}
+                    className={`${realTimeChange >= 0 ? 'stroke-green-500' : 'stroke-red-500'} fill-none`}
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </div>
             </div>
             
             {/* X-axis labels */}
-            <div className="absolute left-0 right-0 bottom-1 px-4 flex justify-between text-[10px] text-slate-900 font-medium pointer-events-none">
+            <div className="absolute left-0 right-0 bottom-1 pl-12 pr-4 flex justify-between text-[10px] text-slate-900 font-medium pointer-events-none">
               {timeScaleLabels.map((label, index) => (
                 <span key={index}>{label}</span>
               ))}
