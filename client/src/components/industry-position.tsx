@@ -58,10 +58,11 @@ export default function IndustryPosition({ stock }: IndustryPositionProps) {
     summaryText = `${stock.name} is among the lower performers in the ${stock.industry} industry.`;
   }
   
-  // Toggle comparison visibility with logging
+  // Toggle comparison visibility with improved logging
   const toggleComparison = () => {
-    console.log("Toggle comparison clicked. Current state:", showComparison);
+    console.log("State before toggle:", showComparison);
     setShowComparison(!showComparison);
+    console.log("State after toggle:", !showComparison);
     
     // Scroll to the comparison component when it's opened
     if (!showComparison && comparisonRef.current) {
@@ -153,12 +154,15 @@ export default function IndustryPosition({ stock }: IndustryPositionProps) {
         </div>
       </div>
       
-      {/* Expanded comparison view */}
+      {/* Toggle state indicator outside the hidden element for debugging */}
+      <div className="p-2 bg-blue-100 rounded mb-2 text-xs">
+        Toggle state: {showComparison ? 'OPEN' : 'CLOSED'}
+      </div>
+      
+      {/* Expanded comparison view - simplified visibility */}
       <div 
         ref={comparisonRef} 
-        className={`mt-2 transition-all duration-300 ease-in-out overflow-hidden ${
-          showComparison ? 'max-h-[2000px] opacity-100' : 'max-h-0 opacity-0'
-        }`}
+        className={`mt-2 ${showComparison ? 'block' : 'hidden'}`}
       >
         {/* Debug element to verify toggle state */}
         <div className="p-2 bg-blue-50 text-xs text-gray-700 rounded mb-2">
