@@ -9,27 +9,7 @@
 
   body {
     @apply font-sans antialiased bg-white text-slate-800;
-    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
   }
-}
-
-/* iOS-specific fixes for modals and animations */
-.calculator-modal,
-.calculator-overlay,
-.purchase-success-modal {
-  -webkit-transform: translateZ(0);
-  transform: translateZ(0);
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
-  -webkit-perspective: 1000;
-  perspective: 1000;
-  will-change: transform, opacity;
-}
-
-/* Prevent Safari/iOS overscroll for modal content */
-.modal-content {
-  overscroll-behavior: contain;
-  -webkit-overflow-scrolling: touch;
 }
 
 /* SVG chart gradients for positive/negative values */
@@ -306,23 +286,15 @@
 }
 
 .calculator-modal {
-  /* Positioning is optimized for iOS compatibility */
+  /* Positioning is now handled inline for precise centering */
   @apply fixed overflow-auto rounded-2xl bg-white z-50 border border-slate-200 shadow-2xl
-  transition-all duration-200 text-slate-800;
+  transition-all duration-300 text-slate-800;
   left: 50% !important;
   top: 50% !important;
   transform: translate(-50%, -50%) !important;
   width: 90% !important;
   max-width: 450px !important;
   max-height: 90vh !important;
-  
-  /* Additional iOS-specific optimizations */
-  -webkit-transform: translate3d(-50%, -50%, 0) !important;
-  transform: translate3d(-50%, -50%, 0) !important;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  backface-visibility: hidden;
-  -webkit-tap-highlight-color: transparent;
 }
 
 /* Purchase Success Modal Styles now handled directly in the component */
