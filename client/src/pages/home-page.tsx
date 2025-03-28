@@ -14,8 +14,7 @@ import HeroSection from "@/components/hero-section";
 import ModernUserWelcome from "@/components/modern-user-welcome";
 import PortfolioDashboard from "@/components/portfolio-dashboard";
 import CompetitionTracker from "@/components/competition-tracker";
-import { PortfolioContext } from "@/contexts/portfolio-context";
-import { PortfolioProvider } from "@/contexts/portfolio-context";
+import { PortfolioContext, usePortfolio } from "@/contexts/portfolio-context";
 
 // Container for applying animations to child elements
 const AnimatedContainer = ({ children, delay = 0 }: { children: React.ReactNode, delay?: number }) => (
@@ -44,7 +43,7 @@ export default function HomePage() {
   };
   
   return (
-    <PortfolioProvider>
+    <>
       <AppHeader />
       
       <main className="main-content pb-24 pt-20 px-4 bg-gradient-to-b from-slate-50 to-white">
@@ -90,6 +89,6 @@ export default function HomePage() {
       </main>
       
       <AppNavigation />
-    </PortfolioProvider>
+    </>
   );
 }
