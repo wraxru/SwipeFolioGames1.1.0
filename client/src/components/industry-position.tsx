@@ -16,18 +16,18 @@ export default function IndustryPosition({ stock }: IndustryPositionProps) {
   const stabilityScore = getAdvancedMetricScore(stock, 'stability');
   const valueScore = getAdvancedMetricScore(stock, 'value');
   const momentumScore = getAdvancedMetricScore(stock, 'momentum');
-  
+
   // Overall score (simple average of the four metrics)
   const overallScore = Math.round((performanceScore + stabilityScore + valueScore + momentumScore) / 4);
-  
+
   // Convert to percentile (simple approach for now)
   const percentile = overallScore;
-  
+
   // Color coding based on percentile
   let statusColor = 'bg-red-500';
   let textColor = 'text-red-600';
   let borderColor = 'border-red-500';
-  
+
   if (percentile >= 70) {
     statusColor = 'bg-green-500';
     textColor = 'text-green-600';
@@ -55,7 +55,7 @@ export default function IndustryPosition({ stock }: IndustryPositionProps) {
   } else {
     summaryText = `${stock.name} is among the lower performers in the ${stock.industry} industry.`;
   }
-  
+
   // Toggle comparison visibility with logging
   const toggleComparison = () => {
     console.log("Toggle comparison clicked. Current state:", showComparison);
@@ -77,7 +77,7 @@ export default function IndustryPosition({ stock }: IndustryPositionProps) {
               <h3 className="text-lg font-bold text-gray-800">Industry Position</h3>
               <p className="text-sm font-medium text-gray-600">{stock.industry}</p>
             </div>
-            
+
             {/* Percentile circle */}
             <div className="flex flex-col items-center">
               <div className={`w-20 h-20 ${statusColor} rounded-full flex items-center justify-center text-white font-bold text-2xl shadow-md`}>
@@ -86,12 +86,12 @@ export default function IndustryPosition({ stock }: IndustryPositionProps) {
               <div className="text-sm mt-1 font-medium text-gray-700">Rank</div>
             </div>
           </div>
-          
+
           {/* Summary text */}
           <p className="text-base mt-3 text-gray-700 font-medium">
             {summaryText}
           </p>
-          
+
           {/* Key metrics at a glance */}
           <div className="grid grid-cols-4 gap-3 mt-4">
             <div className="rounded-md bg-gray-50 p-3 text-center shadow-sm">
@@ -119,7 +119,7 @@ export default function IndustryPosition({ stock }: IndustryPositionProps) {
               </div>
             </div>
           </div>
-          
+
           {/* Compare Button - Prominent and attention-grabbing */}
           <button 
             onClick={toggleComparison}
@@ -143,7 +143,7 @@ export default function IndustryPosition({ stock }: IndustryPositionProps) {
           </button>
         </div>
       </div>
-      
+
       {/* Expanded comparison view */}
       {showComparison && (
         <div className="mt-2 transition-all duration-300 ease-in-out">
