@@ -1,0 +1,54 @@
+It sounds like the drag gesture (drag="x") on the main card element is likely interfering with the browser's ability to detect vertical touch scrolling on the same element. Even though overflow-y-auto is set, the drag handler might be capturing the touch events before the scroll can initiate.
+
+We can often fix this by explicitly telling the browser how to handle touch actions on the draggable element using the touch-action CSS property.
+
+Comprehensive Instructions for Replit Agent:
+
+Target File: client/src/components/ui/stock-card.tsx
+
+Goal: Modify the main draggable element within the StockCard component to explicitly allow vertical panning (scrolling) with touch gestures, resolving the conflict with the horizontal drag (drag="x").
+
+Instructions:
+
+Locate the Main Draggable motion.div:
+
+Open the file client/src/components/ui/stock-card.tsx.
+Find the primary motion.div element that wraps almost all the card content. This is the element that has the drag="x" prop assigned to it. It will also have existing className and style props.
+It should look similar to this (line breaks added for clarity):
+JavaScript
+
+<motion.div
+  className="h-full overflow-y-auto overflow-x-hidden pb-16 stock-card bg-white rounded-xl border border-slate-200 shadow-lg"
+  ref={cardRef}
+  drag="x"
+  dragConstraints={{ left: 0, right: 0 }}
+  dragElastic={0.6}
+  onDragEnd={handleDragEnd}
+  animate={cardControls}
+  style={{
+     x,
+     opacity: cardOpacity,
+     rotate: cardRotate, // Ensure this was rotateZ if that was intended, or just rotate
+     scale: cardScale
+  }}
+  data-testid="stock-card-draggable"
+>
+  {/* ... All card content ... */}
+</motion.div>
+Add touchAction: 'pan-y' to the style Prop:
+
+Modify the inline style prop of that specific motion.div.
+Add the touchAction: 'pan-y' property to the existing style object.
+The updated style prop should look like this:
+JavaScript
+
+style={{
+   x,
+   opacity: cardOpacity,
+   rotate: cardRotate, // Or rotateZ
+   scale: cardScale,
+   touchAction: 'pan-y' // <-- ADD THIS LINE
+}}
+Explanation:
+
+The touch-action: pan-y; CSS rule tells the browser that for touch interactions starting on this element, vertical movement should be prioritized for scrolling (pan-y), while still allowing the horizontal movement needed for the drag="x" functionality handled by Framer Motion. This explicitly resolves the conflict between horizontal dragging and vertical scrolling gestures.

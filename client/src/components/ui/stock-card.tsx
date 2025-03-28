@@ -481,6 +481,7 @@ export default function StockCard({
             onDragEnd={handleDragEnd}
             animate={cardControls}
             whileDrag={{ scale: 0.98 }}
+            style={{ touchAction: 'pan-y' }} // Allow vertical scrolling while still enabling horizontal drag
           >
             {/* Page indicator */}
             <div className="sticky top-2 left-0 right-0 z-20 flex justify-center">
@@ -655,7 +656,13 @@ export default function StockCard({
         dragElastic={0.7}
         onDragEnd={handleDragEnd}
         animate={cardControls}
-        style={{ x, opacity: cardOpacity, rotateZ: cardRotate, scale: cardScale }}
+        style={{ 
+          x, 
+          opacity: cardOpacity, 
+          rotateZ: cardRotate, 
+          scale: cardScale,
+          touchAction: 'pan-y' // Allow vertical scrolling while still enabling horizontal drag
+        }}
       >
         {/* Time Frame Selector - Enhanced with better visual contrast */}
         <div className="flex justify-center space-x-1 px-4 py-3 border-b border-slate-100 bg-white shadow-sm">
