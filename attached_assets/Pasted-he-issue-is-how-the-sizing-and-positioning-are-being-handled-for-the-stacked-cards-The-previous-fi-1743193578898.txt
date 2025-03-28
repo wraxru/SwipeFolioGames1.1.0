@@ -1,0 +1,94 @@
+he issue is how the sizing and positioning are being handled for the stacked cards.
+
+The previous fix correctly implemented the stacking with absolute positioning and zIndex, but the className="absolute w-[90%] max-w-md h-[85%]" on the motion.div wrappers is forcing each card into a smaller, fixed-percentage box in the center, instead of letting them fill the screen space. This prevents the overflow-y-auto inside StockCard from working because the card itself isn't tall enough to need scrolling.
+
+Diagnosis:
+
+The parent div in StockDetailPage (flex-1 relative flex items-center justify-center p-4) is centering the content.
+The motion.div wrappers for both the current and next cards are explicitly sized using percentages (w-[90%], h-[85%]), restricting their dimensions.
+The StockCard component inside these wrappers cannot exceed the size of its wrapper, hence it appears small and scrolling is disabled.
+How to Fix:
+
+We need to make the card wrappers fill the available space defined by their parent container in StockDetailPage, allowing the StockCard to use its h-full and overflow-y-auto properties effectively.
+
+Instructions for the Agent:
+
+In client/src/pages/stock-detail-page.tsx:
+Find the main content div that wraps the <AnimatePresence> tag (it currently has classes like flex-1 relative flex items-center justify-center p-4). Change its classes to flex-1 relative overflow-hidden. (This removes the centering and padding that might constrain the absolute children and adds overflow control).
+For both the "Next Card" motion.div and the "Current Card" motion.div, change their className from absolute w-[90%] max-w-md h-[85%] to absolute inset-0 p-4. (This makes the motion wrappers fill the parent container, and p-4 adds padding around the card area, effectively controlling the card size via padding rather than fixed percentages).
+Inside the "Next Card" motion.div, ensure the div with style={{ pointerEvents: 'none' }} also has height: '100%', width: '100%' added to its style prop. This makes sure the non-interactive container fills the motion wrapper.
+Code Snippet for StockDetailPage.tsx (Focus on the card rendering area):
+
+TypeScript
+
+  // Inside StockDetailPage component's return
+
+  {/* Main content - Card Stacking Area */}
+  {/* MODIFIED: Removed flex centering/padding, added overflow-hidden */}
+  <div className="flex-1 relative overflow-hidden">
+
+    <AnimatePresence initial={false}>
+      {/* Render Next Card (if exists) - Positioned behind */}
+      {currentStockIndex + 1 < stocks.length && (
+        <motion.div
+          key={`stackcard-${stocks[currentStockIndex + 1].ticker}`}
+          // MODIFIED: Use inset-0 and padding instead of w/h percentages
+          className="absolute inset-0 p-4"
+          style={{ zIndex: 1 }}
+          initial={{ scale: 0.95, y: 15, opacity: 0.9 }}
+          animate={{ scale: 0.95, y: 15, opacity: 0.9 }}
+          exit={{ scale: 0.9, y: 30, opacity: 0 }}
+          transition={{ type: 'spring', stiffness: 500, damping: 50 }}
+        >
+          {/* MODIFIED: Ensure this div fills its parent */}
+          <div style={{ pointerEvents: 'none', height: '100%', width: '100%' }}>
+            <StockCard
+              stock={stocks[currentStockIndex + 1]}
+              onNext={() => {}}
+              onPrevious={() => {}}
+              currentIndex={currentStockIndex + 1}
+              totalCount={stocks.length}
+              displayMode={useRealTimeData ? 'realtime' : 'simple'}
+            />
+          </div>
+        </motion.div>
+      )}
+
+      {/* Render Current Card - Positioned on top */}
+      {currentStock && (
+         <motion.div
+           key={`stackcard-${currentStockIndex}`}
+           // MODIFIED: Use inset-0 and padding instead of w/h percentages
+           className="absolute inset-0 p-4"
+           style={{ zIndex: 2 }}
+           initial={{ scale: 1, y: 0, opacity: 1 }} // Already in place
+           animate={{ scale: 1, y: 0, opacity: 1 }}
+         >
+          {/* StockCard itself should have h-full and overflow-y-auto */}
+          <StockCard
+            stock={currentStock}
+            onNext={handleNextStock}
+            onPrevious={handlePreviousStock}
+            currentIndex={currentStockIndex}
+            totalCount={stocks.length}
+            displayMode={useRealTimeData ? 'realtime' : 'simple'}
+          />
+         </motion.div>
+      )}
+    </AnimatePresence>
+  </div> // End of main content div
+
+  {/* ... Rest of StockDetailPage (Buttons, Modal) ... */}
+Verify StockCard.tsx:
+Double-check that the outermost motion.div inside StockCard.tsx (the one with the drag prop) still has h-full and overflow-y-auto in its className.
+These changes should allow the StockCard component to correctly fill the space defined by the padding (p-4) within the main content area, restoring its intended size and enabling scrolling for its content.
+
+
+Sources and related content
+repomix-ou...efolio.git
+
+TXT
+image_caddf5
+
+PNG
+image_c9f47c
