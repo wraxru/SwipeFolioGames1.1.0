@@ -1,0 +1,16 @@
+It appears the issue with the stock card not being fully interactive or scrollable after implementing the Tinder-style swiping likely stems from layout constraints and potential conflicts between the scrolling and dragging behaviours.
+
+Here’s a breakdown of the probable causes and how to fix them:
+
+Issue: The top card's view is limited, and scrolling doesn't work correctly.
+
+Cause: This often happens when the container holding the StockCard doesn't have a properly defined height, even if the card itself is set to fill the height (h-full) and allow scrolling (overflow-y-auto). In StockDetailPage.tsx, the StockCard is placed inside absolutely positioned motion.div wrappers (absolute inset-0) within a container that uses flex-1 to grow. If this flex-1 container isn't expanding correctly due to its parent's layout, the StockCard won't have the necessary height to scroll its content. The overflow-hidden style on the container  could also be clipping the card content if the height calculation fails.   
+Fix:
+Verify Container Height: Use browser developer tools to inspect the computed height of the div with flex-1 relative overflow-hidden in StockDetailPage.tsx. Ensure it's expanding to fill the available vertical space between the header and footer/buttons. If not, review the overall flexbox layout of StockDetailPage.tsx  to ensure this container can grow.   
+Confirm StockCard Styles: Double-check that the main draggable motion.div within StockCard.tsx has both h-full and overflow-y-auto in its className attribute.   
+Check touch-action: Ensure the style prop on the draggable motion.div in StockCard.tsx includes touchAction: 'pan-y'. This explicitly tells the browser to prioritize vertical touch movements for scrolling, preventing conflicts with the horizontal drag gesture (drag="x" ).   
+Potential Conflicts:
+
+Cause: Remnants of old code, particularly the previous implementation for showing a blurred background or the next card preview within StockCard.tsx itself, could interfere with the current layout and scroll behavior. The stacking and preview are now handled in StockDetailPage.tsx.   
+Fix: Carefully review StockCard.tsxand ensure any div elements related to the old preview logic (often using classes like absolute, blur-xl, etc. ) have been completely removed.   
+By ensuring the container in StockDetailPage.tsx correctly defines the height and that StockCard.tsx is styled to fill that height and handle touch scrolling appropriately, you should be able to restore the vertical scrolling and full interaction for the top card.

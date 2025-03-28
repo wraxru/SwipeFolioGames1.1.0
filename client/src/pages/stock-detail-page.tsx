@@ -115,7 +115,7 @@ export default function StockDetailPage() {
       </header>
 
       {/* Main content - Card Stacking Area */}
-      <div className="flex-1 relative overflow-hidden">
+      <div className="flex-1 relative overflow-hidden flex flex-col" style={{ height: 'calc(100vh - 72px - 80px)' }}>
         <AnimatePresence initial={false}>
           {/* Render Next Card (if exists) - Positioned behind */}
           {currentStockIndex + 1 < stocks.length && (
