@@ -75,14 +75,20 @@ export default function PortfolioDashboard() {
   const projectedReturn = useMemo(() => {
     console.log("Dashboard: Recalculating projectedReturn");
     return holdings.reduce((total, h) => {
-      const oneYearReturnPercent = typeof h.stock.oneYearReturn === 'number' ? h.stock.oneYearReturn : 0;
+      // Parse the oneYearReturn string (remove % sign and convert to number)
+      const oneYearReturnPercent = 
+        typeof h.stock.oneYearReturn === 'number' ? h.stock.oneYearReturn :
+        typeof h.stock.oneYearReturn === 'string' ? parseFloat(h.stock.oneYearReturn.replace('%', '')) : 
+        0;
+      
       // Base projection on current value or purchase price? Let's use purchase price as in original code
       const stockInvestedValue = h.shares * h.purchasePrice;
       const stockReturn = stockInvestedValue * (oneYearReturnPercent / 100);
-       if (!isNaN(stockReturn)) {
-            return total + stockReturn;
-        }
-        return total;
+      
+      if (!isNaN(stockReturn)) {
+        return total + stockReturn;
+      }
+      return total;
     }, 0);
   }, [holdings]); // Recalculate only if holdings array reference changes
 

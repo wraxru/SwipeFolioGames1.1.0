@@ -66,8 +66,12 @@ export default function CompetitionTracker() {
       
       if (totalInvested > 0) {
         const oneYearReturns = portfolio.holdings.reduce((total, h) => {
-          // Convert to number or use 0 if undefined
-          const oneYearReturnPercent = typeof h.stock.oneYearReturn === 'number' ? h.stock.oneYearReturn : 0;
+          // Parse the oneYearReturn string (remove % sign and convert to number)
+          const oneYearReturnPercent = 
+            typeof h.stock.oneYearReturn === 'number' ? h.stock.oneYearReturn :
+            typeof h.stock.oneYearReturn === 'string' ? parseFloat(h.stock.oneYearReturn.replace('%', '')) : 
+            0;
+            
           const stockValue = h.shares * h.purchasePrice;
           const stockReturn = stockValue * (oneYearReturnPercent / 100);
           return total + stockReturn;
