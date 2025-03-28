@@ -1,35 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { TrendingUp, Lock, ArrowUpRight, Sparkles } from 'lucide-react';
+import { Lock, ArrowUpRight, Sparkles } from 'lucide-react';
 import { StockData } from '@/lib/stock-data';
 
 interface PriceForecastProps {
   stock: StockData;
   isPremium?: boolean;
 }
-
-const Sparkline: React.FC<{ isPositive: boolean | string | undefined }> = ({ isPositive }) => {
-  // Convert to boolean to be safe
-  const isPositiveBoolean = Boolean(isPositive);
-  // Simple sparkline SVG that shows an upward or downward trend
-  const height = 24;
-  const width = 60;
-  const points = isPositiveBoolean 
-    ? "0,24 10,18 20,20 30,16 40,12 50,8 60,4" 
-    : "0,4 10,8 20,12 30,16 40,20 50,18 60,24";
-
-  return (
-    <svg width={width} height={height} className="ml-2">
-      <path 
-        d={`M ${points}`} 
-        fill="none" 
-        stroke={isPositiveBoolean ? "#10B981" : "#EF4444"} 
-        strokeWidth="2" 
-        strokeLinecap="round" 
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-};
 
 /**
  * A component that displays the 1-year return and predicted price
@@ -92,7 +68,7 @@ const PriceForecast: React.FC<PriceForecastProps> = ({
         {/* Content */}
         <div className="p-5 bg-gradient-to-b from-white to-blue-50/20">
           <div className="grid grid-cols-2 gap-6">
-            {/* 1-Year Return with sparkline */}
+            {/* 1-Year Return */}
             {oneYearReturn && (
               <div className="flex flex-col">
                 <span className="text-sm font-medium text-gray-600 mb-1">1-Year Return</span>
@@ -100,7 +76,6 @@ const PriceForecast: React.FC<PriceForecastProps> = ({
                   <span className={`text-xl font-bold ${isPositiveReturn ? 'text-emerald-500' : 'text-red-500'}`}>
                     {oneYearReturn}
                   </span>
-                  <Sparkline isPositive={!!isPositiveReturn} />
                 </div>
                 <p className="text-xs text-gray-500 mt-1">
                   Historical return from the past year
