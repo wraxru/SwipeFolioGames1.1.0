@@ -1,85 +1,128 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowUp, ArrowDown, Wallet, TrendingUp, Clock, DollarSign, PieChart } from 'lucide-react';
 import { Progress } from './ui/progress';
-import { usePortfolio } from '@/contexts/portfolio-context';
+import { usePortfolio, PortfolioHolding } from '@/contexts/portfolio-context';
 
 export default function PortfolioDashboard() {
-  // Force component to update on any portfolio changes
-  const [forceUpdateTime, setForceUpdateTime] = useState(Date.now());
-  const [lastValues, setLastValues] = useState({ invested: 0, available: 0 });
-  const portfolio = usePortfolio();
-  
-  // Create stringified portfolio state to detect ALL changes
-  const portfolioState = JSON.stringify({
-    holdings: portfolio.holdings,
-    cash: portfolio.cash,
-    portfolioValue: portfolio.portfolioValue,
-    totalValue: portfolio.totalValue,
-    version: portfolio.version,
-    lastUpdated: portfolio.lastUpdated
+  // Create local state to track portfolio values
+  const [dashboardState, setDashboardState] = useState({
+    cash: 100,
+    holdings: [] as PortfolioHolding[],
+    portfolioValue: 0,
+    totalValue: 100,
+    allocationPercentage: 0,
+    totalReturn: 0,
+    totalReturnPercent: 0,
+    projectedReturn: 0, 
+    projectedReturnPercent: 0,
+    performanceMetric: 0,
+    stabilityMetric: 0,
+    lastUpdated: Date.now(),
+    updateCount: 0
   });
   
-  // Update component whenever portfolio changes
-  useEffect(() => {
-    console.log("Portfolio dashboard - detected portfolio change:", {
-      holdings: portfolio.holdings.length,
-      portfolioValue: portfolio.portfolioValue,
+  // Get reference to portfolio context
+  const portfolio = usePortfolio();
+  
+  // Create a unique key for total re-rendering
+  const renderKey = `portfolio-dashboard-${dashboardState.updateCount}-${Date.now()}`;
+  
+  // Function to recalculate all derived values
+  const recalculateState = useCallback(() => {
+    // Calculate portfolio value from holdings
+    const portfolioValue = portfolio.holdings.reduce((total, h) => total + (h.shares * h.stock.price), 0);
+    
+    // Calculate total return
+    const totalReturn = portfolio.holdings.reduce((total, h) => {
+      const currentValue = h.shares * h.stock.price;
+      const investedValue = h.shares * h.purchasePrice;
+      return total + (currentValue - investedValue);
+    }, 0);
+    
+    // Calculate return percentage
+    const totalReturnPercent = portfolio.holdings.length > 0 
+      ? (totalReturn / Math.max(0.01, portfolioValue - totalReturn)) * 100 
+      : 0;
+      
+    // Calculate projected 1-year return
+    const projectedReturn = portfolio.holdings.reduce((total, h) => {
+      const oneYearReturnPercent = typeof h.stock.oneYearReturn === 'number' ? h.stock.oneYearReturn : 0;
+      const stockValue = h.shares * h.purchasePrice;
+      const stockReturn = stockValue * (oneYearReturnPercent / 100);
+      return total + stockReturn;
+    }, 0);
+    
+    // Calculate projected return percentage
+    const projectedReturnPercent = portfolio.holdings.length > 0 && portfolioValue > 0
+      ? (projectedReturn / portfolioValue) * 100
+      : 0;
+    
+    // Calculate allocation percentage
+    const totalValue = portfolio.cash + portfolioValue;
+    const allocationPercentage = Math.round((portfolioValue / Math.max(0.01, totalValue)) * 100);
+    
+    // Log the new state 
+    console.log("Portfolio dashboard recalculating state:", {
       cash: portfolio.cash,
-      version: portfolio.version
+      holdings: portfolio.holdings.length,
+      portfolioValue,
+      totalValue,
+      version: portfolio.version,
+      lastUpdated: portfolio.lastUpdated
     });
     
-    // Add delayed force update to ensure state propagation
-    const timer = setTimeout(() => {
-      setForceUpdateTime(Date.now());
-      setLastValues({
-        invested: portfolio.portfolioValue,
-        available: portfolio.cash
-      });
-      console.log("Portfolio dashboard updated after delay:", {
-        timestamp: new Date().toISOString(),
-        holdings: portfolio.holdings.length,
-        portfolioValue: portfolio.portfolioValue,
-        totalValue: portfolio.totalValue,
-        cash: portfolio.cash,
-        version: portfolio.version,
-        lastUpdated: new Date(portfolio.lastUpdated).toISOString()
-      });
-    }, 200); // Increased delay to ensure context is fully updated
+    // Update local state with new calculations
+    setDashboardState(prev => ({
+      cash: portfolio.cash,
+      holdings: [...portfolio.holdings], // Create a copy of holdings array
+      portfolioValue,
+      totalValue,
+      allocationPercentage,
+      totalReturn,
+      totalReturnPercent,
+      projectedReturn,
+      projectedReturnPercent,
+      performanceMetric: portfolio.portfolioMetrics.performance,
+      stabilityMetric: portfolio.portfolioMetrics.stability,
+      lastUpdated: portfolio.lastUpdated,
+      updateCount: prev.updateCount + 1
+    }));
+  }, [portfolio]); // Watch the entire portfolio object
+  
+  // Use effect to update local state whenever portfolio context changes
+  useEffect(() => {
+    // Force immediate calculation on mount
+    recalculateState();
     
-    return () => clearTimeout(timer);
-  }, [portfolioState]); // Using stringified state to detect ANY changes
-  
-  // Calculate performance values exactly like portfolio page
-  const totalReturn = portfolio.holdings.reduce((total, h) => {
-    const currentValue = h.shares * h.stock.price;
-    const investedValue = h.shares * h.purchasePrice;
-    return total + (currentValue - investedValue);
-  }, 0);
-  
-  const totalReturnPercent = portfolio.holdings.length > 0 
-    ? (totalReturn / (portfolio.portfolioValue - totalReturn)) * 100 
-    : 0;
+    // Set up interval for periodic updates (every second)
+    const intervalId = setInterval(() => {
+      recalculateState();
+    }, 500);
     
-  // Calculate projected 1-year return based on holdings
-  const projectedReturn = portfolio.holdings.reduce((total, h) => {
-    // Convert to number or use 0 if undefined
-    const oneYearReturnPercent = typeof h.stock.oneYearReturn === 'number' ? h.stock.oneYearReturn : 0;
-    const stockValue = h.shares * h.purchasePrice;
-    const stockReturn = stockValue * (oneYearReturnPercent / 100);
-    return total + stockReturn;
-  }, 0);
+    return () => clearInterval(intervalId);
+  }, [recalculateState]);
   
-  const projectedReturnPercent = portfolio.holdings.length > 0 && portfolio.portfolioValue > 0
-    ? (projectedReturn / portfolio.portfolioValue) * 100
-    : 0;
-  
-  const { cash, portfolioValue, totalValue } = portfolio;
-  const allocationPercentage = Math.round((portfolioValue / totalValue) * 100);
-  
+  // Destructure values from dashboard state for use in the JSX
+  const {
+    cash,
+    holdings,
+    portfolioValue,
+    totalValue,
+    allocationPercentage,
+    totalReturn,
+    totalReturnPercent,
+    projectedReturn,
+    projectedReturnPercent,
+    performanceMetric,
+    stabilityMetric,
+    lastUpdated,
+    updateCount
+  } = dashboardState;
+
   return (
     <motion.div 
-      key={forceUpdateTime} // Add key with timestamp to force complete re-render
+      key={renderKey} // Use our generated key for complete re-renders
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.2 }}
@@ -92,7 +135,7 @@ export default function PortfolioDashboard() {
         </h3>
         <div className="flex items-center text-sm text-slate-500">
           <TrendingUp className={`w-3.5 h-3.5 mr-1 ${portfolioValue > 0 ? 'text-green-500' : 'text-slate-400'}`} />
-          <span>Updated {new Date(portfolio.lastUpdated).toLocaleTimeString()}</span>
+          <span>Updated {new Date(lastUpdated).toLocaleTimeString()}</span>
         </div>
       </div>
       
@@ -105,7 +148,7 @@ export default function PortfolioDashboard() {
             <span className="ml-1 text-xs text-slate-500">total value</span>
           </div>
           
-          {portfolio.holdings.length > 0 && (
+          {holdings.length > 0 && (
             <div className={`text-sm font-semibold flex items-center ${totalReturn >= 0 ? 'text-green-600' : 'text-red-600'}`}>
               {totalReturn >= 0 ? (
                 <ArrowUp className="h-3 w-3 mr-0.5" />
@@ -117,7 +160,7 @@ export default function PortfolioDashboard() {
           )}
         </div>
         
-        {portfolio.holdings.length > 0 && (
+        {holdings.length > 0 && (
           <div className="flex items-center text-sm">
             <Clock className="w-3 h-3 mr-1 text-blue-500" />
             <span className="text-xs text-slate-600">Projected 1-year return: </span>
@@ -129,16 +172,16 @@ export default function PortfolioDashboard() {
       </div>
       
       {/* Portfolio Metrics - Matching the portfolio page styling */}
-      {portfolio.holdings.length > 0 && (
+      {holdings.length > 0 && (
         <div className="grid grid-cols-2 gap-2 mb-3">
           <MetricItem 
             label="Performance" 
-            value={portfolio.portfolioMetrics.performance} 
+            value={performanceMetric} 
             color="bg-blue-500" 
           />
           <MetricItem 
             label="Stability" 
-            value={portfolio.portfolioMetrics.stability} 
+            value={stabilityMetric} 
             color="bg-purple-500" 
           />
         </div>
@@ -166,21 +209,21 @@ export default function PortfolioDashboard() {
       </div>
       
       {/* Top Holdings - Quick summary */}
-      {portfolio.holdings.length > 0 && (
+      {holdings.length > 0 && (
         <div className="mt-3 pt-3 border-t border-slate-100">
           <div className="flex items-center justify-between mb-2">
             <h4 className="text-sm font-medium text-slate-700">Top Holdings</h4>
             <PieChart className="h-3 w-3 text-slate-400" />
           </div>
           
-          {[...portfolio.holdings]
+          {[...holdings]
             .sort((a, b) => b.value - a.value)
             .slice(0, 2)
             .map(holding => {
               const returnPercent = ((holding.stock.price - holding.purchasePrice) / holding.purchasePrice) * 100;
               
               return (
-                <div key={holding.stock.ticker} className="flex justify-between items-center p-2 hover:bg-slate-50 rounded-md text-sm">
+                <div key={`${holding.stock.ticker}-${updateCount}`} className="flex justify-between items-center p-2 hover:bg-slate-50 rounded-md text-sm">
                   <div className="flex items-center">
                     <div className="w-6 h-6 bg-slate-100 rounded flex items-center justify-center mr-2 text-xs font-medium">
                       {holding.stock.ticker.substring(0, 2)}
