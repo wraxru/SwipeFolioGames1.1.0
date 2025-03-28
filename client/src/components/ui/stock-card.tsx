@@ -737,18 +737,14 @@ export default function StockCard({
             {/* Chart visual */}
             <div className="absolute inset-0 px-4">
               {/* Y-axis labels */}
-              <div className="absolute left-0 top-0 bottom-0 flex flex-col justify-between text-[10px] text-slate-900 font-medium pointer-events-none py-2 z-10">
-                <span>${priceRangeMax.toFixed(2)}</span>
-                <span>${((priceRangeMax + priceRangeMin) / 2).toFixed(2)}</span>
-                <span>${priceRangeMin.toFixed(2)}</span>
+              <div className="absolute left-0 top-0 bottom-0 flex flex-col justify-between text-[10px] text-slate-900 font-medium pointer-events-none py-3 z-10">
+                <span>${Math.round(priceRangeMax)}</span>
+                <span>${Math.round((priceRangeMax + priceRangeMin) / 2)}</span>
+                <span>${Math.round(priceRangeMin)}</span>
               </div>
               
               {/* Chart path - dynamically draw based on chartData with extension to edge */}
               <svg className="w-full h-full" viewBox={`0 0 100 100`} preserveAspectRatio="none">
-                {/* Horizontal grid lines for price points */}
-                <line x1="0" y1="0" x2="100" y2="0" stroke="#f1f5f9" strokeWidth="1" />
-                <line x1="0" y1="50" x2="100" y2="50" stroke="#f1f5f9" strokeWidth="1" />
-                <line x1="0" y1="100" x2="100" y2="100" stroke="#f1f5f9" strokeWidth="1" />
                 
                 {/* Main chart line only - no fill */}
                 <path
@@ -767,7 +763,7 @@ export default function StockCard({
             </div>
             
             {/* X-axis labels */}
-            <div className="absolute left-0 right-0 bottom-0 px-4 flex justify-between text-[10px] text-slate-900 font-medium pointer-events-none">
+            <div className="absolute left-0 right-0 bottom-1 px-4 flex justify-between text-[10px] text-slate-900 font-medium pointer-events-none">
               {timeScaleLabels.map((label, index) => (
                 <span key={index}>{label}</span>
               ))}
@@ -775,7 +771,7 @@ export default function StockCard({
           </div>
           
           {/* Trading date and swipe instruction */}
-          <div className="mt-2 flex items-center justify-between text-xs">
+          <div className="mt-4 flex items-center justify-between text-xs h-6">
             <span className="text-slate-900 font-medium">Last updated: {latestTradingDay}</span>
             <span className="text-slate-700 italic">Swipe left to skip • Swipe right to invest</span>
           </div>
