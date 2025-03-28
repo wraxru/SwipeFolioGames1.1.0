@@ -919,19 +919,9 @@ export default function StockCard({
           <ComparativeAnalysis currentStock={stock} />
         </div>
 
-        {/* Bottom Action Bar */}
+        {/* Bottom Swipe Instruction */}
         <div className="p-4 bg-white border-t border-b border-slate-100 mb-4">
-          <button
-            onClick={openPortfolioCalculator}
-            className={`w-full py-3 px-4 rounded-xl font-medium shadow-md 
-              ${realTimeChange >= 0 
-                ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:from-green-600 hover:to-emerald-700'
-                : 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white hover:from-blue-600 hover:to-indigo-700'} 
-              active:scale-98 transition-all duration-150`}
-          >
-            {stock.name} Details
-          </button>
-          <div className="text-center text-xs text-slate-500 mt-2">
+          <div className="text-center text-sm font-medium text-slate-600 my-2">
             Swipe left to skip • Swipe right to invest
           </div>
         </div>
