@@ -1,6 +1,14 @@
 import React, { useState } from 'react';
-import { ChevronDown, ChevronUp, Plus, Minus } from 'lucide-react';
+import { Plus, Minus, HelpCircle } from 'lucide-react';
 import { StockData } from '@/lib/stock-data';
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 // Type for industry benchmark data
 interface BenchmarkData {
@@ -17,7 +25,6 @@ interface BenchmarkData {
 interface ComparisonStockData {
   symbol: string;
   name: string;
-  type: string;
   color: string;
   ratings: {
     Performance: number;
@@ -26,10 +33,29 @@ interface ComparisonStockData {
     Momentum: number;
     Dividend: number;
   };
+  details?: Record<string, any>;
 }
 
 interface VerticalStockComparisonProps {
   currentStock: StockData;
+}
+
+// Get metrics explanation
+function getMetricDescription(metricName: string): string {
+  switch(metricName) {
+    case 'Performance':
+      return 'How well this stock has performed financially in recent quarters';
+    case 'Stability':
+      return 'How consistent and predictable this stock is over time';
+    case 'Value':
+      return 'Whether the stock is over or undervalued based on key ratios';
+    case 'Momentum':
+      return 'The stock\'s recent price movement trends';
+    case 'Dividend':
+      return 'Dividend yield and consistency compared to peers';
+    default:
+      return '';
+  }
 }
 
 // Function to convert text ratings to numeric scores for visualization
@@ -72,8 +98,7 @@ const comparisonStocksByIndustry: Record<string, Record<string, ComparisonStockD
     'O': {
       symbol: 'O',
       name: 'Realty Income',
-      type: 'Anchor Stock',
-      color: '#5856D6', // Purple
+      color: '#7c3aed', // purple-600
       ratings: {
         Performance: 60,
         Stability: 85,
@@ -84,9 +109,8 @@ const comparisonStocksByIndustry: Record<string, Record<string, ComparisonStockD
     },
     'SPG': {
       symbol: 'SPG',
-      name: 'Simon Property Group',
-      type: 'Anchor Stock',
-      color: '#5856D6',
+      name: 'Simon Property',
+      color: '#7c3aed',
       ratings: {
         Performance: 65,
         Stability: 70,
@@ -97,9 +121,8 @@ const comparisonStocksByIndustry: Record<string, Record<string, ComparisonStockD
     },
     'AVB': {
       symbol: 'AVB',
-      name: 'AvalonBay Communities',
-      type: 'Anchor Stock',
-      color: '#5856D6',
+      name: 'AvalonBay',
+      color: '#7c3aed',
       ratings: {
         Performance: 55,
         Stability: 80,
@@ -113,8 +136,7 @@ const comparisonStocksByIndustry: Record<string, Record<string, ComparisonStockD
     'MSFT': {
       symbol: 'MSFT',
       name: 'Microsoft',
-      type: 'Anchor Stock',
-      color: '#5856D6',
+      color: '#7c3aed',
       ratings: {
         Performance: 90,
         Stability: 85,
@@ -126,8 +148,7 @@ const comparisonStocksByIndustry: Record<string, Record<string, ComparisonStockD
     'AAPL': {
       symbol: 'AAPL',
       name: 'Apple',
-      type: 'Anchor Stock',
-      color: '#5856D6',
+      color: '#7c3aed',
       ratings: {
         Performance: 85,
         Stability: 90,
@@ -139,8 +160,7 @@ const comparisonStocksByIndustry: Record<string, Record<string, ComparisonStockD
     'GOOGL': {
       symbol: 'GOOGL',
       name: 'Alphabet',
-      type: 'Anchor Stock',
-      color: '#5856D6',
+      color: '#7c3aed',
       ratings: {
         Performance: 80,
         Stability: 75,
@@ -154,8 +174,7 @@ const comparisonStocksByIndustry: Record<string, Record<string, ComparisonStockD
     'JNJ': {
       symbol: 'JNJ',
       name: 'Johnson & Johnson',
-      type: 'Anchor Stock',
-      color: '#5856D6',
+      color: '#7c3aed',
       ratings: {
         Performance: 70,
         Stability: 90,
@@ -167,8 +186,7 @@ const comparisonStocksByIndustry: Record<string, Record<string, ComparisonStockD
     'PFE': {
       symbol: 'PFE',
       name: 'Pfizer',
-      type: 'Anchor Stock',
-      color: '#5856D6',
+      color: '#7c3aed',
       ratings: {
         Performance: 60,
         Stability: 75,
@@ -180,8 +198,7 @@ const comparisonStocksByIndustry: Record<string, Record<string, ComparisonStockD
     'UNH': {
       symbol: 'UNH',
       name: 'UnitedHealth',
-      type: 'Anchor Stock',
-      color: '#5856D6',
+      color: '#7c3aed',
       ratings: {
         Performance: 75,
         Stability: 80,
@@ -195,8 +212,7 @@ const comparisonStocksByIndustry: Record<string, Record<string, ComparisonStockD
     'ABC': {
       symbol: 'ABC',
       name: 'Company ABC',
-      type: 'Anchor Stock',
-      color: '#5856D6',
+      color: '#7c3aed',
       ratings: {
         Performance: 65,
         Stability: 70,
@@ -205,11 +221,10 @@ const comparisonStocksByIndustry: Record<string, Record<string, ComparisonStockD
         Dividend: 55
       }
     },
-    'DEF': {
-      symbol: 'DEF',
-      name: 'Company DEF',
-      type: 'Anchor Stock',
-      color: '#5856D6',
+    'XYZ': {
+      symbol: 'XYZ',
+      name: 'Company XYZ',
+      color: '#7c3aed',
       ratings: {
         Performance: 60,
         Stability: 65,
@@ -313,9 +328,13 @@ export default function VerticalStockComparison({ currentStock }: VerticalStockC
   const competitorsForIndustry = comparisonStocksByIndustry[industry] || comparisonStocksByIndustry['Other'];
   
   // Set first competitor that's not the current stock as default
-  const defaultCompetitor = Object.keys(competitorsForIndustry).find(
+  const availableCompetitors = Object.keys(competitorsForIndustry).filter(
     ticker => ticker !== currentStock.ticker
-  ) || Object.keys(competitorsForIndustry)[0];
+  );
+  
+  const defaultCompetitor = availableCompetitors.length > 0 
+    ? availableCompetitors[0]
+    : Object.keys(competitorsForIndustry)[0];
   
   const [showFullComparison, setShowFullComparison] = useState(false);
   const [selectedCompetitor, setSelectedCompetitor] = useState(defaultCompetitor);
@@ -324,17 +343,17 @@ export default function VerticalStockComparison({ currentStock }: VerticalStockC
   const mainStockData: ComparisonStockData = {
     symbol: currentStock.ticker,
     name: currentStock.name,
-    type: 'Anchor Stock',
-    color: '#4CD964', // iOS Green
+    color: '#10b981', // emerald-500 - a more modern green
     ratings: {
       Performance: convertRatingToNumber(currentStock.metrics.performance.value),
       Stability: convertRatingToNumber(currentStock.metrics.stability.value),
       Value: convertRatingToNumber(currentStock.metrics.value.value),
       Momentum: convertRatingToNumber(currentStock.metrics.momentum.value),
       Dividend: typeof currentStock.metrics.value.details.dividendYield === 'number' 
-        ? currentStock.metrics.value.details.dividendYield * 20 // Scale up for visualization
+        ? Math.min(currentStock.metrics.value.details.dividendYield * 20, 100) // Scale dividends up to 100
         : convertRatingToNumber(currentStock.metrics.value.details.dividendYield as string)
-    }
+    },
+    details: currentStock.metrics.value.details
   };
   
   // Get the selected competitor
@@ -347,66 +366,67 @@ export default function VerticalStockComparison({ currentStock }: VerticalStockC
   const toggleFullComparison = () => {
     setShowFullComparison(!showFullComparison);
   };
+  
+  // Handle competitor change
+  const handleCompetitorChange = (value: string) => {
+    setSelectedCompetitor(value);
+  };
 
   return (
-    <div className="bg-white rounded-lg p-4 max-w-md mx-auto mb-4">
+    <div className="bg-white rounded-xl shadow-sm p-5 max-w-md mx-auto mb-4">
+      {/* Color legend at top */}
+      <div className="flex justify-center mb-4 text-sm">
+        <div className="flex items-center mr-6">
+          <div className="w-3 h-3 rounded-full mr-1" style={{ backgroundColor: mainStockData.color }}></div>
+          <span className="font-medium">{mainStockData.symbol}</span>
+        </div>
+        <div className="flex items-center">
+          <div className="w-3 h-3 rounded-full mr-1" style={{ backgroundColor: competitor.color }}></div>
+          <span className="font-medium">{competitor.symbol}</span>
+        </div>
+      </div>
+      
       {/* Header section */}
-      <div className="flex justify-between items-start mb-3">
-        <div>
-          {/* Main stock info */}
-          <div className="flex items-center mb-2">
-            <div className="w-8 h-8 bg-gray-200 rounded mr-2"></div>
-            <div>
-              <div className="font-bold text-lg">{mainStockData.symbol}</div>
-              <div className="text-xs text-gray-600">{mainStockData.type}</div>
-            </div>
-          </div>
-          
-          {/* Competitor stock info */}
-          <div className="flex items-center">
-            <div className="w-8 h-8 bg-gray-200 rounded mr-2"></div>
-            <div>
-              <div className="font-bold text-lg">{competitor.symbol}</div>
-              <div className="text-xs text-gray-600">{competitor.type}</div>
-            </div>
-          </div>
+      <div className="flex justify-between items-center mb-5">
+        <div className="text-sm font-medium text-gray-500">
+          Compare with:
         </div>
         
-        <div className="text-right">
-          <div className="mb-2">
-            <div className="text-sm text-gray-600">Compare with:</div>
-            <select 
-              className="border border-gray-300 rounded p-1 text-sm"
-              value={selectedCompetitor}
-              onChange={(e) => setSelectedCompetitor(e.target.value)}
-            >
-              {Object.keys(competitorsForIndustry)
-                .filter(symbol => symbol !== currentStock.ticker)
-                .map(symbol => (
-                  <option key={symbol} value={symbol}>{symbol}</option>
-                ))
-              }
-            </select>
-          </div>
+        <div className="flex items-center gap-3">
+          <Select 
+            defaultValue={selectedCompetitor}
+            onValueChange={handleCompetitorChange}
+          >
+            <SelectTrigger className="w-[100px] h-8 rounded-lg">
+              <SelectValue placeholder={selectedCompetitor} />
+            </SelectTrigger>
+            <SelectContent>
+              {availableCompetitors.map(symbol => (
+                <SelectItem key={symbol} value={symbol}>
+                  {symbol}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           
           <button 
-            className="text-blue-600 font-medium text-sm flex items-center ml-auto"
+            className="text-blue-600 font-medium text-sm flex items-center"
             onClick={toggleFullComparison}
           >
             {showFullComparison ? 'Hide All' : 'View All'}
-            {showFullComparison ? <Minus className="h-4 w-4 ml-1" /> : <Plus className="h-4 w-4 ml-1" />}
+            {showFullComparison ? <Minus className="h-3.5 w-3.5 ml-1" /> : <Plus className="h-3.5 w-3.5 ml-1" />}
           </button>
         </div>
       </div>
       
       {/* Legend */}
-      <div className="flex justify-end mb-3 text-xs text-gray-600">
+      <div className="flex justify-end mb-4 text-xs text-gray-500">
         <div className="flex items-center mr-4">
-          <div className="w-2 h-2 rounded-full bg-gray-700 mr-1"></div>
+          <div className="w-2 h-2 rounded-full bg-gray-500 mr-1"></div>
           <span>Industry</span>
         </div>
         <div className="flex items-center">
-          <div className="w-2 h-2 rounded-full bg-gray-400 mr-1"></div>
+          <div className="w-2 h-2 rounded-full bg-gray-300 mr-1"></div>
           <span>Market</span>
         </div>
       </div>
@@ -422,106 +442,99 @@ export default function VerticalStockComparison({ currentStock }: VerticalStockC
         const compHigher = compValue > mainValue;
         
         return (
-          <div key={metric} className="mb-6">
-            <div className="font-medium text-gray-700 mb-2">{metric}</div>
+          <div key={metric} className="mb-7">
+            <div className="flex items-center font-medium text-gray-700 mb-2">
+              {metric}
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span><HelpCircle className="h-3.5 w-3.5 ml-1.5 text-gray-400" /></span>
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-[200px] text-xs">
+                    {getMetricDescription(metric)}
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
             
             {/* Main stock bar */}
             <div className="mb-4">
-              <div className="h-8 bg-gray-100 rounded-full relative">
+              <div className="h-9 bg-gray-100 rounded-full relative overflow-hidden">
                 <div 
-                  className="h-full rounded-full"
+                  className="h-full rounded-full flex items-center justify-end pr-3"
                   style={{ 
                     width: `${mainValue}%`, 
-                    backgroundColor: mainStockData.color
+                    backgroundColor: mainStockData.color,
+                    transition: 'width 0.5s ease-in-out'
                   }}
-                ></div>
+                >
+                  <span className="text-xs font-bold text-white">{mainStockData.symbol}</span>
+                </div>
                 
                 {/* Industry marker */}
                 <div 
-                  className="absolute h-full w-1 bg-gray-700 z-10" 
+                  className="absolute h-full w-0.5 bg-gray-500 z-10" 
                   style={{ left: `${industryValue}%` }}
                 ></div>
                 
                 {/* Market marker */}
                 <div 
-                  className="absolute h-full w-1 bg-gray-400 z-10" 
+                  className="absolute h-full w-0.5 bg-gray-300 z-10" 
                   style={{ left: `${marketValue}%` }}
                 ></div>
-                
-                {/* Value label */}
-                <div className={`absolute left-0 -bottom-6 font-medium ${mainHigher ? 'text-green-600' : 'text-gray-700'}`}>
-                  {mainValue.toFixed(0)}
-                </div>
-                
-                {/* Symbol indicator */}
-                <div 
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2 text-xs font-bold text-white"
-                >
-                  {mainStockData.symbol}
-                </div>
+              </div>
+              
+              {/* Value label */}
+              <div className={`text-sm font-semibold mt-1 ${mainHigher ? 'text-emerald-600' : 'text-gray-700'}`}>
+                {mainValue.toFixed(0)}
               </div>
             </div>
             
             {/* Competitor stock bar */}
             <div>
-              <div className="h-8 bg-gray-100 rounded-full relative">
+              <div className="h-9 bg-gray-100 rounded-full relative overflow-hidden">
                 <div 
-                  className="h-full rounded-full"
+                  className="h-full rounded-full flex items-center justify-end pr-3"
                   style={{ 
                     width: `${compValue}%`, 
-                    backgroundColor: competitor.color
+                    backgroundColor: competitor.color,
+                    transition: 'width 0.5s ease-in-out'
                   }}
-                ></div>
+                >
+                  <span className="text-xs font-bold text-white">{competitor.symbol}</span>
+                </div>
                 
                 {/* Industry marker */}
                 <div 
-                  className="absolute h-full w-1 bg-gray-700 z-10" 
+                  className="absolute h-full w-0.5 bg-gray-500 z-10" 
                   style={{ left: `${industryValue}%` }}
                 ></div>
                 
                 {/* Market marker */}
                 <div 
-                  className="absolute h-full w-1 bg-gray-400 z-10" 
+                  className="absolute h-full w-0.5 bg-gray-300 z-10" 
                   style={{ left: `${marketValue}%` }}
                 ></div>
-                
-                {/* Value label */}
-                <div className={`absolute left-0 -bottom-6 font-medium ${compHigher ? 'text-indigo-600' : 'text-gray-700'}`}>
-                  {compValue.toFixed(0)}
-                </div>
-                
-                {/* Symbol indicator */}
-                <div 
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2 text-xs font-bold text-white"
-                >
-                  {competitor.symbol}
-                </div>
+              </div>
+              
+              {/* Value label */}
+              <div className={`text-sm font-semibold mt-1 ${compHigher ? 'text-purple-600' : 'text-gray-700'}`}>
+                {compValue.toFixed(0)}
               </div>
             </div>
           </div>
         );
       })}
       
-      {/* Color legend */}
-      <div className="flex justify-center my-4 text-sm">
-        <div className="flex items-center mr-6">
-          <div className="w-3 h-3 rounded-full mr-1" style={{ backgroundColor: mainStockData.color }}></div>
-          <span>{mainStockData.symbol}</span>
-        </div>
-        <div className="flex items-center">
-          <div className="w-3 h-3 rounded-full mr-1" style={{ backgroundColor: competitor.color }}></div>
-          <span>{competitor.symbol}</span>
-        </div>
-      </div>
-      
       {/* Full comparison table */}
       {showFullComparison && (
-        <div className="mt-4 border-t pt-4">
+        <div className="mt-6 border-t pt-4 transition-all duration-300 ease-in-out">
           <div className="flex justify-between items-center mb-3">
-            <div className="font-bold text-gray-800">Full Comparison</div>
+            <div className="font-semibold text-gray-800">Full Comparison</div>
             <button 
-              className="text-gray-500 hover:text-gray-700"
+              className="text-gray-500 hover:text-gray-700 p-1"
               onClick={toggleFullComparison}
+              aria-label="Close comparison table"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
@@ -529,49 +542,53 @@ export default function VerticalStockComparison({ currentStock }: VerticalStockC
             </button>
           </div>
           
-          <table className="w-full text-sm">
-            <thead>
-              <tr>
-                <th className="text-left pb-2">Metrics</th>
-                <th className="text-center pb-2 font-medium" style={{ color: mainStockData.color }}>{mainStockData.symbol}</th>
-                <th className="text-center pb-2 font-medium" style={{ color: competitor.color }}>{competitor.symbol}</th>
-                <th className="text-center pb-2 font-medium text-gray-700">Industry</th>
-                <th className="text-center pb-2 font-medium text-gray-500">Market</th>
-              </tr>
-            </thead>
-            <tbody>
-              {Object.keys(mainStockData.ratings).map(metric => {
-                const mainValue = mainStockData.ratings[metric as keyof typeof mainStockData.ratings];
-                const compValue = competitor.ratings[metric as keyof typeof competitor.ratings];
-                const industryValue = benchmarks.Industry.ratings[metric as keyof typeof benchmarks.Industry.ratings];
-                const marketValue = benchmarks.Market.ratings[metric as keyof typeof benchmarks.Market.ratings];
-                
-                const values = [mainValue, compValue, industryValue, marketValue];
-                const maxValue = Math.max(...values);
-                
-                return (
-                  <tr key={metric} className="border-t">
-                    <td className="py-2 font-medium text-gray-700">{metric}</td>
-                    <td className={`text-center py-2 ${mainValue === maxValue ? 'font-bold' : ''}`} style={{ color: mainValue === maxValue ? mainStockData.color : 'inherit' }}>
-                      {mainValue.toFixed(0)}
-                    </td>
-                    <td className={`text-center py-2 ${compValue === maxValue ? 'font-bold' : ''}`} style={{ color: compValue === maxValue ? competitor.color : 'inherit' }}>
-                      {compValue.toFixed(0)}
-                    </td>
-                    <td className={`text-center py-2 ${industryValue === maxValue ? 'font-bold' : ''}`}>
-                      {industryValue.toFixed(0)}
-                    </td>
-                    <td className={`text-center py-2 ${marketValue === maxValue ? 'font-bold' : ''}`}>
-                      {marketValue.toFixed(0)}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="bg-gray-50">
+                  <th className="text-left py-2 px-2 rounded-l-lg font-semibold text-gray-700">Metrics</th>
+                  <th className="text-center py-2 px-2 font-semibold" style={{ color: mainStockData.color }}>{mainStockData.symbol}</th>
+                  <th className="text-center py-2 px-2 font-semibold" style={{ color: competitor.color }}>{competitor.symbol}</th>
+                  <th className="text-center py-2 px-2 font-semibold text-gray-600">Industry</th>
+                  <th className="text-center py-2 px-2 rounded-r-lg font-semibold text-gray-400">Market</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {Object.keys(mainStockData.ratings).map(metric => {
+                  const mainValue = mainStockData.ratings[metric as keyof typeof mainStockData.ratings];
+                  const compValue = competitor.ratings[metric as keyof typeof competitor.ratings];
+                  const industryValue = benchmarks.Industry.ratings[metric as keyof typeof benchmarks.Industry.ratings];
+                  const marketValue = benchmarks.Market.ratings[metric as keyof typeof benchmarks.Market.ratings];
+                  
+                  const values = [mainValue, compValue, industryValue, marketValue];
+                  const maxValue = Math.max(...values);
+                  
+                  return (
+                    <tr key={metric} className="hover:bg-gray-50 transition-colors duration-150">
+                      <td className="py-3 px-2 font-medium text-gray-700">{metric}</td>
+                      <td className={`text-center py-3 px-2 ${mainValue === maxValue ? 'font-bold' : ''}`} 
+                         style={{ color: mainValue === maxValue ? mainStockData.color : 'inherit' }}>
+                        {mainValue.toFixed(0)}
+                      </td>
+                      <td className={`text-center py-3 px-2 ${compValue === maxValue ? 'font-bold' : ''}`} 
+                         style={{ color: compValue === maxValue ? competitor.color : 'inherit' }}>
+                        {compValue.toFixed(0)}
+                      </td>
+                      <td className={`text-center py-3 px-2 ${industryValue === maxValue ? 'font-medium text-gray-600' : 'text-gray-600'}`}>
+                        {industryValue.toFixed(0)}
+                      </td>
+                      <td className={`text-center py-3 px-2 ${marketValue === maxValue ? 'font-medium text-gray-500' : 'text-gray-400'}`}>
+                        {marketValue.toFixed(0)}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
           
-          <div className="text-xs text-gray-500 mt-3">
-            Higher numbers indicate better performance in each category. Bold values represent the highest score.
+          <div className="text-xs text-gray-500 mt-3 italic">
+            Higher numbers indicate better performance. Bold values represent the highest score in each category.
           </div>
         </div>
       )}
