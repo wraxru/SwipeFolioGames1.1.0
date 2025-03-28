@@ -114,42 +114,48 @@ export default function PortfolioImpactCalculator({
   // Create a simplistic mock impact model
   const [isLoading] = useState(false);
 
+  // Check if this is a first investment (true zero state)
+  const isFirstInvestment = cash === 0 || cash === 10000; // Starting with $10k cash, no investments
+
   // Mock portfolio impact with realistic data
   const impact = {
     metrics: {
-      performance: 0.8,
-      stability: 1.2,
-      value: -0.5,
-      momentum: 1.1
+      // For first investment, show full value of the metrics as they're all new
+      performance: isFirstInvestment ? stock.scorePerformance || 65 : 0.8,
+      stability: isFirstInvestment ? stock.scoreStability || 70 : 1.2, 
+      value: isFirstInvestment ? stock.scoreValue || 60 : -0.5,
+      momentum: isFirstInvestment ? stock.scoreMomentum || 55 : 1.1
     },
     currentMetrics: {
-      performance: 65,
-      stability: 70,
-      value: 80,
-      momentum: 60
+      // For first investment, all metrics start at 0
+      performance: isFirstInvestment ? 0 : 65,
+      stability: isFirstInvestment ? 0 : 70,
+      value: isFirstInvestment ? 0 : 80,
+      momentum: isFirstInvestment ? 0 : 60
     },
     newMetrics: {
-      performance: 65.8,
-      stability: 71.2,
-      value: 79.5,
-      momentum: 61.1
+      // For first investment, new values are just the stock's metrics
+      performance: isFirstInvestment ? stock.scorePerformance || 65 : 65.8,
+      stability: isFirstInvestment ? stock.scoreStability || 70 : 71.2,
+      value: isFirstInvestment ? stock.scoreValue || 60 : 79.5,
+      momentum: isFirstInvestment ? stock.scoreMomentum || 55 : 61.1
     },
     industryAllocation: {
       [stock.industry || "Real Estate"]: {
-        previous: Object.keys({ cash }).length === 0 ? 0 : 65,
-        new: 100,
-        change: Object.keys({ cash }).length === 0 ? 100 : 35
+        previous: 0, // Always start from zero for clear visualization
+        new: 100,    // 100% allocation to this industry for first investment
+        change: 100  // Full change of 100%
       }
     },
     diversification: {
-      previous: 45,
-      new: 52,
-      change: 7
+      previous: isFirstInvestment ? 0 : 45,
+      new: isFirstInvestment ? 25 : 52, // Low diversification with just one stock
+      change: isFirstInvestment ? 25 : 7
     },
     risk: {
-      previous: 65,
-      new: 62,
-      change: -3
+      previous: isFirstInvestment ? 0 : 65,
+      new: isFirstInvestment ? stock.scoreStability ? 100 - stock.scoreStability : 35 : 62,
+      change: isFirstInvestment ? stock.scoreStability ? 100 - stock.scoreStability : 35 : -3
     }
   };
   
