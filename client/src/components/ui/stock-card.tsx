@@ -915,7 +915,12 @@ export default function StockCard({
         </div>
 
         {/* Comparative Analysis Section */}
-        <div className="bg-white border-t border-b border-slate-100">
+        <div 
+          className="bg-white border-t border-b border-slate-100"
+          onClick={(e) => e.stopPropagation()}
+          onTouchStart={(e) => e.stopPropagation()}
+          onTouchEnd={(e) => e.stopPropagation()}
+        >
           <ComparativeAnalysis currentStock={stock} />
         </div>
 
