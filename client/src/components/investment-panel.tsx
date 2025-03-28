@@ -5,18 +5,18 @@ import { Progress } from './ui/progress';
 import { PortfolioContext } from '@/contexts/portfolio-context';
 
 export default function InvestmentPanel() {
+  // Force component to update on any portfolio change
+  const [_, forceUpdate] = useState({});
   const portfolio = useContext(PortfolioContext);
   
   // Update component whenever portfolio changes
   useEffect(() => {
     if (portfolio) {
-      console.log("Portfolio updated in InvestmentPanel:", {
-        holdings: portfolio.holdings.length,
-        cash: portfolio.cash,
-        value: portfolio.portfolioValue
-      });
+      // Force re-render when portfolio updates
+      forceUpdate({});
+      console.log("Portfolio updated in InvestmentPanel:", portfolio.holdings.length);
     }
-  }, [portfolio?.holdings, portfolio?.cash, portfolio?.portfolioValue]);
+  }, [portfolio, portfolio?.holdings.length, portfolio?.cash, portfolio?.portfolioValue]);
   
   if (!portfolio) {
     return (
