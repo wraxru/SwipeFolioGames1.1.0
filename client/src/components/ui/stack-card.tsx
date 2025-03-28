@@ -67,7 +67,7 @@ export default function StackCard({ stack, onClick, imageUrl, category }: StackC
         {showSwipeCues && (
           <>
             <motion.div 
-              className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/70 backdrop-blur-sm rounded-full p-1 z-30"
+              className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/70 backdrop-blur-sm rounded-full p-1 z-10"
               initial={{ opacity: 0, x: -5 }}
               animate={{ opacity: 0.8, x: 0 }}
               transition={{ repeat: 3, duration: 0.8, repeatType: "reverse" }}
@@ -75,7 +75,7 @@ export default function StackCard({ stack, onClick, imageUrl, category }: StackC
               <ChevronLeft className="w-4 h-4 text-white" />
             </motion.div>
             <motion.div 
-              className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/70 backdrop-blur-sm rounded-full p-1 z-30"
+              className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/70 backdrop-blur-sm rounded-full p-1 z-10"
               initial={{ opacity: 0, x: 5 }}
               animate={{ opacity: 0.8, x: 0 }}
               transition={{ repeat: 3, duration: 0.8, repeatType: "reverse" }}
@@ -86,26 +86,26 @@ export default function StackCard({ stack, onClick, imageUrl, category }: StackC
         )}
         
         {/* Card Stack Preview - simulate the edge of the next card */}
-        <div className="absolute -right-1 top-6 bottom-6 w-2 rounded-l-md bg-gray-200/10 backdrop-blur-sm z-20" />
+        <div className="absolute -right-1 top-6 bottom-6 w-2 rounded-l-md bg-gray-200/10 backdrop-blur-sm z-10" />
 
         {/* Decorative gradient band */}
         <div className={`absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r ${getGradient()}`} />
 
         {/* Category badge */}
         {category && (
-          <div className="absolute top-3 left-3 bg-black/60 border border-gray-700 backdrop-blur-sm rounded-full px-3 py-1 text-xs font-medium z-20 text-white">
+          <div className="absolute top-3 left-3 bg-black/60 border border-gray-700 backdrop-blur-sm rounded-full px-3 py-1 text-xs font-medium z-10 text-white">
             {category}
           </div>
         )}
 
         {/* Rating */}
-        <div className="absolute bottom-3 left-3 bg-black/60 backdrop-blur-sm rounded-full px-3 py-1 flex items-center space-x-1 text-xs z-20 border border-gray-700">
+        <div className="absolute bottom-3 left-3 bg-black/60 backdrop-blur-sm rounded-full px-3 py-1 flex items-center space-x-1 text-xs z-10 border border-gray-700">
           <Star className="w-3 h-3 text-yellow-400" />
           <span className="text-white">{stack.rating}.0</span>
         </div>
 
         {/* Card count with progress */}
-        <div className="absolute bottom-3 right-3 bg-black/60 backdrop-blur-sm border border-gray-700 rounded-full px-3 py-1 flex items-center space-x-1 text-xs z-20">
+        <div className="absolute bottom-3 right-3 bg-black/60 backdrop-blur-sm border border-gray-700 rounded-full px-3 py-1 flex items-center space-x-1 text-xs z-10">
           <BarChart2 className="w-3 h-3 text-cyan-400" />
           <span className="text-white">{currentCardIndex}/{totalCards} stocks</span>
         </div>
@@ -160,9 +160,6 @@ export default function StackCard({ stack, onClick, imageUrl, category }: StackC
               }}
             />
           ))}
-          {totalCards > 5 && (
-            <span className="text-xs text-gray-400">+{totalCards - 5}</span>
-          )}
         </div>
       </div>
     </motion.div>
