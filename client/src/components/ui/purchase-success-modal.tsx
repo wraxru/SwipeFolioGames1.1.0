@@ -40,7 +40,7 @@ export default function PurchaseSuccessModal({
             animate={{ opacity: 0.7 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 bg-black z-[100]"
+            className="fixed inset-0 bg-black z-[60]"
             onClick={onClose}
           />
           
