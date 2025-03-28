@@ -733,24 +733,24 @@ export default function StockCard({
           </div>
           
           {/* Chart placeholder - visualize the data */}
-          <div className="relative mt-3 h-44 rounded-xl bg-slate-50 border border-slate-100 py-2">
+          <div className="relative mt-3 h-44 py-2">
             {/* Chart visual */}
             <div className="absolute inset-0 px-4">
               {/* Y-axis labels */}
-              <div className="absolute left-0 top-0 bottom-0 flex flex-col justify-between text-[10px] text-slate-400 pointer-events-none py-2">
-                <span>${priceRangeMax}</span>
-                <span>${priceRangeMin}</span>
+              <div className="absolute left-0 top-0 bottom-0 flex flex-col justify-between text-[10px] text-slate-900 font-medium pointer-events-none py-2 z-10">
+                <span>${priceRangeMax.toFixed(2)}</span>
+                <span>${((priceRangeMax + priceRangeMin) / 2).toFixed(2)}</span>
+                <span>${priceRangeMin.toFixed(2)}</span>
               </div>
               
               {/* Chart path - dynamically draw based on chartData with extension to edge */}
               <svg className="w-full h-full" viewBox={`0 0 100 100`} preserveAspectRatio="none">
-                <defs>
-                  <linearGradient id="chartGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stopColor={realTimeChange >= 0 ? "rgb(34, 197, 94)" : "rgb(239, 68, 68)"} stopOpacity="0.1" />
-                    <stop offset="100%" stopColor={realTimeChange >= 0 ? "rgb(34, 197, 94)" : "rgb(239, 68, 68)"} stopOpacity="0.05" />
-                  </linearGradient>
-                </defs>
-                {/* Main chart line */}
+                {/* Horizontal grid lines for price points */}
+                <line x1="0" y1="0" x2="100" y2="0" stroke="#f1f5f9" strokeWidth="1" />
+                <line x1="0" y1="50" x2="100" y2="50" stroke="#f1f5f9" strokeWidth="1" />
+                <line x1="0" y1="100" x2="100" y2="100" stroke="#f1f5f9" strokeWidth="1" />
+                
+                {/* Main chart line only - no fill */}
                 <path
                   d={`M-5,${100 - ((chartData[0] - minValue) / (maxValue - minValue)) * 100} ${chartData.map((point, i) => {
                     // Plot points with x-coordinates extending beyond the visible area
@@ -763,22 +763,11 @@ export default function StockCard({
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 />
-                
-                {/* Area fill with gradient - extended to ensure coverage */}
-                <path
-                  d={`M-5,${100 - ((chartData[0] - minValue) / (maxValue - minValue)) * 100} ${chartData.map((point, i) => {
-                    const x = (i / (chartData.length - 1)) * 110 - 5; // Extend from -5 to 105
-                    const y = 100 - ((point - minValue) / (maxValue - minValue)) * 100;
-                    return `L${x},${y}`;
-                  }).join(' ')} L105,${100 - ((chartData[chartData.length-1] - minValue) / (maxValue - minValue)) * 100} L105,105 L-5,105 Z`}
-                  fill="url(#chartGradient)"
-                  className={`${realTimeChange >= 0 ? 'fill-green-100/50' : 'fill-red-100/50'}`}
-                />
               </svg>
             </div>
             
             {/* X-axis labels */}
-            <div className="absolute left-0 right-0 bottom-0 px-4 flex justify-between text-[10px] text-slate-400 pointer-events-none">
+            <div className="absolute left-0 right-0 bottom-0 px-4 flex justify-between text-[10px] text-slate-900 font-medium pointer-events-none">
               {timeScaleLabels.map((label, index) => (
                 <span key={index}>{label}</span>
               ))}
@@ -787,8 +776,8 @@ export default function StockCard({
           
           {/* Trading date and swipe instruction */}
           <div className="mt-2 flex items-center justify-between text-xs">
-            <span className="text-slate-400">Last updated: {latestTradingDay}</span>
-            <span className="text-slate-500 italic">Swipe left to skip • Swipe right to invest</span>
+            <span className="text-slate-900 font-medium">Last updated: {latestTradingDay}</span>
+            <span className="text-slate-700 italic">Swipe left to skip • Swipe right to invest</span>
           </div>
         </div>
         
