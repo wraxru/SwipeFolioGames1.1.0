@@ -206,15 +206,15 @@ export default function VerticalStockComparison({
           </div>
         </div>
         
-        {/* Legend with improved styling */}
+        {/* Legend with improved styling and clear text contrast */}
         <div className="flex items-center justify-between mb-4 px-2">
           <div className="flex items-center gap-1.5">
             <span className="inline-block h-3 w-3 bg-emerald-500 rounded-full"></span>
-            <span className="text-xs font-medium text-gray-700">{currentStock.name} ({currentStock.ticker})</span>
+            <span className="text-xs font-semibold text-gray-800">{currentStock.name} ({currentStock.ticker})</span>
           </div>
           <div className="flex items-center gap-1.5">
             <span className="inline-block h-3 w-3 bg-purple-500 rounded-full"></span>
-            <span className="text-xs font-medium text-gray-700">{competitorData?.name || ''} ({competitorData?.symbol || ''})</span>
+            <span className="text-xs font-semibold text-gray-800">{competitorData?.name || ''} ({competitorData?.symbol || ''})</span>
           </div>
         </div>
         
