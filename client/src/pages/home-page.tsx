@@ -12,7 +12,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useState, useContext } from "react";
 import HeroSection from "@/components/hero-section";
 import ModernUserWelcome from "@/components/modern-user-welcome";
-import InvestmentPanel from "@/components/investment-panel";
+import PortfolioDashboard from "@/components/portfolio-dashboard";
 import CompetitionTracker from "@/components/competition-tracker";
 import { PortfolioContext } from "@/contexts/portfolio-context";
 import { PortfolioProvider } from "@/contexts/portfolio-context";
@@ -55,7 +55,7 @@ export default function HomePage() {
         
         <AnimatedContainer delay={0.2}>
           <div className="md:grid md:grid-cols-2 md:gap-4">
-            <InvestmentPanel />
+            <PortfolioDashboard />
             <CompetitionTracker />
           </div>
         </AnimatedContainer>
