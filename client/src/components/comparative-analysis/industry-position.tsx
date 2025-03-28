@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronDown, Award, TrendingUp, Shield, DollarSign, Zap, BarChart2 } from 'lucide-react';
 import VerticalStockComparison from './vertical-comparison-new';
+import MetricRankingPopup from './metric-ranking-popup';
 import { StockData, getIndustryStocks } from '../../lib/stock-data';
 
 interface IndustryPositionProps {
@@ -39,20 +40,26 @@ const IndustryPosition: React.FC<IndustryPositionProps> = ({
   rank
 }) => {
   const [showComparison, setShowComparison] = useState(false);
+  const [industryStocks, setIndustryStocks] = useState<StockData[]>([]);
   const [industryStocksCount, setIndustryStocksCount] = useState(0);
   const [rankOrdinal, setRankOrdinal] = useState('');
   const stockGrade = getGradeFromRank(rank);
+  
+  // State for metric ranking popup
+  const [isRankingPopupOpen, setIsRankingPopupOpen] = useState(false);
+  const [selectedMetric, setSelectedMetric] = useState<string | null>(null);
 
-  // Get count of industry stocks and calculate actual rank position
+  // Get industry stocks and calculate actual rank position
   useEffect(() => {
-    const industryStocks = getIndustryStocks(industry);
-    setIndustryStocksCount(industryStocks.length);
+    const stocks = getIndustryStocks(industry);
+    setIndustryStocks(stocks);
+    setIndustryStocksCount(stocks.length);
     
     // Calculate actual rank position (e.g., 3rd out of 10)
-    if (industryStocks.length > 0) {
-      const actualPosition = Math.max(1, Math.ceil(industryStocks.length * (1 - rank / 100)));
+    if (stocks.length > 0) {
+      const actualPosition = Math.max(1, Math.ceil(stocks.length * (1 - rank / 100)));
       const ordinal = getOrdinalSuffix(actualPosition);
-      setRankOrdinal(`${actualPosition}${ordinal} of ${industryStocks.length}`);
+      setRankOrdinal(`${actualPosition}${ordinal} of ${stocks.length}`);
     }
   }, [industry, rank]);
 
@@ -123,6 +130,17 @@ const IndustryPosition: React.FC<IndustryPositionProps> = ({
   const toggleComparison = () => {
     setShowComparison(!showComparison);
   };
+  
+  // Handle opening the metric ranking popup
+  const handleMetricClick = (metricName: string) => {
+    setSelectedMetric(metricName);
+    setIsRankingPopupOpen(true);
+  };
+  
+  // Close the metric ranking popup
+  const closeRankingPopup = () => {
+    setIsRankingPopupOpen(false);
+  };
 
   // Calculate average score
   const averageScore = Object.values(scores).reduce((sum, score) => sum + score, 0) / 4;
@@ -186,13 +204,17 @@ const IndustryPosition: React.FC<IndustryPositionProps> = ({
           {/* Metric Scores - Enhanced with modern design and better responsiveness */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4">
             {Object.entries(scores).map(([metric, score]) => (
-              <div key={metric} className="relative group">
+              <div 
+                key={metric} 
+                className="relative group"
+                onClick={() => handleMetricClick(metric)}
+              >
                 {/* Background glow effect on hover */}
                 <div className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-30 transition-opacity duration-300 blur-sm -m-1"
                      style={{ backgroundColor: score >= 60 ? '#10b981' : score >= 40 ? '#f59e0b' : '#ef4444' }}></div>
                 
                 {/* Metric card with improved design */}
-                <div className="bg-white border border-gray-200 p-3 rounded-xl shadow-sm group-hover:shadow-md transition-all duration-300 flex flex-col items-center">
+                <div className="bg-white border border-gray-200 p-3 rounded-xl shadow-sm group-hover:shadow-md transition-all duration-300 flex flex-col items-center cursor-pointer active:scale-95">
                   {/* Progress circle */}
                   <div className="relative w-10 h-10 mb-2">
                     {/* Background circle */}
@@ -243,6 +265,17 @@ const IndustryPosition: React.FC<IndustryPositionProps> = ({
           </div>
         </div>
       </div>
+      
+      {/* Metric Ranking Popup */}
+      {selectedMetric && (
+        <MetricRankingPopup
+          isOpen={isRankingPopupOpen}
+          onClose={closeRankingPopup}
+          metricName={selectedMetric}
+          currentStock={currentStock}
+          industryStocks={industryStocks}
+        />
+      )}
     </div>
   );
 };
