@@ -72,6 +72,13 @@ export default function StacksExplorer({ stacks }: StacksExplorerProps) {
   if (industryStacksOnly.length < 5) {
     // Example industries to add if there aren't enough
     const defaultIndustries = ["Tech", "Healthcare", "Consumer", "Real Estate", "ESG"];
+    const industryStockCounts: Record<string, number> = {
+      "Real Estate": 10,
+      "Healthcare": 9,
+      "Tech": 10,
+      "Consumer": 8,
+      "ESG": 8
+    };
 
     // Add missing industries from our defaults
     defaultIndustries.forEach((industry, index) => {
@@ -83,7 +90,7 @@ export default function StacksExplorer({ stacks }: StacksExplorerProps) {
           industry: industry,
           iconName: "trending-up", // Default icon
           difficulty: "intermediate",
-          cardCount: 10,
+          cardCount: industryStockCounts[industry] || 8, // Use specific count or default to 8
           rating: 4.5,
           estimatedMinutes: 15,
           color: "#000"

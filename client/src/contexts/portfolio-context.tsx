@@ -18,6 +18,8 @@ interface PortfolioContextProps {
   holdings: PortfolioHolding[];
   portfolioValue: number;
   totalValue: number;
+  version: number; // Add version property to trigger updates
+  lastUpdated: number; // Timestamp for tracking updates
   portfolioMetrics: {
     performance: number;
     stability: number;
@@ -61,6 +63,8 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
   const [cash, setCash] = useState<number>(100);
   const [holdings, setHoldings] = useState<PortfolioHolding[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [version, setVersion] = useState<number>(1); // Add version counter for triggering updates
+  const [lastUpdated, setLastUpdated] = useState<number>(Date.now()); // Timestamp for tracking updates
   
   // Derived state
   const portfolioValue = holdings.reduce((total, holding) => total + holding.value, 0);
@@ -182,6 +186,11 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
         description: `You purchased ${shares.toFixed(4)} shares of ${stock.ticker} for $${amount.toFixed(2)}`,
         variant: "default",
       });
+      
+      // Update version and timestamp to trigger updates
+      setVersion(prev => prev + 1);
+      setLastUpdated(Date.now());
+      console.log("Portfolio updated: version and timestamp updated after purchase");
     } catch (error) {
       // Handle errors
       toast({
@@ -249,6 +258,11 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
         description: `You sold ${sharesToSell.toFixed(4)} shares of ${stockId} for $${saleAmount.toFixed(2)}`,
         variant: "default",
       });
+      
+      // Update version and timestamp to trigger updates
+      setVersion(prev => prev + 1);
+      setLastUpdated(Date.now());
+      console.log("Portfolio updated: version and timestamp updated after sale");
     } catch (error) {
       // Handle errors
       toast({
@@ -454,6 +468,8 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
     holdings,
     portfolioValue,
     totalValue,
+    version, // Include version counter in context
+    lastUpdated, // Include timestamp
     portfolioMetrics,
     buyStock,
     sellStock,

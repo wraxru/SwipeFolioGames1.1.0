@@ -4,6 +4,7 @@ import { X, DollarSign, ChevronDown, ChevronUp, Info, TrendingUp, Shield, Zap, A
 import { StockData } from "@/lib/stock-data";
 import { usePortfolio } from "@/contexts/portfolio-context";
 import { cn } from "@/lib/utils";
+import PurchaseSuccessModal from "./purchase-success-modal";
 
 interface PortfolioImpactCalculatorProps {
   isOpen: boolean;
@@ -26,6 +27,9 @@ export default function PortfolioImpactCalculator({
   
   // State for metric info tooltips
   const [activeTooltip, setActiveTooltip] = useState<string | null>(null);
+  
+  // State for purchase success modal
+  const [showSuccessModal, setShowSuccessModal] = useState<boolean>(false);
   
   // Metric explanations
   const metricExplanations = {
@@ -106,10 +110,15 @@ export default function PortfolioImpactCalculator({
   // Calculate shares based on investment amount (minimum 0.001 shares)
   const shares = Math.max(investmentAmount / stock.price, 0.001);
   
-  // Estimated value in 1 year (based on oneYearReturn if available)
-  const estimatedValue = stock.oneYearReturn 
-    ? investmentAmount * (1 + parseFloat(stock.oneYearReturn.replace("%", "")) / 100)
-    : investmentAmount * 1.08; // Default 8% growth if no return data
+  // Projected 1-year return (based on oneYearReturn if available)
+  const oneYearReturnRate = typeof stock.oneYearReturn === 'number' 
+    ? stock.oneYearReturn / 100 
+    : typeof stock.oneYearReturn === 'string' 
+      ? parseFloat(stock.oneYearReturn.replace("%", "")) / 100
+      : 0.08; // Default 8% growth if no return data
+      
+  const projectedReturn = investmentAmount * oneYearReturnRate;
+  const estimatedValue = investmentAmount + projectedReturn;
   
   // Calculate portfolio impact with validation
   const impact = calculateImpact(stock, investmentAmount);
@@ -162,9 +171,24 @@ export default function PortfolioImpactCalculator({
   // Handle invest action
   const handleInvest = () => {
     buyStock(stock, investmentAmount);
+    setShowSuccessModal(true);
     onInvest();
-    onClose();
+    // Don't close the calculator yet - success modal will be shown first
   };
+  
+  // Handle success modal close
+  const handleSuccessModalClose = () => {
+    setShowSuccessModal(false);
+    onClose(); // Close calculator after success modal is closed
+  };
+  
+  // Close calculator when success modal is shown
+  useEffect(() => {
+    if (showSuccessModal) {
+      // Hide calculator immediately when success modal is shown
+      document.querySelector('.calculator-modal')?.classList.add('opacity-0');
+    }
+  }, [showSuccessModal]);
   
   // Format number for display
   const formatCurrency = (value: number) => {
@@ -182,7 +206,7 @@ export default function PortfolioImpactCalculator({
   };
   
   return (
-    <AnimatePresence>
+    <AnimatePresence mode="wait" key="calculator-modal">
       {isOpen && (
         <>
           {/* Backdrop with blur effect */}
@@ -407,36 +431,36 @@ export default function PortfolioImpactCalculator({
                   )}
                 </div>
                 
-                {/* Metric Comparisons - Modernized with equal sized buttons */}
-                <div className="grid grid-cols-2 gap-4 mb-5">
+                {/* Improved Metrics Grid - More compact and space efficient */}
+                <div className="grid grid-cols-2 gap-2 mb-4">
                   {Object.entries(impact.impact).map(([metric, change]) => (
                     <div 
                       key={metric} 
-                      className="p-4 bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-all duration-200 hover:border-sky-200"
+                      className="p-3 bg-white rounded-lg border border-slate-200 shadow-sm hover:shadow-md transition-all duration-200 hover:border-sky-200"
                     >
-                      <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center">
-                          <div className={`p-1.5 rounded-md mr-2 ${
+                          <div className={`p-1 rounded-md mr-1.5 ${
                             change > 0 ? "bg-green-100 text-green-600" : 
                             change < 0 ? "bg-red-100 text-red-600" : 
                             "bg-slate-100 text-slate-600"
                           }`}>
-                            {getMetricIcon(metric)}
+                            {getMetricIcon(metric, 14)}
                           </div>
-                          <h4 className="font-semibold text-sm capitalize">{metric}</h4>
+                          <h4 className="font-semibold text-xs capitalize">{metric}</h4>
                           <button 
-                            className="ml-1.5 text-slate-400 hover:text-slate-600 transition-colors"
+                            className="ml-1 text-slate-400 hover:text-slate-600 transition-colors"
                             onClick={(e) => {
                               e.stopPropagation();
                               setActiveTooltip(activeTooltip === metric ? null : metric);
                             }}
                             aria-label={`Info about ${metric}`}
                           >
-                            <Info size={14} />
+                            <Info size={12} />
                           </button>
                           {activeTooltip === metric && (
                             <div 
-                              className="absolute z-50 bg-white p-3 rounded-lg shadow-lg border border-slate-200 text-xs text-slate-700 max-w-[200px] mt-2 left-1/2 transform -translate-x-1/2"
+                              className="absolute z-50 bg-white p-2 rounded-lg shadow-lg border border-slate-200 text-xs text-slate-700 max-w-[180px] mt-1 left-1/2 transform -translate-x-1/2"
                               style={{ top: '100%' }}
                             >
                               {(metricExplanations as any)[metric.toLowerCase()]}
@@ -454,27 +478,28 @@ export default function PortfolioImpactCalculator({
                         </div>
                       </div>
                       
-                      <div className="flex items-center justify-between">
+                      {/* Compact Current → New format with less vertical space */}
+                      <div className="flex items-center justify-between text-sm">
                         {/* Current value */}
-                        <div className="flex-1">
-                          <div className="text-xs text-slate-500 mb-1 text-center">Current</div>
-                          <div className="font-semibold text-center bg-slate-50 px-2 py-1.5 rounded-md shadow-sm border border-slate-100 w-full">
+                        <div className="flex flex-col items-center">
+                          <div className="text-[10px] text-slate-500">Current</div>
+                          <div className="font-semibold bg-slate-50 px-2 py-1 rounded-md shadow-sm border border-slate-100 min-w-[40px] text-center">
                             {impact.currentMetrics[metric as keyof typeof impact.currentMetrics].toFixed(1)}
                           </div>
                         </div>
                         
                         {/* Arrow indicator */}
-                        <div className="text-slate-400 px-2">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <div className="text-slate-400 mx-1">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M5 12h14"></path>
                             <path d="m12 5 7 7-7 7"></path>
                           </svg>
                         </div>
                         
                         {/* New value */}
-                        <div className="flex-1">
-                          <div className="text-xs text-slate-500 mb-1 text-center">New</div>
-                          <div className={`font-semibold text-center px-2 py-1.5 rounded-md shadow-sm border w-full ${
+                        <div className="flex flex-col items-center">
+                          <div className="text-[10px] text-slate-500">New</div>
+                          <div className={`font-semibold px-2 py-1 rounded-md shadow-sm border min-w-[40px] text-center ${
                             change > 0 ? "bg-green-50 border-green-100" : 
                             change < 0 ? "bg-red-50 border-red-100" : 
                             "bg-slate-50 border-slate-100"
@@ -487,13 +512,13 @@ export default function PortfolioImpactCalculator({
                   ))}
                 </div>
                 
-                {/* Investment Amount Controls */}
-                <div className="bg-white rounded-xl border border-slate-200 shadow-md p-4 mb-4">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="font-bold text-slate-800">Investment Amount</h3>
+                {/* Compact Investment Amount Controls */}
+                <div className="bg-white rounded-lg border border-slate-200 shadow-sm p-3 mb-3">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="font-bold text-sm text-slate-800">Investment Amount</h3>
                     <div className="flex items-center">
                       <button 
-                        className={`px-3 py-1 text-xs rounded-l-lg border ${
+                        className={`px-2 py-0.5 text-xs rounded-l-md border ${
                           showValueShares ? 'bg-blue-50 text-blue-600 border-blue-200' : 'text-slate-500 border-slate-200'
                         }`}
                         onClick={() => setShowValueShares(true)}
@@ -501,7 +526,7 @@ export default function PortfolioImpactCalculator({
                         Value
                       </button>
                       <button 
-                        className={`px-3 py-1 text-xs rounded-r-lg border ${
+                        className={`px-2 py-0.5 text-xs rounded-r-md border ${
                           !showValueShares ? 'bg-blue-50 text-blue-600 border-blue-200' : 'text-slate-500 border-slate-200'
                         }`}
                         onClick={() => setShowValueShares(false)}
@@ -511,22 +536,23 @@ export default function PortfolioImpactCalculator({
                     </div>
                   </div>
                   
-                  <div className="flex items-center justify-between mb-4">
+                  {/* More compact input controls */}
+                  <div className="flex items-center justify-between mb-2">
                     <button 
-                      className="w-12 h-12 flex items-center justify-center bg-slate-100 rounded-full text-slate-700 hover:bg-slate-200 transition-colors"
+                      className="w-10 h-10 flex items-center justify-center bg-slate-100 rounded-full text-slate-700 hover:bg-slate-200 transition-colors"
                       onClick={decrementAmount}
                       disabled={investmentAmount <= 1}
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/></svg>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/></svg>
                     </button>
                     
                     <div className="relative">
-                      <div className="absolute left-0 inset-y-0 flex items-center pl-3 pointer-events-none">
-                        <span className="text-gray-500">$</span>
+                      <div className="absolute left-0 inset-y-0 flex items-center pl-2 pointer-events-none">
+                        <span className="text-gray-500 text-sm">$</span>
                       </div>
                       <input
                         type="number"
-                        className="block w-40 p-2 pl-8 text-center text-lg font-semibold border border-slate-200 rounded-lg"
+                        className="block w-24 sm:w-32 p-1.5 pl-6 text-center text-base font-semibold border border-slate-200 rounded-lg"
                         value={investmentAmount}
                         onChange={handleAmountChange}
                         min={1}
@@ -535,25 +561,31 @@ export default function PortfolioImpactCalculator({
                     </div>
                     
                     <button 
-                      className="w-12 h-12 flex items-center justify-center bg-slate-100 rounded-full text-slate-700 hover:bg-slate-200 transition-colors"
+                      className="w-10 h-10 flex items-center justify-center bg-slate-100 rounded-full text-slate-700 hover:bg-slate-200 transition-colors"
                       onClick={incrementAmount}
                       disabled={investmentAmount >= maxInvestment}
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
                     </button>
                   </div>
                   
-                  <div className="text-center text-sm text-slate-600 mb-3">
-                    {showValueShares ? (
-                      <span>Approx. {shares.toFixed(4)} shares @ {formatCurrency(stock.price)}</span>
-                    ) : (
-                      <span>Value: {formatCurrency(shares * stock.price)}</span>
-                    )}
-                  </div>
-                  
-                  <div className="bg-blue-50 rounded-lg p-3 text-blue-800 text-sm flex items-center">
-                    <Info size={16} className="mr-2 text-blue-500" />
-                    Est. Value in 1Y: {formatCurrency(estimatedValue)}
+                  {/* Improved share/value display and projected return */}
+                  <div className="flex flex-col text-sm space-y-2">
+                    <div className="text-center text-xs text-slate-600">
+                      {showValueShares ? (
+                        <span>Approx. {shares.toFixed(4)} shares @ {formatCurrency(stock.price)}</span>
+                      ) : (
+                        <span>Value: {formatCurrency(shares * stock.price)}</span>
+                      )}
+                    </div>
+                    
+                    <div className="flex items-center justify-between bg-gradient-to-r from-blue-50 to-indigo-50 rounded-md p-2 text-blue-800 text-sm">
+                      <div className="flex items-center">
+                        <TrendingUp size={14} className="mr-1.5 text-blue-500" />
+                        <span className="font-medium">Projected Return:</span>
+                      </div>
+                      <span className="font-bold">{formatCurrency(projectedReturn)}</span>
+                    </div>
                   </div>
                 </div>
                 
@@ -608,6 +640,16 @@ export default function PortfolioImpactCalculator({
           </motion.div>
         </>
       )}
+      
+      {/* Purchase Success Modal */}
+      <PurchaseSuccessModal
+        isOpen={showSuccessModal}
+        onClose={handleSuccessModalClose}
+        stock={stock}
+        shares={shares}
+        amount={investmentAmount}
+        projectedReturn={projectedReturn}
+      />
     </AnimatePresence>
   );
 }

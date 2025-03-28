@@ -5,8 +5,7 @@ import { Stack } from "@shared/schema";
 import { ArrowLeft, BellRing, Zap } from "lucide-react";
 import { getQueryFn } from "@/lib/queryClient";
 import { StockData, getIndustryStocks } from "@/lib/stock-data";
-import SimpleStackCard from "@/components/ui/simple-stack-card";
-import RealTimeStockCard from "@/components/ui/real-time-stock-card";
+import StockCard from "@/components/ui/stock-card";
 import StackCompletedModal from "@/components/stack-completed-modal";
 
 export default function StockDetailPage() {
@@ -97,6 +96,16 @@ export default function StockDetailPage() {
         </button>
         <div className="flex items-center gap-2">
           <h1 className="text-xl font-bold text-green-400">Swipefolio</h1>
+          <button
+            onClick={() => setUseRealTimeData(!useRealTimeData)}
+            className={`ml-2 text-xs px-3 py-1 rounded-full transition-colors ${
+              useRealTimeData 
+                ? 'bg-green-800 text-green-200 hover:bg-green-700' 
+                : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+            }`}
+          >
+            {useRealTimeData ? 'Live Data' : 'Simple View'}
+          </button>
         </div>
         <button className="text-green-400 hover:bg-gray-800 p-2 rounded-full transition-colors relative">
           <div className="absolute top-1 right-1 w-2 h-2 bg-green-400 rounded-full"></div>
@@ -107,25 +116,56 @@ export default function StockDetailPage() {
       {/* Main content */}
       <div className="flex-1 relative">
         {stocks.length > 0 && (
-          useRealTimeData ? (
-            <RealTimeStockCard
-              stock={currentStock}
-              onNext={handleNextStock}
-              onPrevious={handlePreviousStock}
-              currentIndex={currentStockIndex}
-              totalCount={stocks.length}
-            />
-          ) : (
-            <SimpleStackCard
-              stock={currentStock}
-              onNext={handleNextStock}
-              onPrevious={handlePreviousStock}
-              currentIndex={currentStockIndex}
-              totalCount={stocks.length}
-              nextStock={nextStock}
-            />
-          )
+          <StockCard
+            stock={currentStock}
+            onNext={handleNextStock}
+            onPrevious={handlePreviousStock}
+            currentIndex={currentStockIndex}
+            totalCount={stocks.length}
+            nextStock={nextStock}
+            displayMode={useRealTimeData ? 'realtime' : 'simple'}
+          />
         )}
+      </div>
+
+      {/* Modern Buy/Skip Buttons */}
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black to-transparent z-10">
+        <div className="flex justify-between gap-4 max-w-md mx-auto">
+          <button
+            onClick={handlePreviousStock}
+            className="w-1/2 py-3 rounded-xl bg-gradient-to-r from-red-600 to-red-700 text-white font-medium shadow-lg transition transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            disabled={currentStockIndex === 0}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 5 12 12 19"></polyline>
+            </svg>
+            Skip
+          </button>
+          <button
+            onClick={() => {
+              // Open portfolio impact calculator
+              const stockCardElement = document.querySelector('[data-testid="stock-card"]');
+              const buyButtonElement = stockCardElement?.querySelector('[data-testid="buy-button"]');
+              
+              if (buyButtonElement && 'click' in buyButtonElement) {
+                (buyButtonElement as HTMLButtonElement).click();
+              } else {
+                // Fallback - just move to next stock
+                handleNextStock();
+              }
+            }}
+            className="w-1/2 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-green-600 text-white font-medium shadow-lg transition transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h6"></path>
+              <path d="M12 12h4l-1.8-1.8"></path>
+              <path d="M14.2 13.8L16 12"></path>
+              <circle cx="17" cy="7" r="3"></circle>
+            </svg>
+            Buy
+          </button>
+        </div>
       </div>
 
       {/* Completed modal */}
