@@ -2,6 +2,7 @@ import { useState, useEffect, useContext } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronUp, Award } from 'lucide-react';
 import { PortfolioContext } from '@/contexts/portfolio-context';
+import avatarImage from '../assets/belford-avatar.png';
 
 interface ModernUserWelcomeProps {
   name: string;
@@ -100,7 +101,7 @@ export default function ModernUserWelcome({ name, rank: initialRank = 10 }: Mode
               
               {/* Belford&Co avatar */}
               <img 
-                src="/belford-avatar.png" 
+                src={avatarImage} 
                 alt="User avatar" 
                 className="w-full h-full object-cover"
                 onError={(e) => {
