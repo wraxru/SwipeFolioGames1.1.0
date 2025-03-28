@@ -8,10 +8,6 @@ import PortfolioImpactCalculator from "./portfolio-impact-calculator";
 import OverallAnalysisCard from "@/components/overall-analysis-card";
 import { Skeleton } from "@/components/ui/skeleton";
 import ComparativeAnalysis from "@/components/comparative-analysis";
-import React from 'react';
-import { cn } from '@/lib/utils';
-import { Card, CardContent, CardHeader } from './card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './select';
 
 interface StockCardProps {
   stock: StockData;
@@ -115,171 +111,7 @@ const getIndustryAverageData = (stock: StockData, metricType: string) => {
   return [];
 };
 
-// Define competitor stock data structure
-interface CompetitorStock {
-  symbol: string;
-  name: string;
-  color: string;
-  ratings: {
-    Performance: number;
-    Stability: number;
-    Value: number;
-    Momentum: number;
-  };
-}
-
-// Define industry stocks
-const realEstateStocks: Record<string, CompetitorStock> = {
-  'O': {
-    symbol: 'O',
-    name: 'Realty Income Corp',
-    color: '#7c3aed',
-    ratings: {
-      Performance: 65,
-      Stability: 80,
-      Value: 70,
-      Momentum: 60
-    }
-  },
-  'SPG': {
-    symbol: 'SPG',
-    name: 'Simon Property Group',
-    color: '#7c3aed',
-    ratings: {
-      Performance: 60,
-      Stability: 75,
-      Value: 75,
-      Momentum: 65
-    }
-  },
-  'AVB': {
-    symbol: 'AVB',
-    name: 'AvalonBay Communities',
-    color: '#7c3aed',
-    ratings: {
-      Performance: 55,
-      Stability: 85,
-      Value: 65,
-      Momentum: 55
-    }
-  }
-};
-
-const technologyStocks: Record<string, CompetitorStock> = {
-  'AAPL': {
-    symbol: 'AAPL',
-    name: 'Apple Inc',
-    color: '#7c3aed',
-    ratings: {
-      Performance: 80,
-      Stability: 85,
-      Value: 65,
-      Momentum: 75
-    }
-  },
-  'MSFT': {
-    symbol: 'MSFT',
-    name: 'Microsoft',
-    color: '#7c3aed',
-    ratings: {
-      Performance: 85,
-      Stability: 80,
-      Value: 60,
-      Momentum: 80
-    }
-  }
-};
-
-const healthcareStocks: Record<string, CompetitorStock> = {
-  'JNJ': {
-    symbol: 'JNJ',
-    name: 'Johnson & Johnson',
-    color: '#7c3aed',
-    ratings: {
-      Performance: 70,
-      Stability: 90,
-      Value: 75,
-      Momentum: 60
-    }
-  },
-  'UNH': {
-    symbol: 'UNH',
-    name: 'UnitedHealth Group',
-    color: '#7c3aed',
-    ratings: {
-      Performance: 75,
-      Stability: 85,
-      Value: 70,
-      Momentum: 65
-    }
-  }
-};
-
-const defaultStocks: Record<string, CompetitorStock> = {
-  'SPY': {
-    symbol: 'SPY',
-    name: 'S&P 500 ETF',
-    color: '#7c3aed',
-    ratings: {
-      Performance: 60,
-      Stability: 65,
-      Value: 60,
-      Momentum: 60
-    }
-  }
-};
-
-// Combine all industry stocks
-const stocksByIndustry = {
-  'Real Estate': realEstateStocks,
-  'Technology': technologyStocks,
-  'Healthcare': healthcareStocks,
-  'Other': defaultStocks
-};
-
-export interface StockCardProps extends React.HTMLAttributes<HTMLDivElement> {
-  children?: React.ReactNode;
-}
-
-export function StockCard({ className, ...props }: StockCardProps) {
-  return (
-    <Card className={cn("w-[380px]", className)} {...props}>
-      <CardHeader>
-        <div className="flex items-center space-x-4">
-          <ComparisonDropdown />
-        </div>
-      </CardHeader>
-      <CardContent>
-        {props.children}
-      </CardContent>
-    </Card>
-  );
-}
-
-function ComparisonDropdown() {
-  const [selectedCompetitor, setSelectedCompetitor] = React.useState('O');
-  const availableCompetitors = Object.keys(realEstateStocks);
-
-  return (
-    <div className="flex items-center space-x-2">
-      <span className="text-sm text-gray-500">Compare with:</span>
-      <Select value={selectedCompetitor} onValueChange={setSelectedCompetitor}>
-        <SelectTrigger className="w-[140px] h-9">
-          <SelectValue placeholder="Select stock" />
-        </SelectTrigger>
-        <SelectContent>
-          {availableCompetitors.map(symbol => (
-            <SelectItem key={symbol} value={symbol}>
-              {realEstateStocks[symbol].name} ({symbol})
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-    </div>
-  );
-}
-
-export default function StockCardComponent({ 
+export default function StockCard({ 
   stock, 
   onNext, 
   onPrevious, 
@@ -731,7 +563,7 @@ export default function StockCardComponent({
                 );
               })}
             </div>
-            
+
             {/* Stock Synopsis */}
             <div className="p-4 border-b border-gray-800">
               <h3 className="text-lg font-bold text-white mb-3">Stock Synopsis</h3>
@@ -820,325 +652,323 @@ export default function StockCardComponent({
 
   // Real-time display mode
   return (
-    <StockCard className="h-[700px]">
-      <div className="relative h-full">
-        {/* Blurred background stock (next in stack) - visible during swipes */}
-        <div 
-          className="absolute inset-0 overflow-hidden blur-xl pointer-events-none opacity-20"
-          style={{
-            clipPath: x.get() > 0 ? 'inset(0 0 0 100%)' : 'inset(0 0 0 0)',
-            opacity: Math.abs(x.get()) > 50 ? 0.2 : 0,
-            transform: `translateX(${x.get() < 0 ? '60px' : '-60px'})`
-          }}
+    <div className="relative h-full">
+      {/* Blurred background stock (next in stack) - visible during swipes */}
+      <div 
+        className="absolute inset-0 overflow-hidden blur-xl pointer-events-none opacity-20"
+        style={{
+          clipPath: x.get() > 0 ? 'inset(0 0 0 100%)' : 'inset(0 0 0 0)',
+          opacity: Math.abs(x.get()) > 50 ? 0.2 : 0,
+          transform: `translateX(${x.get() < 0 ? '60px' : '-60px'})`
+        }}
+      >
+        {/* This would ideally be the next stock's preview, simplified here */}
+        <div className="w-full h-full bg-gradient-to-br from-slate-100 to-blue-50 flex items-center justify-center">
+          <div className="w-32 h-32 rounded-full bg-gradient-to-tr from-blue-400/20 to-indigo-300/20"></div>
+        </div>
+      </div>
+      {/* Skipped message - shows when swiping left */}
+      {showSkippedMessage && (
+        <motion.div
+          className="absolute inset-0 z-30 flex items-center justify-center pointer-events-none"
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.8 }}
         >
-          {/* This would ideally be the next stock's preview, simplified here */}
-          <div className="w-full h-full bg-gradient-to-br from-slate-100 to-blue-50 flex items-center justify-center">
-            <div className="w-32 h-32 rounded-full bg-gradient-to-tr from-blue-400/20 to-indigo-300/20"></div>
+          <div className="text-xl font-semibold bg-gray-900/90 text-red-400 px-6 py-3 rounded-xl border border-red-500/20 shadow-xl">
+            Stock Skipped
+          </div>
+        </motion.div>
+      )}
+
+      <motion.div
+        className="h-full overflow-y-auto overflow-x-hidden pb-16 stock-card"
+        ref={cardRef}
+        drag="x"
+        dragConstraints={{ left: 0, right: 0 }}
+        dragElastic={0.7}
+        onDragEnd={handleDragEnd}
+        animate={cardControls}
+        style={{ x, opacity: cardOpacity, rotateZ: cardRotate, scale: cardScale }}
+      >
+        {/* Time Frame Selector - Updated with Robinhood style */}
+        <div className="flex justify-center space-x-1 px-4 py-3 border-b border-slate-100 bg-white">
+          {["1D", "5D", "1M", "6M", "YTD", "1Y", "5Y", "MAX"].map((period) => (
+            <button
+              key={period}
+              className={`px-3 py-1 text-xs rounded-full transition-all duration-200 ${
+                timeFrame === period 
+                  ? `${realTimeChange >= 0 ? 'text-green-600 bg-green-50 border border-green-100' : 'text-red-600 bg-red-50 border border-red-100'} font-medium` 
+                  : 'text-slate-500 hover:bg-slate-50 border border-transparent'
+              }`}
+              onClick={() => setTimeFrame(period as TimeFrame)}
+            >
+              {period}
+            </button>
+          ))}
+        </div>
+
+        {/* Stock Price and Chart */}
+        <div className="bg-white p-4 flex flex-col border-b border-slate-100">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1.5">
+              <h2 className="text-xl font-semibold text-slate-900">{stock.name}</h2>
+              <span className="text-slate-500 font-medium">{stock.ticker}</span>
+            </div>
+            <div className="flex items-center">
+              <button 
+                onClick={refreshData}
+                className="p-1.5 rounded-full hover:bg-slate-100 transition-colors"
+                disabled={isRefreshing}
+              >
+                <RefreshCw size={17} className={`text-slate-500 ${isRefreshing ? 'animate-spin' : ''}`} />
+              </button>
+            </div>
+          </div>
+          
+          <div className="mt-1 flex items-baseline">
+            <span className="text-2xl font-semibold text-slate-900">${displayPrice}</span>
+            <span className={`ml-2 text-sm font-medium ${realTimeChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+              {realTimeChange >= 0 ? '+' : ''}{realTimeChange}%
+            </span>
+          </div>
+          
+          {/* Chart placeholder - visualize the data */}
+          <div className="relative mt-3 h-44 py-2">
+            {/* Chart visual */}
+            <div className="absolute inset-0 px-4">
+              {/* Y-axis labels */}
+              <div className="absolute left-0 top-0 bottom-0 flex flex-col justify-between text-[10px] text-slate-900 font-medium pointer-events-none py-3 z-10 w-12">
+                <span>${Math.round(priceRangeMax)}</span>
+                <span>${Math.round((priceRangeMax + priceRangeMin) / 2)}</span>
+                <span>${Math.round(priceRangeMin)}</span>
+              </div>
+              
+              {/* Chart path - dynamically draw based on chartData with extension to edge */}
+              <div className="absolute inset-0 pl-12 pr-4">
+                <svg className="w-full h-full" viewBox={`0 0 100 100`} preserveAspectRatio="none">
+                  {/* Main chart line only - no fill */}
+                  <path
+                    d={`M-5,${100 - ((chartData[0] - minValue) / (maxValue - minValue)) * 100} ${chartData.map((point, i) => {
+                      // Plot points with x-coordinates extending beyond the visible area
+                      const x = (i / (chartData.length - 1)) * 110 - 5; // Extend from -5 to 105
+                      const y = 100 - ((point - minValue) / (maxValue - minValue)) * 100;
+                      return `L${x},${y}`;
+                    }).join(' ')} L105,${100 - ((chartData[chartData.length-1] - minValue) / (maxValue - minValue)) * 100}`}
+                    className={`${realTimeChange >= 0 ? 'stroke-green-500' : 'stroke-red-500'} fill-none`}
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </div>
+            </div>
+            
+            {/* X-axis labels */}
+            <div className="absolute left-0 right-0 bottom-1 pl-12 pr-4 flex justify-between text-[10px] text-slate-900 font-medium pointer-events-none">
+              {timeScaleLabels.map((label, index) => (
+                <span key={index}>{label}</span>
+              ))}
+            </div>
+          </div>
+          
+          {/* Trading date and swipe instruction */}
+          <div className="mt-4 flex items-center justify-between text-xs h-6">
+            <span className="text-slate-900 font-medium">Last updated: {latestTradingDay}</span>
+            <span className="text-slate-700 italic">Swipe left to skip • Swipe right to invest</span>
           </div>
         </div>
-        {/* Skipped message - shows when swiping left */}
-        {showSkippedMessage && (
-          <motion.div
-            className="absolute inset-0 z-30 flex items-center justify-center pointer-events-none"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-          >
-            <div className="text-xl font-semibold bg-gray-900/90 text-red-400 px-6 py-3 rounded-xl border border-red-500/20 shadow-xl">
-              Stock Skipped
-            </div>
-          </motion.div>
-        )}
-
-        <motion.div
-          className="h-full overflow-y-auto overflow-x-hidden pb-16 stock-card"
-          ref={cardRef}
-          drag="x"
-          dragConstraints={{ left: 0, right: 0 }}
-          dragElastic={0.7}
-          onDragEnd={handleDragEnd}
-          animate={cardControls}
-          style={{ x, opacity: cardOpacity, rotateZ: cardRotate, scale: cardScale }}
-        >
-          {/* Time Frame Selector - Updated with Robinhood style */}
-          <div className="flex justify-center space-x-1 px-4 py-3 border-b border-slate-100 bg-white">
-            {["1D", "5D", "1M", "6M", "YTD", "1Y", "5Y", "MAX"].map((period) => (
-              <button
-                key={period}
-                className={`px-3 py-1 text-xs rounded-full transition-all duration-200 ${
-                  timeFrame === period 
-                    ? `${realTimeChange >= 0 ? 'text-green-600 bg-green-50 border border-green-100' : 'text-red-600 bg-red-50 border border-red-100'} font-medium` 
-                    : 'text-slate-500 hover:bg-slate-50 border border-transparent'
-                }`}
-                onClick={() => setTimeFrame(period as TimeFrame)}
+        
+        {/* Stock Metrics - Enhanced Card Style */}
+        <div className="grid grid-cols-2 gap-4 p-4 bg-white border-b border-slate-100">
+          {Object.entries(stock.metrics).map(([key, metricObj]) => {
+            const metricName = key.charAt(0).toUpperCase() + key.slice(1);
+            
+            return (
+              <div 
+                key={key}
+                className="group relative"
+                onClick={() => handleMetricClick(metricName)}
               >
-                {period}
-              </button>
-            ))}
-          </div>
-
-          {/* Stock Price and Chart */}
-          <div className="bg-white p-4 flex flex-col border-b border-slate-100">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1.5">
-                <h2 className="text-xl font-semibold text-slate-900">{stock.name}</h2>
-                <span className="text-slate-500 font-medium">{stock.ticker}</span>
-              </div>
-              <div className="flex items-center">
-                <button 
-                  onClick={refreshData}
-                  className="p-1.5 rounded-full hover:bg-slate-100 transition-colors"
-                  disabled={isRefreshing}
-                >
-                  <RefreshCw size={17} className={`text-slate-500 ${isRefreshing ? 'animate-spin' : ''}`} />
-                </button>
-              </div>
-            </div>
-            
-            <div className="mt-1 flex items-baseline">
-              <span className="text-2xl font-semibold text-slate-900">${displayPrice}</span>
-              <span className={`ml-2 text-sm font-medium ${realTimeChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                {realTimeChange >= 0 ? '+' : ''}{realTimeChange}%
-              </span>
-            </div>
-            
-            {/* Chart placeholder - visualize the data */}
-            <div className="relative mt-3 h-44 py-2">
-              {/* Chart visual */}
-              <div className="absolute inset-0 px-4">
-                {/* Y-axis labels */}
-                <div className="absolute left-0 top-0 bottom-0 flex flex-col justify-between text-[10px] text-slate-900 font-medium pointer-events-none py-3 z-10 w-12">
-                  <span>${Math.round(priceRangeMax)}</span>
-                  <span>${Math.round((priceRangeMax + priceRangeMin) / 2)}</span>
-                  <span>${Math.round(priceRangeMin)}</span>
+                {/* Background effect for hover that appears behind the card */}
+                <div className={`absolute inset-0 rounded-xl blur-sm transform scale-[0.98] translate-y-1 opacity-0 group-hover:opacity-100 transition-all duration-300
+                  ${metricObj.color === 'green' ? 'bg-gradient-to-r from-green-100/30 to-emerald-100/30' :
+                  metricObj.color === 'yellow' ? 'bg-gradient-to-r from-amber-100/30 to-yellow-100/30' : 
+                  'bg-gradient-to-r from-red-100/30 to-rose-100/30'}`}>
                 </div>
                 
-                {/* Chart path - dynamically draw based on chartData with extension to edge */}
-                <div className="absolute inset-0 pl-12 pr-4">
-                  <svg className="w-full h-full" viewBox={`0 0 100 100`} preserveAspectRatio="none">
-                    {/* Main chart line only - no fill */}
-                    <path
-                      d={`M-5,${100 - ((chartData[0] - minValue) / (maxValue - minValue)) * 100} ${chartData.map((point, i) => {
-                        // Plot points with x-coordinates extending beyond the visible area
-                        const x = (i / (chartData.length - 1)) * 110 - 5; // Extend from -5 to 105
-                        const y = 100 - ((point - minValue) / (maxValue - minValue)) * 100;
-                        return `L${x},${y}`;
-                      }).join(' ')} L105,${100 - ((chartData[chartData.length-1] - minValue) / (maxValue - minValue)) * 100}`}
-                      className={`${realTimeChange >= 0 ? 'stroke-green-500' : 'stroke-red-500'} fill-none`}
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </div>
-              </div>
-              
-              {/* X-axis labels */}
-              <div className="absolute left-0 right-0 bottom-1 pl-12 pr-4 flex justify-between text-[10px] text-slate-900 font-medium pointer-events-none">
-                {timeScaleLabels.map((label, index) => (
-                  <span key={index}>{label}</span>
-                ))}
-              </div>
-            </div>
-            
-            {/* Trading date and swipe instruction */}
-            <div className="mt-4 flex items-center justify-between text-xs h-6">
-              <span className="text-slate-900 font-medium">Last updated: {latestTradingDay}</span>
-              <span className="text-slate-700 italic">Swipe left to skip • Swipe right to invest</span>
-            </div>
-          </div>
-          
-          {/* Stock Metrics - Enhanced Card Style */}
-          <div className="grid grid-cols-2 gap-4 p-4 bg-white border-b border-slate-100">
-            {Object.entries(stock.metrics).map(([key, metricObj]) => {
-              const metricName = key.charAt(0).toUpperCase() + key.slice(1);
-              
-              return (
+                {/* Metric Card */}
                 <div 
-                  key={key}
-                  className="group relative"
-                  onClick={() => handleMetricClick(metricName)}
+                  className={`p-4 rounded-xl border relative z-10 overflow-hidden active:scale-95 transition-all duration-150 cursor-pointer shadow-md hover:shadow-lg group-hover:translate-y-[-2px]
+                    ${metricObj.color === 'green' ? 'bg-white border-green-200 group-hover:border-green-300' :
+                    metricObj.color === 'yellow' ? 'bg-white border-amber-200 group-hover:border-amber-300' : 
+                    'bg-white border-red-200 group-hover:border-red-300'}`}
                 >
-                  {/* Background effect for hover that appears behind the card */}
-                  <div className={`absolute inset-0 rounded-xl blur-sm transform scale-[0.98] translate-y-1 opacity-0 group-hover:opacity-100 transition-all duration-300
-                    ${metricObj.color === 'green' ? 'bg-gradient-to-r from-green-100/30 to-emerald-100/30' :
-                    metricObj.color === 'yellow' ? 'bg-gradient-to-r from-amber-100/30 to-yellow-100/30' : 
-                    'bg-gradient-to-r from-red-100/30 to-rose-100/30'}`}>
+                  {/* Top gradient bar that appears on hover */}
+                  <div className={`absolute top-0 left-0 w-full h-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300
+                    ${metricObj.color === 'green' ? 'bg-gradient-to-r from-green-400 to-emerald-500' :
+                    metricObj.color === 'yellow' ? 'bg-gradient-to-r from-amber-400 to-yellow-500' : 
+                    'bg-gradient-to-r from-red-400 to-rose-500'}`}>
                   </div>
                   
-                  {/* Metric Card */}
-                  <div 
-                    className={`p-4 rounded-xl border relative z-10 overflow-hidden active:scale-95 transition-all duration-150 cursor-pointer shadow-md hover:shadow-lg group-hover:translate-y-[-2px]
-                      ${metricObj.color === 'green' ? 'bg-white border-green-200 group-hover:border-green-300' :
-                      metricObj.color === 'yellow' ? 'bg-white border-amber-200 group-hover:border-amber-300' : 
-                      'bg-white border-red-200 group-hover:border-red-300'}`}
-                  >
-                    {/* Top gradient bar that appears on hover */}
-                    <div className={`absolute top-0 left-0 w-full h-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300
-                      ${metricObj.color === 'green' ? 'bg-gradient-to-r from-green-400 to-emerald-500' :
-                      metricObj.color === 'yellow' ? 'bg-gradient-to-r from-amber-400 to-yellow-500' : 
-                      'bg-gradient-to-r from-red-400 to-rose-500'}`}>
-                    </div>
-                    
-                    {/* Metric indicator with icon */}
-                    <div className={`flex items-center justify-between mb-2`}>
-                      <div className={`flex items-center justify-center rounded-full w-8 h-8 
-                        ${metricObj.color === 'green' ? 'bg-green-100 text-green-600' :
-                         metricObj.color === 'yellow' ? 'bg-amber-100 text-amber-600' : 
-                         'bg-red-100 text-red-600'}`}
-                      >
-                        {key === 'performance' && <TrendingUp size={16} />}
-                        {key === 'stability' && <Shield size={16} />}
-                        {key === 'value' && <DollarSign size={16} />}
-                        {key === 'momentum' && <Zap size={16} />}
-                      </div>
-                      <Info size={15} className="text-slate-400 group-hover:text-slate-600 transition-colors" />
-                    </div>
-                    
-                    {/* Metric value and name */}
-                    <div className={`text-lg font-semibold 
-                      ${metricObj.color === 'green' ? 'text-slate-900' :
-                       metricObj.color === 'yellow' ? 'text-slate-900' : 
-                       'text-slate-900'}`}
+                  {/* Metric indicator with icon */}
+                  <div className="flex items-center justify-between mb-2">
+                    <div className={`flex items-center justify-center rounded-full w-8 h-8 
+                      ${metricObj.color === 'green' ? 'bg-green-100 text-green-600' :
+                       metricObj.color === 'yellow' ? 'bg-amber-100 text-amber-600' : 
+                       'bg-red-100 text-red-600'}`}
                     >
-                      {metricObj.value}
+                      {key === 'performance' && <TrendingUp size={16} />}
+                      {key === 'stability' && <Shield size={16} />}
+                      {key === 'value' && <DollarSign size={16} />}
+                      {key === 'momentum' && <Zap size={16} />}
                     </div>
-                    <div className="text-slate-500 text-sm font-medium mt-0.5 capitalize">{metricName}</div>
+                    <Info size={15} className="text-slate-400 group-hover:text-slate-600 transition-colors" />
                   </div>
-                </div>
-              );
-            })}
-          </div>
-          
-          {/* Unified cards with consistent styling */}
-          <div className="bg-white rounded-xl border border-slate-200 shadow-md overflow-hidden mb-4">
-            {/* Common background with slight highlight */}
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 to-indigo-50/30 rounded-xl opacity-30"></div>
-            
-            {/* Price Trend */}
-            <div className="p-4 border-b border-slate-100 relative">
-              <div className="flex items-center gap-4">
-                <div className={`${realTimeChange >= 0 ? 'text-white bg-gradient-to-br from-green-400 to-green-600' : 'text-white bg-gradient-to-br from-red-400 to-red-600'} 
-                  w-12 h-12 min-w-12 flex items-center justify-center rounded-lg shadow-md`}>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-                  </svg>
-                </div>
-                <div className="flex-1 relative">
-                  <div className="font-bold text-slate-800 text-base flex items-center">
-                    Price Trend
-                    <div className={`ml-2 text-xs px-2 py-0.5 rounded-full ${realTimeChange >= 0 ? 'text-green-600 bg-green-50 border border-green-100' : 'text-red-600 bg-red-50 border border-red-100'}`}>
-                      {realTimeChange >= 0 ? 'Bullish' : 'Bearish'}
-                    </div>
+                  
+                  {/* Metric value and name */}
+                  <div className={`text-lg font-semibold 
+                    ${metricObj.color === 'green' ? 'text-slate-900' :
+                     metricObj.color === 'yellow' ? 'text-slate-900' : 
+                     'text-slate-900'}`}
+                  >
+                    {metricObj.value}
                   </div>
-                  <p className="text-slate-600 text-sm mt-1">
-                    {stock.synopsis.price}
-                  </p>
+                  <div className="text-slate-500 text-sm font-medium mt-0.5 capitalize">{metricName}</div>
                 </div>
               </div>
-            </div>
-            
-            {/* Company Overview */}
-            <div className="p-4 border-b border-slate-100 relative">
-              <div className="flex items-center gap-4">
-                <div className="text-white bg-gradient-to-br from-blue-400 to-indigo-600 w-12 h-12 min-w-12 flex items-center justify-center rounded-lg shadow-md">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
-                    <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
-                  </svg>
-                </div>
-                <div className="flex-1 relative">
-                  <div className="font-bold text-slate-800 text-base flex items-center">
-                    Company Overview
-                  </div>
-                  <p className="text-slate-600 text-sm mt-1">
-                    {stock.synopsis.company}
-                  </p>
-                </div>
-              </div>
-            </div>
-            
-            {/* Portfolio Role */}
-            <div className="p-4 relative">
-              <div className="flex items-center gap-4">
-                <div className="text-white bg-gradient-to-br from-violet-400 to-purple-600 w-12 h-12 min-w-12 flex items-center justify-center rounded-lg shadow-md">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <path d="M12 16v-4"></path>
-                    <path d="M12 8h.01"></path>
-                  </svg>
-                </div>
-                <div className="flex-1 relative">
-                  <div className="font-bold text-slate-800 text-base flex items-center">
-                    Portfolio Role
-                  </div>
-                  <p className="text-slate-600 text-sm mt-1">
-                    {stock.synopsis.role}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          {/* Comparative Analysis Section */}
-          <div className="bg-white border-t border-b border-slate-100">
-            <ComparativeAnalysis currentStock={stock} />
-          </div>
-          
-          {/* Bottom Action Bar */}
-          <div className="p-4 bg-white border-t border-b border-slate-100 mb-4">
-            <button
-              onClick={openPortfolioCalculator}
-              className={`w-full py-3 px-4 rounded-xl font-medium shadow-md 
-                ${realTimeChange >= 0 
-                  ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:from-green-600 hover:to-emerald-700'
-                  : 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white hover:from-blue-600 hover:to-indigo-700'} 
-                active:scale-98 transition-all duration-150`}
-            >
-              Add to Portfolio
-            </button>
-            <div className="text-center text-xs text-slate-500 mt-2">
-              Swipe left to skip • Swipe right to invest
-            </div>
-          </div>
-          
-          {/* Overall Analysis - Enhanced with consistent spacing */}
-          {stock.overallAnalysis && (
-            <div className="p-5 bg-gradient-to-b from-white to-slate-50">
-              <div className="mb-1">
-                <OverallAnalysisCard
-                  ticker={stock.ticker}
-                  name={stock.name}
-                  rating={stock.rating}
-                  analysis={stock.overallAnalysis}
-                />
-              </div>
-            </div>
-          )}
-        </motion.div>
+            );
+          })}
+        </div>
         
-        {/* Metric Popup */}
-        {selectedMetric && (
-          <MetricPopup
-            isOpen={isMetricPopupOpen}
-            onClose={() => setIsMetricPopupOpen(false)}
-            metricName={selectedMetric.name}
-            metricColor={selectedMetric.color}
-            metricData={selectedMetric.data}
-          />
+        {/* Unified cards with consistent styling */}
+        <div className="bg-white rounded-xl border border-slate-200 shadow-md overflow-hidden mb-4">
+          {/* Common background with slight highlight */}
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 to-indigo-50/30 rounded-xl opacity-30"></div>
+          
+          {/* Price Trend */}
+          <div className="p-4 border-b border-slate-100 relative">
+            <div className="flex items-center gap-4">
+              <div className={`${realTimeChange >= 0 ? 'text-white bg-gradient-to-br from-green-400 to-green-600' : 'text-white bg-gradient-to-br from-red-400 to-red-600'} 
+                w-12 h-12 min-w-12 flex items-center justify-center rounded-lg shadow-md`}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                </svg>
+              </div>
+              <div className="flex-1 relative">
+                <div className="font-bold text-slate-800 text-base flex items-center">
+                  Price Trend
+                  <div className={`ml-2 text-xs px-2 py-0.5 rounded-full ${realTimeChange >= 0 ? 'text-green-600 bg-green-50 border border-green-100' : 'text-red-600 bg-red-50 border border-red-100'}`}>
+                    {realTimeChange >= 0 ? 'Bullish' : 'Bearish'}
+                  </div>
+                </div>
+                <p className="text-slate-600 text-sm mt-1">
+                  {stock.synopsis.price}
+                </p>
+              </div>
+            </div>
+          </div>
+          
+          {/* Company Overview */}
+          <div className="p-4 border-b border-slate-100 relative">
+            <div className="flex items-center gap-4">
+              <div className="text-white bg-gradient-to-br from-blue-400 to-indigo-600 w-12 h-12 min-w-12 flex items-center justify-center rounded-lg shadow-md">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                  <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                </svg>
+              </div>
+              <div className="flex-1 relative">
+                <div className="font-bold text-slate-800 text-base flex items-center">
+                  Company Overview
+                </div>
+                <p className="text-slate-600 text-sm mt-1">
+                  {stock.synopsis.company}
+                </p>
+              </div>
+            </div>
+          </div>
+          
+          {/* Portfolio Role */}
+          <div className="p-4 relative">
+            <div className="flex items-center gap-4">
+              <div className="text-white bg-gradient-to-br from-violet-400 to-purple-600 w-12 h-12 min-w-12 flex items-center justify-center rounded-lg shadow-md">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <path d="M12 16v-4"></path>
+                  <path d="M12 8h.01"></path>
+                </svg>
+              </div>
+              <div className="flex-1 relative">
+                <div className="font-bold text-slate-800 text-base flex items-center">
+                  Portfolio Role
+                </div>
+                <p className="text-slate-600 text-sm mt-1">
+                  {stock.synopsis.role}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        {/* Comparative Analysis Section */}
+        <div className="bg-white border-t border-b border-slate-100">
+          <ComparativeAnalysis currentStock={stock} />
+        </div>
+        
+        {/* Bottom Action Bar */}
+        <div className="p-4 bg-white border-t border-b border-slate-100 mb-4">
+          <button
+            onClick={openPortfolioCalculator}
+            className={`w-full py-3 px-4 rounded-xl font-medium shadow-md 
+              ${realTimeChange >= 0 
+                ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:from-green-600 hover:to-emerald-700'
+                : 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white hover:from-blue-600 hover:to-indigo-700'} 
+              active:scale-98 transition-all duration-150`}
+          >
+            Add to Portfolio
+          </button>
+          <div className="text-center text-xs text-slate-500 mt-2">
+            Swipe left to skip • Swipe right to invest
+          </div>
+        </div>
+        
+        {/* Overall Analysis - Enhanced with consistent spacing */}
+        {stock.overallAnalysis && (
+          <div className="p-5 bg-gradient-to-b from-white to-slate-50">
+            <div className="mb-1">
+              <OverallAnalysisCard
+                ticker={stock.ticker}
+                name={stock.name}
+                rating={stock.rating}
+                analysis={stock.overallAnalysis}
+              />
+            </div>
+          </div>
         )}
-        
-        {/* Portfolio Impact Calculator */}
-        <PortfolioImpactCalculator
-          isOpen={isPortfolioImpactOpen}
-          onClose={() => setIsPortfolioImpactOpen(false)}
-          onInvest={() => {
-            // Handle successful investment
-            onNext(); // Move to next stock after investing
-          }}
-          stock={stock}
+      </motion.div>
+      
+      {/* Metric Popup */}
+      {selectedMetric && (
+        <MetricPopup
+          isOpen={isMetricPopupOpen}
+          onClose={() => setIsMetricPopupOpen(false)}
+          metricName={selectedMetric.name}
+          metricColor={selectedMetric.color}
+          metricData={selectedMetric.data}
         />
-      </div>
-    </StockCard>
+      )}
+      
+      {/* Portfolio Impact Calculator */}
+      <PortfolioImpactCalculator
+        isOpen={isPortfolioImpactOpen}
+        onClose={() => setIsPortfolioImpactOpen(false)}
+        onInvest={() => {
+          // Handle successful investment
+          onNext(); // Move to next stock after investing
+        }}
+        stock={stock}
+      />
+    </div>
   );
 }
