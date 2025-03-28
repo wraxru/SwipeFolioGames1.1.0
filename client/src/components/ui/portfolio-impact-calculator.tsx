@@ -182,6 +182,14 @@ export default function PortfolioImpactCalculator({
     onClose(); // Close calculator after success modal is closed
   };
   
+  // Close calculator when success modal is shown
+  useEffect(() => {
+    if (showSuccessModal) {
+      // Hide calculator immediately when success modal is shown
+      document.querySelector('.calculator-modal')?.classList.add('opacity-0');
+    }
+  }, [showSuccessModal]);
+  
   // Format number for display
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -198,7 +206,7 @@ export default function PortfolioImpactCalculator({
   };
   
   return (
-    <AnimatePresence>
+    <AnimatePresence mode="wait" key="calculator-modal">
       {isOpen && (
         <>
           {/* Backdrop with blur effect */}
