@@ -8,8 +8,13 @@ import AuthPage from "@/pages/auth-page";
 import LessonPage from "@/pages/lesson-page";
 import OnboardingPage from "@/pages/onboarding-page";
 import StockDetailPage from "@/pages/stock-detail-page";
+import LearnPage from "@/pages/learn";
+import MarketAdventure from "@/pages/market-adventure";
+import InvestorSimulator from "@/pages/investor-simulator";
+import { TimeAttackGame } from "@/components/time-attack-game";
 import { AuthProvider } from "@/hooks/use-auth";
 import { UserProgressProvider } from "@/contexts/user-progress-context";
+import { BoardRoomGame } from "@/components/board-room-game";
 
 function Router() {
   return (
@@ -17,8 +22,11 @@ function Router() {
       <Route path="/" component={HomePage} />
       <Route path="/stock/:stackId" component={StockDetailPage} />
       <Route path="/lesson/:stackId" component={LessonPage} />
-      <Route path="/learn" component={HomePage} />
-      <Route path="/market" component={HomePage} />
+      <Route path="/learn" component={LearnPage} />
+      <Route path="/market-adventure" component={MarketAdventure} />
+      <Route path="/investor-simulator" component={InvestorSimulator} />
+      <Route path="/time-attack" component={TimeAttackGame} />
+      <Route path="/learn/board-room" component={BoardRoomGame} />
       <Route path="/achievements" component={HomePage} />
       <Route path="/profile" component={HomePage} />
       <Route path="/onboarding" component={OnboardingPage} />

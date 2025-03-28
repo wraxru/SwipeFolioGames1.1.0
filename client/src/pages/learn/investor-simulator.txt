@@ -1,0 +1,182 @@
+This is the raw story data for the Investor Simulator game. This can be used for creating flowcharts and improving the game's narrative structure.
+
+=Raw Data Starts Here=
+<nowiki>::</nowiki> Start
+<<silently>>
+<<set $playerName = "">
+<<set $initialCapital = 100000>>
+<<set $currentCapital = $initialCapital>>
+<<set $portfolio = {}>>
+<<set $dayCount = 1>>
+<<set $marketSentiment = "neutral">>
+<<set $riskTolerance = "moderate">>
+<<set $investmentStrategy = "none">>
+<<set $learnedBasics = false>>
+<<set $firstTrade = false>>
+<<set $marketKnowledge = 0>>
+<<set $tradingExperience = 0>>
+<<set $currentSector = "none">>
+<<set $lastTradeResult = "none">>
+<<set $tutorialCompleted = false>>
+<<endsilently>>
+
+[Welcome to Investor Simulator]
+<nowiki>[[begin_tutorial]]</nowiki>
+
+<nowiki>::</nowiki> begin_tutorial
+Welcome to Investor Simulator! This interactive experience will help you learn about investing in the stock market through hands-on practice.
+
+You have $100,000 in initial capital to start your investment journey. Before you begin trading, let's go through some basics.
+
+Would you like to:
+<nowiki>[[Learn about market basics|market_basics]]</nowiki>
+<nowiki>[[Skip tutorial and start trading|first_trade]]</nowiki>
+
+<nowiki>::</nowiki> market_basics
+Let's start with the fundamentals of stock market investing:
+
+1. Stocks represent ownership in a company
+2. Stock prices fluctuate based on:
+   - Company performance
+   - Market sentiment
+   - Economic conditions
+   - Industry trends
+
+3. Key concepts to remember:
+   - Buy low, sell high
+   - Diversification reduces risk
+   - Research before investing
+   - Don't invest more than you can afford to lose
+
+Would you like to:
+<nowiki>[[Learn about different investment strategies|investment_strategies]]</nowiki>
+<nowiki>[[Start your first trade|first_trade]]</nowiki>
+
+<nowiki>::</nowiki> investment_strategies
+Here are the main investment strategies you can follow:
+
+1. Growth Investing
+   - Focus on companies with high growth potential
+   - Often higher risk, higher reward
+   - Example: Tech companies
+
+2. Value Investing
+   - Look for undervalued companies
+   - Often more stable, lower risk
+   - Example: Established companies with strong fundamentals
+
+3. Dividend Investing
+   - Focus on companies that pay regular dividends
+   - Provides steady income
+   - Example: Utility companies
+
+4. Index Investing
+   - Invest in market indices
+   - Diversified, lower risk
+   - Example: S&P 500 ETFs
+
+Which strategy interests you the most?
+<nowiki>[[Growth Investing|set_growth_strategy]]</nowiki>
+<nowiki>[[Value Investing|set_value_strategy]]</nowiki>
+<nowiki>[[Dividend Investing|set_dividend_strategy]]</nowiki>
+<nowiki>[[Index Investing|set_index_strategy]]</nowiki>
+
+<nowiki>::</nowiki> set_growth_strategy
+<<set $investmentStrategy = "growth">>
+You've chosen Growth Investing! This strategy focuses on companies with high growth potential.
+
+Let's start with your first trade. You have $100,000 to invest. The tech sector is showing strong growth potential.
+
+Would you like to:
+<nowiki>[[Research tech companies|research_tech]]</nowiki>
+<nowiki>[[Invest in a tech ETF|invest_tech_etf]]</nowiki>
+
+<nowiki>::</nowiki> research_tech
+You decide to research individual tech companies. Here are some options:
+
+1. TechCorp (TECH)
+   - Fast-growing cloud computing company
+   - Recent earnings beat expectations
+   - P/E ratio: 45
+   - Risk: High
+
+2. DataFlow (DATA)
+   - AI and data analytics leader
+   - Strong revenue growth
+   - P/E ratio: 38
+   - Risk: High
+
+3. CloudNet (CLD)
+   - Established cloud infrastructure provider
+   - Steady growth
+   - P/E ratio: 32
+   - Risk: Moderate
+
+Which company would you like to invest in?
+<nowiki>[[Invest in TechCorp|invest_techcorp]]</nowiki>
+<nowiki>[[Invest in DataFlow|invest_dataflow]]</nowiki>
+<nowiki>[[Invest in CloudNet|invest_cloudnet]]</nowiki>
+
+<nowiki>::</nowiki> invest_techcorp
+<<set $firstTrade = true>>
+<<set $currentSector = "tech">>
+You decide to invest in TechCorp. How much would you like to invest?
+
+<nowiki>[[Invest $25,000|invest_amount_25k]]</nowiki>
+<nowiki>[[Invest $50,000|invest_amount_50k]]</nowiki>
+<nowiki>[[Invest $75,000|invest_amount_75k]]</nowiki>
+
+<nowiki>::</nowiki> invest_amount_25k
+<<set $currentCapital = $currentCapital - 25000>>
+<<set $portfolio["TECH"] = 25000>>
+You've invested $25,000 in TechCorp.
+
+A week later, the company announces strong earnings and the stock price increases by 15%!
+
+Your investment is now worth $28,750.
+
+Would you like to:
+<nowiki>[[Hold the position|hold_position]]</nowiki>
+<nowiki>[[Take profits|take_profits]]</nowiki>
+
+<nowiki>::</nowiki> hold_position
+You decide to hold your position in TechCorp.
+
+The following week, market sentiment shifts and tech stocks face some pressure. TechCorp's stock price drops by 8%.
+
+Your investment is now worth $26,450.
+
+Would you like to:
+<nowiki>[[Continue holding|continue_holding]]</nowiki>
+<nowiki>[[Cut losses|cut_losses]]</nowiki>
+
+<nowiki>::</nowiki> continue_holding
+You maintain your position in TechCorp, believing in the company's long-term growth potential.
+
+A month later, the company announces a major partnership and the stock price surges by 25%!
+
+Your investment is now worth $33,062.50.
+
+This demonstrates an important lesson: Sometimes holding through short-term volatility can lead to better long-term results.
+
+Would you like to:
+<nowiki>[[Start a new trade|first_trade]]</nowiki>
+<nowiki>[[Review your strategy|review_strategy]]</nowiki>
+
+<nowiki>::</nowiki> review_strategy
+Let's review your investment strategy:
+
+1. Initial Investment: $25,000 in TechCorp
+2. Strategy Used: Growth Investing
+3. Risk Level: High
+4. Final Result: +32.25% return
+
+Key Lessons Learned:
+- Growth stocks can be volatile
+- Patience can be rewarding
+- Research pays off
+- Diversification is important
+
+Would you like to:
+<nowiki>[[Try a different strategy|investment_strategies]]</nowiki>
+<nowiki>[[Start a new trade|first_trade]]</nowiki> 

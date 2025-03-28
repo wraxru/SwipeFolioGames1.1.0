@@ -1,4 +1,4 @@
-import { Home, BarChart3, Search, Briefcase, User, BellRing } from "lucide-react";
+import { Home, Search, Briefcase, User, BellRing, GraduationCap } from "lucide-react";
 import { useLocation } from "wouter";
 
 export default function AppNavigation() {
@@ -24,12 +24,12 @@ export default function AppNavigation() {
           isActive={isActive("/discover")}
           href="/discover"
         />
-        
+
         <NavItem 
-          icon={<BarChart3 className="w-5 h-5" />} 
-          label="Markets" 
-          isActive={isActive("/markets")}
-          href="/markets"
+          icon={<GraduationCap className="w-5 h-5" />} 
+          label="Learn" 
+          isActive={isActive("/learn")}
+          href="/learn"
         />
         
         <NavItem 
