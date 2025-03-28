@@ -7,7 +7,7 @@ import MetricPopup from "./metric-popup-fixed";
 import PortfolioImpactCalculator from "./portfolio-impact-calculator";
 import OverallAnalysisCard from "@/components/overall-analysis-card";
 import { Skeleton } from "@/components/ui/skeleton";
-import ComparativeAnalysis from "@/components/comparative-analysis";
+import IndustryPosition from "@/components/industry-position";
 
 interface StockCardProps {
   stock: StockData;
@@ -911,9 +911,9 @@ export default function StockCard({
           </div>
         </div>
         
-        {/* Comparative Analysis Section */}
+        {/* Industry Position Section */}
         <div className="bg-white border-t border-b border-slate-100">
-          <ComparativeAnalysis currentStock={stock} />
+          <IndustryPosition stock={stock} />
         </div>
         
         {/* Bottom Action Bar */}

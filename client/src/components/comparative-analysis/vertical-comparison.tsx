@@ -7,6 +7,7 @@ import { marketAverages } from '../../lib/market-averages';
 
 interface VerticalStockComparisonProps {
   currentStock: StockData;
+  industry?: string;
 }
 
 interface ComparisonStockData {
@@ -25,9 +26,9 @@ interface ComparisonStockData {
  * A vertical comparison component that shows how a stock compares to ALL other stocks in its industry
  * using vertical bars for easy comparison.
  */
-export default function VerticalStockComparison({ currentStock }: VerticalStockComparisonProps) {
-  // Get the industry for the current stock 
-  const industry = currentStock.industry || 'Other';
+export default function VerticalStockComparison({ currentStock, industry: propIndustry }: VerticalStockComparisonProps) {
+  // Get the industry for the current stock (from props or the stock itself)
+  const industry = propIndustry || currentStock.industry || 'Other';
   
   // Load all stocks in this industry
   const allIndustryStocks = getIndustryStocks(industry);
