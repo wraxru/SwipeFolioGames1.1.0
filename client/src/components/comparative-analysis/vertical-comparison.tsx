@@ -316,6 +316,7 @@ export default function VerticalStockComparison({ currentStock }: VerticalStockC
     : Object.keys(competitorsForIndustry)[0];
   
   const [showFullComparison, setShowFullComparison] = useState(false);
+  const [showAllIndustryComparison, setShowAllIndustryComparison] = useState(false);
   const [selectedCompetitor, setSelectedCompetitor] = useState(defaultCompetitor);
   
   // Get actual scores from the advanced metrics scoring system
@@ -354,6 +355,19 @@ export default function VerticalStockComparison({ currentStock }: VerticalStockC
   // Toggle full comparison
   const toggleFullComparison = () => {
     setShowFullComparison(!showFullComparison);
+    // Close industry comparison if open
+    if (showAllIndustryComparison) {
+      setShowAllIndustryComparison(false);
+    }
+  };
+  
+  // Toggle industry comparison view
+  const toggleIndustryComparison = () => {
+    setShowAllIndustryComparison(!showAllIndustryComparison);
+    // Close full comparison if open
+    if (showFullComparison) {
+      setShowFullComparison(false);
+    }
   };
   
   // Handle competitor change
@@ -381,12 +395,12 @@ export default function VerticalStockComparison({ currentStock }: VerticalStockC
           Compare with:
         </div>
         
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <Select 
             defaultValue={selectedCompetitor}
             onValueChange={handleCompetitorChange}
           >
-            <SelectTrigger className="w-[100px] h-8 rounded-lg">
+            <SelectTrigger className="w-[80px] h-8 rounded-lg">
               <SelectValue placeholder={selectedCompetitor} />
             </SelectTrigger>
             <SelectContent>
@@ -399,11 +413,17 @@ export default function VerticalStockComparison({ currentStock }: VerticalStockC
           </Select>
           
           <button 
-            className="text-blue-600 font-medium text-sm flex items-center"
+            className="text-blue-600 hover:text-blue-800 font-medium text-sm flex items-center bg-gray-100 hover:bg-gray-200 rounded-md px-2 py-1"
+            onClick={toggleIndustryComparison}
+          >
+            {showAllIndustryComparison ? 'Hide Industry' : 'All Industry'}
+          </button>
+          
+          <button 
+            className="text-blue-600 hover:text-blue-800 font-medium text-sm flex items-center bg-gray-100 hover:bg-gray-200 rounded-md px-2 py-1"
             onClick={toggleFullComparison}
           >
-            {showFullComparison ? 'Hide All' : 'View All'}
-            {showFullComparison ? <Minus className="h-3.5 w-3.5 ml-1" /> : <Plus className="h-3.5 w-3.5 ml-1" />}
+            {showFullComparison ? 'Hide Table' : 'Table View'}
           </button>
         </div>
       </div>
@@ -421,7 +441,9 @@ export default function VerticalStockComparison({ currentStock }: VerticalStockC
       </div>
       
       {/* Metric comparisons - vertical layout */}
-      {Object.keys(mainStockData.ratings).map(metric => {
+      {Object.keys(mainStockData.ratings)
+        .filter(metric => metric !== 'Dividend') // Remove Dividend from display
+        .map(metric => {
         const mainValue = mainStockData.ratings[metric as keyof typeof mainStockData.ratings];
         const compValue = competitor.ratings[metric as keyof typeof competitor.ratings];
         const industryValue = benchmarks.Industry.ratings[metric as keyof typeof benchmarks.Industry.ratings];
@@ -531,6 +553,89 @@ export default function VerticalStockComparison({ currentStock }: VerticalStockC
         );
       })}
       
+      {/* Industry comparison view - shows all stocks in the industry */}
+      {showAllIndustryComparison && (
+        <div className="mt-6 border-t pt-4 transition-all duration-300 ease-in-out">
+          <div className="flex justify-between items-center mb-3">
+            <div className="font-semibold text-gray-800">Industry Comparison</div>
+            <button 
+              className="text-gray-500 hover:text-gray-700 p-1"
+              onClick={toggleIndustryComparison}
+              aria-label="Close industry comparison"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+              </svg>
+            </button>
+          </div>
+          
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="bg-gray-50">
+                  <th className="text-left py-2 px-2 rounded-l-lg font-semibold text-gray-700">Stock</th>
+                  <th className="text-center py-2 px-2 font-semibold text-gray-700">Performance</th>
+                  <th className="text-center py-2 px-2 font-semibold text-gray-700">Stability</th>
+                  <th className="text-center py-2 px-2 font-semibold text-gray-700">Value</th>
+                  <th className="text-center py-2 px-2 rounded-r-lg font-semibold text-gray-700">Momentum</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {/* Add the main stock first */}
+                <tr className="hover:bg-gray-50 transition-colors duration-150 bg-gray-50">
+                  <td className="py-3 px-2 font-medium text-gray-800">{mainStockData.symbol}</td>
+                  <td className="text-center py-3 px-2">{mainStockData.ratings.Performance.toFixed(0)}</td>
+                  <td className="text-center py-3 px-2">{mainStockData.ratings.Stability.toFixed(0)}</td>
+                  <td className="text-center py-3 px-2">{mainStockData.ratings.Value.toFixed(0)}</td>
+                  <td className="text-center py-3 px-2">{mainStockData.ratings.Momentum.toFixed(0)}</td>
+                </tr>
+                
+                {/* Display all other stocks in the industry */}
+                {Object.entries(competitorsForIndustry)
+                  .filter(([symbol]) => symbol !== mainStockData.symbol)
+                  .map(([symbol, stockData]) => (
+                    <tr 
+                      key={symbol} 
+                      className={`hover:bg-gray-50 transition-colors duration-150 ${symbol === selectedCompetitor ? 'bg-purple-50' : ''} cursor-pointer`}
+                      onClick={() => {
+                        setSelectedCompetitor(symbol);
+                        setShowAllIndustryComparison(false);
+                      }}
+                    >
+                      <td className="py-3 px-2 font-medium text-gray-700">{symbol}</td>
+                      <td className="text-center py-3 px-2">{stockData.ratings.Performance.toFixed(0)}</td>
+                      <td className="text-center py-3 px-2">{stockData.ratings.Stability.toFixed(0)}</td>
+                      <td className="text-center py-3 px-2">{stockData.ratings.Value.toFixed(0)}</td>
+                      <td className="text-center py-3 px-2">{stockData.ratings.Momentum.toFixed(0)}</td>
+                    </tr>
+                  ))
+                }
+                
+                {/* Add industry and market benchmarks at the bottom */}
+                <tr className="hover:bg-gray-50 transition-colors duration-150 bg-gray-100">
+                  <td className="py-3 px-2 font-medium text-gray-600">Industry Avg</td>
+                  <td className="text-center py-3 px-2 text-gray-600">{benchmarks.Industry.ratings.Performance.toFixed(0)}</td>
+                  <td className="text-center py-3 px-2 text-gray-600">{benchmarks.Industry.ratings.Stability.toFixed(0)}</td>
+                  <td className="text-center py-3 px-2 text-gray-600">{benchmarks.Industry.ratings.Value.toFixed(0)}</td>
+                  <td className="text-center py-3 px-2 text-gray-600">{benchmarks.Industry.ratings.Momentum.toFixed(0)}</td>
+                </tr>
+                <tr className="hover:bg-gray-50 transition-colors duration-150 bg-gray-100">
+                  <td className="py-3 px-2 font-medium text-gray-500">Market Avg</td>
+                  <td className="text-center py-3 px-2 text-gray-500">{benchmarks.Market.ratings.Performance.toFixed(0)}</td>
+                  <td className="text-center py-3 px-2 text-gray-500">{benchmarks.Market.ratings.Stability.toFixed(0)}</td>
+                  <td className="text-center py-3 px-2 text-gray-500">{benchmarks.Market.ratings.Value.toFixed(0)}</td>
+                  <td className="text-center py-3 px-2 text-gray-500">{benchmarks.Market.ratings.Momentum.toFixed(0)}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          
+          <div className="text-xs text-gray-500 mt-3">
+            Click any row to select that stock for detailed comparison
+          </div>
+        </div>
+      )}
+      
       {/* Full comparison table */}
       {showFullComparison && (
         <div className="mt-6 border-t pt-4 transition-all duration-300 ease-in-out">
@@ -559,7 +664,9 @@ export default function VerticalStockComparison({ currentStock }: VerticalStockC
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-                {Object.keys(mainStockData.ratings).map(metric => {
+                {Object.keys(mainStockData.ratings)
+                  .filter(metric => metric !== 'Dividend')
+                  .map(metric => {
                   const mainValue = mainStockData.ratings[metric as keyof typeof mainStockData.ratings];
                   const compValue = competitor.ratings[metric as keyof typeof competitor.ratings];
                   const industryValue = benchmarks.Industry.ratings[metric as keyof typeof benchmarks.Industry.ratings];
