@@ -641,7 +641,8 @@ export default function PortfolioImpactCalculator({
         </>
       )}
       
-      {/* Purchase Success Modal */}
+      {/* Remove any default toast notifications */}
+{/* Purchase Success Modal */}
       <PurchaseSuccessModal
         isOpen={showSuccessModal}
         onClose={handleSuccessModalClose}

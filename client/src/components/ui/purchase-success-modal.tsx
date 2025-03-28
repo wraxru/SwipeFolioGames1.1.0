@@ -40,17 +40,17 @@ export default function PurchaseSuccessModal({
             animate={{ opacity: 0.7 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 bg-black z-[59]"
+            className="fixed inset-0 bg-black z-[9999] backdrop-blur-sm"
             onClick={onClose}
           />
-          
+
           {/* Success modal with green background */}
           <motion.div
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="success-modal fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[60]
+            className="success-modal fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[10000]
                        w-[85%] max-w-xs rounded-xl overflow-hidden bg-gradient-to-b from-green-500 to-green-600 
                        shadow-2xl border border-green-400"
             style={{
@@ -74,7 +74,7 @@ export default function PurchaseSuccessModal({
                 <X size={16} />
               </button>
             </div>
-            
+
             {/* Content */}
             <div className="p-4 text-white">
               <div className="mb-4 text-center">
@@ -84,24 +84,24 @@ export default function PurchaseSuccessModal({
                 <p className="text-lg font-semibold mb-3">
                   of {stock.name} ({stock.ticker})
                 </p>
-                
+
                 <div className="flex justify-center items-center space-x-2 mb-2">
                   <div className="bg-white/20 px-3 py-1.5 rounded-lg flex-1">
                     <p className="text-xs font-medium">Investment</p>
                     <p className="text-lg font-bold">{formatCurrency(amount)}</p>
                   </div>
-                  
+
                   <div className="flex items-center text-white/60">
                     <TrendingUp size={16} />
                   </div>
-                  
+
                   <div className="bg-white/20 px-3 py-1.5 rounded-lg flex-1">
                     <p className="text-xs font-medium">Projected Return</p>
                     <p className="text-lg font-bold">{formatCurrency(projectedReturn)}</p>
                   </div>
                 </div>
               </div>
-              
+
               {/* Action button */}
               <button
                 onClick={onClose}
