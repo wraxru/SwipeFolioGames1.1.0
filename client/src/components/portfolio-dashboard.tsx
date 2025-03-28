@@ -7,6 +7,7 @@ import { usePortfolio } from '@/contexts/portfolio-context';
 export default function PortfolioDashboard() {
   // Force component to update on any portfolio changes
   const [forceUpdateTime, setForceUpdateTime] = useState(Date.now());
+  const [lastValues, setLastValues] = useState({ invested: 0, available: 0 });
   const portfolio = usePortfolio();
   
   // Update component whenever portfolio changes
@@ -14,11 +15,16 @@ export default function PortfolioDashboard() {
     // Add delayed force update to ensure state propagation
     const timer = setTimeout(() => {
       setForceUpdateTime(Date.now());
+      setLastValues({
+        invested: portfolio.portfolioValue,
+        available: portfolio.cash
+      });
       console.log("Portfolio dashboard updated:", {
         timestamp: new Date().toISOString(),
         holdings: portfolio.holdings.length,
         portfolioValue: portfolio.portfolioValue,
         totalValue: portfolio.totalValue,
+        cash: portfolio.cash,
         version: portfolio.version,
         lastUpdated: new Date(portfolio.lastUpdated).toISOString()
       });
