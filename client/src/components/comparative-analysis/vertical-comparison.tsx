@@ -253,7 +253,7 @@ export default function VerticalStockComparison({ currentStock }: VerticalStockC
           <label className="block text-sm font-medium text-gray-700 mb-2">Compare with:</label>
           <div className="relative">
             <select 
-              className="appearance-none w-full px-4 py-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-base"
+              className="appearance-none w-full px-4 py-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-base text-gray-900"
               value={selectedCompetitor}
               onChange={(e) => {
                 console.log("Selected competitor:", e.target.value);
