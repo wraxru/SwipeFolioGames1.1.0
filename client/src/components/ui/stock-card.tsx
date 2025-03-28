@@ -844,7 +844,12 @@ export default function StockCard({
           })}
         </div>
         
-        {/* Unified cards with consistent styling */}
+        {/* Comparative Analysis Section - Moved to the top */}
+        <div className="bg-white border-t border-b border-slate-100 mb-4">
+          <ComparativeAnalysis currentStock={stock} />
+        </div>
+        
+        {/* Unified Synopsis cards with consistent styling */}
         <div className="bg-white rounded-xl border border-slate-200 shadow-md overflow-hidden mb-4">
           {/* Common background with slight highlight */}
           <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 to-indigo-50/30 rounded-xl opacity-30"></div>
@@ -914,24 +919,9 @@ export default function StockCard({
           </div>
         </div>
         
-        {/* Comparative Analysis Section */}
-        <div className="bg-white border-t border-b border-slate-100">
-          <ComparativeAnalysis currentStock={stock} />
-        </div>
-        
-        {/* Bottom Action Bar */}
+        {/* Swipe Instructions */}
         <div className="p-4 bg-white border-t border-b border-slate-100 mb-4">
-          <button
-            onClick={openPortfolioCalculator}
-            className={`w-full py-3 px-4 rounded-xl font-medium shadow-md 
-              ${realTimeChange >= 0 
-                ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:from-green-600 hover:to-emerald-700'
-                : 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white hover:from-blue-600 hover:to-indigo-700'} 
-              active:scale-98 transition-all duration-150`}
-          >
-            Add to Portfolio
-          </button>
-          <div className="text-center text-xs text-slate-500 mt-2">
+          <div className="text-center text-sm font-medium text-gray-700 p-2">
             Swipe left to skip • Swipe right to invest
           </div>
         </div>

@@ -95,24 +95,29 @@ const IndustryPosition: React.FC<IndustryPositionProps> = ({
               <p className="text-sm font-medium text-gray-600">{industry}</p>
             </div>
             
-            {/* Rank Badge with Grade */}
-            <div className="flex flex-col items-center">
+            {/* Grade and Rank - Redesigned as a horizontal badge */}
+            <div className="flex items-center gap-3">
+              <div className="flex flex-col">
+                <div className="flex items-center">
+                  <Award className="h-4 w-4 mr-1 text-amber-600" />
+                  <span className="text-sm font-bold text-gray-800">GRADE</span>
+                </div>
+                <div className="flex items-center mt-1">
+                  <span className="text-xs text-gray-600">Industry Ranking:</span>
+                  <span className="text-xs font-medium text-gray-800 ml-1">{rank}th percentile</span>
+                </div>
+              </div>
               <div className="relative">
-                <div className="absolute inset-0 rounded-full blur-sm opacity-60"
+                <div className="absolute inset-0 rounded-lg blur-sm opacity-60"
                      style={{ 
-                       backgroundColor: `hsl(${Math.min(120, rank * 1.2)}, 70%, 60%)` 
+                       backgroundColor: `hsl(${Math.min(120, rank * 1.2)}, 70%, 60%)`
                      }}>
                 </div>
-                <div className="rounded-full h-20 w-20 flex flex-col items-center justify-center text-white relative shadow-lg" 
+                <div className="rounded-lg w-16 h-16 flex items-center justify-center text-white relative shadow-lg" 
                      style={{ 
                        background: `linear-gradient(135deg, hsl(${Math.min(120, rank * 1.2)}, 80%, 65%), hsl(${Math.min(120, rank * 1.2)}, 70%, 45%))` 
                      }}>
-                  <div className="flex items-center justify-center -mt-1">
-                    <Award className="h-4 w-4 mr-0.5" />
-                    <span className="text-xs font-medium">GRADE</span>
-                  </div>
-                  <span className="text-2xl font-bold tracking-tight">{stockGrade}</span>
-                  <span className="text-xs font-medium">{rank}th percentile</span>
+                  <span className="text-3xl font-bold">{stockGrade}</span>
                 </div>
               </div>
             </div>
