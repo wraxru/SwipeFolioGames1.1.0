@@ -4,6 +4,7 @@ import { X, DollarSign, ChevronDown, ChevronUp, Info, TrendingUp, Shield, Zap, A
 import { StockData } from "@/lib/stock-data";
 import { usePortfolio } from "@/contexts/portfolio-context";
 import { cn } from "@/lib/utils";
+import PurchaseSuccessModal from "./purchase-success-modal";
 
 interface PortfolioImpactCalculatorProps {
   isOpen: boolean;
@@ -26,6 +27,9 @@ export default function PortfolioImpactCalculator({
   
   // State for metric info tooltips
   const [activeTooltip, setActiveTooltip] = useState<string | null>(null);
+  
+  // State for purchase success modal
+  const [showSuccessModal, setShowSuccessModal] = useState<boolean>(false);
   
   // Metric explanations
   const metricExplanations = {
@@ -167,8 +171,15 @@ export default function PortfolioImpactCalculator({
   // Handle invest action
   const handleInvest = () => {
     buyStock(stock, investmentAmount);
+    setShowSuccessModal(true);
     onInvest();
-    onClose();
+    // Don't close the calculator yet - success modal will be shown first
+  };
+  
+  // Handle success modal close
+  const handleSuccessModalClose = () => {
+    setShowSuccessModal(false);
+    onClose(); // Close calculator after success modal is closed
   };
   
   // Format number for display
@@ -621,6 +632,16 @@ export default function PortfolioImpactCalculator({
           </motion.div>
         </>
       )}
+      
+      {/* Purchase Success Modal */}
+      <PurchaseSuccessModal
+        isOpen={showSuccessModal}
+        onClose={handleSuccessModalClose}
+        stock={stock}
+        shares={shares}
+        amount={investmentAmount}
+        projectedReturn={projectedReturn}
+      />
     </AnimatePresence>
   );
 }
