@@ -2,7 +2,7 @@ import { useState, useEffect, useContext } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronUp, Award } from 'lucide-react';
 import { PortfolioContext } from '@/contexts/portfolio-context';
-import avatarImage from '../assets/belford-avatar.png';
+const avatarImage = '/belford-avatar.png';
 
 interface ModernUserWelcomeProps {
   name: string;
