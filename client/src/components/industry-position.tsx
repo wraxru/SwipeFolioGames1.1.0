@@ -60,8 +60,15 @@ export default function IndustryPosition({ stock }: IndustryPositionProps) {
   // Toggle comparison visibility with improved logging
   const toggleComparison = () => {
     console.log("State before toggle:", showComparison);
-    setShowComparison(!showComparison);
-    console.log("State after toggle:", !showComparison);
+    
+    // IMPORTANT: Force set the state to true/false directly rather than toggling
+    if (showComparison) {
+      setShowComparison(false);
+      console.log("Explicitly setting to FALSE");
+    } else {
+      setShowComparison(true);
+      console.log("Explicitly setting to TRUE");
+    }
     
     // Scroll to the comparison component when it's opened
     if (!showComparison && comparisonRef.current) {
@@ -130,26 +137,46 @@ export default function IndustryPosition({ stock }: IndustryPositionProps) {
           </div>
           
           {/* Compare Button - Prominent and attention-grabbing */}
-          <button 
-            onClick={toggleComparison}
-            className={`mt-5 w-full py-3 px-4 rounded-lg flex items-center justify-center font-medium text-base transition-all duration-200 ${
-              showComparison 
-                ? 'bg-gray-100 text-gray-700 hover:bg-gray-200' 
-                : 'bg-blue-600 text-white hover:bg-blue-700 shadow-md'
-            }`}
-          >
-            {showComparison ? (
-              <>
-                <ChevronUp className="w-5 h-5 mr-2" />
-                Hide Industry Comparison
-              </>
-            ) : (
-              <>
+          <div className="mt-5 flex flex-col gap-2">
+            {/* Direct button for SHOW comparison */}
+            {!showComparison && (
+              <button 
+                onClick={() => {
+                  console.log("SHOW button clicked");
+                  setShowComparison(true);
+                }}
+                className="w-full py-3 px-4 rounded-lg flex items-center justify-center font-medium text-base bg-blue-600 text-white hover:bg-blue-700 shadow-md"
+              >
                 <ChevronDown className="w-5 h-5 mr-2" />
                 See How It Compares
-              </>
+              </button>
             )}
-          </button>
+            
+            {/* Direct button for HIDE comparison */}
+            {showComparison && (
+              <button 
+                onClick={() => {
+                  console.log("HIDE button clicked");
+                  setShowComparison(false);
+                }}
+                className="w-full py-3 px-4 rounded-lg flex items-center justify-center font-medium text-base bg-gray-100 text-gray-700 hover:bg-gray-200"
+              >
+                <ChevronUp className="w-5 h-5 mr-2" />
+                Hide Industry Comparison
+              </button>
+            )}
+            
+            {/* Extra debug button that forces state to TRUE */}
+            <button 
+              onClick={() => {
+                console.log("FORCE SHOW clicked");
+                setShowComparison(true);
+              }}
+              className="w-full py-2 px-3 rounded-lg flex items-center justify-center font-medium text-sm bg-green-600 text-white"
+            >
+              Force Show Comparison (Debug)
+            </button>
+          </div>
         </div>
       </div>
       
