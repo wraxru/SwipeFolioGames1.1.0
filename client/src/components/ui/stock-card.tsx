@@ -7,7 +7,7 @@ import MetricPopup from "./metric-popup-fixed";
 import PortfolioImpactCalculator from "./portfolio-impact-calculator";
 import OverallAnalysisCard from "@/components/overall-analysis-card";
 import { Skeleton } from "@/components/ui/skeleton";
-import IndustryPosition from "@/components/industry-position";
+import ComparativeAnalysis from "@/components/comparative-analysis";
 
 interface StockCardProps {
   stock: StockData;
@@ -911,9 +911,26 @@ export default function StockCard({
           </div>
         </div>
         
-        {/* Industry Position Section */}
+        {/* Comparative Analysis Section */}
         <div className="bg-white border-t border-b border-slate-100">
-          <IndustryPosition stock={stock} />
+          <ComparativeAnalysis currentStock={stock} />
+        </div>
+        
+        {/* Bottom Action Bar */}
+        <div className="p-4 bg-white border-t border-b border-slate-100 mb-4">
+          <button
+            onClick={openPortfolioCalculator}
+            className={`w-full py-3 px-4 rounded-xl font-medium shadow-md 
+              ${realTimeChange >= 0 
+                ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:from-green-600 hover:to-emerald-700'
+                : 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white hover:from-blue-600 hover:to-indigo-700'} 
+              active:scale-98 transition-all duration-150`}
+          >
+            Add to Portfolio
+          </button>
+          <div className="text-center text-xs text-slate-500 mt-2">
+            Swipe left to skip • Swipe right to invest
+          </div>
         </div>
         
         {/* Overall Analysis - Enhanced with consistent spacing */}

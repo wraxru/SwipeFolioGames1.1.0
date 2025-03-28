@@ -7,7 +7,6 @@ import { marketAverages } from '../../lib/market-averages';
 
 interface VerticalStockComparisonProps {
   currentStock: StockData;
-  industry?: string;
 }
 
 interface ComparisonStockData {
@@ -26,9 +25,9 @@ interface ComparisonStockData {
  * A vertical comparison component that shows how a stock compares to ALL other stocks in its industry
  * using vertical bars for easy comparison.
  */
-export default function VerticalStockComparison({ currentStock, industry: propIndustry }: VerticalStockComparisonProps) {
-  // Get the industry for the current stock (from props or the stock itself)
-  const industry = propIndustry || currentStock.industry || 'Other';
+export default function VerticalStockComparison({ currentStock }: VerticalStockComparisonProps) {
+  // Get the industry for the current stock 
+  const industry = currentStock.industry || 'Other';
   
   // Load all stocks in this industry
   const allIndustryStocks = getIndustryStocks(industry);
@@ -98,7 +97,7 @@ export default function VerticalStockComparison({ currentStock, industry: propIn
         stockScoresMap['O'] = {
           symbol: 'O',
           name: 'Realty Income',
-          color: '#3b82f6', // blue-500
+          color: '#7c3aed', // purple-600
           scores: {
             Performance: 48,
             Stability: 82,
@@ -110,7 +109,7 @@ export default function VerticalStockComparison({ currentStock, industry: propIn
         stockScoresMap['SPG'] = {
           symbol: 'SPG',
           name: 'Simon Property',
-          color: '#3b82f6',
+          color: '#7c3aed',
           scores: {
             Performance: 52,
             Stability: 68,
@@ -122,7 +121,7 @@ export default function VerticalStockComparison({ currentStock, industry: propIn
         stockScoresMap['AVB'] = {
           symbol: 'AVB',
           name: 'AvalonBay',
-          color: '#3b82f6',
+          color: '#7c3aed',
           scores: {
             Performance: 47,
             Stability: 76,
@@ -147,7 +146,7 @@ export default function VerticalStockComparison({ currentStock, industry: propIn
             stockScoresMap[stock.ticker] = {
               symbol: stock.ticker,
               name: stock.name,
-              color: '#3b82f6', // blue-500 for competitors
+              color: '#7c3aed', // purple-600 for competitors
               scores: {
                 Performance: performanceScore,
                 Stability: stabilityScore,
@@ -254,7 +253,7 @@ export default function VerticalStockComparison({ currentStock, industry: propIn
           <label className="block text-sm font-medium text-gray-700 mb-2">Compare with:</label>
           <div className="relative">
             <select 
-              className="appearance-none w-full px-4 py-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-base text-gray-900"
+              className="appearance-none w-full px-4 py-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-base"
               value={selectedCompetitor}
               onChange={(e) => {
                 console.log("Selected competitor:", e.target.value);
@@ -386,7 +385,7 @@ export default function VerticalStockComparison({ currentStock, industry: propIn
                   </div>
                   
                   {/* Value label */}
-                  <div className={`text-sm font-semibold mt-1 ${compHigher ? 'text-blue-600' : 'text-gray-700'}`}>
+                  <div className={`text-sm font-semibold mt-1 ${compHigher ? 'text-purple-600' : 'text-gray-700'}`}>
                     {(compValue || 0).toFixed(0)}
                   </div>
                 </div>
@@ -426,7 +425,7 @@ export default function VerticalStockComparison({ currentStock, industry: propIn
                 {Object.entries(industryStocksWithScores).map(([ticker, stockData]) => (
                   <tr 
                     key={ticker} 
-                    className={`hover:bg-gray-50 transition-colors duration-150 ${ticker === selectedCompetitor ? 'bg-blue-50' : ''} cursor-pointer`}
+                    className={`hover:bg-gray-50 transition-colors duration-150 ${ticker === selectedCompetitor ? 'bg-purple-50' : ''} cursor-pointer`}
                     onClick={() => {
                       setSelectedCompetitor(ticker);
                       setShowAllIndustryComparison(false);
