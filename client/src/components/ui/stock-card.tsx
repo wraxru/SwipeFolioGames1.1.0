@@ -929,7 +929,7 @@ export default function StockCard({
                 : 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white hover:from-blue-600 hover:to-indigo-700'} 
               active:scale-98 transition-all duration-150`}
           >
-            Add to Portfolio
+            {stock.name} Details
           </button>
           <div className="text-center text-xs text-slate-500 mt-2">
             Swipe left to skip • Swipe right to invest
