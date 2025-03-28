@@ -37,8 +37,6 @@ export default function VerticalStockComparison({
   const allIndustryStocks = getIndustryStocks(industry);
 
   // State for UI controls
-  const [showFullComparison, setShowFullComparison] = useState(false);
-  const [showAllIndustryComparison, setShowAllIndustryComparison] = useState(false);
   const [selectedCompetitor, setSelectedCompetitor] = useState("");
 
   // Prepare industry averages and market data
@@ -95,79 +93,36 @@ export default function VerticalStockComparison({
       // Calculate scores for all other stocks in the industry
       const stockScoresMap: Record<string, ComparisonStockData> = {};
       
-      // Add hard-coded stocks for specific industries if we have an empty array
-      // This is a fallback for testing only
-      if (allIndustryStocks.length <= 1 && industry === 'Real Estate') {
-        console.log("Adding fallback Real Estate comparison stocks since getIndustryStocks returned insufficient data");
+      // Process actual stocks from the industry
+      console.log(`Processing ${allIndustryStocks.length} industry stocks for comparison...`);
+      
+      allIndustryStocks.forEach(stock => {
+        // Skip the current stock as we already calculated it
+        if (stock.ticker === currentStock.ticker) return;
         
-        // Add mock data just for this industry as a fallback
-        stockScoresMap['O'] = {
-          symbol: 'O',
-          name: 'Realty Income',
-          color: '#7c3aed', // purple-600
-          scores: {
-            Performance: 48,
-            Stability: 82,
-            Value: 73,
-            Momentum: 62
-          }
-        };
-        
-        stockScoresMap['SPG'] = {
-          symbol: 'SPG',
-          name: 'Simon Property',
-          color: '#7c3aed',
-          scores: {
-            Performance: 52,
-            Stability: 68,
-            Value: 77,
-            Momentum: 66
-          }
-        };
-        
-        stockScoresMap['AVB'] = {
-          symbol: 'AVB',
-          name: 'AvalonBay',
-          color: '#7c3aed',
-          scores: {
-            Performance: 47,
-            Stability: 76,
-            Value: 69,
-            Momentum: 58
-          }
-        };
-      } else {
-        // Process actual stocks from the industry
-        console.log(`Processing ${allIndustryStocks.length} industry stocks for comparison...`);
-        
-        allIndustryStocks.forEach(stock => {
-          // Skip the current stock as we already calculated it
-          if (stock.ticker === currentStock.ticker) return;
+        try {
+          const performanceScore = getAdvancedMetricScore(stock, 'performance');
+          const stabilityScore = getAdvancedMetricScore(stock, 'stability');
+          const valueScore = getAdvancedMetricScore(stock, 'value');
+          const momentumScore = getAdvancedMetricScore(stock, 'momentum');
           
-          try {
-            const performanceScore = getAdvancedMetricScore(stock, 'performance');
-            const stabilityScore = getAdvancedMetricScore(stock, 'stability');
-            const valueScore = getAdvancedMetricScore(stock, 'value');
-            const momentumScore = getAdvancedMetricScore(stock, 'momentum');
-            
-            stockScoresMap[stock.ticker] = {
-              symbol: stock.ticker,
-              name: stock.name,
-              color: '#7c3aed', // purple-600 for competitors
-              scores: {
-                Performance: performanceScore,
-                Stability: stabilityScore,
-                Value: valueScore,
-                Momentum: momentumScore
-              }
-            };
-            
-            console.log(`Added competitor ${stock.ticker} with scores - Performance: ${performanceScore}, Stability: ${stabilityScore}, Value: ${valueScore}, Momentum: ${momentumScore}`);
-          } catch (error) {
-            console.error(`Error calculating scores for ${stock.ticker}:`, error);
-          }
-        });
-      }
+          stockScoresMap[stock.ticker] = {
+            symbol: stock.ticker,
+            name: stock.name,
+            color: '#a855f7', // purple-500 for competitors
+            scores: {
+              Performance: performanceScore,
+              Stability: stabilityScore,
+              Value: valueScore,
+              Momentum: momentumScore
+            }
+          };
+          
+          console.log(`Added competitor ${stock.ticker} with scores - Performance: ${performanceScore}, Stability: ${stabilityScore}, Value: ${valueScore}, Momentum: ${momentumScore}`);
+        } catch (error) {
+          console.error(`Error calculating scores for ${stock.ticker}:`, error);
+        }
+      });
       
       console.log(`Total competitors found: ${Object.keys(stockScoresMap).length}`);
       setIndustryStocksWithScores(stockScoresMap);
@@ -206,65 +161,16 @@ export default function VerticalStockComparison({
     Momentum: 50     // Default value
   };
   
-  // Toggle functions for UI
-  const toggleFullComparison = () => {
-    setShowFullComparison(!showFullComparison);
-    if (showAllIndustryComparison) setShowAllIndustryComparison(false);
-  };
-  
-  const toggleIndustryComparison = () => {
-    setShowAllIndustryComparison(!showAllIndustryComparison);
-    if (showFullComparison) setShowFullComparison(false);
-  };
-  
   // Define the metrics to show
   const metrics = ['Performance', 'Stability', 'Value', 'Momentum'];
 
-  // Get overall percentile rank
-  const getOverallRank = (): number => {
-    const allScores: number[] = [];
-    
-    // Add current stock's average score
-    const currentAvg = (
-      currentStockScores.scores.Performance +
-      currentStockScores.scores.Stability +
-      currentStockScores.scores.Value +
-      currentStockScores.scores.Momentum
-    ) / 4;
-    
-    allScores.push(currentAvg);
-    
-    // Add all other stocks' average scores
-    Object.values(industryStocksWithScores).forEach(stock => {
-      const avg = (
-        stock.scores.Performance +
-        stock.scores.Stability +
-        stock.scores.Value +
-        stock.scores.Momentum
-      ) / 4;
-      
-      allScores.push(avg);
-    });
-    
-    // Sort scores from lowest to highest
-    allScores.sort((a, b) => a - b);
-    
-    // Find position of current stock
-    const position = allScores.indexOf(currentAvg);
-    
-    // Calculate percentile
-    const percentile = Math.round((position / (allScores.length - 1)) * 100);
-    
-    return percentile;
-  };
-  
   // Check if we have competitor data available
   const hasCompetitors = Object.keys(industryStocksWithScores).length > 0;
   
   if (!hasCompetitors) {
     return (
-      <div>
-        <div className="text-sm text-gray-500">
+      <div className="rounded-xl bg-white p-4 border border-gray-200">
+        <div className="text-sm text-gray-600 font-medium">
           No other stocks available in this industry for comparison.
         </div>
       </div>
@@ -272,298 +178,166 @@ export default function VerticalStockComparison({
   }
   
   return (
-    <div>
-      <div className="flex justify-end mb-4">
-        <div className="flex space-x-2">
-          <button 
-            className="text-xs px-2 py-1 rounded border border-gray-300 hover:bg-gray-100"
-            onClick={toggleFullComparison}
-          >
-            {showFullComparison ? "Hide Details" : "Show Details"}
-          </button>
-          <button 
-            className="text-xs px-2 py-1 rounded border border-gray-300 hover:bg-gray-100"
-            onClick={toggleIndustryComparison}
-          >
-            {showAllIndustryComparison ? "Hide All Stocks" : "Show All Stocks"}
-          </button>
-        </div>
-      </div>
-      
-      {/* Competitor selector */}
-      {!showAllIndustryComparison && (
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-2">Compare with:</label>
+    <div className="comparison-container rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden">
+      <div className="p-4">
+        {/* Competitor selector - Enhanced & more visible */}
+        <div className="mb-6">
+          <label className="block text-sm font-semibold text-gray-800 mb-2">Compare with competitor:</label>
           <div className="relative">
             <select 
-              className="appearance-none w-full px-4 py-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-base"
+              className="appearance-none w-full px-4 py-3 border border-gray-300 bg-white rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 text-base transition-colors duration-200"
               value={selectedCompetitor}
-              onChange={(e) => {
-                console.log("Selected competitor:", e.target.value);
-                setSelectedCompetitor(e.target.value);
-              }}
+              onChange={(e) => setSelectedCompetitor(e.target.value)}
             >
-              {Object.keys(industryStocksWithScores).length === 0 ? (
-                <option value="">No competitors available</option>
-              ) : (
-                Object.entries(industryStocksWithScores).map(([ticker, data]) => (
-                  <option key={ticker} value={ticker}>
-                    {data.name} ({ticker})
-                  </option>
-                ))
-              )}
+              {Object.entries(industryStocksWithScores).map(([ticker, data]) => (
+                <option key={ticker} value={ticker}>
+                  {data.name} ({ticker})
+                </option>
+              ))}
             </select>
-            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-600">
               <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                 <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
               </svg>
             </div>
           </div>
           <div className="mt-1 text-xs text-gray-500">
-            {Object.keys(industryStocksWithScores).length} competitor stocks available
+            {Object.keys(industryStocksWithScores).length} competitor stocks in {industry} industry
           </div>
         </div>
-      )}
-      
-      {/* Vertical bar comparison for each metric */}
-      {!showAllIndustryComparison && competitorData && (
-        <div className="space-y-6">
-          {metrics.map(metric => {
-            // Get values for this metric
-            const mainValue = currentStockScores.scores[metric as keyof typeof currentStockScores.scores] || 0;
-            const compValue = competitorData.scores[metric as keyof typeof competitorData.scores] || 0;
-            const industryValue = industryBenchmarks[metric as keyof typeof industryBenchmarks] || 0;
-            const marketValue = marketBenchmarks[metric as keyof typeof marketBenchmarks] || 0;
-            
-            // Determine higher value
-            const mainHigher = mainValue > compValue;
-            const compHigher = compValue > mainValue;
-            
-            return (
-              <div key={metric} className="space-y-1">
-                <div className="flex justify-between text-xs text-gray-500">
-                  <div>{metric}</div>
+        
+        {/* Legend with improved styling */}
+        <div className="flex items-center justify-between mb-4 px-2">
+          <div className="flex items-center gap-1.5">
+            <span className="inline-block h-3 w-3 bg-emerald-500 rounded-full"></span>
+            <span className="text-xs font-medium text-gray-700">{currentStock.name} ({currentStock.ticker})</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="inline-block h-3 w-3 bg-purple-500 rounded-full"></span>
+            <span className="text-xs font-medium text-gray-700">{competitorData?.name || ''} ({competitorData?.symbol || ''})</span>
+          </div>
+        </div>
+        
+        {/* Vertical bar comparison for each metric - Enhanced styling */}
+        {competitorData && (
+          <div className="space-y-6">
+            {metrics.map(metric => {
+              // Get values for this metric
+              const mainValue = currentStockScores.scores[metric as keyof typeof currentStockScores.scores] || 0;
+              const compValue = competitorData.scores[metric as keyof typeof competitorData.scores] || 0;
+              const industryValue = industryBenchmarks[metric as keyof typeof industryBenchmarks] || 0;
+              const marketValue = marketBenchmarks[metric as keyof typeof marketBenchmarks] || 0;
+              
+              // Determine higher value
+              const mainHigher = mainValue > compValue;
+              const compHigher = compValue > mainValue;
+              
+              // Calculate difference between stocks
+              const difference = Math.abs(mainValue - compValue).toFixed(0);
+              const diffText = mainHigher 
+                ? `${currentStock.ticker} outperforms by ${difference} points` 
+                : mainValue === compValue 
+                  ? 'Equal performance' 
+                  : `${competitorData.symbol} outperforms by ${difference} points`;
+              
+              return (
+                <div key={metric} className="space-y-2 bg-gray-50 p-3 rounded-lg">
+                  <div className="flex justify-between items-center">
+                    <div className="font-semibold text-gray-800">{metric}</div>
+                    <div className="flex items-center gap-2">
+                      <div className="flex items-center">
+                        <span className="inline-block h-2 w-2 bg-gray-600 rounded-full mr-1"></span>
+                        <span className="text-xs text-gray-600">Industry</span>
+                      </div>
+                      <div className="flex items-center">
+                        <span className="inline-block h-2 w-2 bg-gray-400 rounded-full mr-1"></span>
+                        <span className="text-xs text-gray-600">Market</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Main stock bar - Improved with shadow and animation */}
                   <div>
-                    <span className="inline-block h-2 w-2 bg-gray-500 rounded-full mr-1"></span>
-                    Industry
-                    <span className="inline-block h-2 w-2 bg-gray-300 rounded-full ml-3 mr-1"></span>
-                    Market
-                  </div>
-                </div>
-                
-                {/* Main stock bar */}
-                <div>
-                  <div className="h-9 bg-gray-100 rounded-full relative overflow-hidden">
-                    <div 
-                      className="h-full rounded-full flex items-center justify-end pr-3"
-                      style={{ 
-                        width: `${mainValue}%`, 
-                        backgroundColor: currentStockScores.color,
-                        transition: 'width 0.5s ease-in-out'
-                      }}
-                    >
-                      {/* Only show ticker symbol if bar is wide enough */}
-                      {mainValue > 20 && (
-                        <span className="text-xs font-bold text-white drop-shadow-md">{currentStockScores.symbol}</span>
+                    <div className="h-10 bg-gray-200 rounded-xl relative overflow-hidden shadow-inner">
+                      <div 
+                        className="h-full rounded-xl flex items-center justify-end pr-3 shadow-md"
+                        style={{ 
+                          width: `${mainValue}%`, 
+                          backgroundColor: '#10b981', // Emerald-500 for consistency
+                          transition: 'width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)'
+                        }}
+                      >
+                        {/* Only show text if bar is wide enough */}
+                        {mainValue > 25 && (
+                          <span className="text-sm font-bold text-white drop-shadow-md tracking-wide">{mainValue.toFixed(0)}</span>
+                        )}
+                      </div>
+                      
+                      {/* Show value outside the bar if it's too narrow */}
+                      {mainValue <= 25 && (
+                        <span className="absolute text-sm font-bold text-emerald-600 left-[101%] top-1/2 transform -translate-y-1/2">{mainValue.toFixed(0)}</span>
                       )}
+                      
+                      {/* Industry marker */}
+                      <div 
+                        className="absolute h-full w-1 bg-gray-600 z-10 shadow-md" 
+                        style={{ left: `${industryValue}%` }}
+                      ></div>
+                      
+                      {/* Market marker */}
+                      <div 
+                        className="absolute h-full w-1 bg-gray-400 z-10 shadow-md" 
+                        style={{ left: `${marketValue}%` }}
+                      ></div>
                     </div>
-                    
-                    {/* Show ticker outside the bar if it's too narrow */}
-                    {mainValue <= 20 && (
-                      <span className="absolute text-xs font-bold text-gray-700 left-[101%]">{currentStockScores.symbol}</span>
-                    )}
-                    
-                    {/* Industry marker */}
-                    <div 
-                      className="absolute h-full w-0.5 bg-gray-500 z-10" 
-                      style={{ left: `${industryValue}%` }}
-                    ></div>
-                    
-                    {/* Market marker */}
-                    <div 
-                      className="absolute h-full w-0.5 bg-gray-300 z-10" 
-                      style={{ left: `${marketValue}%` }}
-                    ></div>
                   </div>
                   
-                  {/* Value label */}
-                  <div className={`text-sm font-semibold mt-1 ${mainHigher ? 'text-emerald-600' : 'text-gray-700'}`}>
-                    {(mainValue || 0).toFixed(0)}
-                  </div>
-                </div>
-                
-                {/* Competitor stock bar */}
-                <div>
-                  <div className="h-9 bg-gray-100 rounded-full relative overflow-hidden">
-                    <div 
-                      className="h-full rounded-full flex items-center justify-end pr-3"
-                      style={{ 
-                        width: `${compValue}%`, 
-                        backgroundColor: competitorData.color,
-                        transition: 'width 0.5s ease-in-out'
-                      }}
-                    >
-                      {/* Only show ticker symbol if bar is wide enough */}
-                      {compValue > 20 && (
-                        <span className="text-xs font-bold text-white drop-shadow-md">{competitorData.symbol}</span>
+                  {/* Competitor stock bar */}
+                  <div>
+                    <div className="h-10 bg-gray-200 rounded-xl relative overflow-hidden shadow-inner">
+                      <div 
+                        className="h-full rounded-xl flex items-center justify-end pr-3 shadow-md"
+                        style={{ 
+                          width: `${compValue}%`, 
+                          backgroundColor: '#a855f7', // Purple-500 for competitor
+                          transition: 'width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)'
+                        }}
+                      >
+                        {/* Only show text if bar is wide enough */}
+                        {compValue > 25 && (
+                          <span className="text-sm font-bold text-white drop-shadow-md tracking-wide">{compValue.toFixed(0)}</span>
+                        )}
+                      </div>
+                      
+                      {/* Show value outside the bar if it's too narrow */}
+                      {compValue <= 25 && (
+                        <span className="absolute text-sm font-bold text-purple-600 left-[101%] top-1/2 transform -translate-y-1/2">{compValue.toFixed(0)}</span>
                       )}
+                      
+                      {/* Industry marker */}
+                      <div 
+                        className="absolute h-full w-1 bg-gray-600 z-10 shadow-md" 
+                        style={{ left: `${industryValue}%` }}
+                      ></div>
+                      
+                      {/* Market marker */}
+                      <div 
+                        className="absolute h-full w-1 bg-gray-400 z-10 shadow-md" 
+                        style={{ left: `${marketValue}%` }}
+                      ></div>
                     </div>
-                    
-                    {/* Show ticker outside the bar if it's too narrow */}
-                    {compValue <= 20 && (
-                      <span className="absolute text-xs font-bold text-gray-700 left-[101%]">{competitorData.symbol}</span>
-                    )}
-                    
-                    {/* Industry marker */}
-                    <div 
-                      className="absolute h-full w-0.5 bg-gray-500 z-10" 
-                      style={{ left: `${industryValue}%` }}
-                    ></div>
-                    
-                    {/* Market marker */}
-                    <div 
-                      className="absolute h-full w-0.5 bg-gray-300 z-10" 
-                      style={{ left: `${marketValue}%` }}
-                    ></div>
                   </div>
                   
-                  {/* Value label */}
-                  <div className={`text-sm font-semibold mt-1 ${compHigher ? 'text-purple-600' : 'text-gray-700'}`}>
-                    {(compValue || 0).toFixed(0)}
+                  {/* Comparison summary */}
+                  <div className="text-xs font-medium mt-1 text-center text-gray-600">
+                    {diffText}
                   </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
-      
-      {/* Show all industry stocks comparison */}
-      {showAllIndustryComparison && (
-        <div className="mt-6 border-t pt-4 transition-all duration-300 ease-in-out">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="bg-gray-50">
-                  <th className="text-left py-2 px-2 rounded-l-lg font-semibold text-gray-700">Stock</th>
-                  <th className="text-center py-2 px-2 font-semibold text-gray-700">Performance</th>
-                  <th className="text-center py-2 px-2 font-semibold text-gray-700">Stability</th>
-                  <th className="text-center py-2 px-2 font-semibold text-gray-700">Value</th>
-                  <th className="text-center py-2 px-2 rounded-r-lg font-semibold text-gray-700">Momentum</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {/* Main stock row */}
-                <tr className="hover:bg-gray-50 transition-colors duration-150 bg-gray-50">
-                  <td className="py-3 px-2 font-medium text-gray-800">
-                    {currentStockScores.symbol} <span className="text-xs text-gray-500">(Selected)</span>
-                  </td>
-                  <td className="text-center py-3 px-2">{(currentStockScores.scores.Performance || 0).toFixed(0)}</td>
-                  <td className="text-center py-3 px-2">{(currentStockScores.scores.Stability || 0).toFixed(0)}</td>
-                  <td className="text-center py-3 px-2">{(currentStockScores.scores.Value || 0).toFixed(0)}</td>
-                  <td className="text-center py-3 px-2">{(currentStockScores.scores.Momentum || 0).toFixed(0)}</td>
-                </tr>
-                
-                {/* All other industry stocks */}
-                {Object.entries(industryStocksWithScores).map(([ticker, stockData]) => (
-                  <tr 
-                    key={ticker} 
-                    className={`hover:bg-gray-50 transition-colors duration-150 ${ticker === selectedCompetitor ? 'bg-purple-50' : ''} cursor-pointer`}
-                    onClick={() => {
-                      setSelectedCompetitor(ticker);
-                      setShowAllIndustryComparison(false);
-                    }}
-                  >
-                    <td className="py-3 px-2 font-medium text-gray-700">{stockData.symbol}</td>
-                    <td className="text-center py-3 px-2">{(stockData.scores.Performance || 0).toFixed(0)}</td>
-                    <td className="text-center py-3 px-2">{(stockData.scores.Stability || 0).toFixed(0)}</td>
-                    <td className="text-center py-3 px-2">{(stockData.scores.Value || 0).toFixed(0)}</td>
-                    <td className="text-center py-3 px-2">{(stockData.scores.Momentum || 0).toFixed(0)}</td>
-                  </tr>
-                ))}
-                
-                {/* Industry and market averages */}
-                <tr className="hover:bg-gray-50 transition-colors duration-150 bg-gray-100">
-                  <td className="py-3 px-2 font-medium text-gray-600">Industry Avg</td>
-                  <td className="text-center py-3 px-2 text-gray-600">{(industryBenchmarks.Performance || 0).toFixed(0)}</td>
-                  <td className="text-center py-3 px-2 text-gray-600">{(industryBenchmarks.Stability || 0).toFixed(0)}</td>
-                  <td className="text-center py-3 px-2 text-gray-600">{(industryBenchmarks.Value || 0).toFixed(0)}</td>
-                  <td className="text-center py-3 px-2 text-gray-600">{(industryBenchmarks.Momentum || 0).toFixed(0)}</td>
-                </tr>
-                <tr className="hover:bg-gray-50 transition-colors duration-150 bg-gray-100">
-                  <td className="py-3 px-2 font-medium text-gray-500">Market Avg</td>
-                  <td className="text-center py-3 px-2 text-gray-500">{(marketBenchmarks.Performance || 0).toFixed(0)}</td>
-                  <td className="text-center py-3 px-2 text-gray-500">{(marketBenchmarks.Stability || 0).toFixed(0)}</td>
-                  <td className="text-center py-3 px-2 text-gray-500">{(marketBenchmarks.Value || 0).toFixed(0)}</td>
-                  <td className="text-center py-3 px-2 text-gray-500">{(marketBenchmarks.Momentum || 0).toFixed(0)}</td>
-                </tr>
-              </tbody>
-            </table>
+              );
+            })}
           </div>
-          
-          <div className="text-xs text-gray-500 mt-3">
-            Click any row to select that stock for detailed comparison
-          </div>
-        </div>
-      )}
-      
-      {/* Detailed comparison table */}
-      {showFullComparison && competitorData && (
-        <div className="mt-6 border-t pt-4 transition-all duration-300 ease-in-out">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="bg-gray-50">
-                  <th className="text-left py-2 px-2 rounded-l-lg font-semibold text-gray-700">Metrics</th>
-                  <th className="text-center py-2 px-2 font-semibold" style={{ color: currentStockScores.color }}>
-                    {currentStockScores.symbol}
-                  </th>
-                  <th className="text-center py-2 px-2 font-semibold" style={{ color: competitorData.color }}>
-                    {competitorData.symbol}
-                  </th>
-                  <th className="text-center py-2 px-2 font-semibold text-gray-600">Industry</th>
-                  <th className="text-center py-2 px-2 rounded-r-lg font-semibold text-gray-400">Market</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {metrics.map(metric => {
-                  const mainValue = currentStockScores.scores[metric as keyof typeof currentStockScores.scores] || 0;
-                  const compValue = competitorData.scores[metric as keyof typeof competitorData.scores] || 0;
-                  const industryValue = industryBenchmarks[metric as keyof typeof industryBenchmarks] || 0;
-                  const marketValue = marketBenchmarks[metric as keyof typeof marketBenchmarks] || 0;
-                  
-                  const values = [mainValue, compValue, industryValue, marketValue];
-                  const maxValue = Math.max(...values);
-                  
-                  return (
-                    <tr key={metric} className="hover:bg-gray-50 transition-colors duration-150">
-                      <td className="py-3 px-2 font-medium text-gray-700">{metric}</td>
-                      <td className={`text-center py-3 px-2 ${mainValue === maxValue ? 'font-bold' : ''}`} 
-                         style={{ color: mainValue === maxValue ? currentStockScores.color : 'inherit' }}>
-                        {(mainValue || 0).toFixed(0)}
-                      </td>
-                      <td className={`text-center py-3 px-2 ${compValue === maxValue ? 'font-bold' : ''}`} 
-                         style={{ color: compValue === maxValue ? competitorData.color : 'inherit' }}>
-                        {(compValue || 0).toFixed(0)}
-                      </td>
-                      <td className={`text-center py-3 px-2 ${industryValue === maxValue ? 'font-medium text-gray-600' : 'text-gray-600'}`}>
-                        {(industryValue || 0).toFixed(0)}
-                      </td>
-                      <td className={`text-center py-3 px-2 ${marketValue === maxValue ? 'font-medium text-gray-500' : 'text-gray-400'}`}>
-                        {(marketValue || 0).toFixed(0)}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-          
-          <div className="text-xs text-gray-500 mt-3 italic">
-            Higher numbers indicate better performance. Bold values represent the highest score in each category.
-          </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
