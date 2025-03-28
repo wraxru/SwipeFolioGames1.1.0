@@ -10,6 +10,7 @@ import OnboardingPage from "@/pages/onboarding-page";
 import StockDetailPage from "@/pages/stock-detail-page";
 import { AuthProvider } from "@/hooks/use-auth";
 import { UserProgressProvider } from "@/contexts/user-progress-context";
+import { PortfolioProvider } from "@/contexts/portfolio-context";
 
 function Router() {
   return (
@@ -33,8 +34,10 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <UserProgressProvider>
-          <Router />
-          <Toaster />
+          <PortfolioProvider>
+            <Router />
+            <Toaster />
+          </PortfolioProvider>
         </UserProgressProvider>
       </AuthProvider>
     </QueryClientProvider>
