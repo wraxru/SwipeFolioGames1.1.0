@@ -10,8 +10,25 @@ export default function PortfolioDashboard() {
   const [lastValues, setLastValues] = useState({ invested: 0, available: 0 });
   const portfolio = usePortfolio();
   
+  // Create stringified portfolio state to detect ALL changes
+  const portfolioState = JSON.stringify({
+    holdings: portfolio.holdings,
+    cash: portfolio.cash,
+    portfolioValue: portfolio.portfolioValue,
+    totalValue: portfolio.totalValue,
+    version: portfolio.version,
+    lastUpdated: portfolio.lastUpdated
+  });
+  
   // Update component whenever portfolio changes
   useEffect(() => {
+    console.log("Portfolio dashboard - detected portfolio change:", {
+      holdings: portfolio.holdings.length,
+      portfolioValue: portfolio.portfolioValue,
+      cash: portfolio.cash,
+      version: portfolio.version
+    });
+    
     // Add delayed force update to ensure state propagation
     const timer = setTimeout(() => {
       setForceUpdateTime(Date.now());
@@ -19,7 +36,7 @@ export default function PortfolioDashboard() {
         invested: portfolio.portfolioValue,
         available: portfolio.cash
       });
-      console.log("Portfolio dashboard updated:", {
+      console.log("Portfolio dashboard updated after delay:", {
         timestamp: new Date().toISOString(),
         holdings: portfolio.holdings.length,
         portfolioValue: portfolio.portfolioValue,
@@ -28,17 +45,10 @@ export default function PortfolioDashboard() {
         version: portfolio.version,
         lastUpdated: new Date(portfolio.lastUpdated).toISOString()
       });
-    }, 100);
+    }, 200); // Increased delay to ensure context is fully updated
     
     return () => clearTimeout(timer);
-  }, [
-    portfolio.holdings.length,
-    portfolio.cash,
-    portfolio.portfolioValue,
-    portfolio.totalValue,
-    portfolio.version,
-    portfolio.lastUpdated
-  ]);
+  }, [portfolioState]); // Using stringified state to detect ANY changes
   
   // Calculate performance values exactly like portfolio page
   const totalReturn = portfolio.holdings.reduce((total, h) => {
