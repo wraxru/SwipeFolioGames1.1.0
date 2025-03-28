@@ -180,12 +180,9 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
         ]);
       }
       
-      // Show success message
-      toast({
-        title: "Stock purchased",
-        description: `You purchased ${shares.toFixed(4)} shares of ${stock.ticker} for $${amount.toFixed(2)}`,
-        variant: "default",
-      });
+      // Purchase success toast notification has been removed per request
+      // to avoid duplicate notifications, as we're using PurchaseSuccessModal
+      
       
       // Update version and timestamp to trigger updates
       setVersion(prev => prev + 1);

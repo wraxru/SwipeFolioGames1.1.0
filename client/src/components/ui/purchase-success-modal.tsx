@@ -40,7 +40,7 @@ export default function PurchaseSuccessModal({
             animate={{ opacity: 0.7 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 bg-black z-[59]"
+            className="fixed inset-0 bg-black z-[100]"
             onClick={onClose}
           />
           
@@ -50,10 +50,13 @@ export default function PurchaseSuccessModal({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="success-modal fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[60]
-                       w-[85%] max-w-xs rounded-xl overflow-hidden bg-gradient-to-b from-green-500 to-green-600 
+            className="fixed z-[101] w-[85%] max-w-xs rounded-xl overflow-hidden bg-gradient-to-b from-green-500 to-green-600 
                        shadow-2xl border border-green-400"
             style={{
+              position: 'fixed',
+              left: '50%',
+              top: '50%',
+              transform: 'translate(-50%, -50%)',
               boxShadow: '0 20px 60px -15px rgba(0, 0, 0, 0.25), 0 12px 25px -10px rgba(0, 0, 0, 0.1)'
             }}
           >

@@ -51,22 +51,32 @@ export default function PortfolioImpactCalculator({
     [0, 0.5, 1]
   );
   
-  // Update track width on mount and when ref changes
+  // Maximum amount available to invest
+  const maxInvestment = Math.min(cash, 10); // Cap at $10 for demo
+  
+  // Calculate impact of adding this stock
+  const impact = calculateImpact(stock, investmentAmount);
+  
+  // Calculate shares that would be purchased
+  const shares = investmentAmount / stock.price;
+  
+  // Calculate projected 1-year return based on stock oneYearReturn
+  const projectedReturn = investmentAmount * (1 + parseFloat(stock.oneYearReturn) / 100);
+  
+  // Update slideTrackWidth when the component mounts or window resizes
   useEffect(() => {
+    if (!isOpen) return;
+    
     const updateTrackWidth = () => {
       if (slideTrackRef.current) {
-        const thumbWidth = 80; // Approximate width of the slider thumb
-        setSlideTrackWidth(slideTrackRef.current.clientWidth - thumbWidth);
+        const width = slideTrackRef.current.offsetWidth;
+        setSlideTrackWidth(width);
       }
     };
     
-    // Initial update
     updateTrackWidth();
-    
-    // Add resize listener to handle window size changes
     window.addEventListener('resize', updateTrackWidth);
     
-    // Cleanup
     return () => window.removeEventListener('resize', updateTrackWidth);
   }, [slideTrackRef, isOpen]);
   
@@ -80,52 +90,35 @@ export default function PortfolioImpactCalculator({
       slideX.set(slideTrackWidth);
       setSlideSuccess(true);
       
-      // Haptic feedback if supported
-      if (navigator.vibrate) {
-        navigator.vibrate(100);
-      }
-      
-      // Delay before triggering actual invest action to allow animation to play
+      // Wait for animation to complete before triggering actual action
       setTimeout(() => {
         handleInvest();
-      }, 600);
+      }, 500);
     } else {
-      // Spring back to start with animation
+      // Reset to start
       slideX.set(0);
     }
   };
   
-  // Reset slide state when calculator is opened
-  useEffect(() => {
-    if (isOpen) {
-      setSlideSuccess(false);
-      setSlidingInProgress(false);
-      slideX.set(0);
+  // Format currency for value display
+  const formatValue = (value: number) => {
+    if (showValueShares) {
+      // Show currency
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      }).format(value);
+    } else {
+      // Show shares
+      return `${(value / stock.price).toFixed(4)} shares`;
     }
-  }, [isOpen, slideX]);
+  };
   
-  // Calculate max investment (limited by cash)
-  const maxInvestment = Math.min(cash, 100);
-  
-  // Calculate shares based on investment amount (minimum 0.001 shares)
-  const shares = Math.max(investmentAmount / stock.price, 0.001);
-  
-  // Projected 1-year return (based on oneYearReturn if available)
-  const oneYearReturnRate = typeof stock.oneYearReturn === 'number' 
-    ? stock.oneYearReturn / 100 
-    : typeof stock.oneYearReturn === 'string' 
-      ? parseFloat(stock.oneYearReturn.replace("%", "")) / 100
-      : 0.08; // Default 8% growth if no return data
-      
-  const projectedReturn = investmentAmount * oneYearReturnRate;
-  const estimatedValue = investmentAmount + projectedReturn;
-  
-  // Calculate portfolio impact with validation
-  const impact = calculateImpact(stock, investmentAmount);
-  
-  // Function to format metric change with colored arrow
-  const formatMetricChange = (value: number) => {
-    const formatted = value.toFixed(1);
+  // Format positive/negative values
+  const formatChange = (value: number) => {
+    const formatted = value.toFixed(1) + '%';
     if (value > 0) {
       return <span className="text-green-500 flex items-center"><ChevronUp size={16} />{formatted}</span>;
     } else if (value < 0) {
@@ -173,7 +166,8 @@ export default function PortfolioImpactCalculator({
     buyStock(stock, investmentAmount);
     setShowSuccessModal(true);
     onInvest();
-    // Don't close the calculator yet - success modal will be shown first
+    // Close the calculator immediately when showing success modal
+    onClose();
   };
   
   // Handle success modal close
@@ -181,14 +175,6 @@ export default function PortfolioImpactCalculator({
     setShowSuccessModal(false);
     onClose(); // Close calculator after success modal is closed
   };
-  
-  // Close calculator when success modal is shown
-  useEffect(() => {
-    if (showSuccessModal) {
-      // Hide calculator immediately when success modal is shown
-      document.querySelector('.calculator-modal')?.classList.add('opacity-0');
-    }
-  }, [showSuccessModal]);
   
   // Format number for display
   const formatCurrency = (value: number) => {
@@ -206,440 +192,405 @@ export default function PortfolioImpactCalculator({
   };
   
   return (
-    <AnimatePresence mode="wait" key="calculator-modal">
-      {isOpen && (
-        <>
-          {/* Backdrop with blur effect */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
-            className="calculator-overlay"
-            onClick={onClose}
-          />
-          
-          {/* Modal with enhanced animations and better centering */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.92, y: 30 }}
-            animate={{ 
-              opacity: 1, 
-              scale: 1, 
-              y: 0,
-              transition: { 
-                type: "spring", 
-                damping: 30, 
-                stiffness: 350,
-                duration: 0.4,
-                ease: [0.23, 1, 0.32, 1]
-              }
-            }}
-            exit={{ 
-              opacity: 0, 
-              scale: 0.95, 
-              y: 20,
-              transition: { duration: 0.25, ease: [0.32, 0, 0.67, 0] }
-            }}
-            className="calculator-modal"
-            style={{
-              boxShadow: '0 20px 60px -15px rgba(0, 0, 0, 0.25), 0 12px 25px -10px rgba(0, 0, 0, 0.1)',
-              position: 'fixed',
-              left: '50%',
-              top: '50%',
-              transform: 'translate(-50%, -50%)',
-              width: '90%',
-              maxWidth: '450px'
-            }}
-          >
-            {/* Enhanced Modern Header */}
-            <div className="p-5 border-b border-slate-100 flex justify-between items-center bg-gradient-to-b from-white to-slate-50">
-              <div className="flex items-center">
-                <div className="bg-gradient-to-br from-green-500 to-emerald-600 text-white p-2.5 rounded-xl mr-4 shadow-lg flex items-center justify-center w-12 h-12">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-                  </svg>
-                </div>
-                <div>
-                  <h2 className="text-lg font-bold bg-gradient-to-r from-slate-800 to-slate-700 bg-clip-text text-transparent mb-0.5">
-                    Portfolio Impact
-                  </h2>
-                  <div className="flex items-center">
-                    <span className="text-sm font-semibold text-green-600 mr-3">
-                      {formatCurrency(cash)}
-                    </span>
-                    <span className="text-sm text-slate-600 flex items-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="mr-1">
-                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                      </svg>
-                      {stock.name} ({stock.ticker})
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <button 
-                onClick={onClose}
-                className="p-2.5 rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-all duration-200"
-                aria-label="Close"
-              >
-                <X size={18} />
-              </button>
-            </div>
+    <div className="portfolio-impact-wrapper">
+      {/* Calculator Modal */}
+      <AnimatePresence mode="wait" key="calculator-modal">
+        {isOpen && (
+          <>
+            {/* Backdrop with blur effect */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
+              className="calculator-overlay"
+              onClick={onClose}
+            />
             
-            {/* Content */}
-            <div className="p-5">
-              <div className="mb-4">
-                {/* Title removed as it's redundant with the header */}
-                
-                {/* Pie Chart showing industry allocation */}
-                <div className="relative h-48 mb-4">
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <svg viewBox="0 0 100 100" width="200" height="200">
-                      {/* Background circle - lighter when empty */}
-                      <circle 
-                        cx="50" 
-                        cy="50" 
-                        r="40" 
-                        fill="none" 
-                        stroke={Object.keys(impact.industryAllocation).length === 0 ? "#f3f4f6" : "#e5e7eb"} 
-                        strokeWidth="20" 
-                      />
-                      
-                      {/* Dynamic segments - only rendered when data exists */}
-                      {Object.entries(impact.industryAllocation).length > 0 && 
-                        Object.entries(impact.industryAllocation).map(([industry, allocation], index) => {
-                          // Calculate segment parameters
-                          const colors = ["#06b6d4", "#8b5cf6", "#fbbf24", "#34d399", "#f87171"];
-                          const color = colors[index % colors.length];
-                          const segmentPct = allocation.new;
-                          const circumference = 2 * Math.PI * 40;
-                          const previousSegments = Object.entries(impact.industryAllocation)
-                            .slice(0, index)
-                            .reduce((sum, [_, alloc]) => sum + alloc.new, 0);
-                          const rotation = (previousSegments * 3.6) - 90; // -90 to start at top
-                          
-                          // Only render segments with actual percentage values
-                          return segmentPct > 0 ? (
-                            <circle 
-                              key={industry}
-                              cx="50" 
-                              cy="50" 
-                              r="40" 
-                              fill="none" 
-                              stroke={color} 
-                              strokeWidth="20"
-                              strokeDasharray={`${circumference * (segmentPct / 100)} ${circumference}`}
-                              transform={`rotate(${rotation} 50 50)`}
-                              strokeLinecap="butt"
-                            />
-                          ) : null;
-                        })
-                      }
-                      
-                      {/* Central circle */}
-                      <circle cx="50" cy="50" r="30" fill="white" />
-                      
-                      {/* If no allocations, show empty state text */}
-                      {Object.entries(impact.industryAllocation).length === 0 && (
-                        <text 
-                          x="50" 
-                          y="53" 
-                          textAnchor="middle" 
-                          fontSize="8" 
-                          fill="#6b7280"
-                        >
-                          First investment
-                        </text>
-                      )}
+            {/* Modal with enhanced animations and better centering */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.92, y: 30 }}
+              animate={{ 
+                opacity: 1, 
+                scale: 1, 
+                y: 0,
+                transition: { 
+                  type: "spring", 
+                  damping: 30, 
+                  stiffness: 350,
+                  duration: 0.4,
+                  ease: [0.23, 1, 0.32, 1]
+                }
+              }}
+              exit={{ 
+                opacity: 0, 
+                scale: 0.95, 
+                y: 20,
+                transition: { duration: 0.25, ease: [0.32, 0, 0.67, 0] }
+              }}
+              className="calculator-modal"
+              style={{
+                boxShadow: '0 20px 60px -15px rgba(0, 0, 0, 0.25), 0 12px 25px -10px rgba(0, 0, 0, 0.1)',
+                position: 'fixed',
+                left: '50%',
+                top: '50%',
+                transform: 'translate(-50%, -50%)',
+                width: '90%',
+                maxWidth: '450px'
+              }}
+            >
+              {/* Enhanced Modern Header */}
+              <div className="p-5 border-b border-slate-100 flex justify-between items-center bg-gradient-to-b from-white to-slate-50">
+                <div className="flex items-center">
+                  <div className="bg-gradient-to-br from-green-500 to-emerald-600 text-white p-2.5 rounded-xl mr-4 shadow-lg flex items-center justify-center w-12 h-12">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
                     </svg>
                   </div>
+                  <div>
+                    <h2 className="text-lg font-bold bg-gradient-to-r from-slate-800 to-slate-700 bg-clip-text text-transparent mb-0.5">
+                      Portfolio Impact
+                    </h2>
+                    <div className="flex items-center">
+                      <span className="text-sm font-semibold text-green-600 mr-3">
+                        {formatCurrency(cash)}
+                      </span>
+                      <span className="text-sm text-slate-600 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="mr-1">
+                          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                        </svg>
+                        {stock.name} ({stock.ticker})
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <button 
+                  onClick={onClose}
+                  className="p-2.5 rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-all duration-200"
+                  aria-label="Close"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+              
+              {/* Content */}
+              <div className="p-5">
+                <div className="mb-4">
+                  {/* Title removed as it's redundant with the header */}
                   
-                  {/* Better positioned industry legends with improved styling */}
-                  {Object.entries(impact.industryAllocation).length > 0 && (
-                    <div className="absolute inset-0 pointer-events-none">
-                      {Object.entries(impact.industryAllocation).map(([industry, allocation], index) => {
-                        const colors = ["#06b6d4", "#8b5cf6", "#fbbf24", "#34d399", "#f87171"];
-                        const color = colors[index % colors.length];
+                  {/* Pie Chart showing industry allocation */}
+                  <div className="relative h-48 mb-4">
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <svg viewBox="0 0 100 100" width="200" height="200">
+                        {/* Background circle - lighter when empty */}
+                        <circle 
+                          cx="50" 
+                          cy="50" 
+                          r="40" 
+                          fill="none" 
+                          stroke={Object.keys(impact.industryAllocation).length === 0 ? "#f3f4f6" : "#e5e7eb"} 
+                          strokeWidth="20" 
+                        />
                         
-                        // Calculate positions around the pie chart for better spacing
-                        let positionStyle = {};
-                        
-                        if (industry === "Real Estate") {
-                          positionStyle = {
-                            top: '10%',
-                            right: '75%',
-                          };
-                        } else if (industry === "Technology") {
-                          positionStyle = {
-                            top: '20%',
-                            left: '65%',
-                          };
-                        } else if (industry === "Healthcare") {
-                          positionStyle = {
-                            bottom: '20%',
-                            left: '65%',
-                          };
-                        } else if (industry === "Financial") {
-                          positionStyle = {
-                            bottom: '20%',
-                            right: '65%',
-                          };
-                        } else {
-                          // Position other industries in a clean layout
-                          const positions = [
-                            { top: '10%', left: '50%', transform: 'translateX(-50%)' },
-                            { bottom: '10%', left: '50%', transform: 'translateX(-50%)' },
-                            { left: '10%', top: '50%', transform: 'translateY(-50%)' },
-                            { right: '10%', top: '50%', transform: 'translateY(-50%)' },
-                          ];
-                          
-                          positionStyle = positions[index % positions.length];
+                        {/* Dynamic segments - only rendered when data exists */}
+                        {Object.entries(impact.industryAllocation).length > 0 && 
+                          Object.entries(impact.industryAllocation).map(([industry, allocation], index) => {
+                            // Calculate segment parameters
+                            const colors = ["#06b6d4", "#8b5cf6", "#fbbf24", "#34d399", "#f87171"];
+                            const color = colors[index % colors.length];
+                            const segmentPct = allocation.new;
+                            const circumference = 2 * Math.PI * 40;
+                            const previousSegments = Object.entries(impact.industryAllocation)
+                              .slice(0, index)
+                              .reduce((sum, [_, alloc]) => sum + alloc.new, 0);
+                            const rotation = (previousSegments * 3.6) - 90; // -90 to start at top
+                            
+                            // Only render segments with actual percentage values
+                            return segmentPct > 0 ? (
+                              <circle 
+                                key={industry}
+                                cx="50" 
+                                cy="50" 
+                                r="40" 
+                                fill="none" 
+                                stroke={color} 
+                                strokeWidth="20"
+                                strokeDasharray={`${circumference * (segmentPct / 100)} ${circumference}`}
+                                transform={`rotate(${rotation} 50 50)`}
+                                strokeLinecap="butt"
+                              />
+                            ) : null;
+                          })
                         }
                         
-                        // Only show legend items with actual values
-                        return allocation.new > 0 ? (
-                          <div 
-                            key={industry} 
-                            className="absolute flex items-center px-2 py-1 rounded-lg shadow-md bg-white border border-slate-200"
-                            style={{
-                              ...positionStyle,
-                              zIndex: 10,
-                              maxWidth: '120px',
-                              opacity: 0.95,
-                            }}
+                        {/* Central circle */}
+                        <circle cx="50" cy="50" r="30" fill="white" />
+                        
+                        {/* If no allocations, show empty state text */}
+                        {Object.entries(impact.industryAllocation).length === 0 && (
+                          <text 
+                            x="50" 
+                            y="53" 
+                            textAnchor="middle" 
+                            fontSize="8" 
+                            fill="#6b7280"
                           >
-                            <div className="w-3 h-3 rounded-full mr-1.5" style={{ backgroundColor: color }}></div>
-                            <div className="flex flex-col items-start">
-                              <div className="flex items-center">
-                                <span className="mr-1 text-xs text-slate-700 font-medium truncate">{industry}</span>
-                                <span className="font-bold text-xs text-slate-900">{formatPercentage(allocation.new)}</span>
-                              </div>
-                              {/* Only show change indicator when there's a difference */}
-                              {allocation.new !== allocation.current && Math.abs(allocation.new - allocation.current) > 0.1 && (
-                                <span className={cn(
-                                  "text-[10px] font-medium",
-                                  allocation.new > allocation.current ? "text-green-600" : "text-red-600"
-                                )}>
-                                  {allocation.new > allocation.current ? "+" : ""}
-                                  {formatPercentage(allocation.new - allocation.current)}
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                        ) : null;
-                      })}
+                            First investment
+                          </text>
+                        )}
+                      </svg>
                     </div>
-                  )}
-                </div>
-                
-                {/* Improved Metrics Grid - More compact and space efficient */}
-                <div className="grid grid-cols-2 gap-2 mb-4">
-                  {Object.entries(impact.impact).map(([metric, change]) => (
-                    <div 
-                      key={metric} 
-                      className="p-3 bg-white rounded-lg border border-slate-200 shadow-sm hover:shadow-md transition-all duration-200 hover:border-sky-200"
-                    >
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="flex items-center">
-                          <div className={`p-1 rounded-md mr-1.5 ${
-                            change > 0 ? "bg-green-100 text-green-600" : 
-                            change < 0 ? "bg-red-100 text-red-600" : 
-                            "bg-slate-100 text-slate-600"
-                          }`}>
-                            {getMetricIcon(metric, 14)}
-                          </div>
-                          <h4 className="font-semibold text-xs capitalize">{metric}</h4>
-                          <button 
-                            className="ml-1 text-slate-400 hover:text-slate-600 transition-colors"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setActiveTooltip(activeTooltip === metric ? null : metric);
-                            }}
-                            aria-label={`Info about ${metric}`}
-                          >
-                            <Info size={12} />
-                          </button>
-                          {activeTooltip === metric && (
+                    
+                    {/* Better positioned industry legends with improved styling */}
+                    {Object.entries(impact.industryAllocation).length > 0 && (
+                      <div className="absolute inset-0 pointer-events-none">
+                        {Object.entries(impact.industryAllocation).map(([industry, allocation], index) => {
+                          const colors = ["#06b6d4", "#8b5cf6", "#fbbf24", "#34d399", "#f87171"];
+                          const color = colors[index % colors.length];
+                          
+                          // Calculate positions around the pie chart for better spacing
+                          let positionStyle = {};
+                          
+                          if (industry === "Real Estate") {
+                            positionStyle = {
+                              top: '10%',
+                              right: '75%',
+                            };
+                          } else if (industry === "Technology") {
+                            positionStyle = {
+                              top: '20%',
+                              left: '65%',
+                            };
+                          } else if (industry === "Healthcare") {
+                            positionStyle = {
+                              bottom: '20%',
+                              left: '65%',
+                            };
+                          } else if (industry === "Financial") {
+                            positionStyle = {
+                              bottom: '20%',
+                              right: '65%',
+                            };
+                          } else {
+                            // Position other industries in a clean layout
+                            const positions = [
+                              { top: '10%', left: '50%', transform: 'translateX(-50%)' },
+                              { bottom: '10%', left: '50%', transform: 'translateX(-50%)' },
+                              { left: '10%', top: '50%', transform: 'translateY(-50%)' },
+                              { right: '10%', top: '50%', transform: 'translateY(-50%)' },
+                            ];
+                            
+                            positionStyle = positions[index % positions.length];
+                          }
+                          
+                          // Only show legend items with actual values
+                          return allocation.new > 0 ? (
                             <div 
-                              className="absolute z-50 bg-white p-2 rounded-lg shadow-lg border border-slate-200 text-xs text-slate-700 max-w-[180px] mt-1 left-1/2 transform -translate-x-1/2"
-                              style={{ top: '100%' }}
+                              key={industry} 
+                              className="absolute flex items-center px-2 py-1 rounded-lg shadow-md bg-white border border-slate-200"
+                              style={{
+                                ...positionStyle,
+                                zIndex: 10,
+                                maxWidth: '120px',
+                                opacity: 0.95,
+                              }}
                             >
-                              {(metricExplanations as any)[metric.toLowerCase()]}
-                              <div className="absolute w-2 h-2 bg-white transform rotate-45 left-1/2 -mt-5 -ml-1 border-t border-l border-slate-200"></div>
+                              <div className="w-3 h-3 rounded-full mr-1.5" style={{ backgroundColor: color }}></div>
+                              <div className="flex flex-col items-start">
+                                <div className="flex items-center">
+                                  <span className="mr-1 text-xs text-slate-700 font-medium truncate">{industry}</span>
+                                  <span className="font-bold text-xs text-slate-900">{formatPercentage(allocation.new)}</span>
+                                </div>
+                                {/* Only show change indicator when there's a difference */}
+                                {allocation.new !== allocation.current && Math.abs(allocation.new - allocation.current) > 0.1 && (
+                                  <span className={cn(
+                                    "text-[10px] font-medium",
+                                    allocation.new > allocation.current ? "text-green-600" : "text-red-600"
+                                  )}>
+                                    {allocation.new > allocation.current ? "+" : ""}
+                                    {formatPercentage(allocation.new - allocation.current)}
+                                  </span>
+                                )}
+                              </div>
                             </div>
-                          )}
+                          ) : null;
+                        })}
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Improved Metrics Grid - More compact and space efficient */}
+                  <div className="grid grid-cols-2 gap-2 mb-4">
+                    {Object.entries(impact.impact).map(([metric, change]) => (
+                      <div 
+                        key={metric} 
+                        className="p-3 bg-white rounded-lg border border-slate-200 shadow-sm hover:shadow-md transition-all duration-200 hover:border-sky-200"
+                      >
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center">
+                            <div className={`p-1 rounded-md mr-1.5 ${
+                              change > 0 ? "bg-green-100 text-green-600" : 
+                              change < 0 ? "bg-red-100 text-red-600" : 
+                              "bg-slate-100 text-slate-600"
+                            }`}>
+                              {getMetricIcon(metric, 14)}
+                            </div>
+                            <h4 className="font-semibold text-xs capitalize">{metric}</h4>
+                            <button 
+                              className="ml-1 text-slate-400 hover:text-slate-600 transition-colors"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setActiveTooltip(activeTooltip === metric ? null : metric);
+                              }}
+                              aria-label={`Info about ${metric}`}
+                            >
+                              <Info size={12} />
+                            </button>
+                            {activeTooltip === metric && (
+                              <div 
+                                className="absolute z-50 bg-white p-2 rounded-lg shadow-lg border border-slate-200 text-xs text-slate-700 max-w-[180px] mt-1 left-1/2 transform -translate-x-1/2"
+                                style={{ top: '100%' }}
+                              >
+                                {(metricExplanations as any)[metric.toLowerCase()]}
+                                <div className="absolute w-2 h-2 bg-white transform rotate-45 left-1/2 -mt-5 -ml-1 border-t border-l border-slate-200"></div>
+                              </div>
+                            )}
+                          </div>
+                          
+                          <div className={`text-xs font-medium px-2 py-0.5 rounded-full ${
+                            change > 0 ? "bg-green-100 text-green-700" : 
+                            change < 0 ? "bg-red-100 text-red-700" : 
+                            "bg-slate-100 text-slate-700"
+                          }`}>
+                            {change > 0 ? "+" : ""}{change.toFixed(1)}
+                          </div>
                         </div>
                         
-                        <div className={`text-xs font-medium px-2 py-0.5 rounded-full ${
-                          change > 0 ? "bg-green-100 text-green-700" : 
-                          change < 0 ? "bg-red-100 text-red-700" : 
-                          "bg-slate-100 text-slate-700"
-                        }`}>
-                          {change > 0 ? "+" : ""}{change.toFixed(1)}
+                        {/* Compact Current → New format with less vertical space */}
+                        <div className="flex items-center justify-between text-sm">
+                          {/* Current value */}
+                          <div className="flex flex-col items-center">
+                            <div className="text-[10px] text-slate-500">Current</div>
+                            <div className="font-semibold bg-slate-50 px-2 py-1 rounded-md shadow-sm border border-slate-100 min-w-[40px] text-center">
+                              {impact.currentMetrics[metric as keyof typeof impact.currentMetrics].toFixed(1)}
+                            </div>
+                          </div>
+                          
+                          {/* Arrow indicator */}
+                          <div className="text-slate-400 mx-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M5 12h14"></path>
+                              <path d="m12 5 7 7-7 7"></path>
+                            </svg>
+                          </div>
+                          
+                          {/* New value */}
+                          <div className="flex flex-col items-center">
+                            <div className="text-[10px] text-slate-500">New</div>
+                            <div className={`font-semibold px-2 py-1 rounded-md shadow-sm border min-w-[40px] text-center ${
+                              change > 0 ? "bg-green-50 border-green-100" : 
+                              change < 0 ? "bg-red-50 border-red-100" : 
+                              "bg-slate-50 border-slate-100"
+                            }`}>
+                              {impact.newMetrics[metric as keyof typeof impact.newMetrics].toFixed(1)}
+                            </div>
+                          </div>
                         </div>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  {/* Investment amount control with increment/decrement buttons */}
+                  <div className="mt-6">
+                    <div className="flex justify-between items-center mb-2">
+                      <label className="text-sm font-medium text-slate-700">Invest Amount</label>
+                      <div className="text-xs text-slate-500">
+                        Max available: {formatCurrency(maxInvestment)}
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-2">
+                      <button 
+                        className="p-2 bg-slate-100 text-slate-500 rounded-md hover:bg-slate-200 focus:outline-none"
+                        onClick={decrementAmount}
+                        disabled={investmentAmount <= 1}
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M5 12h14"></path>
+                        </svg>
+                      </button>
+                      
+                      <div className="relative flex-1">
+                        <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-500">$</span>
+                        <input 
+                          type="number" 
+                          min="1"
+                          max={maxInvestment}
+                          value={investmentAmount}
+                          onChange={handleAmountChange}
+                          className="w-full rounded-md px-8 py-2.5 border border-slate-200 focus:border-green-300 focus:outline-none focus:ring-2 focus:ring-green-100 text-center font-medium"
+                        />
                       </div>
                       
-                      {/* Compact Current → New format with less vertical space */}
-                      <div className="flex items-center justify-between text-sm">
-                        {/* Current value */}
-                        <div className="flex flex-col items-center">
-                          <div className="text-[10px] text-slate-500">Current</div>
-                          <div className="font-semibold bg-slate-50 px-2 py-1 rounded-md shadow-sm border border-slate-100 min-w-[40px] text-center">
-                            {impact.currentMetrics[metric as keyof typeof impact.currentMetrics].toFixed(1)}
-                          </div>
-                        </div>
-                        
-                        {/* Arrow indicator */}
-                        <div className="text-slate-400 mx-1">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M5 12h14"></path>
-                            <path d="m12 5 7 7-7 7"></path>
-                          </svg>
-                        </div>
-                        
-                        {/* New value */}
-                        <div className="flex flex-col items-center">
-                          <div className="text-[10px] text-slate-500">New</div>
-                          <div className={`font-semibold px-2 py-1 rounded-md shadow-sm border min-w-[40px] text-center ${
-                            change > 0 ? "bg-green-50 border-green-100" : 
-                            change < 0 ? "bg-red-50 border-red-100" : 
-                            "bg-slate-50 border-slate-100"
-                          }`}>
-                            {impact.newMetrics[metric as keyof typeof impact.newMetrics].toFixed(1)}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                
-                {/* Compact Investment Amount Controls */}
-                <div className="bg-white rounded-lg border border-slate-200 shadow-sm p-3 mb-3">
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="font-bold text-sm text-slate-800">Investment Amount</h3>
-                    <div className="flex items-center">
                       <button 
-                        className={`px-2 py-0.5 text-xs rounded-l-md border ${
-                          showValueShares ? 'bg-blue-50 text-blue-600 border-blue-200' : 'text-slate-500 border-slate-200'
-                        }`}
-                        onClick={() => setShowValueShares(true)}
+                        className="p-2 bg-slate-100 text-slate-500 rounded-md hover:bg-slate-200 focus:outline-none"
+                        onClick={incrementAmount}
+                        disabled={investmentAmount >= maxInvestment}
                       >
-                        Value
-                      </button>
-                      <button 
-                        className={`px-2 py-0.5 text-xs rounded-r-md border ${
-                          !showValueShares ? 'bg-blue-50 text-blue-600 border-blue-200' : 'text-slate-500 border-slate-200'
-                        }`}
-                        onClick={() => setShowValueShares(false)}
-                      >
-                        Shares
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M5 12h14"></path>
+                          <path d="M12 5v14"></path>
+                        </svg>
                       </button>
                     </div>
                   </div>
                   
-                  {/* More compact input controls */}
-                  <div className="flex items-center justify-between mb-2">
-                    <button 
-                      className="w-10 h-10 flex items-center justify-center bg-slate-100 rounded-full text-slate-700 hover:bg-slate-200 transition-colors"
-                      onClick={decrementAmount}
-                      disabled={investmentAmount <= 1}
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/></svg>
-                    </button>
-                    
-                    <div className="relative">
-                      <div className="absolute left-0 inset-y-0 flex items-center pl-2 pointer-events-none">
-                        <span className="text-gray-500 text-sm">$</span>
-                      </div>
-                      <input
-                        type="number"
-                        className="block w-24 sm:w-32 p-1.5 pl-6 text-center text-base font-semibold border border-slate-200 rounded-lg"
-                        value={investmentAmount}
-                        onChange={handleAmountChange}
-                        min={1}
-                        max={maxInvestment}
-                      />
+                  {/* Calculation summary */}
+                  <div className="flex justify-between items-center gap-2 mt-4 p-3 bg-slate-50 rounded-lg">
+                    <div>
+                      <div className="text-xs text-slate-500">You'll get</div>
+                      <div className="text-base font-semibold text-slate-700">{shares.toFixed(4)} shares</div>
                     </div>
                     
-                    <button 
-                      className="w-10 h-10 flex items-center justify-center bg-slate-100 rounded-full text-slate-700 hover:bg-slate-200 transition-colors"
-                      onClick={incrementAmount}
-                      disabled={investmentAmount >= maxInvestment}
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
-                    </button>
+                    <div className="text-slate-400">
+                      <ArrowRight size={16} />
+                    </div>
+                    
+                    <div>
+                      <div className="text-xs text-slate-500">Projected 1y return</div>
+                      <div className="flex items-center text-base font-semibold text-green-600">
+                        {formatCurrency(projectedReturn)}
+                      </div>
+                    </div>
                   </div>
                   
-                  {/* Improved share/value display and projected return */}
-                  <div className="flex flex-col text-sm space-y-2">
-                    <div className="text-center text-xs text-slate-600">
-                      {showValueShares ? (
-                        <span>Approx. {shares.toFixed(4)} shares @ {formatCurrency(stock.price)}</span>
-                      ) : (
-                        <span>Value: {formatCurrency(shares * stock.price)}</span>
-                      )}
-                    </div>
-                    
-                    <div className="flex items-center justify-between bg-gradient-to-r from-blue-50 to-indigo-50 rounded-md p-2 text-blue-800 text-sm">
-                      <div className="flex items-center">
-                        <TrendingUp size={14} className="mr-1.5 text-blue-500" />
-                        <span className="font-medium">Projected Return:</span>
-                      </div>
-                      <span className="font-bold">{formatCurrency(projectedReturn)}</span>
-                    </div>
-                  </div>
-                </div>
-                
-                {/* Clickable Invest Button - Modern and clean alternative to slider */}
-                <div className="mt-6">
-                  {isLoading ? (
-                    <motion.button 
-                      disabled
-                      className="w-full h-14 rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold text-lg shadow-lg flex items-center justify-center"
-                      animate={{ 
-                        scale: [1, 1.02, 1],
-                        opacity: [0.9, 1, 0.9]
-                      }}
-                      transition={{ 
-                        repeat: Infinity,
-                        duration: 1.5
-                      }}
-                    >
-                      <svg className="animate-spin mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                      Processing...
-                    </motion.button>
-                  ) : (
-                    <motion.button
-                      onClick={handleInvest}
-                      className="w-full h-14 rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold text-lg shadow-lg
-                      flex items-center justify-center space-x-2 transition-all duration-300
-                      hover:shadow-xl hover:from-green-400 hover:to-emerald-500 hover:scale-[1.02] active:scale-[0.98]"
-                      whileTap={{ scale: 0.98 }}
-                      whileHover={{ 
-                        boxShadow: "0 10px 25px -5px rgba(16, 185, 129, 0.4), 0 8px 10px -6px rgba(16, 185, 129, 0.2)"
-                      }}
-                    >
-                      <span>Invest {formatCurrency(investmentAmount)}</span>
-                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M5 12h14" />
-                        <path d="m12 5 7 7-7 7" />
-                      </svg>
-                    </motion.button>
-                  )}
-                  
-                  {/* Paper trading disclaimer */}
-                  <div className="text-center text-xs text-slate-500 mt-3">
-                    This is paper trading with virtual money.
-                    <br />No real transactions will be processed.
-                  </div>
+                  {/* Invest button */}
+                  <button 
+                    onClick={handleInvest}
+                    disabled={isLoading}
+                    className="w-full py-3 mt-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold rounded-xl transition-all hover:shadow-md hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isLoading ? (
+                      <span className="flex items-center">
+                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Processing...
+                      </span>
+                    ) : (
+                      <span className="flex items-center">
+                        <Check className="mr-1" size={18} />
+                        Invest {formatCurrency(investmentAmount)}
+                      </span>
+                    )}
+                  </button>
                 </div>
               </div>
-            </div>
-          </motion.div>
-        </>
-      )}
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
       
       {/* Purchase Success Modal */}
       <PurchaseSuccessModal
@@ -650,6 +601,6 @@ export default function PortfolioImpactCalculator({
         amount={investmentAmount}
         projectedReturn={projectedReturn}
       />
-    </AnimatePresence>
+    </div>
   );
 }
