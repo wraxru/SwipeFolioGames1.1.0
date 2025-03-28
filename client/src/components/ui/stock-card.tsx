@@ -632,7 +632,7 @@ export default function StockCard({
 
   // Real-time display mode
   return (
-    <div className="relative h-full" data-testid="stock-card">
+    <div className="relative h-full w-full overflow-hidden" data-testid="stock-card">
       {/* Blurred background stock (next in stack) - visible during swipes */}
       <div 
         className="absolute inset-0 overflow-hidden blur-xl pointer-events-none opacity-20"
