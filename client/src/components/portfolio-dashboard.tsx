@@ -25,6 +25,13 @@ export default function PortfolioDashboard() {
   // Get reference to portfolio context
   const portfolio = usePortfolio();
   
+  // Create a ref for tracking previous portfolio state
+  const prevPortfolioRef = useRef({
+    cash: portfolio.cash,
+    holdingsCount: portfolio.holdings.length,
+    version: portfolio.version
+  });
+  
   // Create a unique key for total re-rendering
   const renderKey = `portfolio-dashboard-${dashboardState.updateCount}-${Date.now()}`;
   
@@ -90,18 +97,76 @@ export default function PortfolioDashboard() {
     }));
   }, [portfolio]); // Watch the entire portfolio object
   
-  // Use effect to update local state whenever portfolio context changes
+  // Force first calculation on mount
   useEffect(() => {
-    // Force immediate calculation on mount
-    recalculateState();
+    console.log("Portfolio dashboard - INITIAL MOUNT");
+    // Force immediate calculation once component is mounted
+    const timer = setTimeout(() => {
+      console.log("Portfolio dashboard - FORCED CALCULATION");
+      // Calculate current portfolio state with all the necessary derived values
+      const portfolioValue = portfolio.holdings.reduce((total, h) => 
+        total + (h.shares * h.stock.price), 0);
+      const totalValue = portfolio.cash + portfolioValue;
+      
+      setDashboardState(prev => ({
+        ...prev,
+        cash: portfolio.cash,
+        holdings: [...portfolio.holdings],
+        portfolioValue: portfolioValue,
+        totalValue: totalValue,
+        lastUpdated: Date.now(),
+        updateCount: prev.updateCount + 1
+      }));
+    }, 100);
+    return () => clearTimeout(timer);
+  }, [portfolio]); // Watch portfolio but run once on component mount
+  
+  // Monitor portfolio for real changes (not just reference changes)
+  useEffect(() => {
+    // Calculate portfolio value
+    const portfolioValue = portfolio.holdings.reduce((total, h) => 
+      total + (h.shares * h.stock.price), 0);
     
-    // Set up interval for periodic updates (every second)
-    const intervalId = setInterval(() => {
+    // Track portfolio actual data not just references
+    const portfolioData = {
+      cash: portfolio.cash,
+      holdingsLength: portfolio.holdings.length,
+      portfolioValue: portfolioValue,
+      version: portfolio.version,
+      lastUpdated: portfolio.lastUpdated
+    };
+    
+    // Stringified for deep comparison
+    const currentStateJson = JSON.stringify(portfolioData);
+    const prevStateJson = JSON.stringify({
+      cash: prevPortfolioRef.current.cash,
+      holdingsLength: prevPortfolioRef.current.holdingsCount,
+      version: prevPortfolioRef.current.version
+    });
+    
+    // Compare the current and previous state
+    if (currentStateJson !== prevStateJson) {
+      console.log("🔄 PORTFOLIO REAL CHANGE DETECTED!", {
+        prev: {
+          cash: prevPortfolioRef.current.cash,
+          holdings: prevPortfolioRef.current.holdingsCount,
+          version: prevPortfolioRef.current.version
+        },
+        current: portfolioData,
+        holdings: portfolio.holdings
+      });
+      
+      // Update dashboard state
       recalculateState();
-    }, 500);
-    
-    return () => clearInterval(intervalId);
-  }, [recalculateState]);
+      
+      // Update previous state reference
+      prevPortfolioRef.current = {
+        cash: portfolio.cash,
+        holdingsCount: portfolio.holdings.length,
+        version: portfolio.version
+      };
+    }
+  }, [portfolio, recalculateState]);
   
   // Destructure values from dashboard state for use in the JSX
   const {
