@@ -624,6 +624,9 @@ export default function StockCard({
                 rating={stock.rating}
                 analysis={stock.overallAnalysis}
               />
+              
+              {/* Industry Position & Comparative Analysis */}
+              <ComparativeAnalysis currentStock={stock} />
             </div>
           </motion.div>
         </div>
