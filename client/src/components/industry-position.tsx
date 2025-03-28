@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from 'react';
 import { ChevronDown, ChevronUp, BarChart2 } from 'lucide-react';
 import { StockData } from '@/lib/stock-data';
 import { getAdvancedMetricScore } from '@/lib/advanced-metric-scoring';
-import ComparativeAnalysis from '@/components/comparative-analysis';
 import VerticalStockComparison from '@/components/comparative-analysis/vertical-comparison';
 
 interface IndustryPositionProps {
@@ -155,33 +154,32 @@ export default function IndustryPosition({ stock }: IndustryPositionProps) {
       </div>
       
       {/* Toggle state indicator outside the hidden element for debugging */}
-      <div className="p-2 bg-blue-100 rounded mb-2 text-xs">
+      <div className="p-2 bg-blue-100 rounded mt-2 mb-2 text-xs">
         Toggle state: {showComparison ? 'OPEN' : 'CLOSED'}
       </div>
       
-      {/* Expanded comparison view - simplified visibility */}
-      <div 
-        ref={comparisonRef} 
-        className={`mt-2 ${showComparison ? 'block' : 'hidden'}`}
-      >
-        {/* Debug element to verify toggle state */}
-        <div className="p-2 bg-blue-50 text-xs text-gray-700 rounded mb-2">
-          Debug: Comparison area is {showComparison ? 'OPEN' : 'CLOSED'}<br/>
-          Stock Ticker: {stock?.ticker}, Industry: {stock?.industry}
-        </div>
-        
-        {/* Direct use of VerticalStockComparison to ensure it works */}
-        {stock && stock.industry ? (
-          <VerticalStockComparison 
-            currentStock={stock} 
-            industry={stock.industry} 
-          />
-        ) : (
-          <div className="p-4 border rounded bg-red-50">
-            Missing stock data required for comparison
+      {/* Only render the component when showComparison is true */}
+      {showComparison && (
+        <div ref={comparisonRef} className="mt-2">
+          {/* Debug element to verify toggle state */}
+          <div className="p-2 bg-blue-50 text-xs text-gray-700 rounded mb-2">
+            Debug: Comparison area is {showComparison ? 'OPEN' : 'CLOSED'}<br/>
+            Stock Ticker: {stock?.ticker}, Industry: {stock?.industry}
           </div>
-        )}
-      </div>
+          
+          {/* Direct use of VerticalStockComparison to ensure it works */}
+          {stock && stock.industry ? (
+            <VerticalStockComparison 
+              currentStock={stock} 
+              industry={stock.industry} 
+            />
+          ) : (
+            <div className="p-4 border rounded bg-red-50">
+              Missing stock data required for comparison
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
