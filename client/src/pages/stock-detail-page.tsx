@@ -3,6 +3,7 @@ import { useParams, useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { Stack } from "@shared/schema";
 import { ArrowLeft, BellRing, Zap } from "lucide-react";
+import { motion } from "framer-motion";
 import { getQueryFn } from "@/lib/queryClient";
 import { StockData, getIndustryStocks } from "@/lib/stock-data";
 import StockCard from "@/components/ui/stock-card";
@@ -114,17 +115,48 @@ export default function StockDetailPage() {
       </header>
 
       {/* Main content */}
-      <div className="flex-1 relative">
-        {stocks.length > 0 && (
-          <StockCard
-            stock={currentStock}
-            onNext={handleNextStock}
-            onPrevious={handlePreviousStock}
-            currentIndex={currentStockIndex}
-            totalCount={stocks.length}
-            nextStock={nextStock}
-            displayMode={useRealTimeData ? 'realtime' : 'simple'}
-          />
+      <div className="flex-1 relative flex items-center justify-center p-4">
+        {/* Render Next Card (if one exists) - Positioned behind */}
+        {currentStockIndex + 1 < stocks.length && (
+          <motion.div
+            key={`nextcard-${stocks[currentStockIndex + 1].ticker}`}
+            className="absolute w-[90%] max-w-md h-[85%]"
+            style={{ zIndex: 1 }}
+            initial={{ scale: 0.95, y: 10, opacity: 0.9 }}
+            animate={{ scale: 0.95, y: 10, opacity: 0.9 }}
+            transition={{ type: "spring", stiffness: 400, damping: 30 }}
+          >
+            {/* Render the actual next StockCard, make it non-interactive */}
+            <div style={{ pointerEvents: 'none' }}>
+              <StockCard
+                stock={stocks[currentStockIndex + 1]}
+                onNext={() => {}}
+                onPrevious={() => {}}
+                currentIndex={currentStockIndex + 1}
+                totalCount={stocks.length}
+                displayMode={useRealTimeData ? 'realtime' : 'simple'}
+              />
+            </div>
+          </motion.div>
+        )}
+        
+        {/* Render Current Card - Positioned on top */}
+        {currentStock && (
+          <motion.div
+            key={`currentcard-${currentStock.ticker}`}
+            className="absolute w-[90%] max-w-md h-[85%]"
+            style={{ zIndex: 2 }}
+            layout
+          >
+            <StockCard
+              stock={currentStock}
+              onNext={handleNextStock}
+              onPrevious={handlePreviousStock}
+              currentIndex={currentStockIndex}
+              totalCount={stocks.length}
+              displayMode={useRealTimeData ? 'realtime' : 'simple'}
+            />
+          </motion.div>
         )}
       </div>
 
