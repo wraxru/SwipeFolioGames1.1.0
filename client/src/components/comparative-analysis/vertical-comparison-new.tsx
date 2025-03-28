@@ -185,7 +185,7 @@ export default function VerticalStockComparison({
           <label className="block text-sm font-semibold text-gray-800 mb-2">Compare with competitor:</label>
           <div className="relative">
             <select 
-              className="appearance-none w-full px-4 py-3 border border-gray-300 bg-white rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 text-base transition-colors duration-200"
+              className="appearance-none w-full px-4 py-3 border border-gray-300 bg-white rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 text-base text-gray-900 transition-colors duration-200"
               value={selectedCompetitor}
               onChange={(e) => setSelectedCompetitor(e.target.value)}
             >
