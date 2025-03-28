@@ -79,7 +79,7 @@ const getTimeScaleLabels = (timeFrame: TimeFrame): string[] => {
 const getIndustryAverageData = (stock: StockData, metricType: string) => {
   // Get industry averages from our centralized data
   const industryAvgs = getIndustryAverages(stock.industry);
-
+  
   // Format for display
   if (metricType === 'performance') {
     return [
@@ -106,7 +106,7 @@ const getIndustryAverageData = (stock: StockData, metricType: string) => {
       { label: "RSI", value: `${industryAvgs.momentum.rsi}` }
     ];
   }
-
+  
   // Default empty array if metric type is not recognized
   return [];
 };
@@ -129,12 +129,12 @@ export default function StockCard({
   // Scale effect for better tactile feel
   const cardScale = useTransform(x, [-300, -150, 0, 150, 300], [0.95, 0.97, 1, 0.97, 0.95]);
   const cardRef = useRef<HTMLDivElement>(null);
-
+  
   const [timeFrame, setTimeFrame] = useState<TimeFrame>("1D");
   const [swipeDirection, setSwipeDirection] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [showSkippedMessage, setShowSkippedMessage] = useState(false);
-
+  
   // State for metric popup
   const [isMetricPopupOpen, setIsMetricPopupOpen] = useState(false);
   const [selectedMetric, setSelectedMetric] = useState<{
@@ -142,37 +142,37 @@ export default function StockCard({
     color: "green" | "yellow" | "red";
     data: any;
   } | null>(null);
-
+  
   // State for portfolio impact calculator (real-time mode only)
   const [isPortfolioImpactOpen, setIsPortfolioImpactOpen] = useState(false);
-
+  
   // Use static data only
   const chartData = useMemo(() => 
     generateTimeBasedData(stock.chartData, timeFrame),
     [stock.chartData, timeFrame]
   );
-
+  
   // Format display price
   const displayPrice = stock.price.toFixed(2);
   const realTimeChange = stock.change;
-
+  
   // Calculate min/max for chart display
   const minValue = Math.min(...chartData) - 5;
   const maxValue = Math.max(...chartData) + 5;
-
+  
   // Get time scale labels based on selected timeframe
   const timeScaleLabels = useMemo(() => 
     getTimeScaleLabels(timeFrame),
     [timeFrame]
   );
-
+  
   // Calculate price range for Y-axis
   const priceRangeMin = Math.floor(minValue);
   const priceRangeMax = Math.ceil(maxValue);
-
+  
   // Get current date for the trading day
   const latestTradingDay = new Date().toISOString().split('T')[0];
-
+  
   // Function to refresh data - now just a visual effect with no actual data refresh
   const refreshData = async () => {
     setIsRefreshing(true);
@@ -198,7 +198,7 @@ export default function StockCard({
         }
         // Open portfolio calculator
         setIsPortfolioImpactOpen(true);
-
+        
         // Spring back animation
         cardControls.start({
           x: 0,
@@ -220,7 +220,7 @@ export default function StockCard({
         if (navigator.vibrate) {
           navigator.vibrate(30);
         }
-
+        
         // Animate card off screen to the left
         cardControls.start({
           x: -500,
@@ -292,7 +292,7 @@ export default function StockCard({
     let color: "green" | "yellow" | "red" = "green";
     let metricObj;
     let metricDetails;
-
+    
     switch(metricName) {
       case "Performance":
         metricObj = stock.metrics.performance;
@@ -313,12 +313,12 @@ export default function StockCard({
       default:
         return;
     }
-
+    
     // Map color string to type
     if (metricObj.color === "green") color = "green";
     else if (metricObj.color === "yellow") color = "yellow";
     else if (metricObj.color === "red") color = "red";
-
+    
     // Format metric values for display
     const metricValues = [];
     if (metricName === "Performance") {
@@ -438,12 +438,12 @@ export default function StockCard({
         }
       );
     }
-
+    
     // Get industry average data
     const industryAverage = displayMode === 'realtime' 
       ? getIndustryAverageData(stock, metricName.toLowerCase())
       : [];
-
+    
     // Set selected metric data and open popup
     setSelectedMetric({
       name: metricName,
@@ -457,7 +457,7 @@ export default function StockCard({
         name: stock.name
       }
     });
-
+    
     setIsMetricPopupOpen(true);
   };
 
@@ -485,7 +485,7 @@ export default function StockCard({
                   <div className={`text-lg font-bold px-4 py-1 rounded-full ${nextStock.change >= 0 ? 'text-green-300 bg-green-900/30' : 'text-red-300 bg-red-900/30'}`}>
                     ${nextStock.price.toFixed(2)} <span>{nextStock.change >= 0 ? '↑' : '↓'} {Math.abs(nextStock.change)}%</span>
                   </div>
-
+                  
                   {/* Blurred content suggestion */}
                   <div className="w-3/4 h-2 bg-gray-700/50 rounded-full mt-2"></div>
                   <div className="w-2/3 h-2 bg-gray-700/50 rounded-full"></div>
@@ -493,7 +493,7 @@ export default function StockCard({
               </div>
             </div>
           )}
-
+          
           {/* Main stock card */}
           <motion.div
             className="absolute inset-0 z-10 bg-gradient-to-b from-gray-900 to-black rounded-xl overflow-y-auto"
@@ -511,7 +511,7 @@ export default function StockCard({
                 {currentIndex + 1} / {totalCount}
               </div>
             </div>
-
+            
             {/* Header with stock name and price */}
             <div className="p-4 border-b border-gray-800">
               <div className="flex justify-between items-center">
@@ -521,17 +521,17 @@ export default function StockCard({
                   <span className="ml-2 text-sm">{stock.change >= 0 ? '+' : ''}{stock.change}%</span>
                 </div>
               </div>
-
+              
               <p className="mt-2 text-sm text-gray-300">
                 {stock.description}
               </p>
             </div>
-
+            
             {/* Performance Metrics */}
             <div className="grid grid-cols-2 gap-3 p-4 border-b border-gray-800">
               {Object.entries(stock.metrics).map(([key, metricObj]) => {
                 const metricName = key.charAt(0).toUpperCase() + key.slice(1);
-
+                
                 return (
                   <div 
                     key={key}
@@ -567,7 +567,7 @@ export default function StockCard({
             {/* Stock Synopsis */}
             <div className="p-4 border-b border-gray-800">
               <h3 className="text-lg font-bold text-white mb-3">Stock Synopsis</h3>
-
+              
               <div className="bg-gray-800/50 rounded-xl border border-gray-700/50 overflow-hidden">
                 <div className="border-b border-gray-700/70">
                   <div className="p-3">
@@ -575,14 +575,14 @@ export default function StockCard({
                     <p className="text-sm text-gray-300">{stock.synopsis.price}</p>
                   </div>
                 </div>
-
+                
                 <div className="border-b border-gray-700/70">
                   <div className="p-3">
                     <h4 className="font-bold text-white text-sm mb-1">Company Overview</h4>
                     <p className="text-sm text-gray-300">{stock.synopsis.company}</p>
                   </div>
                 </div>
-
+                
                 <div>
                   <div className="p-3">
                     <h4 className="font-bold text-white text-sm mb-1">Portfolio Role</h4>
@@ -591,11 +591,11 @@ export default function StockCard({
                 </div>
               </div>
             </div>
-
+            
             {/* Future predictions */}
             <div className="p-4 border-b border-gray-800">
               <h3 className="text-lg font-bold text-white mb-3">Price Forecast <span className="text-xs bg-amber-900/70 text-amber-300 px-2 py-0.5 rounded-full ml-2">Premium</span></h3>
-
+              
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <h4 className="text-sm font-medium text-gray-300 mb-1">1-Year Return</h4>
@@ -603,7 +603,7 @@ export default function StockCard({
                     <span className="text-white font-bold">{stock.oneYearReturn || "N/A"}</span>
                   </div>
                 </div>
-
+                
                 <div>
                   <h4 className="text-sm font-medium text-gray-300 mb-1">Predicted Price</h4>
                   <div className="p-2 bg-gray-800/50 rounded-lg border border-gray-700/50 relative overflow-hidden">
@@ -615,7 +615,7 @@ export default function StockCard({
                 </div>
               </div>
             </div>
-
+            
             {/* Full analysis */}
             <div className="p-4">
               <OverallAnalysisCard 
@@ -627,7 +627,7 @@ export default function StockCard({
             </div>
           </motion.div>
         </div>
-
+        
         {/* Swipe indicators */}
         <div className="absolute top-1/2 left-4 z-20 transform -translate-y-1/2 opacity-50">
           <ChevronLeft size={40} className={`text-white/30 ${currentIndex === 0 ? 'invisible' : ''}`} />
@@ -635,7 +635,7 @@ export default function StockCard({
         <div className="absolute top-1/2 right-4 z-20 transform -translate-y-1/2 opacity-50">
           <ChevronRight size={40} className="text-white/30" />
         </div>
-
+        
         {/* Metric Popup */}
         {isMetricPopupOpen && selectedMetric && (
           <MetricPopup
@@ -725,14 +725,14 @@ export default function StockCard({
               </button>
             </div>
           </div>
-
+          
           <div className="mt-1 flex items-baseline">
             <span className="text-2xl font-semibold text-slate-900">${displayPrice}</span>
             <span className={`ml-2 text-sm font-medium ${realTimeChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
               {realTimeChange >= 0 ? '+' : ''}{realTimeChange}%
             </span>
           </div>
-
+          
           {/* Chart placeholder - visualize the data */}
           <div className="relative mt-3 h-44 py-2">
             {/* Chart visual */}
@@ -743,7 +743,7 @@ export default function StockCard({
                 <span>${Math.round((priceRangeMax + priceRangeMin) / 2)}</span>
                 <span>${Math.round(priceRangeMin)}</span>
               </div>
-
+              
               {/* Chart path - dynamically draw based on chartData with extension to edge */}
               <div className="absolute inset-0 pl-12 pr-4">
                 <svg className="w-full h-full" viewBox={`0 0 100 100`} preserveAspectRatio="none">
@@ -763,7 +763,7 @@ export default function StockCard({
                 </svg>
               </div>
             </div>
-
+            
             {/* X-axis labels */}
             <div className="absolute left-0 right-0 bottom-1 pl-12 pr-4 flex justify-between text-[10px] text-slate-900 font-medium pointer-events-none">
               {timeScaleLabels.map((label, index) => (
@@ -771,19 +771,19 @@ export default function StockCard({
               ))}
             </div>
           </div>
-
+          
           {/* Trading date and swipe instruction */}
           <div className="mt-4 flex items-center justify-between text-xs h-6">
             <span className="text-slate-900 font-medium">Last updated: {latestTradingDay}</span>
             <span className="text-slate-700 italic">Swipe left to skip • Swipe right to invest</span>
           </div>
         </div>
-
+        
         {/* Stock Metrics - Enhanced Card Style */}
         <div className="grid grid-cols-2 gap-4 p-4 bg-white border-b border-slate-100">
           {Object.entries(stock.metrics).map(([key, metricObj]) => {
             const metricName = key.charAt(0).toUpperCase() + key.slice(1);
-
+            
             return (
               <div 
                 key={key}
@@ -796,7 +796,7 @@ export default function StockCard({
                   metricObj.color === 'yellow' ? 'bg-gradient-to-r from-amber-100/30 to-yellow-100/30' : 
                   'bg-gradient-to-r from-red-100/30 to-rose-100/30'}`}>
                 </div>
-
+                
                 {/* Metric Card */}
                 <div 
                   className={`p-4 rounded-xl border relative z-10 overflow-hidden active:scale-95 transition-all duration-150 cursor-pointer shadow-md hover:shadow-lg group-hover:translate-y-[-2px]
@@ -810,7 +810,7 @@ export default function StockCard({
                     metricObj.color === 'yellow' ? 'bg-gradient-to-r from-amber-400 to-yellow-500' : 
                     'bg-gradient-to-r from-red-400 to-rose-500'}`}>
                   </div>
-
+                  
                   {/* Metric indicator with icon */}
                   <div className="flex items-center justify-between mb-2">
                     <div className={`flex items-center justify-center rounded-full w-8 h-8 
@@ -825,7 +825,7 @@ export default function StockCard({
                     </div>
                     <Info size={15} className="text-slate-400 group-hover:text-slate-600 transition-colors" />
                   </div>
-
+                  
                   {/* Metric value and name */}
                   <div className={`text-lg font-semibold 
                     ${metricObj.color === 'green' ? 'text-slate-900' :
@@ -840,12 +840,12 @@ export default function StockCard({
             );
           })}
         </div>
-
+        
         {/* Unified cards with consistent styling */}
         <div className="bg-white rounded-xl border border-slate-200 shadow-md overflow-hidden mb-4">
           {/* Common background with slight highlight */}
           <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 to-indigo-50/30 rounded-xl opacity-30"></div>
-
+          
           {/* Price Trend */}
           <div className="p-4 border-b border-slate-100 relative">
             <div className="flex items-center gap-4">
@@ -868,7 +868,7 @@ export default function StockCard({
               </div>
             </div>
           </div>
-
+          
           {/* Company Overview */}
           <div className="p-4 border-b border-slate-100 relative">
             <div className="flex items-center gap-4">
@@ -888,7 +888,7 @@ export default function StockCard({
               </div>
             </div>
           </div>
-
+          
           {/* Portfolio Role */}
           <div className="p-4 relative">
             <div className="flex items-center gap-4">
@@ -910,12 +910,12 @@ export default function StockCard({
             </div>
           </div>
         </div>
-
+        
         {/* Comparative Analysis Section */}
         <div className="bg-white border-t border-b border-slate-100">
           <ComparativeAnalysis currentStock={stock} />
         </div>
-
+        
         {/* Bottom Action Bar */}
         <div className="p-4 bg-white border-t border-b border-slate-100 mb-4">
           <button
@@ -932,7 +932,7 @@ export default function StockCard({
             Swipe left to skip • Swipe right to invest
           </div>
         </div>
-
+        
         {/* Overall Analysis - Enhanced with consistent spacing */}
         {stock.overallAnalysis && (
           <div className="p-5 bg-gradient-to-b from-white to-slate-50">
@@ -947,7 +947,7 @@ export default function StockCard({
           </div>
         )}
       </motion.div>
-
+      
       {/* Metric Popup */}
       {selectedMetric && (
         <MetricPopup
@@ -958,7 +958,7 @@ export default function StockCard({
           metricData={selectedMetric.data}
         />
       )}
-
+      
       {/* Portfolio Impact Calculator */}
       <PortfolioImpactCalculator
         isOpen={isPortfolioImpactOpen}
