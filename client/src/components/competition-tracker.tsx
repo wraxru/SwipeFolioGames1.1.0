@@ -3,40 +3,93 @@ import { motion } from 'framer-motion';
 import { Users, ChevronRight } from 'lucide-react';
 import { PortfolioContext } from '@/contexts/portfolio-context';
 
+// Define the investor type
+interface Investor {
+  id: number;
+  name: string;
+  avatar: string;
+  returns: number;
+  isUser?: boolean;
+  gain?: string;
+}
+
 // Sample leaderboard data - in a real app this would come from API
-const leaderboardData = [
-  { id: 1, name: 'Investor27', avatar: '👨‍💼', returns: 15.7, gain: '+$15.70' },
-  { id: 2, name: 'TradingPro', avatar: '👩‍💼', returns: 12.3, gain: '+$12.30' },
-  { id: 3, name: 'WealthMaster', avatar: '🧔', returns: 8.9, gain: '+$8.90' },
-  { id: 4, name: 'StockExpert', avatar: '👱‍♀️', returns: 6.5, gain: '+$6.50' },
-  { id: 5, name: 'Belford&Co', avatar: 'B', returns: 3.8, gain: '+$3.80', isUser: true },
-  { id: 6, name: 'MarketGuru', avatar: '👨‍🦰', returns: 2.4, gain: '+$2.40' },
-  { id: 7, name: 'InvestorX', avatar: '👴', returns: 1.2, gain: '+$1.20' },
-  { id: 8, name: 'TradeQueen', avatar: '👩‍🦱', returns: -1.8, gain: '-$1.80' },
-  { id: 9, name: 'ValueHunter', avatar: '👨‍🦱', returns: -3.5, gain: '-$3.50' },
-  { id: 10, name: 'NewTrader', avatar: '🧑', returns: -5.2, gain: '-$5.20' },
+const baseLeaderboardData: Investor[] = [
+  { id: 1, name: 'Investor27', avatar: '👨‍💼', returns: 15.7 },
+  { id: 2, name: 'TradingPro', avatar: '👩‍💼', returns: 12.3 },
+  { id: 3, name: 'WealthMaster', avatar: '🧔', returns: 8.9 },
+  { id: 4, name: 'StockExpert', avatar: '👱‍♀️', returns: 6.5 },
+  { id: 6, name: 'MarketGuru', avatar: '👨‍🦰', returns: 2.4 },
+  { id: 7, name: 'InvestorX', avatar: '👴', returns: 1.2 },
+  { id: 8, name: 'TradeQueen', avatar: '👩‍🦱', returns: -1.8 },
+  { id: 9, name: 'ValueHunter', avatar: '👨‍🦱', returns: -3.5 },
+  { id: 10, name: 'NewTrader', avatar: '🧑', returns: -5.2 },
 ];
 
 export default function CompetitionTracker() {
   const portfolio = useContext(PortfolioContext);
   const [expanded, setExpanded] = useState(false);
-  const [userRank, setUserRank] = useState(5);
+  const [userRank, setUserRank] = useState(10); // Start at rank 10 (bottom)
+  const [userReturns, setUserReturns] = useState(0);
+  const [leaderboardData, setLeaderboardData] = useState(baseLeaderboardData);
   
-  // In a real app, we would calculate the user's portfolio performance
-  // and position in the leaderboard based on portfolio data
+  // Calculate projected 1-year return and update leaderboard position
   useEffect(() => {
-    if (portfolio) {
-      // Simulate leaderboard position changing based on portfolio value
-      // This would be replaced with real calculation based on portfolio performance
-      const portfolioValue = portfolio.portfolioValue;
-      const newRank = Math.max(1, Math.min(10, 10 - Math.floor(portfolioValue / 10)));
-      setUserRank(newRank);
+    if (portfolio && portfolio.holdings.length > 0) {
+      // Calculate projected 1-year returns
+      const totalInvested = portfolio.holdings.reduce((total, h) => total + (h.shares * h.purchasePrice), 0);
+      
+      if (totalInvested > 0) {
+        const oneYearReturns = portfolio.holdings.reduce((total, h) => {
+          // Convert to number or use 0 if undefined
+          const oneYearReturnPercent = typeof h.stock.oneYearReturn === 'number' ? h.stock.oneYearReturn : 0;
+          const stockValue = h.shares * h.purchasePrice;
+          const stockReturn = stockValue * (oneYearReturnPercent / 100);
+          return total + stockReturn;
+        }, 0);
+        
+        const projectedReturnPercent = (oneYearReturns / totalInvested) * 100;
+        setUserReturns(projectedReturnPercent);
+        
+        // Create user data
+        const userData = {
+          id: 5,
+          name: 'Belford&Co',
+          avatar: 'B',
+          returns: projectedReturnPercent,
+          isUser: true
+        };
+        
+        // Insert user into leaderboard and sort
+        const newLeaderboard = [...baseLeaderboardData];
+        const userIndex = newLeaderboard.findIndex(item => item.id === 5);
+        if (userIndex >= 0) {
+          newLeaderboard[userIndex] = userData;
+        } else {
+          newLeaderboard.push(userData);
+        }
+        
+        // Sort by returns
+        newLeaderboard.sort((a, b) => b.returns - a.returns);
+        setLeaderboardData(newLeaderboard);
+        
+        // Find user's rank
+        const rank = newLeaderboard.findIndex(item => item.isUser) + 1;
+        setUserRank(rank);
+      }
     }
   }, [portfolio]);
   
+  // Format the gain/loss values with dollar signs
+  const formattedLeaderboardData = leaderboardData.map(item => ({
+    ...item,
+    gain: `${item.returns >= 0 ? '+' : ''}$${Math.abs(item.returns).toFixed(2)}`
+  }));
+  
   // Get top 3 and user's position
-  const topThree = leaderboardData.slice(0, 3);
-  const userPosition = leaderboardData.find(item => item.isUser) || leaderboardData[userRank - 1];
+  const topThree = formattedLeaderboardData.slice(0, 3);
+  const userPosition = formattedLeaderboardData.find(item => item.isUser) || 
+    { id: 5, name: 'Belford&Co', avatar: 'B', returns: 0, gain: '$0.00', isUser: true };
   
   return (
     <motion.div 

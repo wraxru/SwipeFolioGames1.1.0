@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 import { motion } from 'framer-motion';
-import { Wallet, TrendingUp, DollarSign } from 'lucide-react';
+import { Wallet, TrendingUp, DollarSign, Calendar } from 'lucide-react';
 import { Progress } from './ui/progress';
 import { PortfolioContext } from '@/contexts/portfolio-context';
 
@@ -21,8 +21,26 @@ export default function InvestmentPanel() {
     );
   }
   
-  const { cash, portfolioValue, totalValue } = portfolio;
+  const { cash, portfolioValue, totalValue, holdings } = portfolio;
   const allocationPercentage = Math.round((portfolioValue / totalValue) * 100);
+  
+  // Calculate projected 1-year return based on holdings
+  let projectedReturn = 0;
+  let projectedPercent = 0;
+
+  if (holdings.length > 0) {
+    const totalInvested = holdings.reduce((total, h) => total + (h.shares * h.purchasePrice), 0);
+    const oneYearReturns = holdings.reduce((total, h) => {
+      // Convert to number or use 0 if undefined
+      const oneYearReturnPercent = typeof h.stock.oneYearReturn === 'number' ? h.stock.oneYearReturn : 0;
+      const stockValue = h.shares * h.purchasePrice;
+      const stockReturn = stockValue * (oneYearReturnPercent / 100);
+      return total + stockReturn;
+    }, 0);
+    
+    projectedReturn = oneYearReturns;
+    projectedPercent = totalInvested > 0 ? (oneYearReturns / totalInvested) * 100 : 0;
+  }
   
   return (
     <motion.div 
@@ -48,6 +66,15 @@ export default function InvestmentPanel() {
           <span className="text-xl font-bold text-slate-800">{totalValue.toFixed(2)}</span>
           <span className="ml-1 text-xs text-slate-500">total value</span>
         </div>
+        {holdings.length > 0 && (
+          <div className="flex items-center text-sm">
+            <Calendar className="w-3 h-3 mr-1 text-blue-500" />
+            <span className="text-xs text-slate-600">Projected 1-year return: </span>
+            <span className={`ml-1 text-xs font-medium ${projectedReturn >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+              {projectedReturn >= 0 ? '+' : ''}{projectedReturn.toFixed(2)} ({projectedReturn >= 0 ? '+' : ''}{projectedPercent.toFixed(1)}%)
+            </span>
+          </div>
+        )}
       </div>
       
       <div className="mb-1 flex justify-between items-center">

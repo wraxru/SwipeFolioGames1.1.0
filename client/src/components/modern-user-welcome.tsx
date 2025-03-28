@@ -1,23 +1,58 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronUp, Award } from 'lucide-react';
+import { PortfolioContext } from '@/contexts/portfolio-context';
 
 interface ModernUserWelcomeProps {
   name: string;
   rank?: number;
 }
 
-export default function ModernUserWelcome({ name, rank = 8 }: ModernUserWelcomeProps) {
+export default function ModernUserWelcome({ name, rank: initialRank = 10 }: ModernUserWelcomeProps) {
   const [animateRank, setAnimateRank] = useState(false);
+  const [rank, setRank] = useState(initialRank);
+  const portfolio = useContext(PortfolioContext);
+  const [prevRank, setPrevRank] = useState(initialRank);
   
-  // Simulate rank change after 5 seconds for demo purposes
+  // Update rank based on portfolio performance
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setAnimateRank(true);
-    }, 5000);
-    
-    return () => clearTimeout(timer);
-  }, []);
+    if (portfolio && portfolio.holdings.length > 0) {
+      // Calculate projected 1-year returns
+      const totalInvested = portfolio.holdings.reduce((total, h) => total + (h.shares * h.purchasePrice), 0);
+      
+      if (totalInvested > 0) {
+        const oneYearReturns = portfolio.holdings.reduce((total, h) => {
+          // Convert to number or use 0 if undefined
+          const oneYearReturnPercent = typeof h.stock.oneYearReturn === 'number' ? h.stock.oneYearReturn : 0;
+          const stockValue = h.shares * h.purchasePrice;
+          const stockReturn = stockValue * (oneYearReturnPercent / 100);
+          return total + stockReturn;
+        }, 0);
+        
+        const projectedReturnPercent = (oneYearReturns / totalInvested) * 100;
+        
+        // Calculate rank based on return percent
+        // Start at rank 10 (lowest) and improve as returns increase
+        let newRank = 10;
+        if (projectedReturnPercent > 0) newRank = 9;
+        if (projectedReturnPercent > 2) newRank = 8;
+        if (projectedReturnPercent > 4) newRank = 7;
+        if (projectedReturnPercent > 6) newRank = 6;
+        if (projectedReturnPercent > 8) newRank = 5;
+        if (projectedReturnPercent > 10) newRank = 4;
+        if (projectedReturnPercent > 12) newRank = 3;
+        if (projectedReturnPercent > 14) newRank = 2;
+        if (projectedReturnPercent > 16) newRank = 1;
+        
+        // Check if rank improved
+        if (newRank < prevRank) {
+          setPrevRank(rank);
+          setRank(newRank);
+          setAnimateRank(true);
+        }
+      }
+    }
+  }, [portfolio, prevRank, rank]);
   
   return (
     <div className="welcome-section mb-6">

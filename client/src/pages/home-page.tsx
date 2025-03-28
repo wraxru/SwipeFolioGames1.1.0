@@ -4,7 +4,6 @@ import { Loader2 } from "lucide-react";
 import { Stack } from "@shared/schema";
 import AppHeader from "@/components/app-header";
 import AppNavigation from "@/components/app-navigation";
-import SearchBar from "@/components/search-bar";
 import CategoryChips from "@/components/category-chips";
 import SectionHeader from "@/components/section-header";
 import StacksExplorer from "@/components/stacks-explorer";
@@ -51,11 +50,7 @@ export default function HomePage() {
       <main className="main-content pb-24 pt-20 px-4 bg-gradient-to-b from-slate-50 to-white">
         <AnimatedContainer>
           <HeroSection />
-          <ModernUserWelcome name="Belford&Co" rank={8} />
-        </AnimatedContainer>
-        
-        <AnimatedContainer delay={0.1}>
-          <SearchBar />
+          <ModernUserWelcome name="Belford&Co" rank={10} />
         </AnimatedContainer>
         
         <AnimatedContainer delay={0.2}>
