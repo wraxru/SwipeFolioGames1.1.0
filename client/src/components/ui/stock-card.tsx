@@ -183,6 +183,11 @@ export default function StockCard({
   const openPortfolioCalculator = () => {
     setIsPortfolioImpactOpen(true);
   };
+  
+  // Function to handle investment button click - used by the Buy button in stock detail page
+  const handleInvestButtonClick = () => {
+    openPortfolioCalculator();
+  };
 
   // Enhanced drag handler with smoother transitions and feedback
   const handleDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
@@ -655,7 +660,7 @@ export default function StockCard({
 
   // Real-time display mode
   return (
-    <div className="relative h-full">
+    <div className="relative h-full" data-testid="stock-card">
       {/* Blurred background stock (next in stack) - visible during swipes */}
       <div 
         className="absolute inset-0 overflow-hidden blur-xl pointer-events-none opacity-20"
@@ -967,6 +972,15 @@ export default function StockCard({
           metricData={selectedMetric.data}
         />
       )}
+
+      {/* Hidden Buy Button - used for programmatic clicking */}
+      <button 
+        className="hidden"
+        data-testid="buy-button"
+        onClick={openPortfolioCalculator}
+      >
+        Buy
+      </button>
 
       {/* Portfolio Impact Calculator */}
       <PortfolioImpactCalculator
