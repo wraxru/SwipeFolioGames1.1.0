@@ -56,13 +56,15 @@ export default function IndustryPosition({ stock }: IndustryPositionProps) {
     summaryText = `${stock.name} is among the lower performers in the ${stock.industry} industry.`;
   }
   
+  // Toggle comparison visibility with logging
   const toggleComparison = () => {
+    console.log("Toggle comparison clicked. Current state:", showComparison);
     setShowComparison(!showComparison);
   };
 
   // Effect to force update when toggled
   useEffect(() => {
-    // This is just to ensure the component re-renders properly when toggle happens
+    console.log("Comparison state changed to:", showComparison);
   }, [showComparison]);
 
   return (
