@@ -160,11 +160,23 @@ export default function IndustryPosition({ stock }: IndustryPositionProps) {
           showComparison ? 'max-h-[2000px] opacity-100' : 'max-h-0 opacity-0'
         }`}
       >
+        {/* Debug element to verify toggle state */}
+        <div className="p-2 bg-blue-50 text-xs text-gray-700 rounded mb-2">
+          Debug: Comparison area is {showComparison ? 'OPEN' : 'CLOSED'}<br/>
+          Stock Ticker: {stock?.ticker}, Industry: {stock?.industry}
+        </div>
+        
         {/* Direct use of VerticalStockComparison to ensure it works */}
-        <VerticalStockComparison 
-          currentStock={stock} 
-          industry={stock.industry} 
-        />
+        {stock && stock.industry ? (
+          <VerticalStockComparison 
+            currentStock={stock} 
+            industry={stock.industry} 
+          />
+        ) : (
+          <div className="p-4 border rounded bg-red-50">
+            Missing stock data required for comparison
+          </div>
+        )}
       </div>
     </div>
   );

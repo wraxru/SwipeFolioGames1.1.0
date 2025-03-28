@@ -27,11 +27,19 @@ interface ComparisonStockData {
  * using vertical bars for easy comparison.
  */
 export default function VerticalStockComparison({ currentStock, industry: propIndustry }: VerticalStockComparisonProps) {
+  console.log("VerticalStockComparison RENDER: Received props:", { 
+    currentStockTicker: currentStock?.ticker,
+    currentStockIndustry: currentStock?.industry,
+    propIndustry: propIndustry
+  });
+  
   // Get the industry for the current stock (from props or the stock itself)
   const industry = propIndustry || currentStock.industry || 'Other';
+  console.log("VerticalStockComparison: Using industry:", industry);
   
   // Load all stocks in this industry
   const allIndustryStocks = getIndustryStocks(industry);
+  console.log("VerticalStockComparison: Found stocks:", allIndustryStocks.length);
   
   // State for UI controls
   const [showFullComparison, setShowFullComparison] = useState(false);
