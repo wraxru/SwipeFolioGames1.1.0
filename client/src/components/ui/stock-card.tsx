@@ -844,7 +844,12 @@ export default function StockCard({
           })}
         </div>
 
-        {/* Unified cards with consistent styling */}
+        {/* Comparative Analysis Section - Now positioned FIRST */}
+        <div className="bg-white border-t border-b border-slate-100 mb-4">
+          <ComparativeAnalysis currentStock={stock} />
+        </div>
+
+        {/* Unified cards with consistent styling - Now positioned SECOND */}
         <div className="bg-white rounded-xl border border-slate-200 shadow-md overflow-hidden mb-4">
           {/* Common background with slight highlight */}
           <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 to-indigo-50/30 rounded-xl opacity-30"></div>
@@ -912,11 +917,6 @@ export default function StockCard({
               </div>
             </div>
           </div>
-        </div>
-
-        {/* Comparative Analysis Section */}
-        <div className="bg-white border-t border-b border-slate-100">
-          <ComparativeAnalysis currentStock={stock} />
         </div>
 
         {/* Bottom Swipe Instruction */}
