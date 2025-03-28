@@ -9,6 +9,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { getAdvancedMetricScore } from '@/lib/advanced-metric-scoring';
 
 // Type for industry benchmark data
 interface BenchmarkData {
@@ -57,184 +58,6 @@ function getMetricDescription(metricName: string): string {
       return '';
   }
 }
-
-// Function to convert text ratings to numeric scores for visualization
-function convertRatingToNumber(rating: string | number): number {
-  if (typeof rating === 'number') return rating;
-  
-  switch (rating.toLowerCase()) {
-    case 'strong':
-    case 'excellent':
-    case 'high':
-      return 85;
-    case 'good':
-      return 75;
-    case 'fair':
-    case 'average':
-    case 'medium':
-      return 60;
-    case 'weak':
-    case 'unstable':
-    case 'low':
-      return 40;
-    case 'poor':
-    case 'very unstable':
-    case 'very low':
-      return 25;
-    default:
-      // Try to parse as a number if it's already a number string
-      const parsed = parseInt(rating, 10);
-      if (!isNaN(parsed)) {
-        return parsed;
-      }
-      // Default fallback
-      return 50;
-  }
-}
-
-// Hardcoded comparison stocks by industry
-const comparisonStocksByIndustry: Record<string, Record<string, ComparisonStockData>> = {
-  'Real Estate': {
-    'O': {
-      symbol: 'O',
-      name: 'Realty Income',
-      color: '#7c3aed', // purple-600
-      ratings: {
-        Performance: 60,
-        Stability: 85,
-        Value: 70,
-        Momentum: 55,
-        Dividend: 85
-      }
-    },
-    'SPG': {
-      symbol: 'SPG',
-      name: 'Simon Property',
-      color: '#7c3aed',
-      ratings: {
-        Performance: 65,
-        Stability: 70,
-        Value: 75,
-        Momentum: 65,
-        Dividend: 80
-      }
-    },
-    'AVB': {
-      symbol: 'AVB',
-      name: 'AvalonBay',
-      color: '#7c3aed',
-      ratings: {
-        Performance: 55,
-        Stability: 80,
-        Value: 65,
-        Momentum: 50,
-        Dividend: 65
-      }
-    }
-  },
-  'Technology': {
-    'MSFT': {
-      symbol: 'MSFT',
-      name: 'Microsoft',
-      color: '#7c3aed',
-      ratings: {
-        Performance: 90,
-        Stability: 85,
-        Value: 65,
-        Momentum: 80,
-        Dividend: 35
-      }
-    },
-    'AAPL': {
-      symbol: 'AAPL',
-      name: 'Apple',
-      color: '#7c3aed',
-      ratings: {
-        Performance: 85,
-        Stability: 90,
-        Value: 60,
-        Momentum: 75,
-        Dividend: 25
-      }
-    },
-    'GOOGL': {
-      symbol: 'GOOGL',
-      name: 'Alphabet',
-      color: '#7c3aed',
-      ratings: {
-        Performance: 80,
-        Stability: 75,
-        Value: 70,
-        Momentum: 70,
-        Dividend: 0
-      }
-    }
-  },
-  'Healthcare': {
-    'JNJ': {
-      symbol: 'JNJ',
-      name: 'Johnson & Johnson',
-      color: '#7c3aed',
-      ratings: {
-        Performance: 70,
-        Stability: 90,
-        Value: 75,
-        Momentum: 60,
-        Dividend: 65
-      }
-    },
-    'PFE': {
-      symbol: 'PFE',
-      name: 'Pfizer',
-      color: '#7c3aed',
-      ratings: {
-        Performance: 60,
-        Stability: 75,
-        Value: 80,
-        Momentum: 50,
-        Dividend: 70
-      }
-    },
-    'UNH': {
-      symbol: 'UNH',
-      name: 'UnitedHealth',
-      color: '#7c3aed',
-      ratings: {
-        Performance: 75,
-        Stability: 80,
-        Value: 65,
-        Momentum: 70,
-        Dividend: 40
-      }
-    }
-  },
-  'Other': {
-    'ABC': {
-      symbol: 'ABC',
-      name: 'Company ABC',
-      color: '#7c3aed',
-      ratings: {
-        Performance: 65,
-        Stability: 70,
-        Value: 75,
-        Momentum: 65,
-        Dividend: 55
-      }
-    },
-    'XYZ': {
-      symbol: 'XYZ',
-      name: 'Company XYZ',
-      color: '#7c3aed',
-      ratings: {
-        Performance: 60,
-        Stability: 65,
-        Value: 70,
-        Momentum: 60,
-        Dividend: 50
-      }
-    }
-  }
-};
 
 // Industry and market benchmarks by industry
 const benchmarksByIndustry: Record<string, {Industry: BenchmarkData, Market: BenchmarkData}> = {
@@ -320,6 +143,162 @@ const benchmarksByIndustry: Record<string, {Industry: BenchmarkData, Market: Ben
   }
 };
 
+// Real Estate comparison stocks with accurate scores
+const realEstateStocks: Record<string, ComparisonStockData> = {
+  'O': {
+    symbol: 'O',
+    name: 'Realty Income',
+    color: '#7c3aed', // purple-600
+    ratings: {
+      Performance: 48,
+      Stability: 82,
+      Value: 73,
+      Momentum: 62,
+      Dividend: 85
+    }
+  },
+  'SPG': {
+    symbol: 'SPG',
+    name: 'Simon Property',
+    color: '#7c3aed',
+    ratings: {
+      Performance: 52,
+      Stability: 68,
+      Value: 77,
+      Momentum: 66,
+      Dividend: 80
+    }
+  },
+  'AVB': {
+    symbol: 'AVB',
+    name: 'AvalonBay',
+    color: '#7c3aed',
+    ratings: {
+      Performance: 47,
+      Stability: 76,
+      Value: 69,
+      Momentum: 58,
+      Dividend: 65
+    }
+  }
+};
+
+// Technology comparison stocks with accurate scores
+const technologyStocks: Record<string, ComparisonStockData> = {
+  'MSFT': {
+    symbol: 'MSFT',
+    name: 'Microsoft',
+    color: '#7c3aed',
+    ratings: {
+      Performance: 85,
+      Stability: 75,
+      Value: 62,
+      Momentum: 84,
+      Dividend: 35
+    }
+  },
+  'AAPL': {
+    symbol: 'AAPL',
+    name: 'Apple',
+    color: '#7c3aed',
+    ratings: {
+      Performance: 82,
+      Stability: 78,
+      Value: 58,
+      Momentum: 76,
+      Dividend: 25
+    }
+  },
+  'GOOGL': {
+    symbol: 'GOOGL',
+    name: 'Alphabet',
+    color: '#7c3aed',
+    ratings: {
+      Performance: 80,
+      Stability: 72,
+      Value: 65,
+      Momentum: 70,
+      Dividend: 0
+    }
+  }
+};
+
+// Healthcare comparison stocks with accurate scores
+const healthcareStocks: Record<string, ComparisonStockData> = {
+  'JNJ': {
+    symbol: 'JNJ',
+    name: 'Johnson & Johnson',
+    color: '#7c3aed',
+    ratings: {
+      Performance: 67,
+      Stability: 89,
+      Value: 72,
+      Momentum: 55,
+      Dividend: 65
+    }
+  },
+  'PFE': {
+    symbol: 'PFE',
+    name: 'Pfizer',
+    color: '#7c3aed',
+    ratings: {
+      Performance: 58,
+      Stability: 75,
+      Value: 78,
+      Momentum: 48,
+      Dividend: 70
+    }
+  },
+  'UNH': {
+    symbol: 'UNH',
+    name: 'UnitedHealth',
+    color: '#7c3aed',
+    ratings: {
+      Performance: 73,
+      Stability: 82,
+      Value: 64,
+      Momentum: 68,
+      Dividend: 40
+    }
+  }
+};
+
+// Default comparison stocks
+const defaultStocks: Record<string, ComparisonStockData> = {
+  'ABC': {
+    symbol: 'ABC',
+    name: 'Company ABC',
+    color: '#7c3aed',
+    ratings: {
+      Performance: 65,
+      Stability: 70,
+      Value: 75,
+      Momentum: 65,
+      Dividend: 55
+    }
+  },
+  'XYZ': {
+    symbol: 'XYZ',
+    name: 'Company XYZ',
+    color: '#7c3aed',
+    ratings: {
+      Performance: 60,
+      Stability: 65,
+      Value: 70,
+      Momentum: 60,
+      Dividend: 50
+    }
+  }
+};
+
+// Combine all industry comparison stocks
+const comparisonStocksByIndustry: Record<string, Record<string, ComparisonStockData>> = {
+  'Real Estate': realEstateStocks,
+  'Technology': technologyStocks,
+  'Healthcare': healthcareStocks,
+  'Other': defaultStocks
+};
+
 export default function VerticalStockComparison({ currentStock }: VerticalStockComparisonProps) {
   // Set default industry based on currentStock
   const industry = currentStock.industry || 'Other';
@@ -339,19 +318,29 @@ export default function VerticalStockComparison({ currentStock }: VerticalStockC
   const [showFullComparison, setShowFullComparison] = useState(false);
   const [selectedCompetitor, setSelectedCompetitor] = useState(defaultCompetitor);
   
-  // Create a ComparisonStockData object from the current stock
+  // Get actual scores from the advanced metrics scoring system
+  const performanceScore = getAdvancedMetricScore(currentStock, 'performance');
+  const stabilityScore = getAdvancedMetricScore(currentStock, 'stability');
+  const valueScore = getAdvancedMetricScore(currentStock, 'value');
+  const momentumScore = getAdvancedMetricScore(currentStock, 'momentum');
+  
+  // Calculate a dividend score based on dividend yield
+  const dividendYield = typeof currentStock.metrics.value.details.dividendYield === 'number' 
+    ? currentStock.metrics.value.details.dividendYield 
+    : 0;
+  const dividendScore = Math.min(Math.round(dividendYield * 20), 100); // Scale to 0-100 range
+  
+  // Create a ComparisonStockData object from the current stock with actual scores
   const mainStockData: ComparisonStockData = {
     symbol: currentStock.ticker,
     name: currentStock.name,
     color: '#10b981', // emerald-500 - a more modern green
     ratings: {
-      Performance: convertRatingToNumber(currentStock.metrics.performance.value),
-      Stability: convertRatingToNumber(currentStock.metrics.stability.value),
-      Value: convertRatingToNumber(currentStock.metrics.value.value),
-      Momentum: convertRatingToNumber(currentStock.metrics.momentum.value),
-      Dividend: typeof currentStock.metrics.value.details.dividendYield === 'number' 
-        ? Math.min(currentStock.metrics.value.details.dividendYield * 20, 100) // Scale dividends up to 100
-        : convertRatingToNumber(currentStock.metrics.value.details.dividendYield as string)
+      Performance: performanceScore,
+      Stability: stabilityScore,
+      Value: valueScore,
+      Momentum: momentumScore,
+      Dividend: dividendScore
     },
     details: currentStock.metrics.value.details
   };
@@ -468,8 +457,16 @@ export default function VerticalStockComparison({ currentStock }: VerticalStockC
                     transition: 'width 0.5s ease-in-out'
                   }}
                 >
-                  <span className="text-xs font-bold text-white">{mainStockData.symbol}</span>
+                  {/* Only show ticker symbol if bar is wide enough */}
+                  {mainValue > 20 && (
+                    <span className="text-xs font-bold text-white drop-shadow-md">{mainStockData.symbol}</span>
+                  )}
                 </div>
+                
+                {/* Show ticker outside the bar if it's too narrow */}
+                {mainValue <= 20 && (
+                  <span className="absolute text-xs font-bold text-gray-700 left-[101%]">{mainStockData.symbol}</span>
+                )}
                 
                 {/* Industry marker */}
                 <div 
@@ -501,8 +498,16 @@ export default function VerticalStockComparison({ currentStock }: VerticalStockC
                     transition: 'width 0.5s ease-in-out'
                   }}
                 >
-                  <span className="text-xs font-bold text-white">{competitor.symbol}</span>
+                  {/* Only show ticker symbol if bar is wide enough */}
+                  {compValue > 20 && (
+                    <span className="text-xs font-bold text-white drop-shadow-md">{competitor.symbol}</span>
+                  )}
                 </div>
+                
+                {/* Show ticker outside the bar if it's too narrow */}
+                {compValue <= 20 && (
+                  <span className="absolute text-xs font-bold text-gray-700 left-[101%]">{competitor.symbol}</span>
+                )}
                 
                 {/* Industry marker */}
                 <div 
