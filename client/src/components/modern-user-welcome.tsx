@@ -69,9 +69,9 @@ export default function ModernUserWelcome({ name, rank: initialRank = 10 }: Mode
             <div className="relative w-14 h-14 rounded-full overflow-hidden border-2 border-white shadow-lg">
               <div className="absolute inset-0 bg-gradient-to-br from-slate-800 to-slate-900" />
               
-              {/* Businessman avatar */}
+              {/* Belford&Co avatar */}
               <img 
-                src="/avatar.png" 
+                src="/belford-avatar.png" 
                 alt="User avatar" 
                 className="w-full h-full object-cover"
                 onError={(e) => {

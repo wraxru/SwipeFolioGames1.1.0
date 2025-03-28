@@ -106,10 +106,15 @@ export default function PortfolioImpactCalculator({
   // Calculate shares based on investment amount (minimum 0.001 shares)
   const shares = Math.max(investmentAmount / stock.price, 0.001);
   
-  // Estimated value in 1 year (based on oneYearReturn if available)
-  const estimatedValue = stock.oneYearReturn 
-    ? investmentAmount * (1 + parseFloat(stock.oneYearReturn.replace("%", "")) / 100)
-    : investmentAmount * 1.08; // Default 8% growth if no return data
+  // Projected 1-year return (based on oneYearReturn if available)
+  const oneYearReturnRate = typeof stock.oneYearReturn === 'number' 
+    ? stock.oneYearReturn / 100 
+    : typeof stock.oneYearReturn === 'string' 
+      ? parseFloat(stock.oneYearReturn.replace("%", "")) / 100
+      : 0.08; // Default 8% growth if no return data
+      
+  const projectedReturn = investmentAmount * oneYearReturnRate;
+  const estimatedValue = investmentAmount + projectedReturn;
   
   // Calculate portfolio impact with validation
   const impact = calculateImpact(stock, investmentAmount);
@@ -553,7 +558,7 @@ export default function PortfolioImpactCalculator({
                   
                   <div className="bg-blue-50 rounded-lg p-3 text-blue-800 text-sm flex items-center">
                     <Info size={16} className="mr-2 text-blue-500" />
-                    Est. Value in 1Y: {formatCurrency(estimatedValue)}
+                    Projected Return: {formatCurrency(projectedReturn)}
                   </div>
                 </div>
                 

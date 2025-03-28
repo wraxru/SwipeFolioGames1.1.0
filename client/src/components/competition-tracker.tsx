@@ -55,7 +55,7 @@ export default function CompetitionTracker() {
         const userData = {
           id: 5,
           name: 'Belford&Co',
-          avatar: 'B',
+          avatar: '👨‍💼', // Use a professional emoji as avatar
           returns: projectedReturnPercent,
           isUser: true
         };
@@ -89,7 +89,7 @@ export default function CompetitionTracker() {
   // Get top 3 and user's position
   const topThree = formattedLeaderboardData.slice(0, 3);
   const userPosition = formattedLeaderboardData.find(item => item.isUser) || 
-    { id: 5, name: 'Belford&Co', avatar: 'B', returns: 0, gain: '$0.00', isUser: true };
+    { id: 5, name: 'Belford&Co', avatar: '👨‍💼', returns: 0, gain: '$0.00', isUser: true };
   
   return (
     <motion.div 

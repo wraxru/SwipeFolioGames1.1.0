@@ -43,6 +43,19 @@ export default function PortfolioPage() {
   const totalReturnPercent = holdings.length > 0 
     ? (totalReturn / (portfolioValue - totalReturn)) * 100 
     : 0;
+    
+  // Calculate projected 1-year return based on holdings
+  const projectedReturn = holdings.reduce((total, h) => {
+    // Convert to number or use 0 if undefined
+    const oneYearReturnPercent = typeof h.stock.oneYearReturn === 'number' ? h.stock.oneYearReturn : 0;
+    const stockValue = h.shares * h.purchasePrice;
+    const stockReturn = stockValue * (oneYearReturnPercent / 100);
+    return total + stockReturn;
+  }, 0);
+  
+  const projectedReturnPercent = holdings.length > 0 && portfolioValue > 0
+    ? (projectedReturn / portfolioValue) * 100
+    : 0;
   
   const sortedHoldings = [...holdings].sort((a, b) => b.value - a.value);
   
@@ -130,6 +143,21 @@ export default function PortfolioPage() {
                   <p className="text-lg font-semibold text-emerald-600">${cash.toFixed(2)}</p>
                 </div>
               </div>
+              
+              {/* Projected Return */}
+              {holdings.length > 0 && (
+                <div className="mt-3 bg-blue-50 rounded-lg p-3">
+                  <p className="text-xs text-blue-700 mb-1">Projected 1-Year Return</p>
+                  <p className={`text-lg font-semibold flex items-center ${projectedReturn >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                    {projectedReturn >= 0 ? (
+                      <ArrowUp className="h-4 w-4 mr-1" />
+                    ) : (
+                      <ArrowDown className="h-4 w-4 mr-1" />
+                    )}
+                    ${Math.abs(projectedReturn).toFixed(2)} ({projectedReturn >= 0 ? '+' : ''}{projectedReturnPercent.toFixed(2)}%)
+                  </p>
+                </div>
+              )}
             </div>
             
             {/* Portfolio Metrics */}
