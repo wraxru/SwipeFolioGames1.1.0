@@ -473,7 +473,7 @@ export default function StockCard({
 
           {/* Main stock card */}
           <motion.div
-            className="absolute inset-0 z-10 bg-gradient-to-b from-gray-900 to-black rounded-xl overflow-y-auto"
+            className="absolute inset-0 z-10 bg-gradient-to-b from-gray-900 to-black overflow-y-auto"
             ref={cardRef}
             drag="x"
             dragConstraints={{ left: 0, right: 0 }}
@@ -653,7 +653,7 @@ export default function StockCard({
       )}
 
       <motion.div
-        className="h-full overflow-y-auto overflow-x-hidden pb-16 stock-card bg-white rounded-xl border border-slate-200 shadow-lg"
+        className="h-full overflow-y-auto overflow-x-hidden pb-16 stock-card bg-white"
         ref={cardRef}
         drag="x"
         dragConstraints={{ left: 0, right: 0 }}
@@ -832,9 +832,9 @@ export default function StockCard({
         </div>
 
         {/* Unified cards with consistent styling */}
-        <div className="bg-white rounded-xl border border-slate-200 shadow-md overflow-hidden mb-4">
+        <div className="bg-white overflow-hidden mb-4">
           {/* Common background with slight highlight */}
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 to-indigo-50/30 rounded-xl opacity-30"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 to-indigo-50/30 opacity-30"></div>
 
           {/* Price Trend */}
           <div className="p-4 border-b border-slate-100 relative">

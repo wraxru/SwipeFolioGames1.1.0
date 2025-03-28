@@ -121,7 +121,7 @@ export default function StockDetailPage() {
           {currentStockIndex + 1 < stocks.length && (
             <motion.div
               key={`stackcard-${currentStockIndex + 1}`}
-              className="absolute inset-0 p-4"
+              className="absolute inset-0"
               style={{ zIndex: 1 }}
               initial={{ scale: 0.95, y: 15, opacity: 0.9 }}
               animate={{ scale: 0.95, y: 15, opacity: 0.9 }}
@@ -146,7 +146,7 @@ export default function StockDetailPage() {
           {currentStock && (
             <motion.div
               key={`stackcard-${currentStockIndex}`}
-              className="absolute inset-0 p-4"
+              className="absolute inset-0"
               style={{ zIndex: 2 }}
               initial={{ scale: 1, y: 0, opacity: 1 }}
               animate={{ scale: 1, y: 0, opacity: 1 }}
