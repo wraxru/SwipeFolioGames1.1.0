@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { ChevronDown, ChevronUp, BarChart2 } from 'lucide-react';
 import { StockData } from '@/lib/stock-data';
 import { getAdvancedMetricScore } from '@/lib/advanced-metric-scoring';
 import ComparativeAnalysis from '@/components/comparative-analysis';
+import VerticalStockComparison from '@/components/comparative-analysis/vertical-comparison';
 
 interface IndustryPositionProps {
   stock: StockData;
@@ -10,6 +11,7 @@ interface IndustryPositionProps {
 
 export default function IndustryPosition({ stock }: IndustryPositionProps) {
   const [showComparison, setShowComparison] = useState(false);
+  const comparisonRef = useRef<HTMLDivElement>(null);
 
   // Calculate percentile rank and overall score
   const performanceScore = getAdvancedMetricScore(stock, 'performance');
@@ -60,6 +62,13 @@ export default function IndustryPosition({ stock }: IndustryPositionProps) {
   const toggleComparison = () => {
     console.log("Toggle comparison clicked. Current state:", showComparison);
     setShowComparison(!showComparison);
+    
+    // Scroll to the comparison component when it's opened
+    if (!showComparison && comparisonRef.current) {
+      setTimeout(() => {
+        comparisonRef.current?.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    }
   };
 
   // Effect to force update when toggled
@@ -145,14 +154,18 @@ export default function IndustryPosition({ stock }: IndustryPositionProps) {
       </div>
       
       {/* Expanded comparison view */}
-      {showComparison && (
-        <div className="mt-2 transition-all duration-300 ease-in-out">
-          <ComparativeAnalysis 
-            currentStock={stock} 
-            industry={stock.industry} 
-          />
-        </div>
-      )}
+      <div 
+        ref={comparisonRef} 
+        className={`mt-2 transition-all duration-300 ease-in-out overflow-hidden ${
+          showComparison ? 'max-h-[2000px] opacity-100' : 'max-h-0 opacity-0'
+        }`}
+      >
+        {/* Direct use of VerticalStockComparison to ensure it works */}
+        <VerticalStockComparison 
+          currentStock={stock} 
+          industry={stock.industry} 
+        />
+      </div>
     </div>
   );
 }
