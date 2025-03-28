@@ -8,20 +8,14 @@ import { insertUserSchema, User as SelectUser, InsertUser } from "@shared/schema
 import { getQueryFn, apiRequest, queryClient } from "../lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
-// Extended user type with rank information for the UI
-export interface ExtendedUser extends SelectUser {
-  rank: number;
-  previousRank: number;
-}
-
 type AuthContextType = {
-  user: ExtendedUser | null;
+  user: SelectUser | null;
   isLoading: boolean;
   error: Error | null;
-  loginMutation: UseMutationResult<ExtendedUser, Error, LoginData>;
+  loginMutation: UseMutationResult<SelectUser, Error, LoginData>;
   logoutMutation: UseMutationResult<void, Error, void>;
-  registerMutation: UseMutationResult<ExtendedUser, Error, InsertUser>;
-  updateOnboardingMutation: UseMutationResult<ExtendedUser, Error, OnboardingData>;
+  registerMutation: UseMutationResult<SelectUser, Error, InsertUser>;
+  updateOnboardingMutation: UseMutationResult<SelectUser, Error, OnboardingData>;
 };
 
 type LoginData = Pick<InsertUser, "username" | "password">;
@@ -37,8 +31,8 @@ export const AuthContext = createContext<AuthContextType | null>(null);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const { toast } = useToast();
   
-  // Mock user for testing purposes with added rank information
-  const mockUser: ExtendedUser = {
+  // Mock user for testing purposes
+  const mockUser: SelectUser = {
     id: 1,
     username: "investorpro",
     password: "",
@@ -50,10 +44,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     dailyGoal: 5,
     interests: ["Tech", "Crypto", "ETFs"],
     experienceLevel: "intermediate",
-    onboarded: true,
-    // Added rank information
-    rank: 42,
-    previousRank: 45
+    onboarded: true
   };
   
   // Use mock user instead of API call
@@ -61,30 +52,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     data: user,
     error,
     isLoading,
-  } = useQuery<ExtendedUser | null, Error>({
+  } = useQuery<SelectUser | null, Error>({
     queryKey: ["/api/user"],
     queryFn: () => Promise.resolve(mockUser),
     // queryFn: getQueryFn({ on401: "returnNull" }), // Original API call
   });
 
-  const loginMutation = useMutation<ExtendedUser, Error, LoginData>({
+  const loginMutation = useMutation({
     mutationFn: async (credentials: LoginData) => {
       const res = await apiRequest("POST", "/api/login", credentials);
-      const user = await res.json();
-      // Add rank info to returned user data
-      return { ...user, rank: 42, previousRank: 45 };
+      return await res.json();
     },
-    onSuccess: (user: any) => {
-      // Add rank information for UI if not present
-      const extendedUser: ExtendedUser = {
-        ...user,
-        rank: user.rank || 42,
-        previousRank: user.previousRank || 45
-      };
-      queryClient.setQueryData(["/api/user"], extendedUser);
+    onSuccess: (user: SelectUser) => {
+      queryClient.setQueryData(["/api/user"], user);
       toast({
         title: "Login successful",
-        description: `Welcome back, ${extendedUser.displayName}!`,
+        description: `Welcome back, ${user.displayName}!`,
       });
     },
     onError: (error: Error) => {
@@ -96,24 +79,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     },
   });
 
-  const registerMutation = useMutation<ExtendedUser, Error, InsertUser>({
+  const registerMutation = useMutation({
     mutationFn: async (credentials: InsertUser) => {
       const res = await apiRequest("POST", "/api/register", credentials);
-      const user = await res.json();
-      // Add rank info to returned user data
-      return { ...user, rank: 42, previousRank: 45 };
+      return await res.json();
     },
-    onSuccess: (user: any) => {
-      // Add rank information for UI if not present
-      const extendedUser: ExtendedUser = {
-        ...user,
-        rank: user.rank || 42,
-        previousRank: user.previousRank || 45
-      };
-      queryClient.setQueryData(["/api/user"], extendedUser);
+    onSuccess: (user: SelectUser) => {
+      queryClient.setQueryData(["/api/user"], user);
       toast({
         title: "Registration successful",
-        description: `Welcome to Swipefolio, ${extendedUser.displayName}!`,
+        description: `Welcome to Swipefolio, ${user.displayName}!`,
       });
     },
     onError: (error: Error) => {
@@ -145,21 +120,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     },
   });
   
-  const updateOnboardingMutation = useMutation<ExtendedUser, Error, OnboardingData>({
+  const updateOnboardingMutation = useMutation({
     mutationFn: async (data: OnboardingData) => {
       const res = await apiRequest("PATCH", "/api/user/onboarding", data);
-      const user = await res.json();
-      // Add rank info to returned user data
-      return { ...user, rank: 42, previousRank: 45 };
+      return await res.json();
     },
-    onSuccess: (user: any) => {
-      // Add rank information for UI if not present
-      const extendedUser: ExtendedUser = {
-        ...user,
-        rank: user.rank || 42,
-        previousRank: user.previousRank || 45
-      };
-      queryClient.setQueryData(["/api/user"], extendedUser);
+    onSuccess: (user: SelectUser) => {
+      queryClient.setQueryData(["/api/user"], user);
     },
     onError: (error: Error) => {
       toast({

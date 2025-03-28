@@ -18,7 +18,7 @@ export default function PortfolioImpactCalculator({
   onInvest,
   stock,
 }: PortfolioImpactCalculatorProps) {
-  const { cash } = usePortfolio();
+  const { cash, calculateImpact, buyStock, isLoading } = usePortfolio();
   
   // State for investment amount - start with min $1
   const [investmentAmount, setInvestmentAmount] = useState<number>(1);
@@ -111,53 +111,8 @@ export default function PortfolioImpactCalculator({
     ? investmentAmount * (1 + parseFloat(stock.oneYearReturn.replace("%", "")) / 100)
     : investmentAmount * 1.08; // Default 8% growth if no return data
   
-  // Create a simplistic mock impact model
-  const [isLoading] = useState(false);
-
-  // Check if this is a first investment (true zero state)
-  const isFirstInvestment = cash === 0 || cash === 10000; // Starting with $10k cash, no investments
-
-  // Mock portfolio impact with realistic data
-  const impact = {
-    metrics: {
-      // For first investment, show full value of the metrics as they're all new
-      performance: isFirstInvestment ? stock.scorePerformance || 65 : 0.8,
-      stability: isFirstInvestment ? stock.scoreStability || 70 : 1.2, 
-      value: isFirstInvestment ? stock.scoreValue || 60 : -0.5,
-      momentum: isFirstInvestment ? stock.scoreMomentum || 55 : 1.1
-    },
-    currentMetrics: {
-      // For first investment, all metrics start at 0
-      performance: isFirstInvestment ? 0 : 65,
-      stability: isFirstInvestment ? 0 : 70,
-      value: isFirstInvestment ? 0 : 80,
-      momentum: isFirstInvestment ? 0 : 60
-    },
-    newMetrics: {
-      // For first investment, new values are just the stock's metrics
-      performance: isFirstInvestment ? stock.scorePerformance || 65 : 65.8,
-      stability: isFirstInvestment ? stock.scoreStability || 70 : 71.2,
-      value: isFirstInvestment ? stock.scoreValue || 60 : 79.5,
-      momentum: isFirstInvestment ? stock.scoreMomentum || 55 : 61.1
-    },
-    industryAllocation: {
-      [stock.industry || "Real Estate"]: {
-        previous: 0, // Always start from zero for clear visualization
-        new: 100,    // 100% allocation to this industry for first investment
-        change: 100  // Full change of 100%
-      }
-    },
-    diversification: {
-      previous: isFirstInvestment ? 0 : 45,
-      new: isFirstInvestment ? 25 : 52, // Low diversification with just one stock
-      change: isFirstInvestment ? 25 : 7
-    },
-    risk: {
-      previous: isFirstInvestment ? 0 : 65,
-      new: isFirstInvestment ? stock.scoreStability ? 100 - stock.scoreStability : 35 : 62,
-      change: isFirstInvestment ? stock.scoreStability ? 100 - stock.scoreStability : 35 : -3
-    }
-  };
+  // Calculate portfolio impact with validation
+  const impact = calculateImpact(stock, investmentAmount);
   
   // Function to format metric change with colored arrow
   const formatMetricChange = (value: number) => {
@@ -206,8 +161,7 @@ export default function PortfolioImpactCalculator({
   
   // Handle invest action
   const handleInvest = () => {
-    // Instead of using portfolio context buyStock function,
-    // we'll just call the onInvest callback to move to next stock
+    buyStock(stock, investmentAmount);
     onInvest();
     onClose();
   };
@@ -436,13 +390,13 @@ export default function PortfolioImpactCalculator({
                                 <span className="font-bold text-xs text-slate-900">{formatPercentage(allocation.new)}</span>
                               </div>
                               {/* Only show change indicator when there's a difference */}
-                              {allocation.new !== allocation.previous && Math.abs(allocation.new - allocation.previous) > 0.1 && (
+                              {allocation.new !== allocation.current && Math.abs(allocation.new - allocation.current) > 0.1 && (
                                 <span className={cn(
                                   "text-[10px] font-medium",
-                                  allocation.new > allocation.previous ? "text-green-600" : "text-red-600"
+                                  allocation.new > allocation.current ? "text-green-600" : "text-red-600"
                                 )}>
-                                  {allocation.new > allocation.previous ? "+" : ""}
-                                  {formatPercentage(allocation.new - allocation.previous)}
+                                  {allocation.new > allocation.current ? "+" : ""}
+                                  {formatPercentage(allocation.new - allocation.current)}
                                 </span>
                               )}
                             </div>
@@ -455,7 +409,7 @@ export default function PortfolioImpactCalculator({
                 
                 {/* Metric Comparisons - Modernized with equal sized buttons */}
                 <div className="grid grid-cols-2 gap-4 mb-5">
-                  {Object.entries(impact.metrics).map(([metric, change]) => (
+                  {Object.entries(impact.impact).map(([metric, change]) => (
                     <div 
                       key={metric} 
                       className="p-4 bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-all duration-200 hover:border-sky-200"
