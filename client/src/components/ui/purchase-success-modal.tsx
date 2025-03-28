@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Check, X, TrendingUp } from "lucide-react";
 import { StockData } from "@/lib/stock-data";
+import { createPortal } from "react-dom";
 
 interface PurchaseSuccessModalProps {
   isOpen: boolean;
@@ -30,17 +31,31 @@ export default function PurchaseSuccessModal({
     }).format(value);
   };
 
-  return (
+  // Body lock when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
+
+  // Create a portal to ensure the modal is not affected by parent stacking contexts
+  return createPortal(
     <AnimatePresence mode="wait" key="success-modal">
       {isOpen && (
-        <>
+        <div className="fixed inset-0 flex items-center justify-center z-[9999]" style={{ isolation: 'isolate' }}>
           {/* Semi-transparent backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 0.7 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 bg-black z-[60]"
+            className="absolute inset-0 bg-black z-[1]"
             onClick={onClose}
           />
           
@@ -50,8 +65,8 @@ export default function PurchaseSuccessModal({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="success-modal z-[101] w-[85%] max-w-xs rounded-xl overflow-hidden bg-gradient-to-b from-green-500 to-green-600 
-                       shadow-2xl border border-green-400"
+            className="w-[85%] max-w-xs rounded-xl overflow-hidden bg-gradient-to-b from-green-500 to-green-600 
+                       shadow-2xl border border-green-400 z-[2] relative"
             style={{
               boxShadow: '0 20px 60px -15px rgba(0, 0, 0, 0.25), 0 12px 25px -10px rgba(0, 0, 0, 0.1)'
             }}
@@ -111,8 +126,9 @@ export default function PurchaseSuccessModal({
               </button>
             </div>
           </motion.div>
-        </>
+        </div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body // Mount directly to the body to escape any stacking contexts
   );
 }

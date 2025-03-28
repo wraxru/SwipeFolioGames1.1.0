@@ -297,15 +297,7 @@
   max-height: 90vh !important;
 }
 
-/* Purchase Success Modal Styles */
-.success-modal {
-  @apply fixed overflow-auto rounded-2xl bg-white z-50 border border-slate-200 shadow-2xl
-  transition-all duration-300 text-slate-800;
-  left: 50% !important;
-  top: 50% !important;
-  transform: translate(-50%, -50%) !important;
-  max-height: 90vh !important;
-}
+/* Purchase Success Modal Styles now handled directly in the component */
 
 /* Enhanced card swipe effects */
 .stock-card {
