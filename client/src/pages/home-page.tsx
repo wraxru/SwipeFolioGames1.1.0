@@ -7,7 +7,7 @@ import AppNavigation from "@/components/app-navigation";
 import CategoryChips from "@/components/category-chips";
 import SectionHeader from "@/components/section-header";
 import StacksExplorer from "@/components/stacks-explorer";
-import DailyGoal from "@/components/daily-goal";
+
 import { useAuth } from "@/hooks/use-auth";
 import { useState, useContext } from "react";
 import HeroSection from "@/components/hero-section";
@@ -60,21 +60,15 @@ export default function HomePage() {
           </div>
         </AnimatedContainer>
         
-        <AnimatedContainer delay={0.3}>
-          <DailyGoal
-            dailyGoal={user?.dailyGoal || 5}
-            completed={2}
-            isLoading={false}
-          />
-        </AnimatedContainer>
+
         
-        <AnimatedContainer delay={0.4}>
+        <AnimatedContainer delay={0.3}>
           <CategoryChips 
             onCategoryChange={setSelectedCategory}
           />
         </AnimatedContainer>
         
-        <AnimatedContainer delay={0.5}>
+        <AnimatedContainer delay={0.4}>
           <SectionHeader 
             title="Investment Lessons" 
           />

@@ -35,7 +35,7 @@ export default function CategoryChips({ onCategoryChange }: CategoryChipsProps) 
             key={category}
             className={`relative flex items-center space-x-1.5 whitespace-nowrap rounded-full px-4 py-2 text-sm transition-all duration-150
               ${activeCategory === category 
-                ? 'text-white shadow-md' 
+                ? 'text-white shadow-md bg-blue-500' 
                 : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'}`}
             onClick={() => handleCategoryClick(category)}
             whileTap={{ scale: 0.95 }}
