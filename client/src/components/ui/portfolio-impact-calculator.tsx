@@ -164,17 +164,22 @@ export default function PortfolioImpactCalculator({
   
   // Handle invest action
   const handleInvest = () => {
+    // Execute buyStock and show success modal
     buyStock(stock, investmentAmount);
     setShowSuccessModal(true);
-    onInvest();
-    // Close the calculator immediately when showing success modal
-    onClose();
+    
+    // Don't call onInvest() or onClose() here
+    // This prevents conflicts between closing animations and showing the success modal
+    // The parent component will manage visibility after the success modal is closed
   };
   
   // Handle success modal close
   const handleSuccessModalClose = () => {
     setShowSuccessModal(false);
-    onClose(); // Close calculator after success modal is closed
+    
+    // Signal to parent that investment is complete and calculator should close
+    onInvest();
+    onClose();
   };
   
   // Format number for display
@@ -193,10 +198,10 @@ export default function PortfolioImpactCalculator({
   };
   
   return (
-    <div className="portfolio-impact-wrapper">
+    <div className="portfolio-impact-wrapper" style={{ position: 'relative', zIndex: isOpen ? 50 : 0 }}>
       {/* Calculator Modal */}
       <AnimatePresence mode="wait" key="calculator-modal">
-        {isOpen && (
+        {isOpen && !showSuccessModal && (
           <>
             {/* Backdrop with blur effect */}
             <motion.div
@@ -587,15 +592,17 @@ export default function PortfolioImpactCalculator({
         )}
       </AnimatePresence>
       
-      {/* Purchase Success Modal */}
-      <PurchaseSuccessModal
-        isOpen={showSuccessModal}
-        onClose={handleSuccessModalClose}
-        stock={stock}
-        shares={shares}
-        amount={investmentAmount}
-        projectedReturn={projectedReturn}
-      />
+      {/* Purchase Success Modal - Completely separate from calculator UI */}
+      {stock && (
+        <PurchaseSuccessModal
+          isOpen={showSuccessModal}
+          onClose={handleSuccessModalClose}
+          stock={stock}
+          shares={shares}
+          amount={investmentAmount}
+          projectedReturn={projectedReturn}
+        />
+      )}
     </div>
   );
 }
