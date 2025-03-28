@@ -18,11 +18,26 @@ export default function ModernUserWelcome({ name, rank: initialRank = 10 }: Mode
   // Force update when portfolio changes
   useEffect(() => {
     if (portfolio) {
-      // Schedule a re-render after portfolio updates
-      forceUpdate({});
-      console.log("Portfolio updated in ModernUserWelcome:", portfolio.holdings.length);
+      // Schedule a re-render after portfolio updates with small delay for state propagation
+      const timer = setTimeout(() => {
+        forceUpdate({ timestamp: Date.now() });
+        console.log("Portfolio updated in ModernUserWelcome:", {
+          holdings: portfolio.holdings.length,
+          version: portfolio.version,
+          lastUpdated: new Date(portfolio.lastUpdated).toISOString()
+        });
+      }, 100);
+      
+      return () => clearTimeout(timer);
     }
-  }, [portfolio, portfolio?.holdings.length, portfolio?.cash, portfolio?.portfolioValue]);
+  }, [
+    portfolio, 
+    portfolio?.holdings.length, 
+    portfolio?.cash, 
+    portfolio?.portfolioValue,
+    portfolio?.version,
+    portfolio?.lastUpdated
+  ]);
   
   // Update rank based on portfolio performance
   useEffect(() => {

@@ -64,6 +64,7 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
   const [holdings, setHoldings] = useState<PortfolioHolding[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [version, setVersion] = useState<number>(1); // Add version counter for triggering updates
+  const [lastUpdated, setLastUpdated] = useState<number>(Date.now()); // Timestamp for tracking updates
   
   // Derived state
   const portfolioValue = holdings.reduce((total, holding) => total + holding.value, 0);
@@ -186,9 +187,10 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
         variant: "default",
       });
       
-      // Increment version to trigger updates
+      // Update version and timestamp to trigger updates
       setVersion(prev => prev + 1);
-      console.log("Portfolio updated: version incremented after purchase");
+      setLastUpdated(Date.now());
+      console.log("Portfolio updated: version and timestamp updated after purchase");
     } catch (error) {
       // Handle errors
       toast({
@@ -257,9 +259,10 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
         variant: "default",
       });
       
-      // Increment version to trigger updates
+      // Update version and timestamp to trigger updates
       setVersion(prev => prev + 1);
-      console.log("Portfolio updated: version incremented after sale");
+      setLastUpdated(Date.now());
+      console.log("Portfolio updated: version and timestamp updated after sale");
     } catch (error) {
       // Handle errors
       toast({
@@ -466,6 +469,7 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
     portfolioValue,
     totalValue,
     version, // Include version counter in context
+    lastUpdated, // Include timestamp
     portfolioMetrics,
     buyStock,
     sellStock,

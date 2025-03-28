@@ -12,11 +12,28 @@ export default function InvestmentPanel() {
   // Update component whenever portfolio changes
   useEffect(() => {
     if (portfolio) {
-      // Force re-render when portfolio updates
-      forceUpdate({});
-      console.log("Portfolio updated in InvestmentPanel:", portfolio.holdings.length);
+      // Force re-render when portfolio updates with small delay for state propagation
+      const timer = setTimeout(() => {
+        forceUpdate({ timestamp: Date.now() });
+        console.log("Portfolio updated in InvestmentPanel:", {
+          holdings: portfolio.holdings.length,
+          cash: portfolio.cash,
+          value: portfolio.portfolioValue,
+          version: portfolio.version,
+          lastUpdated: new Date(portfolio.lastUpdated).toISOString()
+        });
+      }, 100);
+      
+      return () => clearTimeout(timer);
     }
-  }, [portfolio, portfolio?.holdings.length, portfolio?.cash, portfolio?.portfolioValue]);
+  }, [
+    portfolio, 
+    portfolio?.holdings.length, 
+    portfolio?.cash, 
+    portfolio?.portfolioValue,
+    portfolio?.version,
+    portfolio?.lastUpdated
+  ]);
   
   if (!portfolio) {
     return (
