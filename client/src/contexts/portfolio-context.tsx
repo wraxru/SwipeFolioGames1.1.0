@@ -19,6 +19,7 @@ interface PortfolioContextProps {
   portfolioValue: number;
   totalValue: number;
   version: number; // Add version property to trigger updates
+  lastUpdated: number; // Timestamp for tracking updates
   portfolioMetrics: {
     performance: number;
     stability: number;
