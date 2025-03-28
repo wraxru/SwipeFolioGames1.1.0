@@ -13,6 +13,16 @@ export default function ModernUserWelcome({ name, rank: initialRank = 10 }: Mode
   const [rank, setRank] = useState(initialRank);
   const portfolio = useContext(PortfolioContext);
   const [prevRank, setPrevRank] = useState(initialRank);
+  const [_, forceUpdate] = useState({});
+  
+  // Force update when portfolio changes
+  useEffect(() => {
+    if (portfolio) {
+      // Schedule a re-render after portfolio updates
+      forceUpdate({});
+      console.log("Portfolio updated in ModernUserWelcome:", portfolio.holdings.length);
+    }
+  }, [portfolio, portfolio?.holdings.length, portfolio?.cash, portfolio?.portfolioValue]);
   
   // Update rank based on portfolio performance
   useEffect(() => {

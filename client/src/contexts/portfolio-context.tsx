@@ -18,6 +18,7 @@ interface PortfolioContextProps {
   holdings: PortfolioHolding[];
   portfolioValue: number;
   totalValue: number;
+  version: number; // Add version property to trigger updates
   portfolioMetrics: {
     performance: number;
     stability: number;
@@ -61,6 +62,7 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
   const [cash, setCash] = useState<number>(100);
   const [holdings, setHoldings] = useState<PortfolioHolding[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [version, setVersion] = useState<number>(1); // Add version counter for triggering updates
   
   // Derived state
   const portfolioValue = holdings.reduce((total, holding) => total + holding.value, 0);
@@ -182,6 +184,10 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
         description: `You purchased ${shares.toFixed(4)} shares of ${stock.ticker} for $${amount.toFixed(2)}`,
         variant: "default",
       });
+      
+      // Increment version to trigger updates
+      setVersion(prev => prev + 1);
+      console.log("Portfolio updated: version incremented after purchase");
     } catch (error) {
       // Handle errors
       toast({
@@ -249,6 +255,10 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
         description: `You sold ${sharesToSell.toFixed(4)} shares of ${stockId} for $${saleAmount.toFixed(2)}`,
         variant: "default",
       });
+      
+      // Increment version to trigger updates
+      setVersion(prev => prev + 1);
+      console.log("Portfolio updated: version incremented after sale");
     } catch (error) {
       // Handle errors
       toast({
@@ -454,6 +464,7 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
     holdings,
     portfolioValue,
     totalValue,
+    version, // Include version counter in context
     portfolioMetrics,
     buyStock,
     sellStock,

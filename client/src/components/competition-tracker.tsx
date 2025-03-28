@@ -32,6 +32,15 @@ export default function CompetitionTracker() {
   const [userRank, setUserRank] = useState(10); // Start at rank 10 (bottom)
   const [userReturns, setUserReturns] = useState(0);
   const [leaderboardData, setLeaderboardData] = useState(baseLeaderboardData);
+  const [_, forceUpdate] = useState({});
+  
+  // Force update when portfolio changes
+  useEffect(() => {
+    if (portfolio) {
+      forceUpdate({});
+      console.log("Portfolio updated in CompetitionTracker:", portfolio.holdings.length);
+    }
+  }, [portfolio, portfolio?.holdings.length, portfolio?.cash, portfolio?.portfolioValue]);
   
   // Calculate projected 1-year return and update leaderboard position
   useEffect(() => {

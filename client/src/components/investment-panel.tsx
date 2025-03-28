@@ -1,11 +1,22 @@
-import { useContext } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Wallet, TrendingUp, DollarSign, Calendar } from 'lucide-react';
 import { Progress } from './ui/progress';
 import { PortfolioContext } from '@/contexts/portfolio-context';
 
 export default function InvestmentPanel() {
+  // Force component to update on any portfolio change
+  const [_, forceUpdate] = useState({});
   const portfolio = useContext(PortfolioContext);
+  
+  // Update component whenever portfolio changes
+  useEffect(() => {
+    if (portfolio) {
+      // Force re-render when portfolio updates
+      forceUpdate({});
+      console.log("Portfolio updated in InvestmentPanel:", portfolio.holdings.length);
+    }
+  }, [portfolio, portfolio?.holdings.length, portfolio?.cash, portfolio?.portfolioValue]);
   
   if (!portfolio) {
     return (
