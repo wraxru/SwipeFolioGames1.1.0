@@ -1,0 +1,18 @@
+Okay, that makes sense. If dragging your finger anywhere on the card causes the entire page (including the fixed "Swipefolio" header [source: 2098]) to move, it strongly suggests that the touch events are not being exclusively captured by the stock card's drag handler as intended. Instead, the browser's default page scroll/pan mechanism is taking over.
+
+Code Validation:
+
+Intended Handling: The code attempts to handle this correctly. The draggable motion.div inside StockCard.tsx has the style touchAction: 'pan-y' applied [source: 2014]. This CSS rule is specifically designed to tell the browser: "For touch interactions starting on this element, allow vertical panning (scrolling), but let JavaScript handle horizontal movements." This should prevent the browser from hijacking horizontal drags for page panning.
+Global Styles: Your index.css file includes body { touch-action: manipulation; } [source: 3394]. manipulation allows panning and zooming gestures across the page. While usually compatible, there might be an unexpected interaction where the browser's interpretation of the body style takes precedence over the more specific pan-y on the card element, especially on certain devices or browsers.
+Event Capture: The touch event seems to be triggering the browser's default behavior before or instead of Framer Motion's drag="x" handler [source: 2013] on the card.
+Why it might be happening:
+
+CSS Specificity/Conflict: The global touch-action: manipulation on the body might be interfering with or overriding the touch-action: pan-y on the card element in practice, even though pan-y is more specific.
+Browser Interpretation: Different mobile browsers can sometimes interpret touch-action rules slightly differently, especially when combined with complex layouts involving absolute positioning, scrolling, and JavaScript drag listeners.
+Initialization Race Condition: Less likely, but sometimes the JavaScript listeners might not attach quickly enough, allowing the browser's native gesture handling to engage first on a rapid touch-and-drag.
+How to Fix:
+
+Override Body Touch Action (Experiment): As a test, try removing or commenting out the touch-action: manipulation; line from the body style in client/src/index.css [source: 3394]. Rebuild and test if this allows the card's touch-action: 'pan-y' to take control correctly. If this works, you might need a more nuanced global touch-action strategy or rely solely on element-specific rules.
+Apply touch-action to Container: Add touch-action: pan-y; to the style of the immediate parent container of the StockCard within StockDetailPage.tsx (the motion.div with className="absolute inset-0 p-4" [source: 3309]). This might help reinforce the instruction to the browser for that specific area.
+Prevent Default (Carefully): You could try adding an onTouchStart handler to the draggable motion.div in StockCard.tsx that calls event.preventDefault(), but this is generally discouraged as it can break native scrolling entirely. Use this only as a last resort for testing, as it would likely re-introduce the vertical scrolling problem.
+The most probable fix involves adjusting the touch-action CSS rules, either by removing the global one or potentially making the rule on the card container more specific.

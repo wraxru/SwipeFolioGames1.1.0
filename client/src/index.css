@@ -299,7 +299,7 @@
 
 /* Enhanced card swipe effects */
 .stock-card {
-  touch-action: pan-y;
+  /* Removed conflicting touch-action property - now handled inline */
   will-change: transform;
   transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
 }

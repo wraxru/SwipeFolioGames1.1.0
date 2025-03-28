@@ -483,6 +483,7 @@ export default function StockCard({
             whileDrag={{ scale: 0.98 }}
             style={{ 
               touchAction: 'pan-y', // Allow vertical scrolling while still enabling horizontal drag
+              WebkitTouchAction: 'pan-y' as any, // For Safari support
               height: '100%',
               display: 'block'
             }}
@@ -666,6 +667,7 @@ export default function StockCard({
           rotateZ: cardRotate, 
           scale: cardScale,
           touchAction: 'pan-y', // Allow vertical scrolling while still enabling horizontal drag
+          WebkitTouchAction: 'pan-y' as any, // For Safari support
           height: '100%',
           display: 'block'
         }}
