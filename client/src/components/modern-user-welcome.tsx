@@ -14,7 +14,7 @@ export default function ModernUserWelcome({ name, rank: initialRank = 10 }: Mode
   const portfolio = useContext(PortfolioContext);
   const [prevRank, setPrevRank] = useState(initialRank);
   const [_, forceUpdate] = useState({});
-
+  
   // Force update when portfolio changes
   useEffect(() => {
     if (portfolio) {
@@ -27,7 +27,7 @@ export default function ModernUserWelcome({ name, rank: initialRank = 10 }: Mode
           lastUpdated: new Date(portfolio.lastUpdated).toISOString()
         });
       }, 100);
-
+      
       return () => clearTimeout(timer);
     }
   }, [
@@ -38,13 +38,13 @@ export default function ModernUserWelcome({ name, rank: initialRank = 10 }: Mode
     portfolio?.version,
     portfolio?.lastUpdated
   ]);
-
+  
   // Update rank based on portfolio performance
   useEffect(() => {
     if (portfolio && portfolio.holdings.length > 0) {
       // Calculate projected 1-year returns
       const totalInvested = portfolio.holdings.reduce((total, h) => total + (h.shares * h.purchasePrice), 0);
-
+      
       if (totalInvested > 0) {
         const oneYearReturns = portfolio.holdings.reduce((total, h) => {
           // Convert to number or use 0 if undefined
@@ -53,9 +53,9 @@ export default function ModernUserWelcome({ name, rank: initialRank = 10 }: Mode
           const stockReturn = stockValue * (oneYearReturnPercent / 100);
           return total + stockReturn;
         }, 0);
-
+        
         const projectedReturnPercent = (oneYearReturns / totalInvested) * 100;
-
+        
         // Calculate rank based on return percent
         // Start at rank 10 (lowest) and improve as returns increase
         let newRank = 10;
@@ -68,7 +68,7 @@ export default function ModernUserWelcome({ name, rank: initialRank = 10 }: Mode
         if (projectedReturnPercent > 12) newRank = 3;
         if (projectedReturnPercent > 14) newRank = 2;
         if (projectedReturnPercent > 16) newRank = 1;
-
+        
         // Check if rank improved
         if (newRank < prevRank) {
           setPrevRank(rank);
@@ -78,7 +78,7 @@ export default function ModernUserWelcome({ name, rank: initialRank = 10 }: Mode
       }
     }
   }, [portfolio, prevRank, rank]);
-
+  
   return (
     <div className="welcome-section mb-6">
       <div className="flex items-center space-x-4">
@@ -93,10 +93,10 @@ export default function ModernUserWelcome({ name, rank: initialRank = 10 }: Mode
             <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-400 to-violet-400 opacity-70 blur-md" />
             <div className="relative w-14 h-14 rounded-full overflow-hidden border-2 border-white shadow-lg">
               <div className="absolute inset-0 bg-gradient-to-br from-slate-800 to-slate-900" />
-
+              
               {/* Belford&Co avatar */}
               <img 
-                src="./belford-avatar.png" 
+                src="/belford-avatar.png" 
                 alt="User avatar" 
                 className="w-full h-full object-cover"
                 onError={(e) => {
@@ -106,7 +106,7 @@ export default function ModernUserWelcome({ name, rank: initialRank = 10 }: Mode
                   target.style.display = 'none';
                 }}
               />
-
+              
               {/* Fallback initial for the avatar */}
               <div className="absolute inset-0 flex items-center justify-center text-white text-xl font-bold bg-gradient-to-br from-blue-500 to-violet-600">
                 {name.charAt(0)}
@@ -114,7 +114,7 @@ export default function ModernUserWelcome({ name, rank: initialRank = 10 }: Mode
             </div>
           </div>
         </motion.div>
-
+        
         <div>
           <h1 className="text-2xl font-bold text-slate-800 mb-0 flex items-center">
             <span className="font-serif mr-1">Belford&Co</span>
