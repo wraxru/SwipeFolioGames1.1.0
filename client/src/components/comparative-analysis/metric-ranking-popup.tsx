@@ -1,5 +1,5 @@
 import React from 'react';
-import { X } from 'lucide-react';
+import { X, Trophy } from 'lucide-react';
 import { StockData } from '../../lib/stock-data';
 import { getAdvancedMetricScore } from '../../lib/advanced-metric-scoring';
 
@@ -27,8 +27,13 @@ const MetricRankingPopup: React.FC<MetricRankingPopupProps> = ({
   // Convert metric name to the format expected by the scoring function
   const metricKey = metricName.toLowerCase() as 'performance' | 'stability' | 'value' | 'momentum';
   
+  // Filter out current stock from industry stocks to avoid duplication
+  const filteredIndustryStocks = industryStocks.filter(
+    stock => stock.ticker !== currentStock.ticker
+  );
+  
   // Calculate scores for all stocks including the current one
-  const stockScores = [...industryStocks, currentStock].map(stock => {
+  const stockScores = [...filteredIndustryStocks, currentStock].map(stock => {
     // Get score for this metric
     const score = getAdvancedMetricScore(stock, metricKey);
     
@@ -57,6 +62,40 @@ const MetricRankingPopup: React.FC<MetricRankingPopupProps> = ({
     return 'text-red-600';
   };
   
+  // Get medal for top 3 positions
+  const getMedalStyles = (position: number) => {
+    switch(position) {
+      case 0: // Gold - 1st place
+        return {
+          background: 'bg-gradient-to-br from-yellow-300 to-yellow-600',
+          shadow: 'shadow-yellow-200',
+          border: 'border-yellow-400',
+          text: 'text-yellow-900'
+        };
+      case 1: // Silver - 2nd place
+        return {
+          background: 'bg-gradient-to-br from-gray-300 to-gray-400',
+          shadow: 'shadow-gray-200',
+          border: 'border-gray-300',
+          text: 'text-gray-800'
+        };
+      case 2: // Bronze - 3rd place
+        return {
+          background: 'bg-gradient-to-br from-amber-300 to-amber-600',
+          shadow: 'shadow-amber-200',
+          border: 'border-amber-400',
+          text: 'text-amber-900'
+        };
+      default:
+        return {
+          background: 'bg-gray-100',
+          shadow: '',
+          border: 'border-gray-200',
+          text: 'text-gray-700'
+        };
+    }
+  };
+  
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-xl shadow-lg max-w-md w-full max-h-[90vh] overflow-hidden flex flex-col">
@@ -83,36 +122,43 @@ const MetricRankingPopup: React.FC<MetricRankingPopupProps> = ({
         {/* Companies list */}
         <div className="overflow-y-auto flex-1">
           <div className="divide-y divide-gray-100">
-            {topTenStocks.map((stock, index) => (
-              <div 
-                key={stock.ticker} 
-                className={`p-4 flex items-center ${stock.isCurrentStock ? 'bg-blue-50' : 'hover:bg-gray-50'}`}
-              >
-                {/* Rank circle */}
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center mr-3 font-bold text-sm 
-                  ${index < 3 
-                    ? 'bg-gradient-to-br from-amber-400 to-yellow-500 text-white shadow-md' 
-                    : 'bg-gray-100 text-gray-700'}`}>
-                  {index + 1}
-                </div>
-                
-                {/* Company info */}
-                <div className="flex-1">
-                  <div className="font-semibold text-gray-800 flex items-center">
-                    {stock.name}
-                    {stock.isCurrentStock && (
-                      <span className="ml-2 text-xs font-medium px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full">Current</span>
-                    )}
+            {topTenStocks.map((stock, index) => {
+              const medalStyles = getMedalStyles(index);
+              
+              return (
+                <div 
+                  key={stock.ticker} 
+                  className={`p-4 flex items-center ${stock.isCurrentStock ? 'bg-blue-50' : 'hover:bg-gray-50'}`}
+                >
+                  {/* Medal for top 3, number for others */}
+                  {index < 3 ? (
+                    <div className={`w-9 h-9 rounded-full flex items-center justify-center mr-3 ${medalStyles.background} ${medalStyles.shadow} border ${medalStyles.border}`}>
+                      <Trophy className="h-5 w-5 text-white" />
+                    </div>
+                  ) : (
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center mr-3 font-bold text-sm bg-gray-100 text-gray-700`}>
+                      {index + 1}
+                    </div>
+                  )}
+                  
+                  {/* Company info */}
+                  <div className="flex-1">
+                    <div className="font-semibold text-gray-800 flex items-center">
+                      {stock.name}
+                      {stock.isCurrentStock && (
+                        <span className="ml-2 text-xs font-medium px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full">Current</span>
+                      )}
+                    </div>
+                    <div className="text-xs text-gray-500">{stock.ticker}</div>
                   </div>
-                  <div className="text-xs text-gray-500">{stock.ticker}</div>
+                  
+                  {/* Score */}
+                  <div className={`font-bold text-lg ${getScoreColor(stock.score)}`}>
+                    {stock.score}
+                  </div>
                 </div>
-                
-                {/* Score */}
-                <div className={`font-bold text-lg ${getScoreColor(stock.score)}`}>
-                  {stock.score}
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
         
