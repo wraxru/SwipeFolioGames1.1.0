@@ -916,23 +916,6 @@ export default function StockCard({
           <IndustryPosition stock={stock} />
         </div>
         
-        {/* Bottom Action Bar */}
-        <div className="p-4 bg-white border-t border-b border-slate-100 mb-4">
-          <button
-            onClick={openPortfolioCalculator}
-            className={`w-full py-3 px-4 rounded-xl font-medium shadow-md 
-              ${realTimeChange >= 0 
-                ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:from-green-600 hover:to-emerald-700'
-                : 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white hover:from-blue-600 hover:to-indigo-700'} 
-              active:scale-98 transition-all duration-150`}
-          >
-            Add to Portfolio
-          </button>
-          <div className="text-center text-xs text-slate-500 mt-2">
-            Swipe left to skip • Swipe right to invest
-          </div>
-        </div>
-        
         {/* Overall Analysis - Enhanced with consistent spacing */}
         {stock.overallAnalysis && (
           <div className="p-5 bg-gradient-to-b from-white to-slate-50">

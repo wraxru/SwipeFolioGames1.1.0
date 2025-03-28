@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { ChevronDown, ChevronUp, ArrowRightCircle } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { ChevronDown, ChevronUp, BarChart2 } from 'lucide-react';
 import { StockData } from '@/lib/stock-data';
 import { getAdvancedMetricScore } from '@/lib/advanced-metric-scoring';
 import ComparativeAnalysis from '@/components/comparative-analysis';
@@ -60,6 +60,11 @@ export default function IndustryPosition({ stock }: IndustryPositionProps) {
     setShowComparison(!showComparison);
   };
 
+  // Effect to force update when toggled
+  useEffect(() => {
+    // This is just to ensure the component re-renders properly when toggle happens
+  }, [showComparison]);
+
   return (
     <div className="mt-4 mb-2">
       {/* Main position indicator with left border accent */}
@@ -67,47 +72,47 @@ export default function IndustryPosition({ stock }: IndustryPositionProps) {
         <div className="p-4">
           <div className="flex items-center justify-between">
             <div className="flex-1">
-              <h3 className="text-sm font-medium text-gray-700">Industry Position</h3>
-              <p className="text-xs text-gray-500">{stock.industry}</p>
+              <h3 className="text-lg font-bold text-gray-800">Industry Position</h3>
+              <p className="text-sm font-medium text-gray-600">{stock.industry}</p>
             </div>
             
             {/* Percentile circle */}
             <div className="flex flex-col items-center">
-              <div className={`w-16 h-16 ${statusColor} rounded-full flex items-center justify-center text-white font-bold text-xl`}>
+              <div className={`w-20 h-20 ${statusColor} rounded-full flex items-center justify-center text-white font-bold text-2xl shadow-md`}>
                 {percentile}%
               </div>
-              <div className="text-xs mt-1 font-medium text-gray-600">Rank</div>
+              <div className="text-sm mt-1 font-medium text-gray-700">Rank</div>
             </div>
           </div>
           
           {/* Summary text */}
-          <p className="text-sm mt-2 text-gray-600">
+          <p className="text-base mt-3 text-gray-700 font-medium">
             {summaryText}
           </p>
           
           {/* Key metrics at a glance */}
-          <div className="grid grid-cols-4 gap-2 mt-3">
-            <div className="rounded-md bg-gray-50 p-2 text-center">
-              <div className="text-xs text-gray-500">Performance</div>
-              <div className={`text-sm font-medium ${performanceScore >= 70 ? 'text-green-600' : performanceScore >= 50 ? 'text-yellow-600' : 'text-red-600'}`}>
+          <div className="grid grid-cols-4 gap-3 mt-4">
+            <div className="rounded-md bg-gray-50 p-3 text-center shadow-sm">
+              <div className="text-sm text-gray-600 font-medium mb-1">Performance</div>
+              <div className={`text-lg font-bold ${performanceScore >= 70 ? 'text-green-600' : performanceScore >= 50 ? 'text-yellow-600' : 'text-red-600'}`}>
                 {performanceScore}
               </div>
             </div>
-            <div className="rounded-md bg-gray-50 p-2 text-center">
-              <div className="text-xs text-gray-500">Stability</div>
-              <div className={`text-sm font-medium ${stabilityScore >= 70 ? 'text-green-600' : stabilityScore >= 50 ? 'text-yellow-600' : 'text-red-600'}`}>
+            <div className="rounded-md bg-gray-50 p-3 text-center shadow-sm">
+              <div className="text-sm text-gray-600 font-medium mb-1">Stability</div>
+              <div className={`text-lg font-bold ${stabilityScore >= 70 ? 'text-green-600' : stabilityScore >= 50 ? 'text-yellow-600' : 'text-red-600'}`}>
                 {stabilityScore}
               </div>
             </div>
-            <div className="rounded-md bg-gray-50 p-2 text-center">
-              <div className="text-xs text-gray-500">Value</div>
-              <div className={`text-sm font-medium ${valueScore >= 70 ? 'text-green-600' : valueScore >= 50 ? 'text-yellow-600' : 'text-red-600'}`}>
+            <div className="rounded-md bg-gray-50 p-3 text-center shadow-sm">
+              <div className="text-sm text-gray-600 font-medium mb-1">Value</div>
+              <div className={`text-lg font-bold ${valueScore >= 70 ? 'text-green-600' : valueScore >= 50 ? 'text-yellow-600' : 'text-red-600'}`}>
                 {valueScore}
               </div>
             </div>
-            <div className="rounded-md bg-gray-50 p-2 text-center">
-              <div className="text-xs text-gray-500">Momentum</div>
-              <div className={`text-sm font-medium ${momentumScore >= 70 ? 'text-green-600' : momentumScore >= 50 ? 'text-yellow-600' : 'text-red-600'}`}>
+            <div className="rounded-md bg-gray-50 p-3 text-center shadow-sm">
+              <div className="text-sm text-gray-600 font-medium mb-1">Momentum</div>
+              <div className={`text-lg font-bold ${momentumScore >= 70 ? 'text-green-600' : momentumScore >= 50 ? 'text-yellow-600' : 'text-red-600'}`}>
                 {momentumScore}
               </div>
             </div>
@@ -116,10 +121,10 @@ export default function IndustryPosition({ stock }: IndustryPositionProps) {
           {/* Compare Button - Prominent and attention-grabbing */}
           <button 
             onClick={toggleComparison}
-            className={`mt-4 w-full py-3 px-4 rounded-lg flex items-center justify-center font-medium transition-all duration-200 ${
+            className={`mt-5 w-full py-3 px-4 rounded-lg flex items-center justify-center font-medium text-base transition-all duration-200 ${
               showComparison 
                 ? 'bg-gray-100 text-gray-700 hover:bg-gray-200' 
-                : 'bg-purple-600 text-white hover:bg-purple-700'
+                : 'bg-blue-600 text-white hover:bg-blue-700 shadow-md'
             }`}
           >
             {showComparison ? (
