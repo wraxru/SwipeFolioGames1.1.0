@@ -52,7 +52,7 @@ export default function PortfolioImpactCalculator({
   );
   
   // Maximum amount available to invest
-  const maxInvestment = Math.min(cash, 10); // Cap at $10 for demo
+  const maxInvestment = cash; // Allow using all available cash
   
   // Calculate impact of adding this stock
   const impact = calculateImpact(stock, investmentAmount);
@@ -61,7 +61,8 @@ export default function PortfolioImpactCalculator({
   const shares = investmentAmount / stock.price;
   
   // Calculate projected 1-year return based on stock oneYearReturn
-  const projectedReturn = investmentAmount * (1 + parseFloat(stock.oneYearReturn) / 100);
+  const oneYearReturnValue = typeof stock.oneYearReturn === 'string' ? parseFloat(stock.oneYearReturn) : stock.oneYearReturn ?? 0;
+  const projectedReturn = investmentAmount * (1 + oneYearReturnValue / 100);
   
   // Update slideTrackWidth when the component mounts or window resizes
   useEffect(() => {
@@ -230,13 +231,7 @@ export default function PortfolioImpactCalculator({
               }}
               className="calculator-modal"
               style={{
-                boxShadow: '0 20px 60px -15px rgba(0, 0, 0, 0.25), 0 12px 25px -10px rgba(0, 0, 0, 0.1)',
-                position: 'fixed',
-                left: '50%',
-                top: '50%',
-                transform: 'translate(-50%, -50%)',
-                width: '90%',
-                maxWidth: '450px'
+                boxShadow: '0 20px 60px -15px rgba(0, 0, 0, 0.25), 0 12px 25px -10px rgba(0, 0, 0, 0.1)'
               }}
             >
               {/* Enhanced Modern Header */}
