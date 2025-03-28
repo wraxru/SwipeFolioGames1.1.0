@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { StockData, getIndustryStocks } from '../../lib/stock-data';
 import IndustryPosition from './industry-position';
+import PriceForecast from '../price-forecast';
 import { getAdvancedMetricScore } from '../../lib/advanced-metric-scoring';
 
 interface ComparativeAnalysisProps {
@@ -79,12 +80,17 @@ export default function ComparativeAnalysis({ currentStock }: ComparativeAnalysi
   return (
     <div className="comparative-analysis">
       {!isLoading && (
-        <IndustryPosition 
-          currentStock={currentStock}
-          industry={industry}
-          scores={scores}
-          rank={rank}
-        />
+        <>
+          <IndustryPosition 
+            currentStock={currentStock}
+            industry={industry}
+            scores={scores}
+            rank={rank}
+          />
+          
+          {/* Price Forecast Component - with blurred premium feature */}
+          <PriceForecast stock={currentStock} isPremium={false} />
+        </>
       )}
     </div>
   );
