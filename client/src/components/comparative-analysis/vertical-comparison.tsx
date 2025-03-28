@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Minus, HelpCircle } from 'lucide-react';
+import { HelpCircle } from 'lucide-react';
 import { StockData } from '@/lib/stock-data';
 import { 
   Select,
@@ -18,7 +18,7 @@ interface BenchmarkData {
     Stability: number;
     Value: number;
     Momentum: number;
-    Dividend: number;
+    Dividend?: number; // Make dividend optional
   };
 }
 
@@ -32,7 +32,7 @@ interface ComparisonStockData {
     Stability: number;
     Value: number;
     Momentum: number;
-    Dividend: number;
+    Dividend?: number; // Make Dividend optional to handle legacy data
   };
   details?: Record<string, any>;
 }
@@ -319,6 +319,9 @@ export default function VerticalStockComparison({ currentStock }: VerticalStockC
   const [showAllIndustryComparison, setShowAllIndustryComparison] = useState(false);
   const [selectedCompetitor, setSelectedCompetitor] = useState(defaultCompetitor);
   
+  // Get all stocks for this industry
+  const industryStocks = Object.values(competitorsForIndustry);
+  
   // Get actual scores from the advanced metrics scoring system
   const performanceScore = getAdvancedMetricScore(currentStock, 'performance');
   const stabilityScore = getAdvancedMetricScore(currentStock, 'stability');
@@ -444,10 +447,10 @@ export default function VerticalStockComparison({ currentStock }: VerticalStockC
       {Object.keys(mainStockData.ratings)
         .filter(metric => metric !== 'Dividend') // Remove Dividend from display
         .map(metric => {
-        const mainValue = mainStockData.ratings[metric as keyof typeof mainStockData.ratings];
-        const compValue = competitor.ratings[metric as keyof typeof competitor.ratings];
-        const industryValue = benchmarks.Industry.ratings[metric as keyof typeof benchmarks.Industry.ratings];
-        const marketValue = benchmarks.Market.ratings[metric as keyof typeof benchmarks.Market.ratings];
+        const mainValue = mainStockData.ratings[metric as keyof typeof mainStockData.ratings] || 0;
+        const compValue = competitor.ratings[metric as keyof typeof competitor.ratings] || 0;
+        const industryValue = benchmarks.Industry.ratings[metric as keyof typeof benchmarks.Industry.ratings] || 50;
+        const marketValue = benchmarks.Market.ratings[metric as keyof typeof benchmarks.Market.ratings] || 50;
         
         const mainHigher = mainValue > compValue;
         const compHigher = compValue > mainValue;
@@ -505,7 +508,7 @@ export default function VerticalStockComparison({ currentStock }: VerticalStockC
               
               {/* Value label */}
               <div className={`text-sm font-semibold mt-1 ${mainHigher ? 'text-emerald-600' : 'text-gray-700'}`}>
-                {mainValue.toFixed(0)}
+                {(mainValue || 0).toFixed(0)}
               </div>
             </div>
             
@@ -546,7 +549,7 @@ export default function VerticalStockComparison({ currentStock }: VerticalStockC
               
               {/* Value label */}
               <div className={`text-sm font-semibold mt-1 ${compHigher ? 'text-purple-600' : 'text-gray-700'}`}>
-                {compValue.toFixed(0)}
+                {(compValue || 0).toFixed(0)}
               </div>
             </div>
           </div>
@@ -584,10 +587,10 @@ export default function VerticalStockComparison({ currentStock }: VerticalStockC
                 {/* Add the main stock first */}
                 <tr className="hover:bg-gray-50 transition-colors duration-150 bg-gray-50">
                   <td className="py-3 px-2 font-medium text-gray-800">{mainStockData.symbol}</td>
-                  <td className="text-center py-3 px-2">{mainStockData.ratings.Performance.toFixed(0)}</td>
-                  <td className="text-center py-3 px-2">{mainStockData.ratings.Stability.toFixed(0)}</td>
-                  <td className="text-center py-3 px-2">{mainStockData.ratings.Value.toFixed(0)}</td>
-                  <td className="text-center py-3 px-2">{mainStockData.ratings.Momentum.toFixed(0)}</td>
+                  <td className="text-center py-3 px-2">{(mainStockData.ratings.Performance || 0).toFixed(0)}</td>
+                  <td className="text-center py-3 px-2">{(mainStockData.ratings.Stability || 0).toFixed(0)}</td>
+                  <td className="text-center py-3 px-2">{(mainStockData.ratings.Value || 0).toFixed(0)}</td>
+                  <td className="text-center py-3 px-2">{(mainStockData.ratings.Momentum || 0).toFixed(0)}</td>
                 </tr>
                 
                 {/* Display all other stocks in the industry */}
@@ -603,10 +606,10 @@ export default function VerticalStockComparison({ currentStock }: VerticalStockC
                       }}
                     >
                       <td className="py-3 px-2 font-medium text-gray-700">{symbol}</td>
-                      <td className="text-center py-3 px-2">{stockData.ratings.Performance.toFixed(0)}</td>
-                      <td className="text-center py-3 px-2">{stockData.ratings.Stability.toFixed(0)}</td>
-                      <td className="text-center py-3 px-2">{stockData.ratings.Value.toFixed(0)}</td>
-                      <td className="text-center py-3 px-2">{stockData.ratings.Momentum.toFixed(0)}</td>
+                      <td className="text-center py-3 px-2">{(stockData.ratings.Performance || 0).toFixed(0)}</td>
+                      <td className="text-center py-3 px-2">{(stockData.ratings.Stability || 0).toFixed(0)}</td>
+                      <td className="text-center py-3 px-2">{(stockData.ratings.Value || 0).toFixed(0)}</td>
+                      <td className="text-center py-3 px-2">{(stockData.ratings.Momentum || 0).toFixed(0)}</td>
                     </tr>
                   ))
                 }
@@ -614,17 +617,17 @@ export default function VerticalStockComparison({ currentStock }: VerticalStockC
                 {/* Add industry and market benchmarks at the bottom */}
                 <tr className="hover:bg-gray-50 transition-colors duration-150 bg-gray-100">
                   <td className="py-3 px-2 font-medium text-gray-600">Industry Avg</td>
-                  <td className="text-center py-3 px-2 text-gray-600">{benchmarks.Industry.ratings.Performance.toFixed(0)}</td>
-                  <td className="text-center py-3 px-2 text-gray-600">{benchmarks.Industry.ratings.Stability.toFixed(0)}</td>
-                  <td className="text-center py-3 px-2 text-gray-600">{benchmarks.Industry.ratings.Value.toFixed(0)}</td>
-                  <td className="text-center py-3 px-2 text-gray-600">{benchmarks.Industry.ratings.Momentum.toFixed(0)}</td>
+                  <td className="text-center py-3 px-2 text-gray-600">{(benchmarks.Industry.ratings.Performance || 0).toFixed(0)}</td>
+                  <td className="text-center py-3 px-2 text-gray-600">{(benchmarks.Industry.ratings.Stability || 0).toFixed(0)}</td>
+                  <td className="text-center py-3 px-2 text-gray-600">{(benchmarks.Industry.ratings.Value || 0).toFixed(0)}</td>
+                  <td className="text-center py-3 px-2 text-gray-600">{(benchmarks.Industry.ratings.Momentum || 0).toFixed(0)}</td>
                 </tr>
                 <tr className="hover:bg-gray-50 transition-colors duration-150 bg-gray-100">
                   <td className="py-3 px-2 font-medium text-gray-500">Market Avg</td>
-                  <td className="text-center py-3 px-2 text-gray-500">{benchmarks.Market.ratings.Performance.toFixed(0)}</td>
-                  <td className="text-center py-3 px-2 text-gray-500">{benchmarks.Market.ratings.Stability.toFixed(0)}</td>
-                  <td className="text-center py-3 px-2 text-gray-500">{benchmarks.Market.ratings.Value.toFixed(0)}</td>
-                  <td className="text-center py-3 px-2 text-gray-500">{benchmarks.Market.ratings.Momentum.toFixed(0)}</td>
+                  <td className="text-center py-3 px-2 text-gray-500">{(benchmarks.Market.ratings.Performance || 0).toFixed(0)}</td>
+                  <td className="text-center py-3 px-2 text-gray-500">{(benchmarks.Market.ratings.Stability || 0).toFixed(0)}</td>
+                  <td className="text-center py-3 px-2 text-gray-500">{(benchmarks.Market.ratings.Value || 0).toFixed(0)}</td>
+                  <td className="text-center py-3 px-2 text-gray-500">{(benchmarks.Market.ratings.Momentum || 0).toFixed(0)}</td>
                 </tr>
               </tbody>
             </table>
@@ -667,10 +670,10 @@ export default function VerticalStockComparison({ currentStock }: VerticalStockC
                 {Object.keys(mainStockData.ratings)
                   .filter(metric => metric !== 'Dividend')
                   .map(metric => {
-                  const mainValue = mainStockData.ratings[metric as keyof typeof mainStockData.ratings];
-                  const compValue = competitor.ratings[metric as keyof typeof competitor.ratings];
-                  const industryValue = benchmarks.Industry.ratings[metric as keyof typeof benchmarks.Industry.ratings];
-                  const marketValue = benchmarks.Market.ratings[metric as keyof typeof benchmarks.Market.ratings];
+                  const mainValue = mainStockData.ratings[metric as keyof typeof mainStockData.ratings] || 0;
+                  const compValue = competitor.ratings[metric as keyof typeof competitor.ratings] || 0;
+                  const industryValue = benchmarks.Industry.ratings[metric as keyof typeof benchmarks.Industry.ratings] || 50;
+                  const marketValue = benchmarks.Market.ratings[metric as keyof typeof benchmarks.Market.ratings] || 50;
                   
                   const values = [mainValue, compValue, industryValue, marketValue];
                   const maxValue = Math.max(...values);
@@ -680,17 +683,17 @@ export default function VerticalStockComparison({ currentStock }: VerticalStockC
                       <td className="py-3 px-2 font-medium text-gray-700">{metric}</td>
                       <td className={`text-center py-3 px-2 ${mainValue === maxValue ? 'font-bold' : ''}`} 
                          style={{ color: mainValue === maxValue ? mainStockData.color : 'inherit' }}>
-                        {mainValue.toFixed(0)}
+                        {(mainValue || 0).toFixed(0)}
                       </td>
                       <td className={`text-center py-3 px-2 ${compValue === maxValue ? 'font-bold' : ''}`} 
                          style={{ color: compValue === maxValue ? competitor.color : 'inherit' }}>
-                        {compValue.toFixed(0)}
+                        {(compValue || 0).toFixed(0)}
                       </td>
                       <td className={`text-center py-3 px-2 ${industryValue === maxValue ? 'font-medium text-gray-600' : 'text-gray-600'}`}>
-                        {industryValue.toFixed(0)}
+                        {(industryValue || 0).toFixed(0)}
                       </td>
                       <td className={`text-center py-3 px-2 ${marketValue === maxValue ? 'font-medium text-gray-500' : 'text-gray-400'}`}>
-                        {marketValue.toFixed(0)}
+                        {(marketValue || 0).toFixed(0)}
                       </td>
                     </tr>
                   );
