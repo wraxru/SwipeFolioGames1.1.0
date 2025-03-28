@@ -296,7 +296,7 @@ export default function VerticalStockComparison({
           </label>
           <div className="relative">
             <select
-              className="appearance-none w-full px-4 py-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-base text-gray-900"
+              className="appearance-none w-full px-4 py-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-base text-gray-900 text-black"
               value={selectedCompetitor}
               onChange={(e) => {
                 console.log("Selected competitor:", e.target.value);
