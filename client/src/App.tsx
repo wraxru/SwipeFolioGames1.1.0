@@ -8,23 +8,28 @@ import AuthPage from "@/pages/auth-page";
 import LessonPage from "@/pages/lesson-page";
 import OnboardingPage from "@/pages/onboarding-page";
 import StockDetailPage from "@/pages/stock-detail-page";
+import PortfolioPage from "@/pages/portfolio-page";
 import { AuthProvider } from "@/hooks/use-auth";
 import { UserProgressProvider } from "@/contexts/user-progress-context";
+import { PortfolioProvider } from "@/contexts/portfolio-context";
 
 function Router() {
   return (
-    <Switch>
-      <Route path="/" component={HomePage} />
-      <Route path="/stock/:stackId" component={StockDetailPage} />
-      <Route path="/lesson/:stackId" component={LessonPage} />
-      <Route path="/learn" component={HomePage} />
-      <Route path="/market" component={HomePage} />
-      <Route path="/achievements" component={HomePage} />
-      <Route path="/profile" component={HomePage} />
-      <Route path="/onboarding" component={OnboardingPage} />
-      <Route path="/auth" component={AuthPage} />
-      <Route component={NotFound} />
-    </Switch>
+    <PortfolioProvider>
+      <Switch>
+        <Route path="/" component={HomePage} />
+        <Route path="/stock/:stackId" component={StockDetailPage} />
+        <Route path="/lesson/:stackId" component={LessonPage} />
+        <Route path="/learn" component={HomePage} />
+        <Route path="/market" component={HomePage} />
+        <Route path="/portfolio" component={PortfolioPage} />
+        <Route path="/achievements" component={HomePage} />
+        <Route path="/profile" component={HomePage} />
+        <Route path="/onboarding" component={OnboardingPage} />
+        <Route path="/auth" component={AuthPage} />
+        <Route component={NotFound} />
+      </Switch>
+    </PortfolioProvider>
   );
 }
 
