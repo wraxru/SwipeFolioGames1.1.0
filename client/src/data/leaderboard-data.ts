@@ -39,9 +39,9 @@ export const leaderboardUsers: LeaderboardUser[] = [
   },
   {
     id: "outsider-trading",
-    name: "Michael Lewis",
+    name: "Nancy Pelosi",
     username: "OutsiderTrading123",
-    avatar: "/images/avatars/default-2.png",
+    avatar: "/images/avatars/outsider-trading.png",
     roi: 128.7,
     trades: 213,
     portfolioQuality: 87,
