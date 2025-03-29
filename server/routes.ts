@@ -19,6 +19,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const stack = await storage.getStackById(stackId);
     
     if (!stack) {
+      // Handle default industry stacks
+      if (stackId === 100) {
+        return res.json({
+          id: 100,
+          title: "Tech Titans",
+          description: "Explore top companies in the Tech sector",
+          industry: "Tech",
+          iconName: "trending-up",
+          difficulty: "intermediate",
+          cardCount: 15,
+          rating: 4.5,
+          estimatedMinutes: 15,
+          color: "#000"
+        });
+      }
       return res.status(404).json({ message: "Stack not found" });
     }
     
