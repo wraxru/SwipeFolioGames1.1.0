@@ -237,10 +237,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Make the API call to OpenRouter following their documentation exactly
       const openRouterUrl = 'https://openrouter.ai/api/v1/chat/completions';
       const requestData = {
-        model: "google/gemini-flash-1.5", // Using Gemini 2.0 flash lite
+        model: "google/gemini-2.0-flash-lite-001", // Using correct model ID from documentation
         messages: [
           { role: "system", content: systemPrompt },
-          { role: "user", content: userMessage }
+          { 
+            role: "user", 
+            content: [
+              {
+                type: "text",
+                text: userMessage
+              }
+            ]
+          }
         ]
       };
       
@@ -266,9 +274,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log("OpenRouter API response status:", response.status);
       console.log("OpenRouter API response data:", JSON.stringify(response.data, null, 2));
       
-      // Extract the AI's response
+      // Extract the AI's response - handling both formats (string or array of content objects)
       if (response.data && response.data.choices && response.data.choices.length > 0) {
-        const answer = response.data.choices[0].message.content;
+        let answer;
+        const content = response.data.choices[0].message.content;
+        
+        // Handle different response formats
+        if (typeof content === 'string') {
+          answer = content;
+        } else if (Array.isArray(content) && content.length > 0) {
+          // Extract from content array structure (if API returns in this format)
+          const textContents = content
+            .filter(item => item.type === 'text')
+            .map(item => item.text)
+            .join('\n');
+          answer = textContents || 'No text content found in response';
+        } else {
+          // Fallback - try to stringify the content if it's neither string nor array
+          answer = JSON.stringify(content);
+        }
+        
         console.log("Successfully extracted answer:", answer.substring(0, 50) + "...");
         return res.json({ answer });
       } else {
