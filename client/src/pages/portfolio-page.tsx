@@ -379,17 +379,7 @@ export default function PortfolioPage() {
           
           <TabsContent value="ai-advisor" className="space-y-4">
             <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-              <div className="bg-gradient-to-r from-blue-600 to-blue-500 border-b border-blue-700 px-4 py-3 text-white">
-                <div className="flex items-center">
-                  <MessageSquare className="h-5 w-5 mr-2" />
-                  <h3 className="text-lg font-medium">Portfolio AI Advisor</h3>
-                </div>
-                <p className="text-sm text-blue-100 mt-1">
-                  Ask questions about your portfolio or get advice on investments
-                </p>
-              </div>
-              
-              <div className="p-4">
+              <div className="p-0">
                 {sortedHoldings.length === 0 ? (
                   <EmptyState 
                     title="Start building your portfolio"

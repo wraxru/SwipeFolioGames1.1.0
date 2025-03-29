@@ -1,10 +1,11 @@
-import { useState, useRef } from "react";
-import { Send, Loader2 } from "lucide-react";
+import { useState, useRef, useCallback } from "react";
+import { Send, Loader2, Maximize2, Minimize2, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { usePortfolio, PortfolioHolding } from "@/contexts/portfolio-context";
 import { useToast } from "@/hooks/use-toast";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 /**
  * PortfolioAnalyzer component provides AI-powered portfolio analysis
@@ -19,6 +20,7 @@ export default function PortfolioAnalyzer() {
   
   const [query, setQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const [conversation, setConversation] = useState<{ role: "user" | "assistant"; content: string }[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
@@ -107,18 +109,48 @@ export default function PortfolioAnalyzer() {
     }
   };
 
-  return (
-    <div className="portfolio-analyzer rounded-xl border border-blue-100 overflow-hidden">
+  // Create a portable analyzer component that can be used in both normal and fullscreen mode
+  const AnalyzerContent = useCallback(({ maxHeight = '300px', fullscreen = false }) => (
+    <div className={`portfolio-analyzer rounded-xl overflow-hidden ${fullscreen ? 'h-full flex flex-col' : 'border border-blue-100'}`}>
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-blue-400 p-4 border-l-4 border-blue-700">
-        <h2 className="text-white font-semibold text-lg">AI Portfolio Advisor</h2>
-        <p className="text-blue-50 text-sm">
-          Ask questions about your portfolio performance, investment strategies, or specific stocks
-        </p>
+      <div className="bg-gradient-to-r from-blue-600 to-blue-400 p-4 border-l-4 border-blue-700 flex justify-between">
+        <div>
+          <h2 className="text-white font-semibold text-lg flex items-center">
+            <MessageSquare className="h-5 w-5 mr-2" />
+            AI Portfolio Advisor
+          </h2>
+          <p className="text-blue-50 text-sm">
+            Ask questions about your portfolio performance or investment strategy
+          </p>
+        </div>
+        {fullscreen ? (
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={() => setIsFullscreen(false)}
+            className="text-white hover:bg-blue-500/20"
+          >
+            <Minimize2 className="h-5 w-5" />
+          </Button>
+        ) : (
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={() => setIsFullscreen(true)}
+            className="text-white hover:bg-blue-500/20"
+          >
+            <Maximize2 className="h-5 w-5" />
+          </Button>
+        )}
       </div>
       
       {/* Conversation Area */}
-      <div className="conversation-container bg-gradient-to-b from-blue-50 to-white p-4 max-h-[300px] overflow-y-auto">
+      <div 
+        className={`conversation-container bg-gradient-to-b from-blue-50 to-white p-4 ${
+          fullscreen ? 'flex-grow overflow-y-auto' : 'overflow-y-auto'
+        }`}
+        style={{ maxHeight: fullscreen ? 'none' : maxHeight }}
+      >
         {conversation.length === 0 ? (
           <div className="text-center py-6 text-gray-500">
             <p>Ask me about your portfolio performance or investment strategy!</p>
@@ -233,6 +265,18 @@ export default function PortfolioAnalyzer() {
         </Accordion>
       </div>
     </div>
+  ), [conversation, isLoading, query, handleSubmit, messagesEndRef, setIsFullscreen]);
+
+  return isFullscreen ? (
+    // Full-screen mode using Dialog
+    <Dialog open={isFullscreen} onOpenChange={setIsFullscreen}>
+      <DialogContent className="max-w-[90vw] w-[800px] h-[80vh] p-0">
+        {AnalyzerContent({ maxHeight: '100%', fullscreen: true })}
+      </DialogContent>
+    </Dialog>
+  ) : (
+    // Normal embedded mode
+    AnalyzerContent({ maxHeight: '300px', fullscreen: false })
   );
 }
 
