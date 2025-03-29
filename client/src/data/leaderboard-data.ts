@@ -1,5 +1,6 @@
 // Import necessary modules
 import { portfolioContextInstance } from '../lib/portfolio-context-instance';
+import belfordAvatar from '/images/belford-avatar.png';
 
 export interface LeaderboardUser {
   id: string;
@@ -17,9 +18,9 @@ export interface LeaderboardUser {
 export const leaderboardUsers: LeaderboardUser[] = [
   {
     id: "lebron-james",
-    name: "LeBron James",
+    name: "Lebron James",
     username: "KingJames",
-    avatar: "/images/avatars/lebron-james.png",
+    avatar: "/images/lebron.png",
     roi: 245.8,
     trades: 147,
     portfolioQuality: 98,
@@ -28,9 +29,9 @@ export const leaderboardUsers: LeaderboardUser[] = [
   },
   {
     id: "value-buffet",
-    name: "Warren B.",
+    name: "Warren Buffet",
     username: "ValueBuffet",
-    avatar: "/images/avatars/default-1.png", 
+    avatar: "/images/warren.png", 
     roi: 156.3,
     trades: 89,
     portfolioQuality: 94,
@@ -39,9 +40,9 @@ export const leaderboardUsers: LeaderboardUser[] = [
   },
   {
     id: "outsider-trading",
-    name: "Michael Lewis",
-    username: "OutsiderTrading123",
-    avatar: "/images/avatars/default-2.png",
+    name: "Nancy Pelosi",
+    username: "OutsiderTrading",
+    avatar: "/images/OUTSIDERTRADING.png",
     roi: 128.7,
     trades: 213,
     portfolioQuality: 87,
@@ -49,9 +50,9 @@ export const leaderboardUsers: LeaderboardUser[] = [
   },
   {
     id: "investor-4",
-    name: "Sophia Chen",
-    username: "SophiaInvests",
-    avatar: "/images/avatars/default-3.png",
+    name: "Julie Sweet",
+    username: "JulieSweetCEO",
+    avatar: "/images/Julie.png",
     roi: 97.5,
     trades: 76,
     portfolioQuality: 89,
@@ -61,7 +62,7 @@ export const leaderboardUsers: LeaderboardUser[] = [
     id: "investor-5",
     name: "Alex Morgan",
     username: "GrowthSeeker",
-    avatar: "/images/avatars/default-4.png",
+    avatar: "/images/belford-avatar.png",
     roi: 83.2,
     trades: 103,
     portfolioQuality: 81,
@@ -69,9 +70,9 @@ export const leaderboardUsers: LeaderboardUser[] = [
   },
   {
     id: "investor-6",
-    name: "David Kim",
-    username: "StockSurfer",
-    avatar: "/images/avatars/default-5.png",
+    name: "Elon Musk",
+    username: "ElonMusk",
+    avatar: "/images/Musk.png",
     roi: 76.8,
     trades: 158,
     portfolioQuality: 77,
@@ -79,9 +80,9 @@ export const leaderboardUsers: LeaderboardUser[] = [
   },
   {
     id: "investor-7",
-    name: "Emma Watson",
-    username: "SmartMoney",
-    avatar: "/images/avatars/default-6.png",
+    name: "Michelle Obama",
+    username: "MichelleO",
+    avatar: "/images/obama.png",
     roi: 65.4,
     trades: 67,
     portfolioQuality: 82,
@@ -89,9 +90,9 @@ export const leaderboardUsers: LeaderboardUser[] = [
   },
   {
     id: "investor-8",
-    name: "Tyler Johnson",
-    username: "InvestNinja",
-    avatar: "/images/avatars/default-7.png",
+    name: "Oprah Winfrey",
+    username: "Oprah",
+    avatar: "/images/oprah.png",
     roi: 53.9,
     trades: 91,
     portfolioQuality: 71,
@@ -99,9 +100,9 @@ export const leaderboardUsers: LeaderboardUser[] = [
   },
   {
     id: "investor-9",
-    name: "Zoe Rodriguez",
-    username: "ZoeRoadToWealth",
-    avatar: "/images/avatars/default-8.png",
+    name: "Kanye West",
+    username: "Ye",
+    avatar: "/images/Kanye.jpg",
     roi: 42.7,
     trades: 58,
     portfolioQuality: 68,
@@ -109,9 +110,9 @@ export const leaderboardUsers: LeaderboardUser[] = [
   },
   {
     id: "investor-10",
-    name: "James Miller",
-    username: "FutureRich",
-    avatar: "/images/avatars/default-9.png",
+    name: "Kurt Fass",
+    username: "KurtFass",
+    avatar: "/images/betty.png",
     roi: 36.5,
     trades: 42,
     portfolioQuality: 63,
@@ -121,7 +122,7 @@ export const leaderboardUsers: LeaderboardUser[] = [
     id: "current-user",
     name: "Belford & Co",
     username: "Belford&Co",
-    avatar: "/images/avatars/belford-avatar.png",
+    avatar: "/images/belford-avatar.png",
     roi: 0, // Will be dynamically calculated from portfolio context
     trades: 0, // Will be dynamically calculated from portfolio context
     portfolioQuality: 0, // Will be dynamically calculated from portfolio context 
