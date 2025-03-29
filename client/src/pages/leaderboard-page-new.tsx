@@ -125,9 +125,9 @@ const LeaderboardPage: React.FC = () => {
         </div>
         
         {/* iOS-Style Card Podium Layout for Top 3 */}
-        <div className="py-2 px-2 mb-4">
+        <div className="py-3 px-2 mb-8">
           {/* New 3-card arrangement for top performers */}
-          <div className="flex flex-col items-center mb-3">
+          <div className="flex flex-col items-center mb-6">
             <div className="flex mb-1 -space-x-1">
               <span className="text-xs font-medium text-slate-500">TOP PERFORMERS</span>
               <div className="w-1 h-1 rounded-full bg-slate-400 my-auto mx-2"></div>
@@ -164,32 +164,16 @@ const LeaderboardPage: React.FC = () => {
                   {/* User info */}
                   <p className="font-semibold text-sm truncate max-w-full text-slate-700">{filteredData[1]?.username}</p>
                   
-                  {/* Stats with side-by-side metrics */}
-                  <div className="flex w-full space-x-1 mt-2 items-center justify-center">
-                    <motion.div 
-                      className="flex-1 bg-slate-50 rounded-lg px-2 py-1 flex items-center justify-between"
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: 0.2, duration: 0.2 }}
-                    >
-                      <div className="flex items-center">
-                        <TrendingUp className="w-3 h-3 text-green-500 mr-1" />
-                        <span className="text-[9px] text-slate-500">ROI</span>
-                      </div>
-                      <span className="text-xs font-bold text-green-600">{filteredData[1]?.roi.toFixed(1)}%</span>
-                    </motion.div>
-                    <motion.div 
-                      className="flex-1 bg-blue-50 rounded-lg px-2 py-1 flex items-center justify-between"
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: 0.3, duration: 0.2 }}
-                    >
-                      <div className="flex items-center">
-                        <Star className="w-3 h-3 text-indigo-500 mr-1" />
-                        <span className="text-[9px] text-slate-500">Quality</span>
-                      </div>
-                      <span className="text-xs font-bold text-indigo-600">{filteredData[1]?.portfolioQuality}</span>
-                    </motion.div>
+                  {/* Stats */}
+                  <div className="flex flex-col w-full space-y-1.5 mt-2">
+                    <div className="flex justify-between items-center">
+                      <span className="text-[10px] text-slate-400 font-medium">Quality</span>
+                      <span className="text-sm font-bold text-slate-700">{filteredData[1]?.portfolioQuality}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-[10px] text-slate-400 font-medium">ROI</span>
+                      <span className="text-sm font-bold text-green-600">{filteredData[1]?.roi.toFixed(1)}%</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -243,34 +227,16 @@ const LeaderboardPage: React.FC = () => {
                     )}
                   </div>
                   
-                  {/* Stats with enhanced side-by-side metrics */}
-                  <div className="flex w-full space-x-2 mt-3 items-center justify-center">
-                    <motion.div 
-                      className="flex-1 bg-green-50 rounded-lg px-2 py-1.5 flex items-center justify-between"
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: 0.2, duration: 0.3 }}
-                      whileHover={{ scale: 1.05 }}
-                    >
-                      <div className="flex items-center">
-                        <TrendingUp className="w-3.5 h-3.5 text-green-500 mr-1" />
-                        <span className="text-[10px] text-green-700">ROI</span>
-                      </div>
-                      <span className="text-sm font-bold text-green-600">{filteredData[0]?.roi.toFixed(1)}%</span>
-                    </motion.div>
-                    <motion.div 
-                      className="flex-1 bg-indigo-50 rounded-lg px-2 py-1.5 flex items-center justify-between"
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: 0.3, duration: 0.3 }}
-                      whileHover={{ scale: 1.05 }}
-                    >
-                      <div className="flex items-center">
-                        <Star className="w-3.5 h-3.5 text-indigo-500 mr-1" />
-                        <span className="text-[10px] text-indigo-700">Quality</span>
-                      </div>
-                      <span className="text-sm font-bold text-indigo-600">{filteredData[0]?.portfolioQuality}</span>
-                    </motion.div>
+                  {/* Stats */}
+                  <div className="flex flex-col w-full space-y-2 mt-2">
+                    <div className="flex justify-between items-center">
+                      <span className="text-[10px] text-slate-400 font-medium">Quality</span>
+                      <span className="text-base font-bold text-slate-800">{filteredData[0]?.portfolioQuality}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-[10px] text-slate-400 font-medium">ROI</span>
+                      <span className="text-base font-bold text-green-600">{filteredData[0]?.roi.toFixed(1)}%</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -307,32 +273,16 @@ const LeaderboardPage: React.FC = () => {
                   {/* User info */}
                   <p className="font-semibold text-sm truncate max-w-full text-slate-700">{filteredData[2]?.username}</p>
                   
-                  {/* Stats with side-by-side metrics */}
-                  <div className="flex w-full space-x-1 mt-2 items-center justify-center">
-                    <motion.div 
-                      className="flex-1 bg-slate-50 rounded-lg px-2 py-1 flex items-center justify-between"
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: 0.3, duration: 0.2 }}
-                    >
-                      <div className="flex items-center">
-                        <TrendingUp className="w-3 h-3 text-green-500 mr-1" />
-                        <span className="text-[9px] text-slate-500">ROI</span>
-                      </div>
-                      <span className="text-xs font-bold text-green-600">{filteredData[2]?.roi.toFixed(1)}%</span>
-                    </motion.div>
-                    <motion.div 
-                      className="flex-1 bg-amber-50 rounded-lg px-2 py-1 flex items-center justify-between"
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: 0.4, duration: 0.2 }}
-                    >
-                      <div className="flex items-center">
-                        <Star className="w-3 h-3 text-amber-700 mr-1" />
-                        <span className="text-[9px] text-slate-500">Quality</span>
-                      </div>
-                      <span className="text-xs font-bold text-amber-800">{filteredData[2]?.portfolioQuality}</span>
-                    </motion.div>
+                  {/* Stats */}
+                  <div className="flex flex-col w-full space-y-1.5 mt-2">
+                    <div className="flex justify-between items-center">
+                      <span className="text-[10px] text-slate-400 font-medium">Quality</span>
+                      <span className="text-sm font-bold text-slate-700">{filteredData[2]?.portfolioQuality}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-[10px] text-slate-400 font-medium">ROI</span>
+                      <span className="text-sm font-bold text-green-600">{filteredData[2]?.roi.toFixed(1)}%</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -343,53 +293,42 @@ const LeaderboardPage: React.FC = () => {
           </div>
         </div>
         
-        {/* iOS-Style Tab Selector - Reduced margin */}
-        <div className="flex justify-center mt-1">
-          <motion.div 
-            className="bg-white/80 backdrop-blur-sm p-1 rounded-full flex shadow-sm"
-            initial={{ opacity: 0, y: 5 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: 0.2 }}
-          >
-            <motion.button 
-              className={`px-5 py-1.5 rounded-full text-sm font-medium transition-all relative ${activeTab === 'all' ? 'bg-blue-500 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'}`}
+        {/* iOS-Style Tab Selector */}
+        <div className="flex justify-center mt-2">
+          <div className="bg-white/80 backdrop-blur-sm p-1 rounded-full flex shadow-sm">
+            <button 
+              className={`px-5 py-2 rounded-full text-sm font-medium transition-all ${activeTab === 'all' ? 'bg-blue-500 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'}`}
               onClick={() => setActiveTab('all')}
-              whileTap={{ scale: 0.95 }}
             >
               All Investors
-            </motion.button>
-            <motion.button 
-              className={`px-5 py-1.5 rounded-full text-sm font-medium transition-all ${activeTab === 'friends' ? 'bg-blue-500 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'}`}
+            </button>
+            <button 
+              className={`px-5 py-2 rounded-full text-sm font-medium transition-all ${activeTab === 'friends' ? 'bg-blue-500 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'}`}
               onClick={() => setActiveTab('friends')}
-              whileTap={{ scale: 0.95 }}
             >
               Friends
-            </motion.button>
-          </motion.div>
+            </button>
+          </div>
         </div>
       </div>
       
-      {/* iOS-Style Search - with reduced margin */}
-      <div className="px-4 mt-3">
+      {/* iOS-Style Search */}
+      <div className="px-4 mt-6">
         <div className="relative">
-          <motion.input
+          <input
             type="text"
             placeholder="Search investors..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-slate-100/70 border border-slate-200 rounded-xl py-2.5 pl-10 pr-4 shadow-sm 
-                     focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white focus:border-transparent
-                     text-sm text-slate-600"
-            initial={{ opacity: 0, y: 5 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: 0.3 }}
+            className="w-full bg-slate-100/70 border border-slate-200 rounded-xl py-3 pl-10 pr-4 shadow-sm 
+                     focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white focus:border-transparent"
           />
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
         </div>
       </div>
       
-      {/* Leaderboard Content - Reduced margin */}
-      <div className="px-4 mt-3">
+      {/* Leaderboard Content */}
+      <div className="px-4 mt-6">
         {activeTab === 'friends' && friendsList.length === 0 ? (
           <motion.div 
             className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8 flex flex-col items-center justify-center"
