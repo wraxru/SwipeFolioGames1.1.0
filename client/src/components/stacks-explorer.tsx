@@ -45,7 +45,7 @@ export default function StacksExplorer({ stacks }: StacksExplorerProps) {
     },
     "ESG": { 
       name: "Green Giants", 
-      image: "https://images.unsplash.com/photo-1464380573004-8ca85a08751a?q=80&w=580&auto=format&fit=crop" 
+      image: "Profiles/green.png" 
     },
     "Industrials": { 
       name: "Industrial Leaders", 
@@ -73,7 +73,7 @@ export default function StacksExplorer({ stacks }: StacksExplorerProps) {
     // Example industries to add if there aren't enough
     const defaultIndustries = ["Tech", "Healthcare", "Consumer", "Real Estate", "ESG"];
     const industryStockCounts: Record<string, number> = {
-      "Real Estate": 10,
+      "Real Estate": 8,
       "Healthcare": 9,
       "Tech": 10,
       "Consumer": 8,

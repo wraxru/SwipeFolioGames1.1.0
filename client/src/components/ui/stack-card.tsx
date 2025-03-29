@@ -95,18 +95,12 @@ export default function StackCard({ stack, onClick, imageUrl, category }: StackC
           </div>
         )}
 
-        {/* Bottom indicators row with better spacing */}
-        <div className="absolute bottom-3 left-0 right-0 px-3 flex justify-between items-center z-20">
-          {/* Rating */}
-          <div className="bg-black/60 backdrop-blur-sm rounded-full px-3 py-1 flex items-center space-x-1 text-xs border border-gray-700">
-            <Star className="w-3 h-3 text-yellow-400" />
-            <span className="text-white">{stack.rating}.0</span>
-          </div>
-
-          {/* Card count with progress */}
+        {/* Bottom indicators row - Only showing stock count */}
+        <div className="absolute bottom-3 right-3 z-20">
+          {/* Card count with progress - Simplified */}
           <div className="bg-black/60 backdrop-blur-sm border border-gray-700 rounded-full px-3 py-1 flex items-center space-x-1 text-xs">
             <BarChart2 className="w-3 h-3 text-cyan-400" />
-            <span className="text-white">{currentCardIndex}/{totalCards} stocks</span>
+            <span className="text-white">{totalCards}</span>
           </div>
         </div>
       </div>
