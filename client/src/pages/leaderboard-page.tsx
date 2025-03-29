@@ -18,9 +18,7 @@ import {
   getLeaderboardData, 
   getCurrentUserRank, 
   LeaderboardUser, 
-  updateUserStats,
-  calculateTrades,
-  calculatePortfolioQuality
+  calculateTrades
 } from "@/data/leaderboard-data";
 import { PortfolioContext } from "@/contexts/portfolio-context";
 
@@ -38,7 +36,22 @@ const LeaderboardPage: React.FC = () => {
   useEffect(() => {
     if (!portfolio) return;
     
-    // Calculate projected 1-year returns if there are holdings
+    // Fetch the base leaderboard data (bots only)
+    let baseLeaderboardData = getLeaderboardData();
+    
+    // Construct live user data from the portfolio context
+    const userStats: LeaderboardUser = {
+      id: "current-user",
+      name: "Belford & Co",
+      username: "Belford&Co",
+      avatar: "/images/avatars/belford-avatar.png",
+      referrals: 0,
+      roi: 0,
+      trades: 0,
+      portfolioQuality: 0
+    };
+    
+    // Calculate live metrics directly from the portfolio
     if (portfolio.holdings.length > 0) {
       const totalInvested = portfolio.holdings.reduce(
         (total, h) => total + h.shares * h.purchasePrice, 
@@ -46,8 +59,8 @@ const LeaderboardPage: React.FC = () => {
       );
       
       if (totalInvested > 0) {
+        // Calculate live ROI (projected return percentage)
         const oneYearReturns = portfolio.holdings.reduce((total, h) => {
-          // Parse the oneYearReturn string (remove % sign and convert to number)
           const oneYearReturnPercent = 
             typeof h.stock.oneYearReturn === 'number' ? h.stock.oneYearReturn :
             typeof h.stock.oneYearReturn === 'string' ? 
@@ -60,37 +73,40 @@ const LeaderboardPage: React.FC = () => {
         
         const projectedReturnPercent = (oneYearReturns / totalInvested) * 100;
         
-        // Calculate trades (number of holdings)
-        const tradeCount = calculateTrades(portfolio.holdings);
-        
-        // Calculate portfolio quality
-        const qualityScore = calculatePortfolioQuality(portfolio.holdings);
-        
-        // Update the global user stats
-        updateUserStats({
-          roi: projectedReturnPercent,
-          trades: tradeCount,
-          portfolioQuality: qualityScore
-        });
+        // Add live stats to the user object
+        userStats.roi = projectedReturnPercent;
+        userStats.trades = portfolio.holdings.length;
+        userStats.portfolioQuality = portfolio.portfolioMetrics.qualityScore;
       }
     } else {
-      // Reset stats if no holdings
-      updateUserStats({
-        roi: 0,
-        trades: 0,
-        portfolioQuality: 0 // Default starting score
-      });
+      // Set default values for empty portfolio
+      userStats.roi = 0;
+      userStats.trades = 0;
+      userStats.portfolioQuality = 0;
     }
     
-    // Get updated leaderboard data
-    setLeaderboardData(getLeaderboardData());
-    setCurrentUser(getCurrentUserRank());
+    // Update the current user in the base data
+    const updatedLeaderboardData = baseLeaderboardData.map(user => 
+      user.id === "current-user" ? userStats : user
+    );
+    
+    // Sort and add ranks
+    const sortedData = [...updatedLeaderboardData].sort((a, b) => b.roi - a.roi)
+      .map((user, index) => ({
+        ...user,
+        rank: index + 1
+      }));
+    
+    // Update component state
+    setLeaderboardData(sortedData);
+    setCurrentUser(sortedData.find(u => u.id === "current-user"));
     
   }, [
     portfolio, 
     portfolio?.holdings.length,
     portfolio?.version,
-    portfolio?.lastUpdated
+    portfolio?.lastUpdated,
+    portfolio?.portfolioMetrics
   ]);
   
   // Initialize data on component mount

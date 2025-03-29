@@ -6,8 +6,7 @@ import { Link } from 'wouter';
 import { 
   getLeaderboardData, 
   getCurrentUserRank, 
-  LeaderboardUser, 
-  updateUserStats 
+  LeaderboardUser
 } from '@/data/leaderboard-data';
 
 // Define the investor type
@@ -40,7 +39,7 @@ export default function CompetitionTracker() {
   const [userReturns, setUserReturns] = useState(0);
   const [leaderboardData, setLeaderboardData] = useState<Investor[]>([]);
   
-  // Refresh data from shared leaderboard source when portfolio changes 
+  // Refresh data from portfolio context when portfolio changes 
   useEffect(() => {
     // Calculate metrics if portfolio exists
     if (portfolio) {
@@ -52,7 +51,7 @@ export default function CompetitionTracker() {
           lastUpdated: new Date(portfolio.lastUpdated).toISOString()
         });
         
-        // Calculate and update metrics if there are holdings
+        // Calculate ROI directly from portfolio context
         if (portfolio.holdings.length > 0) {
           const totalInvested = portfolio.holdings.reduce(
             (total, h) => total + (h.shares * h.purchasePrice),
@@ -60,7 +59,7 @@ export default function CompetitionTracker() {
           );
           
           if (totalInvested > 0) {
-            // Calculate projected 1-year returns
+            // Calculate projected 1-year returns directly from holdings
             const oneYearReturns = portfolio.holdings.reduce((total, h) => {
               const oneYearReturnPercent = 
                 typeof h.stock.oneYearReturn === 'number' ? h.stock.oneYearReturn :
@@ -74,46 +73,16 @@ export default function CompetitionTracker() {
             
             const projectedReturnPercent = (oneYearReturns / totalInvested) * 100;
             
-            // Calculate trades (number of holdings)
-            const tradeCount = portfolio.holdings.length;
-            
-            // Calculate quality score - simple algorithm based on diversity and growth
-            const diversificationScore = Math.min(50, portfolio.holdings.length * 10);
-            const growthScore = portfolio.holdings.reduce((total, h) => {
-              const returnPercent = 
-                typeof h.stock.oneYearReturn === 'number' ? h.stock.oneYearReturn :
-                typeof h.stock.oneYearReturn === 'string' ? 
-                  parseFloat(h.stock.oneYearReturn.replace('%', '')) : 0;
-              
-              const holdingScore = Math.min(50, (returnPercent / 20) * 50);
-              return total + holdingScore;
-            }, 0) / (portfolio.holdings.length || 1);
-            
-            const qualityScore = Math.round((diversificationScore + growthScore) / 2);
-            
-            // Update the shared user stats - will affect all components
-            updateUserStats({
-              roi: projectedReturnPercent,
-              trades: tradeCount,
-              portfolioQuality: qualityScore
-            });
-            
+            // Set local user returns for this component
             setUserReturns(projectedReturnPercent);
-            
-            // Fetch updated leaderboard data
-            fetchUpdatedLeaderboard();
           }
         } else {
-          // Reset stats if no holdings
-          updateUserStats({
-            roi: 0,
-            trades: 0,
-            portfolioQuality: 0 // Default is 0 for empty portfolio
-          });
-          
+          // Reset local user returns if no holdings
           setUserReturns(0);
-          fetchUpdatedLeaderboard();
         }
+        
+        // Fetch updated leaderboard data (which will now read from portfolio context)
+        fetchUpdatedLeaderboard();
       }, 100);
       
       return () => clearTimeout(timer);
@@ -122,7 +91,8 @@ export default function CompetitionTracker() {
     portfolio, 
     portfolio?.holdings.length,
     portfolio?.version,
-    portfolio?.lastUpdated
+    portfolio?.lastUpdated,
+    portfolio?.portfolioMetrics
   ]);
   
   // Function to fetch latest leaderboard data
