@@ -19,7 +19,7 @@ export const leaderboardUsers: LeaderboardUser[] = [
     id: "lebron-james",
     name: "Lebron James",
     username: "KingJames",
-    avatar: "/images/LEBRON.png",
+    avatar: "/images/Kanye.png",
     roi: 245.8,
     trades: 147,
     portfolioQuality: 98,
