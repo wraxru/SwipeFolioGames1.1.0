@@ -1,3 +1,6 @@
+// Import necessary modules
+import { portfolioContextInstance } from '../lib/portfolio-context-instance';
+
 export interface LeaderboardUser {
   id: string;
   name: string;
@@ -125,11 +128,6 @@ export const leaderboardUsers: LeaderboardUser[] = [
     referrals: 0,
   }
 ];
-
-// Import necessary modules
-import { portfolioContextInstance } from '@/lib/portfolio-context-instance';
-
-// No longer need private userStats - we'll read directly from PortfolioContext
 
 // Function to get leaderboard data with rankings applied
 export function getLeaderboardData(): LeaderboardUser[] {

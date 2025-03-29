@@ -1,4 +1,4 @@
-import { PortfolioContextProps } from '@/contexts/portfolio-context';
+import type { PortfolioContextProps } from '@/contexts/portfolio-context';
 
 /**
  * This utility provides a way to access the PortfolioContext outside of React components
