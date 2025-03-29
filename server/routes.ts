@@ -398,7 +398,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Make the API call to OpenRouter following their documentation
       const openRouterUrl = 'https://openrouter.ai/api/v1/chat/completions';
       const requestData = {
-        model: "anthropic/claude-3-haiku",
+        model: "google/gemini-2.0-flash-exp:free",
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userMessage }

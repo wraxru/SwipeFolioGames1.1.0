@@ -73,9 +73,9 @@ export default function StacksExplorer({ stacks }: StacksExplorerProps) {
     // Example industries to add if there aren't enough
     const defaultIndustries = ["Tech", "Healthcare", "Consumer", "Real Estate", "ESG"];
     const industryStockCounts: Record<string, number> = {
-      "Real Estate": 8,
+      "Real Estate": 10,
       "Healthcare": 9,
-      "Tech": 10,
+      "Tech": 15,
       "Consumer": 8,
       "ESG": 8
     };
