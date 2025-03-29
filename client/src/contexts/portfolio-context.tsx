@@ -4,6 +4,7 @@ import { useToast } from '@/hooks/use-toast';
 import { getIndustryAverages } from '@/lib/industry-data';
 import { getAdvancedMetricScore, calculatePortfolioScore } from '@/lib/advanced-metric-scoring';
 import { getQualityScoreColor, getQualityScoreBgColor } from '@/data/leaderboard-data';
+import { portfolioContextInstance } from '@/lib/portfolio-context-instance';
 
 // Define types
 export interface PortfolioHolding {
@@ -14,7 +15,7 @@ export interface PortfolioHolding {
   purchaseDate: string;
 }
 
-interface PortfolioContextProps {
+export interface PortfolioContextProps {
   cash: number;
   holdings: PortfolioHolding[];
   portfolioValue: number;
@@ -27,6 +28,8 @@ interface PortfolioContextProps {
     value: number;
     momentum: number;
     qualityScore: number;
+    trades: number;
+    roi: number;
   };
   buyStock: (stock: StockData, amount: number) => void;
   sellStock: (stockId: string, shares: number) => void;
@@ -37,6 +40,8 @@ interface PortfolioContextProps {
       value: number;
       momentum: number;
       qualityScore: number;
+      trades: number;
+      roi: number;
     };
     newMetrics: {
       performance: number;
@@ -44,6 +49,8 @@ interface PortfolioContextProps {
       value: number;
       momentum: number;
       qualityScore: number;
+      trades: number;
+      roi: number;
     };
     impact: {
       performance: number;
@@ -51,6 +58,8 @@ interface PortfolioContextProps {
       value: number;
       momentum: number;
       qualityScore: number;
+      trades: number;
+      roi: number;
     };
     industryAllocation: Record<string, { current: number; new: number }>;
   };
@@ -75,7 +84,28 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
   const portfolioValue = holdings.reduce((total, holding) => total + holding.value, 0);
   const totalValue = cash + portfolioValue;
   
-  // Calculate individual metrics first
+  // Calculate trades count
+  const trades = holdings.length;
+
+  // Calculate projected ROI percentage
+  const totalInvestedForROI = holdings.reduce((total, h) => total + (h.shares * h.purchasePrice), 0);
+  let projectedROI = 0;
+  
+  if (totalInvestedForROI > 0) {
+    const oneYearReturnsValue = holdings.reduce((total, h) => {
+      const oneYearReturnPercentValue = 
+        typeof h.stock.oneYearReturn === 'number' ? h.stock.oneYearReturn :
+        typeof h.stock.oneYearReturn === 'string' ? parseFloat(h.stock.oneYearReturn.replace('%', '')) : 0;
+      
+      const stockValue = h.shares * h.purchasePrice;
+      const stockReturn = stockValue * (oneYearReturnPercentValue / 100);
+      return total + stockReturn;
+    }, 0);
+    
+    projectedROI = (oneYearReturnsValue / totalInvestedForROI) * 100;
+  }
+
+  // Calculate individual metrics for quality score
   const performanceScore = calculatePortfolioMetric('performance');
   const stabilityScore = calculatePortfolioMetric('stability');
   const valueScore = calculatePortfolioMetric('value');
@@ -86,13 +116,15 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
                      ? 0 
                      : Math.round((performanceScore + stabilityScore + valueScore + momentumScore) / 4);
 
-  // Portfolio metrics object now uses the calculated scores
+  // Portfolio metrics object now includes all metrics needed for leaderboard data
   const portfolioMetrics = {
     performance: performanceScore,
     stability: stabilityScore,
     value: valueScore,
     momentum: momentumScore,
-    qualityScore: qualityScore // Use the directly calculated average
+    qualityScore: qualityScore,
+    trades: trades,
+    roi: projectedROI
   };
   
   // Calculate individual portfolio metric score using the advanced 0-100 scale
@@ -327,7 +359,9 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
       stability: hasExistingHoldings ? portfolioMetrics.stability : 0,
       value: hasExistingHoldings ? portfolioMetrics.value : 0,
       momentum: hasExistingHoldings ? portfolioMetrics.momentum : 0,
-      qualityScore: hasExistingHoldings ? portfolioMetrics.qualityScore : 0
+      qualityScore: hasExistingHoldings ? portfolioMetrics.qualityScore : 0,
+      trades: portfolioMetrics.trades,
+      roi: portfolioMetrics.roi
     };
     console.log('Current portfolio metrics:', currentMetrics);
     
@@ -388,12 +422,35 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
     console.log(`- Momentum: ${newMomentum}`);
     console.log(`- Quality Score: ${newQualityScore}`);
     
+    // Calculate new trades count (current + 1 for new stock if not already held)
+    const newTrades = existingHoldingIndex >= 0 ? portfolioMetrics.trades : portfolioMetrics.trades + 1;
+    
+    // Calculate new ROI for simulated portfolio
+    const simulatedTotalInvested = simulatedHoldings.reduce((total, h) => total + (h.shares * h.purchasePrice), 0);
+    let simulatedROI = 0;
+    
+    if (simulatedTotalInvested > 0) {
+      const simulatedReturnsValue = simulatedHoldings.reduce((total, h) => {
+        const oneYearReturnPercentValue = 
+          typeof h.stock.oneYearReturn === 'number' ? h.stock.oneYearReturn :
+          typeof h.stock.oneYearReturn === 'string' ? parseFloat(h.stock.oneYearReturn.replace('%', '')) : 0;
+        
+        const stockValue = h.shares * h.purchasePrice;
+        const stockReturn = stockValue * (oneYearReturnPercentValue / 100);
+        return total + stockReturn;
+      }, 0);
+      
+      simulatedROI = (simulatedReturnsValue / simulatedTotalInvested) * 100;
+    }
+
     const newMetrics = {
       performance: newPerformance,
       stability: newStability,
       value: newValue,
       momentum: newMomentum,
-      qualityScore: newQualityScore
+      qualityScore: newQualityScore,
+      trades: newTrades,
+      roi: simulatedROI
     };
     
     // Calculate industry allocation (current and new)
@@ -453,12 +510,17 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
     console.log(`- Momentum: ${currentMetrics.momentum} → ${newMetrics.momentum} (${momentumImpact > 0 ? '+' : ''}${momentumImpact})`);
     console.log(`- Quality Score: ${currentMetrics.qualityScore} → ${newMetrics.qualityScore} (${qualityScoreImpact > 0 ? '+' : ''}${qualityScoreImpact})`);
     
+    const tradesImpact = newMetrics.trades - currentMetrics.trades;
+    const roiImpact = parseFloat((newMetrics.roi - currentMetrics.roi).toFixed(1));
+    
     const impact = {
       performance: performanceImpact,
       stability: stabilityImpact,
       value: valueImpact,
       momentum: momentumImpact,
-      qualityScore: qualityScoreImpact
+      qualityScore: qualityScoreImpact,
+      trades: tradesImpact,
+      roi: roiImpact
     };
     
     console.log('Final industry allocation:', industryAllocation);
@@ -501,6 +563,12 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
     calculateImpact,
     isLoading
   };
+  
+  // Update the portfolio context instance when the context changes
+  useEffect(() => {
+    console.log("Setting portfolio context instance");
+    portfolioContextInstance.setContext(contextValue);
+  }, [version, lastUpdated, portfolioValue, qualityScore, projectedROI, trades]); // Update when any important value changes
   
   return (
     <PortfolioContext.Provider value={contextValue}>

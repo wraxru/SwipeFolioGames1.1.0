@@ -126,31 +126,24 @@ export const leaderboardUsers: LeaderboardUser[] = [
   }
 ];
 
-// Private variable to store user stats
-let userStats = {
-  roi: 0,
-  trades: 0,
-  portfolioQuality: 0, // Default is 0 for empty portfolio
-};
+// Import necessary modules
+import { portfolioContextInstance } from '@/lib/portfolio-context-instance';
 
-// Function to update current user stats - will be called from portfolio context
-export function updateUserStats(stats: {roi?: number, trades?: number, portfolioQuality?: number}) {
-  userStats = {
-    ...userStats,
-    ...stats
-  };
-}
+// No longer need private userStats - we'll read directly from PortfolioContext
 
 // Function to get leaderboard data with rankings applied
 export function getLeaderboardData(): LeaderboardUser[] {
-  // Update the current user with latest stats
+  // Get portfolio context metrics
+  const portfolioContext = portfolioContextInstance.getContext();
+  
+  // Update the current user with latest stats from context
   const updatedUsers = leaderboardUsers.map(user => {
-    if (user.id === "current-user") {
+    if (user.id === "current-user" && portfolioContext) {
       return {
         ...user,
-        roi: userStats.roi,
-        trades: userStats.trades,
-        portfolioQuality: userStats.portfolioQuality
+        roi: portfolioContext.portfolioMetrics.roi,
+        trades: portfolioContext.portfolioMetrics.trades,
+        portfolioQuality: portfolioContext.portfolioMetrics.qualityScore
       };
     }
     return user;

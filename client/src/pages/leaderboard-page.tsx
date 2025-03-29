@@ -51,39 +51,16 @@ const LeaderboardPage: React.FC = () => {
       portfolioQuality: 0
     };
     
-    // Calculate live metrics directly from the portfolio
-    if (portfolio.holdings.length > 0) {
-      const totalInvested = portfolio.holdings.reduce(
-        (total, h) => total + h.shares * h.purchasePrice, 
-        0
-      );
-      
-      if (totalInvested > 0) {
-        // Calculate live ROI (projected return percentage)
-        const oneYearReturns = portfolio.holdings.reduce((total, h) => {
-          const oneYearReturnPercent = 
-            typeof h.stock.oneYearReturn === 'number' ? h.stock.oneYearReturn :
-            typeof h.stock.oneYearReturn === 'string' ? 
-              parseFloat(h.stock.oneYearReturn.replace('%', '')) : 0;
-              
-          const stockValue = h.shares * h.purchasePrice;
-          const stockReturn = stockValue * (oneYearReturnPercent / 100);
-          return total + stockReturn;
-        }, 0);
-        
-        const projectedReturnPercent = (oneYearReturns / totalInvested) * 100;
-        
-        // Add live stats to the user object
-        userStats.roi = projectedReturnPercent;
-        userStats.trades = portfolio.holdings.length;
-        userStats.portfolioQuality = portfolio.portfolioMetrics.qualityScore;
-      }
-    } else {
-      // Set default values for empty portfolio
-      userStats.roi = 0;
-      userStats.trades = 0;
-      userStats.portfolioQuality = 0;
-    }
+    // Get metrics directly from the portfolio context
+    userStats.roi = portfolio.portfolioMetrics.roi;
+    userStats.trades = portfolio.portfolioMetrics.trades;
+    userStats.portfolioQuality = portfolio.portfolioMetrics.qualityScore;
+    
+    console.log("Leaderboard using portfolio metrics:", {
+      roi: userStats.roi.toFixed(2),
+      trades: userStats.trades,
+      qualityScore: userStats.portfolioQuality
+    });
     
     // Update the current user in the base data
     const updatedLeaderboardData = baseLeaderboardData.map(user => 

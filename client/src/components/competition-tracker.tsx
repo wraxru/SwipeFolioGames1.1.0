@@ -51,35 +51,8 @@ export default function CompetitionTracker() {
           lastUpdated: new Date(portfolio.lastUpdated).toISOString()
         });
         
-        // Calculate ROI directly from portfolio context
-        if (portfolio.holdings.length > 0) {
-          const totalInvested = portfolio.holdings.reduce(
-            (total, h) => total + (h.shares * h.purchasePrice),
-            0
-          );
-          
-          if (totalInvested > 0) {
-            // Calculate projected 1-year returns directly from holdings
-            const oneYearReturns = portfolio.holdings.reduce((total, h) => {
-              const oneYearReturnPercent = 
-                typeof h.stock.oneYearReturn === 'number' ? h.stock.oneYearReturn :
-                typeof h.stock.oneYearReturn === 'string' ? 
-                  parseFloat(h.stock.oneYearReturn.replace('%', '')) : 0;
-                  
-              const stockValue = h.shares * h.purchasePrice;
-              const stockReturn = stockValue * (oneYearReturnPercent / 100);
-              return total + stockReturn;
-            }, 0);
-            
-            const projectedReturnPercent = (oneYearReturns / totalInvested) * 100;
-            
-            // Set local user returns for this component
-            setUserReturns(projectedReturnPercent);
-          }
-        } else {
-          // Reset local user returns if no holdings
-          setUserReturns(0);
-        }
+        // Use ROI directly from portfolio context
+        setUserReturns(portfolio.portfolioMetrics.roi);
         
         // Fetch updated leaderboard data (which will now read from portfolio context)
         fetchUpdatedLeaderboard();
@@ -88,8 +61,6 @@ export default function CompetitionTracker() {
       return () => clearTimeout(timer);
     }
   }, [
-    portfolio, 
-    portfolio?.holdings.length,
     portfolio?.version,
     portfolio?.lastUpdated,
     portfolio?.portfolioMetrics
