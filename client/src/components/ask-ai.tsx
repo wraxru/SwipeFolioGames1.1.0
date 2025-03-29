@@ -53,49 +53,51 @@ export default function AskAI({ stock }: AskAIProps) {
       
       console.log("API request payload:", { userQuestion, stockContext });
       
-      // Make API request to our backend
-      const response = await axios.post("/api/ai/ask-stock", {
-        userQuestion,
-        stockContext
+      // Make API request to our backend using fetch instead of axios
+      const response = await fetch("/api/ai/ask-stock", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userQuestion,
+          stockContext
+        })
       });
       
-      console.log("API response received:", response.data);
+      // First check if the response is ok
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        console.error("API error response:", errorData);
+        
+        if (response.status === 401) {
+          // Specific error message for authentication issues
+          throw new Error("The AI service is temporarily unavailable due to API key issues. We're working on resolving this.");
+        } else if (response.status === 429) {
+          throw new Error("Too many requests to AI service. Please try again later.");
+        } else if (response.status >= 500) {
+          throw new Error("Server error. The AI service is currently unavailable.");
+        } else {
+          throw new Error(errorData.message || `Error: ${response.status} ${response.statusText}`);
+        }
+      }
+      
+      // Parse the JSON response for successful requests
+      const data = await response.json();
+      console.log("API response received:", data);
       
       // Update state with AI's response
-      if (response.data && response.data.answer) {
-        setAiResponse(response.data.answer);
+      if (data && data.answer) {
+        setAiResponse(data.answer);
       } else {
-        console.error("Missing answer in response:", response.data);
-        setErrorAI("No answer received from AI service. Please check your API key and try again.");
+        console.error("Missing answer in response:", data);
+        setErrorAI("No answer received from AI service. Please try again with a different question.");
       }
     } catch (error: any) {
       console.error("Error getting AI response:", error);
       
-      // Extract and display more detailed error information
-      let errorMessage = "Unknown error occurred";
-      
-      if (error.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
-        console.error("Error response data:", error.response.data);
-        console.error("Error response status:", error.response.status);
-        
-        if (error.response.data && error.response.data.message) {
-          errorMessage = `Server error: ${error.response.data.message}`;
-        } else if (error.response.status === 401) {
-          errorMessage = "Authentication error. Please check your API key.";
-        } else if (error.response.status === 500) {
-          errorMessage = "Server error. The AI service might be unavailable.";
-        }
-      } else if (error.request) {
-        // The request was made but no response was received
-        errorMessage = "No response from server. Network issue or server is down.";
-      } else if (error.message) {
-        // Something happened in setting up the request
-        errorMessage = error.message;
-      }
-      
-      setErrorAI(errorMessage);
+      // Set a user-friendly error message
+      setErrorAI(error.message || "Failed to get AI response. Please try again later.");
     } finally {
       setIsLoadingAI(false);
     }

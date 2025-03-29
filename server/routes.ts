@@ -199,7 +199,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
+      // Try to ensure we have the latest environment variable value
       const apiKey = process.env.OPENROUTER_API_KEY;
+      console.log("Using OpenRouter API key (first 5 chars):", apiKey ? apiKey.substring(0, 5) + "..." : "undefined");
+      
       if (!apiKey) {
         console.error("OpenRouter API key is missing");
         return res.status(500).json({ 
@@ -231,7 +234,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log("Making API call to OpenRouter with prompt:", userMessage);
       console.log("Using API key:", apiKey.substring(0, 5) + "..." + apiKey.substring(apiKey.length - 4));
       
-      // Make the API call to OpenRouter
+      // Make the API call to OpenRouter following their documentation exactly
       const openRouterUrl = 'https://openrouter.ai/api/v1/chat/completions';
       const requestData = {
         model: "google/gemini-flash-1.5", // Using Gemini 2.0 flash lite
@@ -241,17 +244,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
         ]
       };
       
-      console.log("Sending request to OpenRouter:", JSON.stringify(requestData, null, 2));
+      // Ensure we're using the correct API key format
+      const apiKeyValue = process.env.OPENROUTER_API_KEY;
+      console.log("Sending request to OpenRouter with API key starting with:", 
+        apiKeyValue ? apiKeyValue.substring(0, 8) + "..." : "undefined");
       
+      // Following the example in the OpenRouter documentation exactly
       const response = await axios.post(
         openRouterUrl,
         requestData,
         {
           headers: {
-            'Authorization': `Bearer ${apiKey}`,
+            'Authorization': `Bearer ${apiKeyValue}`,
             'Content-Type': 'application/json',
-            'HTTP-Referer': 'https://swipefolio.replit.app',
-            'X-Title': 'Swipefolio Finance'
+            'HTTP-Referer': 'https://swipefolio.replit.app', // Site URL for OpenRouter rankings
+            'X-Title': 'Swipefolio Finance' // Site name for OpenRouter rankings
           }
         }
       );
@@ -275,7 +282,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error("Error in AI request:", error);
       
-      let errorResponse = { 
+      // Define the structure for our error response
+      interface AIErrorResponse {
+        error: string;
+        message: string;
+        details?: {
+          status?: number;
+          data?: any;
+        };
+      }
+      
+      let errorResponse: AIErrorResponse = { 
         error: "AI service error", 
         message: error instanceof Error ? error.message : "Unknown error occurred"
       };
@@ -285,10 +302,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.error("Error response status:", error.response.status);
         console.error("Error response data:", error.response.data);
         
+        // Create a new custom error response with additional details
         errorResponse = {
-          ...errorResponse,
-          status: error.response.status,
-          data: error.response.data
+          error: "AI service error", 
+          message: error instanceof Error ? error.message : "Unknown error occurred",
+          details: {
+            status: error.response.status,
+            data: error.response.data
+          }
         };
       }
       
