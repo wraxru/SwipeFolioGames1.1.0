@@ -59,33 +59,35 @@ export default function HomePage() {
           </div>
         </AnimatedContainer>
         
-        {/* AI Portfolio Advisor Banner */}
+        {/* AI Portfolio Advisor Banner - More Sleek & Compact */}
         <AnimatedContainer delay={0.25}>
           <motion.div 
-            className="rounded-xl border border-blue-100 bg-gradient-to-r from-blue-50 to-indigo-50 p-4 my-4 shadow-sm border-l-4 border-l-blue-500"
-            whileHover={{ y: -3, boxShadow: "0 10px 25px -5px rgba(59, 130, 246, 0.1), 0 8px 10px -6px rgba(59, 130, 246, 0.1)" }}
-            transition={{ type: "spring", stiffness: 300, damping: 15 }}
+            className="rounded-lg border border-blue-100 bg-white p-3 my-3 shadow-sm flex items-center justify-between"
+            whileHover={{ y: -2, boxShadow: "0 4px 12px -2px rgba(59, 130, 246, 0.1)" }}
+            transition={{ type: "spring", stiffness: 400, damping: 15 }}
           >
-            <div className="flex justify-between items-center">
+            <div className="flex items-center">
+              <div className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-600 mr-3">
+                <span className="text-sm">✨</span>
+              </div>
               <div>
-                <h3 className="font-semibold text-blue-700 text-lg mb-1 flex items-center">
-                  <span className="mr-2">✨</span>
-                  New! Improve your portfolio with AI
+                <h3 className="font-medium text-slate-800 text-sm flex items-center">
+                  Get AI insights for your portfolio
                 </h3>
-                <p className="text-blue-700/80 text-sm">
-                  Get personalized advice to boost your investments and climb the leaderboard.
+                <p className="text-slate-500 text-xs">
+                  Smart suggestions to improve performance
                 </p>
               </div>
-              
-              <motion.a 
-                href="/portfolio"
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium text-sm shadow-sm flex items-center"
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-              >
-                Analyze My Portfolio
-              </motion.a>
             </div>
+            
+            <motion.a 
+              href="/portfolio"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-md text-xs font-medium shadow-sm"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              Try AI
+            </motion.a>
           </motion.div>
         </AnimatedContainer>
         

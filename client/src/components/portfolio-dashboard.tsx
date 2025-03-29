@@ -162,41 +162,12 @@ export default function PortfolioDashboard() {
         </div>
       </div>
 
-      {/* Portfolio Summary Card - New Modular Format */}
+      {/* Portfolio Summary Card - New Simplified Format */}
       <div className="bg-white rounded-xl shadow-md border border-slate-100 mb-4 overflow-hidden">
         {/* Top Metrics Row - Clear Icon-Text Pairing */}
         <div className="grid grid-cols-2 gap-0">
-          {/* Left Side - Portfolio Value & Return */}
-          <div className="p-4 border-r border-b border-slate-100">
-            <div className="flex items-center mb-1">
-              <Wallet className="w-4 h-4 text-blue-500 mr-1.5" />
-              <span className="text-sm font-medium text-slate-500">Total Value</span>
-            </div>
-            <div className="flex items-baseline">
-              <span className="text-2xl font-bold text-slate-800">${totalValue.toFixed(2)}</span>
-            </div>
-          </div>
-          
-          {/* Right Side - Quality Score as Circular Stat */}
-          <div className="p-4 border-b border-slate-100 flex justify-between items-center">
-            <div className="flex flex-col justify-center">
-              <div className="flex items-center mb-1">
-                <TrendingUp className="w-4 h-4 text-emerald-500 mr-1.5" />
-                <span className="text-sm font-medium text-slate-500">1-Year Return</span>
-              </div>
-              <div className={`flex items-center ${totalReturn >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
-                <span className="text-2xl font-bold">
-                  {totalReturn >= 0 ? '+' : ''}{totalReturnPercent.toFixed(1)}%
-                </span>
-                {totalReturn >= 0 ? (
-                  <ArrowUp className="h-4 w-4 ml-1" />
-                ) : (
-                  <ArrowDown className="h-4 w-4 ml-1" />
-                )}
-              </div>
-            </div>
-            
-            {/* Quality Score Circle */}
+          {/* Left Side - Quality Score Circle */}
+          <div className="p-4 border-r border-slate-100 flex justify-center items-center">
             <motion.div 
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
@@ -237,39 +208,30 @@ export default function PortfolioDashboard() {
               <span className="text-xs font-medium text-blue-600 mt-1">Quality Score</span>
             </motion.div>
           </div>
+          
+          {/* Right Side - Portfolio Value */}
+          <div className="p-4 flex flex-col justify-center">
+            <div className="flex items-center mb-1">
+              <Wallet className="w-4 h-4 text-blue-500 mr-1.5" />
+              <span className="text-sm font-medium text-slate-500">Total Value</span>
+            </div>
+            <div className="flex items-baseline">
+              <span className="text-2xl font-bold text-slate-800">${totalValue.toFixed(2)}</span>
+            </div>
+          </div>
         </div>
         
-        {/* Bottom Row - Projection Info */}
-        {holdings.length > 0 && (
-          <div className="p-3 bg-gradient-to-r from-slate-50 to-blue-50 flex items-center justify-between">
-            <div className="flex items-center">
-              <Clock className="w-3.5 h-3.5 text-blue-500 mr-1.5" />
-              <span className="text-sm text-slate-700">Projected Growth</span>
-            </div>
-            <span className={`text-sm font-medium ${projectedReturn >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
-              {projectedReturn >= 0 ? '+' : ''}{projectedReturn.toFixed(2)} ({projectedReturn >= 0 ? '+' : ''}{projectedReturnPercent.toFixed(1)}%)
-            </span>
+        {/* Projection Info - Always show for better UI consistency */}
+        <div className="p-3 bg-gradient-to-r from-slate-50 to-blue-50 flex items-center justify-between">
+          <div className="flex items-center">
+            <Clock className="w-3.5 h-3.5 text-blue-500 mr-1.5" />
+            <span className="text-sm text-slate-700">Projected Growth</span>
           </div>
-        )}
-      </div>
-
-      {/* Portfolio Metrics */}
-      {holdings.length > 0 && (
-        <div className="grid grid-cols-2 gap-2 mb-3">
-          {/* Use direct performanceMetric */}
-          <MetricItem
-            label="Performance"
-            value={performanceMetric}
-            color="bg-blue-500"
-          />
-          {/* Use direct stabilityMetric */}
-          <MetricItem
-            label="Stability"
-            value={stabilityMetric}
-            color="bg-purple-500"
-          />
+          <span className={`text-sm font-medium ${projectedReturn >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
+            {projectedReturn >= 0 ? '+' : ''}{projectedReturn.toFixed(2)} ({projectedReturn >= 0 ? '+' : ''}{projectedReturnPercent.toFixed(1)}%)
+          </span>
         </div>
-      )}
+      </div>
 
       {/* Allocation */}
       <div className="mb-1 flex justify-between items-center">
