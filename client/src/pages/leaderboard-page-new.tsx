@@ -10,7 +10,8 @@ import {
   ArrowLeft, 
   Star,
   Check,
-  UserPlus
+  UserPlus,
+  ChevronRight
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { 
@@ -110,145 +111,199 @@ const LeaderboardPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 pb-20">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white pt-10 pb-8 px-4 rounded-b-3xl">
-        <div className="flex items-center justify-between mb-6">
+      {/* Header - Lighter Background */}
+      <div className="bg-gradient-to-r from-slate-100 to-blue-50 text-slate-800 pt-10 pb-8 px-4 rounded-b-3xl shadow-sm">
+        <div className="flex items-center justify-between mb-8">
           <Link href="/">
-            <button className="flex items-center text-white/90 hover:text-white transition-colors">
+            <button className="flex items-center text-slate-600 hover:text-slate-800 transition-colors">
               <ArrowLeft className="w-5 h-5 mr-1" />
               <span>Back</span>
             </button>
           </Link>
-          <h1 className="text-2xl font-bold">Leaderboard</h1>
+          <h1 className="text-2xl font-bold text-slate-800">Leaderboard</h1>
           <div className="w-5"></div> {/* Empty div for even spacing */}
         </div>
         
-        {/* Podium for top 3 - enhanced with better spacing and visual hierarchy */}
-        <div className="grid grid-cols-3 max-w-md mx-auto items-end mt-6 mb-6">
-          {/* Position 2 */}
-          <div className="flex flex-col items-center">
-            <motion.div 
-              className="relative"
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.1 }}
-            >
-              <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-slate-300 bg-white shadow-md">
-                <img 
-                  src={filteredData[1]?.avatar || "/images/default-avatar.png"} 
-                  alt={filteredData[1]?.name} 
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="absolute -bottom-1 -right-1 bg-slate-400 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold shadow-md">
-                2
-              </div>
-            </motion.div>
-            <div className="mt-2 text-center w-full">
-              <p className="font-bold text-sm truncate max-w-[100px] mx-auto">{filteredData[1]?.username}</p>
-              <div className="flex flex-col space-y-0.5 mt-1">
-                <p className="text-xs text-white/90 bg-white/10 rounded-full px-2 py-0.5">
-                  <span className="font-bold">{filteredData[1]?.portfolioQuality}</span> Quality
-                </p>
-                <p className="text-xs text-white/90 bg-white/10 rounded-full px-2 py-0.5">
-                  <span className="font-bold">{filteredData[1]?.roi.toFixed(1)}%</span> ROI
-                </p>
-              </div>
+        {/* iOS-Style Card Podium Layout for Top 3 */}
+        <div className="py-3 px-2 mb-8">
+          {/* New 3-card arrangement for top performers */}
+          <div className="flex flex-col items-center mb-6">
+            <div className="flex mb-1 -space-x-1">
+              <span className="text-xs font-medium text-slate-500">TOP PERFORMERS</span>
+              <div className="w-1 h-1 rounded-full bg-slate-400 my-auto mx-2"></div>
+              <Trophy className="w-3.5 h-3.5 text-yellow-500" />
             </div>
-            <div className="h-20 w-16 bg-gradient-to-b from-slate-300 to-slate-400 rounded-t-lg mt-3 shadow-inner"></div>
           </div>
           
-          {/* Position 1 */}
-          <div className="flex flex-col items-center">
-            <div className="relative mb-2">
-              <Trophy className="w-8 h-8 text-yellow-300 filter drop-shadow-lg" />
-            </div>
+          <div className="relative flex justify-center items-end space-x-3 max-w-md mx-auto">
+            {/* 2nd Place Card */}
             <motion.div 
-              className="relative"
+              className="relative z-10 w-[30%]"
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0 }}
+              transition={{ delay: 0.1, duration: 0.3 }}
             >
-              <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-yellow-400 bg-white shadow-xl">
-                <img 
-                  src={filteredData[0]?.avatar || "/images/default-avatar.png"} 
-                  alt={filteredData[0]?.name} 
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 rounded-full shadow-inner"></div>
-              </div>
-              <div className="absolute -bottom-2 -right-2 bg-yellow-400 text-slate-800 rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold shadow-lg">
-                1
-              </div>
-              {/* Add glow effect for the winner */}
-              <div className="absolute -inset-1 bg-yellow-400/30 rounded-full blur-md -z-10"></div>
-            </motion.div>
-            <div className="mt-2 text-center w-full">
-              <div className="flex items-center justify-center">
-                <p className="font-bold text-lg truncate max-w-[120px] mx-auto">{filteredData[0]?.username}</p>
-                {filteredData[0]?.isVerified && (
-                  <div className="ml-1 bg-blue-500 rounded-full p-0.5">
-                    <Check className="w-3 h-3 text-white" />
+              <div className="bg-white rounded-2xl shadow-md p-3 transform -translate-y-6">
+                <div className="flex flex-col items-center">
+                  {/* Rank indicator */}
+                  <div className="absolute -top-2 right-3 bg-slate-400 rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold text-white shadow border border-white">
+                    2
                   </div>
-                )}
+                  
+                  {/* Avatar with silver frame */}
+                  <div className="relative mb-3">
+                    <div className="w-16 h-16 rounded-full overflow-hidden border-[3px] border-slate-300 bg-white">
+                      <img 
+                        src={filteredData[1]?.avatar || "/images/default-avatar.png"} 
+                        alt={filteredData[1]?.name} 
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  </div>
+                  
+                  {/* User info */}
+                  <p className="font-semibold text-sm truncate max-w-full text-slate-700">{filteredData[1]?.username}</p>
+                  
+                  {/* Stats */}
+                  <div className="flex flex-col w-full space-y-1.5 mt-2">
+                    <div className="flex justify-between items-center">
+                      <span className="text-[10px] text-slate-400 font-medium">Quality</span>
+                      <span className="text-sm font-bold text-slate-700">{filteredData[1]?.portfolioQuality}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-[10px] text-slate-400 font-medium">ROI</span>
+                      <span className="text-sm font-bold text-green-600">{filteredData[1]?.roi.toFixed(1)}%</span>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div className="flex flex-col space-y-1 mt-1.5">
-                <p className="text-xs text-white bg-white/20 rounded-full px-3 py-0.5 font-medium">
-                  <span className="font-bold text-base">{filteredData[0]?.portfolioQuality}</span> Quality
-                </p>
-                <p className="text-xs text-white bg-white/20 rounded-full px-3 py-0.5 font-medium">
-                  <span className="font-bold text-base">{filteredData[0]?.roi.toFixed(1)}%</span> ROI
-                </p>
-              </div>
-            </div>
-            <div className="h-28 w-20 bg-gradient-to-b from-yellow-300 to-yellow-500 rounded-t-lg mt-3 shadow-inner"></div>
-          </div>
-          
-          {/* Position 3 */}
-          <div className="flex flex-col items-center">
+              
+              {/* Podium bar */}
+              <div className="h-14 bg-gradient-to-t from-slate-400 to-slate-300 rounded-lg mx-auto w-full"></div>
+            </motion.div>
+            
+            {/* 1st Place Card */}
             <motion.div 
-              className="relative"
+              className="relative z-20 w-[36%]"
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.2 }}
+              transition={{ delay: 0, duration: 0.3 }}
             >
-              <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-amber-700 bg-white shadow-md">
-                <img 
-                  src={filteredData[2]?.avatar || "/images/default-avatar.png"} 
-                  alt={filteredData[2]?.name} 
-                  className="w-full h-full object-cover"
-                />
+              <div className="bg-white rounded-2xl shadow-lg p-4 transform -translate-y-10 border-[0.5px] border-yellow-100">
+                {/* Trophy on top - outside the card */}
+                <div className="absolute -top-6 left-1/2 transform -translate-x-1/2">
+                  <div className="relative">
+                    <div className="absolute inset-0 rounded-full bg-yellow-400 opacity-30 blur-sm"></div>
+                    <Trophy className="w-8 h-8 text-yellow-500 drop-shadow-md" />
+                  </div>
+                </div>
+                
+                <div className="flex flex-col items-center">
+                  {/* Crown indicator */}
+                  <div className="absolute -top-2 right-3 bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-full w-7 h-7 flex items-center justify-center text-sm font-bold text-white shadow-md border-2 border-white">
+                    1
+                  </div>
+                  
+                  {/* Avatar with gold glow */}
+                  <div className="relative mb-3">
+                    <div className="absolute -inset-1 bg-yellow-300/40 rounded-full blur-md"></div>
+                    <div className="w-20 h-20 rounded-full overflow-hidden border-[3px] border-yellow-400 bg-white relative">
+                      <img 
+                        src={filteredData[0]?.avatar || "/images/default-avatar.png"} 
+                        alt={filteredData[0]?.name} 
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent"></div>
+                    </div>
+                  </div>
+                  
+                  {/* User info with verified badge */}
+                  <div className="flex items-center">
+                    <p className="font-bold text-base truncate max-w-[100px] text-slate-800">{filteredData[0]?.username}</p>
+                    {filteredData[0]?.isVerified && (
+                      <div className="ml-1 bg-blue-500 rounded-full p-0.5">
+                        <Check className="w-3 h-3 text-white" />
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Stats */}
+                  <div className="flex flex-col w-full space-y-2 mt-2">
+                    <div className="flex justify-between items-center">
+                      <span className="text-[10px] text-slate-400 font-medium">Quality</span>
+                      <span className="text-base font-bold text-slate-800">{filteredData[0]?.portfolioQuality}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-[10px] text-slate-400 font-medium">ROI</span>
+                      <span className="text-base font-bold text-green-600">{filteredData[0]?.roi.toFixed(1)}%</span>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div className="absolute -bottom-1 -right-1 bg-amber-700 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold shadow-md">
-                3
-              </div>
+              
+              {/* Podium bar - gold gradient */}
+              <div className="h-20 bg-gradient-to-t from-yellow-500 to-yellow-300 rounded-lg mx-auto w-full shadow-sm"></div>
             </motion.div>
-            <div className="mt-2 text-center w-full">
-              <p className="font-bold text-sm truncate max-w-[100px] mx-auto">{filteredData[2]?.username}</p>
-              <div className="flex flex-col space-y-0.5 mt-1">
-                <p className="text-xs text-white/90 bg-white/10 rounded-full px-2 py-0.5">
-                  <span className="font-bold">{filteredData[2]?.portfolioQuality}</span> Quality
-                </p>
-                <p className="text-xs text-white/90 bg-white/10 rounded-full px-2 py-0.5">
-                  <span className="font-bold">{filteredData[2]?.roi.toFixed(1)}%</span> ROI
-                </p>
+            
+            {/* 3rd Place Card */}
+            <motion.div 
+              className="relative z-10 w-[30%]"
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.2, duration: 0.3 }}
+            >
+              <div className="bg-white rounded-2xl shadow-md p-3 transform -translate-y-6">
+                <div className="flex flex-col items-center">
+                  {/* Rank indicator */}
+                  <div className="absolute -top-2 right-3 bg-amber-700 rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold text-white shadow border border-white">
+                    3
+                  </div>
+                  
+                  {/* Avatar with bronze frame */}
+                  <div className="relative mb-3">
+                    <div className="w-16 h-16 rounded-full overflow-hidden border-[3px] border-amber-700 bg-white">
+                      <img 
+                        src={filteredData[2]?.avatar || "/images/default-avatar.png"} 
+                        alt={filteredData[2]?.name} 
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  </div>
+                  
+                  {/* User info */}
+                  <p className="font-semibold text-sm truncate max-w-full text-slate-700">{filteredData[2]?.username}</p>
+                  
+                  {/* Stats */}
+                  <div className="flex flex-col w-full space-y-1.5 mt-2">
+                    <div className="flex justify-between items-center">
+                      <span className="text-[10px] text-slate-400 font-medium">Quality</span>
+                      <span className="text-sm font-bold text-slate-700">{filteredData[2]?.portfolioQuality}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-[10px] text-slate-400 font-medium">ROI</span>
+                      <span className="text-sm font-bold text-green-600">{filteredData[2]?.roi.toFixed(1)}%</span>
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
-            <div className="h-14 w-16 bg-gradient-to-b from-amber-600 to-amber-800 rounded-t-lg mt-3 shadow-inner"></div>
+              
+              {/* Podium bar */}
+              <div className="h-10 bg-gradient-to-t from-amber-800 to-amber-600 rounded-lg mx-auto w-full"></div>
+            </motion.div>
           </div>
         </div>
         
-        {/* Tab Selector - improved visual design */}
-        <div className="flex justify-center mt-6">
-          <div className="bg-white/10 backdrop-blur-sm p-1 rounded-full flex shadow-inner">
+        {/* iOS-Style Tab Selector */}
+        <div className="flex justify-center mt-2">
+          <div className="bg-white/80 backdrop-blur-sm p-1 rounded-full flex shadow-sm">
             <button 
-              className={`px-5 py-2 rounded-full text-sm font-medium transition-all ${activeTab === 'all' ? 'bg-white text-blue-600 shadow-sm' : 'text-white hover:bg-white/10'}`}
+              className={`px-5 py-2 rounded-full text-sm font-medium transition-all ${activeTab === 'all' ? 'bg-blue-500 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'}`}
               onClick={() => setActiveTab('all')}
             >
               All Investors
             </button>
             <button 
-              className={`px-5 py-2 rounded-full text-sm font-medium transition-all ${activeTab === 'friends' ? 'bg-white text-blue-600 shadow-sm' : 'text-white hover:bg-white/10'}`}
+              className={`px-5 py-2 rounded-full text-sm font-medium transition-all ${activeTab === 'friends' ? 'bg-blue-500 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'}`}
               onClick={() => setActiveTab('friends')}
             >
               Friends
@@ -257,7 +312,7 @@ const LeaderboardPage: React.FC = () => {
         </div>
       </div>
       
-      {/* Search */}
+      {/* iOS-Style Search */}
       <div className="px-4 mt-6">
         <div className="relative">
           <input
@@ -265,7 +320,8 @@ const LeaderboardPage: React.FC = () => {
             placeholder="Search investors..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-white border border-slate-200 rounded-xl py-3 pl-10 pr-4 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full bg-slate-100/70 border border-slate-200 rounded-xl py-3 pl-10 pr-4 shadow-sm 
+                     focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white focus:border-transparent"
           />
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
         </div>
@@ -275,7 +331,7 @@ const LeaderboardPage: React.FC = () => {
       <div className="px-4 mt-6">
         {activeTab === 'friends' && friendsList.length === 0 ? (
           <motion.div 
-            className="bg-white rounded-xl border border-slate-200 shadow-sm p-8 flex flex-col items-center justify-center"
+            className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8 flex flex-col items-center justify-center"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
           >
@@ -286,16 +342,16 @@ const LeaderboardPage: React.FC = () => {
             <p className="text-sm text-slate-500 text-center mb-4">
               Invite friends to compete and compare investment performance!
             </p>
-            <Link to="/" className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-full text-sm font-medium hover:bg-blue-700 transition-colors">
+            <Link to="/" className="flex items-center px-5 py-2.5 bg-blue-500 text-white rounded-full text-sm font-medium hover:bg-blue-600 transition-colors shadow-sm">
               <UserPlus className="w-4 h-4 mr-2" />
               Add Friends via Referral
             </Link>
           </motion.div>
         ) : (
-          <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-            {/* Jump to My Position Button - Moved to top */}
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            {/* Jump to My Position Button - iOS Style */}
             {currentUser && (
-              <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-2.5">
+              <div className="p-3 bg-slate-50/60">
                 <button 
                   onClick={() => {
                     const userElement = document.getElementById(`leaderboard-user-${currentUser.id}`);
@@ -306,30 +362,35 @@ const LeaderboardPage: React.FC = () => {
                       setTimeout(() => userElement.classList.remove('bg-blue-50'), 1500);
                     }
                   }}
-                  className="w-full flex items-center justify-center text-xs font-medium bg-white hover:bg-blue-50 text-blue-600 py-2 px-3 rounded-lg transition-all shadow-sm hover:shadow border border-blue-200"
+                  className="w-full flex items-center justify-center text-sm font-medium 
+                           bg-white hover:bg-blue-50 text-blue-500 py-2.5 px-4 rounded-xl 
+                           transition-all shadow-sm hover:shadow border border-slate-200"
                 >
-                  <div className="mr-1.5 bg-blue-100 rounded-full p-1">
-                    <ChevronUp className="w-3 h-3 text-blue-600" />
+                  <div className="mr-2 bg-blue-100 rounded-full p-1">
+                    <ChevronUp className="w-4 h-4 text-blue-500" />
                   </div>
                   Find my position (#{currentUser.rank})
                 </button>
               </div>
             )}
             
-            {/* Header Row */}
-            <div className="grid grid-cols-[40px_minmax(100px,1.5fr)_repeat(4,_minmax(45px,1fr))] items-center px-2 py-2.5 border-b border-slate-100 bg-slate-50">
-              <div className="text-xs font-medium text-slate-600 text-center">Rank</div>
-              <div className="text-xs font-medium text-slate-600 pl-1">Investor</div>
+            {/* iOS-Style Header Row */}
+            <div className="grid grid-cols-[40px_minmax(100px,1.5fr)_repeat(4,_minmax(45px,1fr))] items-center px-3 py-3 border-b border-slate-100 bg-slate-50/70">
+              <div className="text-xs font-medium text-slate-500 text-center">Rank</div>
+              <div className="text-xs font-medium text-slate-500 pl-1">Investor</div>
               {metrics.map((metric) => (
-                <div key={metric.key} className="text-[10px] font-medium text-slate-600 flex items-center justify-center">
+                <div key={metric.key} className="text-[11px] font-medium text-slate-500 flex items-center justify-center">
                   <span className="mr-0.5">{metric.name}</span>
                   {metric.icon}
                 </div>
               ))}
             </div>
             
-            {/* Scrollable Leaderboard List */}
-            <div className="max-h-[calc(100vh-400px)] overflow-y-auto overflow-x-hidden -webkit-overflow-scrolling-touch">
+            {/* Scrollable Leaderboard List - iOS Style with Better Visual Cues */}
+            <div className="max-h-[calc(100vh-400px)] overflow-y-auto overflow-x-hidden -webkit-overflow-scrolling-touch pb-1">
+              {/* Visible scroll indicator for iOS */}
+              <div className="absolute right-0 top-1/3 bottom-1/3 w-1 bg-slate-200/60 rounded-full"></div>
+              
               {filteredData.map((user, index) => {
                 const isCurrentUser = user.id === 'current-user';
                 const isTopThree = index < 3;
@@ -339,37 +400,40 @@ const LeaderboardPage: React.FC = () => {
                   <motion.div 
                     key={user.id}
                     id={`leaderboard-user-${user.id}`}
-                    className={`grid grid-cols-[40px_minmax(100px,1.5fr)_repeat(4,_minmax(45px,1fr))] items-center px-2 py-3 
-                      ${isTopThree ? 'bg-gradient-to-r from-blue-50/30 to-white border-t border-slate-100' : 
-                        isCurrentUser ? 'bg-blue-50 border-t border-blue-100' : 
-                        isEvenRow ? 'bg-slate-50/40 border-t border-slate-100' : 'bg-white border-t border-slate-100'
+                    className={`grid grid-cols-[40px_minmax(100px,1.5fr)_repeat(4,_minmax(45px,1fr))] items-center px-3 py-4 
+                      ${isTopThree ? 'bg-gradient-to-r from-slate-50 to-white border-t border-slate-100' : 
+                        isCurrentUser ? 'bg-blue-50/80' : 
+                        isEvenRow ? 'bg-white border-t border-slate-100' : 'bg-slate-50/30 border-t border-slate-100'
                       }
-                      ${isCurrentUser ? 'border-l-2 border-blue-500' : ''}
-                      hover:bg-blue-50/50 transition-colors duration-200`}
+                      ${isCurrentUser ? 'border-l-3 border-blue-500' : ''}
+                      hover:bg-blue-50/30 transition-colors duration-200 relative`}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.05, duration: 0.2 }}
                   >
+                    {/* Rank column with better styling */}
                     <div className="flex items-center justify-center">
                       {isTopThree ? (
-                        <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-sm ${
-                          index === 0 ? 'bg-gradient-to-br from-yellow-300 to-yellow-500' : 
-                          index === 1 ? 'bg-gradient-to-br from-slate-300 to-slate-500' : 
-                          'bg-gradient-to-br from-amber-600 to-amber-800'
-                        }`}>
+                        <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-sm 
+                                      ${index === 0 ? 'bg-gradient-to-br from-yellow-300 to-yellow-500' : 
+                                        index === 1 ? 'bg-gradient-to-br from-slate-300 to-slate-500' : 
+                                        'bg-gradient-to-br from-amber-600 to-amber-800'}`}
+                        >
                           {index + 1}
                         </div>
                       ) : (
-                        <div className="text-xs font-medium text-slate-500">#{index + 1}</div>
+                        <div className="text-sm font-medium text-slate-500">#{index + 1}</div>
                       )}
                     </div>
+                    
+                    {/* User info column */}
                     <div className="flex items-center overflow-hidden">
-                      <div className="w-8 h-8 rounded-full overflow-hidden border border-slate-200 flex-shrink-0 mr-2 shadow-sm">
+                      <div className="w-10 h-10 rounded-full overflow-hidden border border-slate-200 flex-shrink-0 mr-2.5 shadow-sm">
                         <img src={user.avatar || "/images/default-avatar.png"} alt={user.name} className="w-full h-full object-cover" />
                       </div>
                       <div className="min-w-0">
                         <div className="flex items-center">
-                          <p className="font-medium text-sm truncate text-slate-700">{user.username}</p>
+                          <p className="font-semibold text-sm truncate text-slate-700">{user.username}</p>
                           {user.isVerified && (
                             <div className="ml-1 bg-blue-500 rounded-full p-0.5 flex-shrink-0">
                               <Check className="w-2.5 h-2.5 text-white" />
@@ -379,31 +443,73 @@ const LeaderboardPage: React.FC = () => {
                         <p className="text-[10px] text-slate-500 truncate">{user.name}</p>
                       </div>
                     </div>
-                    {metrics.map((metric, mIndex) => (
-                      <div 
-                        key={metric.key} 
-                        className={`text-xs text-center ${metric.isBold ? 'font-semibold' : ''} 
-                          ${metric.key === 'roi' && user[metric.key] > 0 ? 'text-green-600' : ''}
-                          ${metric.key === 'portfolioQuality' ? 'text-indigo-600 font-semibold' : ''}
-                        `}
-                      >
-                        {metric.format(user[metric.key as keyof LeaderboardUser] as number)}
+                    
+                    {/* Metrics with improved styling */}
+                    {metrics.map((metric, mIndex) => {
+                      // Determine styling based on metric type
+                      const isQuality = metric.key === 'portfolioQuality';
+                      const isROI = metric.key === 'roi';
+                      const value = user[metric.key as keyof LeaderboardUser] as number;
+                      
+                      return (
+                        <div 
+                          key={metric.key} 
+                          className={`text-xs flex flex-col items-center justify-center 
+                                    ${isQuality ? 'font-semibold' : ''}`}
+                        >
+                          {/* Styled metric display */}
+                          <span className={`
+                            ${isQuality ? 'text-indigo-600 font-semibold text-sm' : 
+                             isROI && value > 0 ? 'text-green-600 font-medium' : 
+                             isROI && value < 0 ? 'text-red-500 font-medium' : 
+                             'text-slate-700'} 
+                          `}>
+                            {metric.format(value)}
+                          </span>
+                          
+                          {/* Show mini label on mobile */}
+                          <span className="text-[9px] text-slate-400 mt-0.5 hidden sm:block">
+                            {metric.name}
+                          </span>
+                        </div>
+                      );
+                    })}
+                    
+                    {/* iOS-style disclosure indicator for top performers */}
+                    {isTopThree && (
+                      <div className="absolute right-2 top-1/2 transform -translate-y-1/2 text-slate-300">
+                        <ChevronRight className="w-4 h-4" />
                       </div>
-                    ))}
+                    )}
                   </motion.div>
                 );
               })}
+              
+              {/* Add shadow fade at the bottom to indicate more content */}
+              <div className="h-6 bg-gradient-to-t from-white to-transparent sticky bottom-0 w-full"></div>
             </div>
           </div>
         )}
       </div>
       
-      {/* Info Box */}
-      <div className="px-4 mt-6">
-        <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 text-center">
-          <p className="text-sm text-blue-800">
-            Your <span className="font-bold">Quality Score</span> determines your ranking! Improve your portfolio's performance, stability, value, and momentum metrics to climb the leaderboard.
+      {/* iOS-Style Info Box */}
+      <div className="px-4 mt-6 mb-8">
+        <div className="bg-white border border-slate-200 rounded-2xl p-4 text-center shadow-sm">
+          <div className="flex justify-center mb-2">
+            <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+              <Star className="w-5 h-5 text-blue-500" />
+            </div>
+          </div>
+          <h4 className="text-base font-semibold text-slate-800 mb-1">Quality Score Matters</h4>
+          <p className="text-sm text-slate-600 mb-3">
+            Your ranking is determined by your portfolio's quality score. Build a balanced portfolio with strong performance, stability, and value metrics.
           </p>
+          <div className="flex justify-center">
+            <Link to="/portfolio" className="text-xs font-medium text-blue-500 flex items-center">
+              View Portfolio Details
+              <ChevronRight className="w-3 h-3 ml-0.5" />
+            </Link>
+          </div>
         </div>
       </div>
     </div>
