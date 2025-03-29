@@ -90,7 +90,7 @@ export default function CompetitionTracker() {
   // Get top 3 and user's position
   const topThree = formattedLeaderboardData.slice(0, 3);
   const userPosition = formattedLeaderboardData.find(item => item.isUser) || 
-    { id: 5, name: 'Belford&Co', avatar: '/images/default-avatar.png', returns: 0, gain: '0.0%', isUser: true };
+    { id: 5, name: 'Belford&Co', avatar: '/images/default-avatar.png', returns: 0, gain: '0.0%', isUser: true, qualityScore: 0 };
   
   return (
     <motion.div 

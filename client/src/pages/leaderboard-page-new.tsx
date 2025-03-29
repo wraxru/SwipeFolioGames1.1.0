@@ -8,7 +8,6 @@ import {
   ChevronUp, 
   Search, 
   ArrowLeft, 
-  Medal, 
   Star,
   Check,
   UserPlus
@@ -17,20 +16,16 @@ import { motion } from "framer-motion";
 import { 
   getLeaderboardData, 
   getCurrentUserRank, 
-  LeaderboardUser, 
-  calculateTrades
+  LeaderboardUser
 } from "@/data/leaderboard-data";
 import { PortfolioContext } from "@/contexts/portfolio-context";
-
 
 const LeaderboardPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"all" | "friends">("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
-  // Empty friends list for now (to be populated via referrals)
   const [friendsList, setFriendsList] = useState<LeaderboardUser[]>([]);
   const [leaderboardData, setLeaderboardData] = useState<LeaderboardUser[]>([]);
   const [currentUser, setCurrentUser] = useState<LeaderboardUser | undefined>();
-  // Get portfolio context
   const portfolio = useContext(PortfolioContext);
   
   // Update user stats and refetch leaderboard data when portfolio changes
@@ -45,7 +40,7 @@ const LeaderboardPage: React.FC = () => {
       id: "current-user",
       name: "Belford & Co",
       username: "Belford&Co",
-      avatar: "/images/avatars/belford-avatar.png",
+      avatar: "/images/default-avatar.png",
       referrals: 0,
       roi: 0,
       trades: 0,
@@ -99,7 +94,6 @@ const LeaderboardPage: React.FC = () => {
     user.username.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // Metrics that appear on the leaderboard
   // Metrics with shorter display names for better mobile layout
   const metrics = [
     { name: "ROI", icon: <TrendingUp className="w-3 h-3" />, key: "roi", format: (val: number) => `${val.toFixed(1)}%` },
@@ -253,7 +247,7 @@ const LeaderboardPage: React.FC = () => {
         </div>
       </div>
       
-      {/* Metrics Header */}
+      {/* Leaderboard Content */}
       <div className="px-4 mt-6">
         {activeTab === 'friends' && friendsList.length === 0 ? (
           <motion.div 
@@ -274,7 +268,8 @@ const LeaderboardPage: React.FC = () => {
             </Link>
           </motion.div>
         ) : (
-          <div className="bg-white rounded-t-xl border border-slate-200 shadow-sm">
+          <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+            {/* Header Row */}
             <div className="grid grid-cols-[40px_minmax(100px,1.5fr)_repeat(4,_minmax(45px,1fr))] items-center px-2 py-2 border-b border-slate-100">
               <div className="text-xs font-medium text-slate-500 text-center">Rank</div>
               <div className="text-xs font-medium text-slate-500 pl-1">Investor</div>
@@ -286,7 +281,7 @@ const LeaderboardPage: React.FC = () => {
               ))}
             </div>
             
-            {/* Jump to Your Position Button */}
+            {/* Jump to My Position Button */}
             {currentUser && (
               <div className="bg-white border-b border-slate-100 p-2">
                 <button 
@@ -309,7 +304,7 @@ const LeaderboardPage: React.FC = () => {
               </div>
             )}
             
-            {/* Leaderboard List */}
+            {/* Scrollable Leaderboard List */}
             <div className="max-h-[calc(100vh-400px)] overflow-y-auto overflow-x-hidden -webkit-overflow-scrolling-touch">
               {filteredData.map((user, index) => {
                 const isCurrentUser = user.id === 'current-user';

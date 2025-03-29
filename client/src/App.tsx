@@ -9,7 +9,7 @@ import LessonPage from "@/pages/lesson-page";
 import OnboardingPage from "@/pages/onboarding-page";
 import StockDetailPage from "@/pages/stock-detail-page";
 import PortfolioPage from "@/pages/portfolio-page";
-import LeaderboardPage from "@/pages/leaderboard-page";
+import LeaderboardPage from "@/pages/leaderboard-page-new";
 import { AuthProvider } from "@/hooks/use-auth";
 import { UserProgressProvider } from "@/contexts/user-progress-context";
 import { PortfolioProvider } from "@/contexts/portfolio-context";
