@@ -8,7 +8,7 @@ import PortfolioImpactCalculator from "./portfolio-impact-calculator";
 import OverallAnalysisCard from "@/components/overall-analysis-card";
 import { Skeleton } from "@/components/ui/skeleton";
 import ComparativeAnalysis from "@/components/comparative-analysis";
-import AskAI from "@/components/ask-ai";
+// AskAI component removed
 
 interface StockCardProps {
   stock: StockData;
@@ -947,19 +947,7 @@ export default function StockCard({
           <ComparativeAnalysis currentStock={stock} />
         </div>
         
-        {/* Ask AI Component - Modified to improve touch interaction */}
-        <div
-          onClick={(e) => {
-            // Only stop propagation if the accordion is open to allow swipes when closed
-            if (e.target instanceof Element && e.target.closest('.accordion-content-open')) {
-              e.stopPropagation();
-            }
-          }}
-          // Remove onTouchStart and onTouchEnd handlers that were interfering with button clicks
-          className="ask-ai-container" // Add class for easier debugging
-        >
-          <AskAI stock={stock} />
-        </div>
+        {/* Ask AI Component has been removed */}
 
         {/* Bottom Swipe Instruction */}
         <div className="p-4 bg-white border-t border-b border-slate-100 mb-4">

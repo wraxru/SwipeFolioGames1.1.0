@@ -1,6 +1,6 @@
 import { useContext, useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowUp, ArrowDown, MoreHorizontal, PieChart, TrendingUp, Briefcase, Settings, Clock, DollarSign } from 'lucide-react';
+import { ArrowUp, ArrowDown, MoreHorizontal, PieChart, TrendingUp, Briefcase, Settings, Clock, DollarSign, MessageSquare } from 'lucide-react';
 import AppHeader from '@/components/app-header';
 import AppNavigation from '@/components/app-navigation';
 import { PortfolioContext, PortfolioHolding } from '@/contexts/portfolio-context';
@@ -8,6 +8,7 @@ import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { getIndustryAverages } from '@/lib/industry-data';
 import { getQualityScoreColor, getQualityScoreBgColor } from '@/data/leaderboard-data';
+import PortfolioAnalyzer from '@/components/portfolio-analyzer';
 
 export default function PortfolioPage() {
   const portfolio = useContext(PortfolioContext);
@@ -233,7 +234,7 @@ export default function PortfolioPage() {
           onValueChange={setActiveTab}
           className="w-full"
         >
-          <TabsList className="grid w-full grid-cols-3 mb-6">
+          <TabsList className="grid w-full grid-cols-4 mb-6">
             <TabsTrigger value="holdings" className="text-sm">
               Holdings
             </TabsTrigger>
@@ -242,6 +243,10 @@ export default function PortfolioPage() {
             </TabsTrigger>
             <TabsTrigger value="activity" className="text-sm">
               Activity
+            </TabsTrigger>
+            <TabsTrigger value="ai-advisor" className="text-sm flex items-center justify-center">
+              <MessageSquare className="h-3.5 w-3.5 mr-1.5" />
+              AI Advisor
             </TabsTrigger>
           </TabsList>
           
@@ -369,6 +374,32 @@ export default function PortfolioPage() {
                   ))}
                 </div>
               )}
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="ai-advisor" className="space-y-4">
+            <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+              <div className="bg-gradient-to-r from-blue-600 to-blue-500 border-b border-blue-700 px-4 py-3 text-white">
+                <div className="flex items-center">
+                  <MessageSquare className="h-5 w-5 mr-2" />
+                  <h3 className="text-lg font-medium">Portfolio AI Advisor</h3>
+                </div>
+                <p className="text-sm text-blue-100 mt-1">
+                  Ask questions about your portfolio or get advice on investments
+                </p>
+              </div>
+              
+              <div className="p-4">
+                {sortedHoldings.length === 0 ? (
+                  <EmptyState 
+                    title="Start building your portfolio"
+                    description="The AI advisor can help analyze your investments once you have holdings"
+                    className="py-8"
+                  />
+                ) : (
+                  <PortfolioAnalyzer />
+                )}
+              </div>
             </div>
           </TabsContent>
         </Tabs>

@@ -341,6 +341,134 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.status(500).json(errorResponse);
     }
   });
+  
+  // Portfolio Analysis AI endpoint
+  app.post("/api/ai/portfolio-analysis", async (req, res) => {
+    try {
+      console.log("Received portfolio analysis request");
+      const { query, portfolioData, totalValue, overallReturn, portfolioQuality } = req.body;
+      
+      // Validate request body
+      if (!query || !portfolioData) {
+        return res.status(400).json({ 
+          error: "INVALID_REQUEST", 
+          message: "Query and portfolio data are required" 
+        });
+      }
+      
+      // Prepare system message with instructions
+      const systemPrompt = "You are a professional financial advisor specialized in portfolio analysis and investment strategy. " +
+        "Your task is to provide concise, insightful analysis of the user's investment portfolio. " +
+        "Focus on giving actionable advice, identifying strengths and weaknesses, and suggesting improvements. " +
+        "Be direct and practical in your responses. Limit responses to 3-4 paragraphs maximum. " +
+        "Use a professional but conversational tone. Always remain factual and educational. " +
+        "DO NOT make specific stock recommendations or predictions about individual stock prices. " +
+        "DO NOT encourage risky investment behavior or market timing. " +
+        "When appropriate, explain basic investment concepts like diversification, risk/reward balance, " +
+        "and long-term investing principles.";
+      
+      // Prepare portfolio context
+      const portfolioContext = `
+        Total Value: $${totalValue ? totalValue.toFixed(2) : '0.00'}
+        Overall Return: ${overallReturn ? overallReturn.toFixed(2) : '0.00'}%
+        Portfolio Quality Score: ${portfolioQuality || 0}/100
+        
+        Holdings:
+        ${portfolioData.map((stock: any) => 
+          `${stock.ticker} (${stock.name}): ${stock.shares} shares, current value $${stock.currentValue.toFixed(2)}, return ${stock.return.toFixed(2)}%`
+        ).join('\n')}
+      `;
+      
+      const userMessage = `${query}\n\nMy portfolio information:\n${portfolioContext}`;
+      
+      // Try to ensure we have the latest environment variable value
+      const apiKey = process.env.OPENROUTER_API_KEY;
+      console.log("Using OpenRouter API key (first 5 chars):", apiKey ? apiKey.substring(0, 5) + "..." : "undefined");
+      
+      if (!apiKey) {
+        console.error("OpenRouter API key is missing");
+        return res.status(500).json({ 
+          error: "API key missing", 
+          message: "OpenRouter API key is not configured" 
+        });
+      }
+      
+      // Make the API call to OpenRouter following their documentation
+      const openRouterUrl = 'https://openrouter.ai/api/v1/chat/completions';
+      const requestData = {
+        model: "anthropic/claude-3-haiku",
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userMessage }
+        ],
+        temperature: 0.7,
+        max_tokens: 1024
+      };
+      
+      console.log("Making API call to OpenRouter for portfolio analysis");
+      
+      const response = await axios.post(
+        openRouterUrl,
+        requestData,
+        {
+          headers: {
+            'Authorization': `Bearer ${apiKey}`,
+            'Content-Type': 'application/json',
+            'HTTP-Referer': 'https://swipefolio.replit.app',
+            'X-Title': 'Swipefolio Portfolio Advisor'
+          }
+        }
+      );
+      
+      console.log("OpenRouter API response status:", response.status);
+      
+      // Extract the AI's response
+      if (response.data && response.data.choices && response.data.choices.length > 0) {
+        const answer = response.data.choices[0].message.content;
+        return res.json({ response: answer });
+      } else {
+        console.error("Invalid API response format:", response.data);
+        return res.status(500).json({ 
+          error: "Invalid API response", 
+          message: "The AI service returned an unexpected response format"
+        });
+      }
+    } catch (error: any) {
+      console.error("Error in portfolio analysis request:", error);
+      
+      // Structure for our error response
+      interface AIErrorResponse {
+        error: string;
+        message: string;
+        details?: {
+          status?: number;
+          data?: any;
+        };
+      }
+      
+      let errorResponse: AIErrorResponse = { 
+        error: "AI service error", 
+        message: error instanceof Error ? error.message : "Unknown error occurred"
+      };
+      
+      // Add more detailed error information if available
+      if (error.response) {
+        console.error("Error response status:", error.response.status);
+        console.error("Error response data:", error.response.data);
+        
+        errorResponse = {
+          error: "AI service error", 
+          message: error instanceof Error ? error.message : "Unknown error occurred",
+          details: {
+            status: error.response.status,
+            data: error.response.data
+          }
+        };
+      }
+      
+      return res.status(500).json(errorResponse);
+    }
+  });
 
   const httpServer = createServer(app);
   return httpServer;
