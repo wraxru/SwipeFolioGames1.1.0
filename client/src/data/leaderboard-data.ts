@@ -1,6 +1,5 @@
 // Import necessary modules
 import { portfolioContextInstance } from '../lib/portfolio-context-instance';
-import belfordAvatar from '/images/belford-avatar.png';
 
 export interface LeaderboardUser {
   id: string;
