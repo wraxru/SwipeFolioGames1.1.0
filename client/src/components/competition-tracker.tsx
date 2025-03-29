@@ -20,19 +20,6 @@ interface Investor {
   gain?: string;
 }
 
-// Sample leaderboard data - this is not used anymore, data comes from leaderboard-data.ts
-const baseLeaderboardData: Investor[] = [
-  { id: 1, name: 'Investor27', avatar: '/images/default-avatar.png', returns: 15.7 },
-  { id: 2, name: 'TradingPro', avatar: '/images/default-avatar.png', returns: 12.3 },
-  { id: 3, name: 'WealthMaster', avatar: '/images/default-avatar.png', returns: 8.9 },
-  { id: 4, name: 'StockExpert', avatar: '/images/default-avatar.png', returns: 6.5 },
-  { id: 6, name: 'MarketGuru', avatar: '/images/default-avatar.png', returns: 2.4 },
-  { id: 7, name: 'InvestorX', avatar: '/images/default-avatar.png', returns: 1.2 },
-  { id: 8, name: 'TradeQueen', avatar: '/images/default-avatar.png', returns: -1.8 },
-  { id: 9, name: 'ValueHunter', avatar: '/images/default-avatar.png', returns: -3.5 },
-  { id: 10, name: 'NewTrader', avatar: '/images/default-avatar.png', returns: -5.2 },
-];
-
 export default function CompetitionTracker() {
   const portfolio = useContext(PortfolioContext);
   const [expanded, setExpanded] = useState(false);
