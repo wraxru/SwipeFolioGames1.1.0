@@ -2,7 +2,8 @@ import { useState, useEffect, useContext } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronUp, Award } from 'lucide-react';
 import { PortfolioContext } from '@/contexts/portfolio-context';
-import belfordAvatar from '../assets/belford-avatar.png';
+// Use a path that can be dynamically loaded
+const defaultAvatarPath = '/images/default-avatar.png';
 
 interface ModernUserWelcomeProps {
   name: string;
@@ -92,7 +93,7 @@ export default function ModernUserWelcome({ name, rank: initialRank = 10 }: Mode
             <div className="relative w-14 h-14 rounded-full overflow-hidden border-2 border-white shadow-lg">
               {/* Businessman avatar image */}
               <img 
-                src={belfordAvatar} 
+                src={defaultAvatarPath} 
                 alt="Belford avatar" 
                 className="w-full h-full object-cover"
               />

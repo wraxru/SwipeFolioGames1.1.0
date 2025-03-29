@@ -61,7 +61,7 @@ export const leaderboardUsers: LeaderboardUser[] = [
     id: "investor-5",
     name: "Alex Morgan",
     username: "GrowthSeeker",
-    avatar: "/images/belford-avatar.png",
+    avatar: "/images/default-avatar.png",
     roi: 83.2,
     trades: 103,
     portfolioQuality: 81,
@@ -121,7 +121,7 @@ export const leaderboardUsers: LeaderboardUser[] = [
     id: "current-user",
     name: "Belford & Co",
     username: "Belford&Co",
-    avatar: "/images/belford-avatar.png",
+    avatar: "/images/default-avatar.png",
     roi: 0, // Will be dynamically calculated from portfolio context
     trades: 0, // Will be dynamically calculated from portfolio context
     portfolioQuality: 0, // Will be dynamically calculated from portfolio context 

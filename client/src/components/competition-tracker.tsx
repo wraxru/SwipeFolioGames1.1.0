@@ -22,15 +22,15 @@ interface Investor {
 
 // Sample leaderboard data - this is not used anymore, data comes from leaderboard-data.ts
 const baseLeaderboardData: Investor[] = [
-  { id: 1, name: 'Investor27', avatar: '/images/belford-avatar.png', returns: 15.7 },
-  { id: 2, name: 'TradingPro', avatar: '/images/belford-avatar.png', returns: 12.3 },
-  { id: 3, name: 'WealthMaster', avatar: '/images/belford-avatar.png', returns: 8.9 },
-  { id: 4, name: 'StockExpert', avatar: '/images/belford-avatar.png', returns: 6.5 },
-  { id: 6, name: 'MarketGuru', avatar: '/images/belford-avatar.png', returns: 2.4 },
-  { id: 7, name: 'InvestorX', avatar: '/images/belford-avatar.png', returns: 1.2 },
-  { id: 8, name: 'TradeQueen', avatar: '/images/belford-avatar.png', returns: -1.8 },
-  { id: 9, name: 'ValueHunter', avatar: '/images/belford-avatar.png', returns: -3.5 },
-  { id: 10, name: 'NewTrader', avatar: '/images/belford-avatar.png', returns: -5.2 },
+  { id: 1, name: 'Investor27', avatar: '/images/default-avatar.png', returns: 15.7 },
+  { id: 2, name: 'TradingPro', avatar: '/images/default-avatar.png', returns: 12.3 },
+  { id: 3, name: 'WealthMaster', avatar: '/images/default-avatar.png', returns: 8.9 },
+  { id: 4, name: 'StockExpert', avatar: '/images/default-avatar.png', returns: 6.5 },
+  { id: 6, name: 'MarketGuru', avatar: '/images/default-avatar.png', returns: 2.4 },
+  { id: 7, name: 'InvestorX', avatar: '/images/default-avatar.png', returns: 1.2 },
+  { id: 8, name: 'TradeQueen', avatar: '/images/default-avatar.png', returns: -1.8 },
+  { id: 9, name: 'ValueHunter', avatar: '/images/default-avatar.png', returns: -3.5 },
+  { id: 10, name: 'NewTrader', avatar: '/images/default-avatar.png', returns: -5.2 },
 ];
 
 export default function CompetitionTracker() {
@@ -103,7 +103,7 @@ export default function CompetitionTracker() {
   // Get top 3 and user's position
   const topThree = formattedLeaderboardData.slice(0, 3);
   const userPosition = formattedLeaderboardData.find(item => item.isUser) || 
-    { id: 5, name: 'Belford&Co', avatar: '/images/belford-avatar.png', returns: 0, gain: '0.0%', isUser: true };
+    { id: 5, name: 'Belford&Co', avatar: '/images/default-avatar.png', returns: 0, gain: '0.0%', isUser: true };
   
   return (
     <motion.div 
@@ -150,7 +150,7 @@ export default function CompetitionTracker() {
                       </div>
                       <div className="flex items-center">
                         <div className="w-6 h-6 rounded-full overflow-hidden border border-slate-200 flex-shrink-0 mr-2">
-                          <img src={investor.avatar || "/images/belford-avatar.png"} alt={investor.name} className="w-full h-full object-cover" />
+                          <img src={investor.avatar || "/images/default-avatar.png"} alt={investor.name} className="w-full h-full object-cover" />
                         </div>
                         <span className="text-sm font-medium text-slate-700">{investor.name}</span>
                       </div>
@@ -183,7 +183,7 @@ export default function CompetitionTracker() {
                   </div>
                   <div className="flex items-center">
                     <div className="w-8 h-8 rounded-full overflow-hidden border border-slate-200 flex-shrink-0 mr-2">
-                      <img src={userPosition.avatar || "/images/belford-avatar.png"} alt={userPosition.name} className="w-full h-full object-cover" />
+                      <img src={userPosition.avatar || "/images/default-avatar.png"} alt={userPosition.name} className="w-full h-full object-cover" />
                     </div>
                     <span className="text-sm font-medium text-slate-700">{userPosition.name}</span>
                     <span className="ml-2 text-xs text-blue-500 bg-blue-50 px-1.5 py-0.5 rounded-full">You</span>
@@ -226,7 +226,7 @@ export default function CompetitionTracker() {
                         </div>
                         <div className="flex items-center">
                           <div className="w-6 h-6 rounded-full overflow-hidden border border-slate-200 flex-shrink-0 mr-2">
-                            <img src={investor.avatar || "/images/belford-avatar.png"} alt={investor.name} className="w-full h-full object-cover" />
+                            <img src={investor.avatar || "/images/default-avatar.png"} alt={investor.name} className="w-full h-full object-cover" />
                           </div>
                           <span className="text-sm font-medium text-slate-700">{investor.name}</span>
                         </div>
