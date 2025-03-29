@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Users, ChevronRight, ExternalLink } from 'lucide-react';
 import { PortfolioContext } from '@/contexts/portfolio-context';
 import { Link } from 'wouter';
-import { getTopUsers, getCurrentUserRank } from '@/data/leaderboard-data';
+import { getLeaderboardData, getCurrentUserRank, LeaderboardUser } from '@/data/leaderboard-data';
 
 // Define the investor type
 interface Investor {
@@ -33,8 +33,30 @@ export default function CompetitionTracker() {
   const [expanded, setExpanded] = useState(false);
   const [userRank, setUserRank] = useState(10); // Start at rank 10 (bottom)
   const [userReturns, setUserReturns] = useState(0);
-  const [leaderboardData, setLeaderboardData] = useState(baseLeaderboardData);
+  const [leaderboardData, setLeaderboardData] = useState<Investor[]>([]);
   const [_, forceUpdate] = useState({});
+  
+  // Fetch data from the shared leaderboard data source
+  useEffect(() => {
+    const leaderboardUsers = getLeaderboardData();
+    const currentUser = getCurrentUserRank();
+    
+    // Convert to the format used by this component
+    const convertedData: Investor[] = leaderboardUsers.map(user => ({
+      id: Number(user.id.replace('user-', '')),
+      name: user.username,
+      avatar: user.avatar,
+      returns: user.roi,
+      isUser: user.id === 'current-user'
+    }));
+    
+    setLeaderboardData(convertedData);
+    
+    if (currentUser) {
+      setUserRank(currentUser.rank || 10); // Default to rank 10 if undefined
+      setUserReturns(currentUser.roi || 0); // Default to 0 if undefined
+    }
+  }, []);
   
   // Force update when portfolio changes
   useEffect(() => {
@@ -82,45 +104,37 @@ export default function CompetitionTracker() {
         const projectedReturnPercent = (oneYearReturns / totalInvested) * 100;
         setUserReturns(projectedReturnPercent);
         
-        // Create user data
-        const userData = {
-          id: 5,
-          name: 'Belford&Co',
-          avatar: '👨‍💼', // Use a professional emoji as avatar
-          returns: projectedReturnPercent,
-          isUser: true
-        };
-        
-        // Insert user into leaderboard and sort
-        const newLeaderboard = [...baseLeaderboardData];
-        const userIndex = newLeaderboard.findIndex(item => item.id === 5);
-        if (userIndex >= 0) {
-          newLeaderboard[userIndex] = userData;
-        } else {
-          newLeaderboard.push(userData);
+        // Update the current user's data
+        if (leaderboardData.length > 0) {
+          const newLeaderboardData = [...leaderboardData];
+          const currentUserIndex = newLeaderboardData.findIndex(user => user.isUser);
+          
+          if (currentUserIndex >= 0) {
+            newLeaderboardData[currentUserIndex].returns = projectedReturnPercent;
+            
+            // Sort by returns
+            newLeaderboardData.sort((a, b) => b.returns - a.returns);
+            setLeaderboardData(newLeaderboardData);
+            
+            // Find user's rank
+            const rank = newLeaderboardData.findIndex(item => item.isUser) + 1;
+            setUserRank(rank);
+          }
         }
-        
-        // Sort by returns
-        newLeaderboard.sort((a, b) => b.returns - a.returns);
-        setLeaderboardData(newLeaderboard);
-        
-        // Find user's rank
-        const rank = newLeaderboard.findIndex(item => item.isUser) + 1;
-        setUserRank(rank);
       }
     }
-  }, [portfolio]);
+  }, [portfolio, leaderboardData.length]);
   
-  // Format the gain/loss values with dollar signs
+  // Format the gain/loss values as percentages (projected ROI)
   const formattedLeaderboardData = leaderboardData.map(item => ({
     ...item,
-    gain: `${item.returns >= 0 ? '+' : ''}$${Math.abs(item.returns).toFixed(2)}`
+    gain: `${item.returns >= 0 ? '+' : ''}${Math.abs(item.returns).toFixed(1)}%`
   }));
   
   // Get top 3 and user's position
   const topThree = formattedLeaderboardData.slice(0, 3);
   const userPosition = formattedLeaderboardData.find(item => item.isUser) || 
-    { id: 5, name: 'Belford&Co', avatar: '👨‍💼', returns: 0, gain: '$0.00', isUser: true };
+    { id: 5, name: 'Belford&Co', avatar: '👨‍💼', returns: 0, gain: '0.0%', isUser: true };
   
   return (
     <motion.div 

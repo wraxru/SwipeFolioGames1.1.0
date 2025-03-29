@@ -10,7 +10,8 @@ import {
   ArrowLeft, 
   Medal, 
   Star,
-  Check
+  Check,
+  UserPlus
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { getLeaderboardData, getCurrentUserRank, LeaderboardUser } from "@/data/leaderboard-data";
@@ -18,6 +19,8 @@ import { getLeaderboardData, getCurrentUserRank, LeaderboardUser } from "@/data/
 const LeaderboardPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"all" | "friends">("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
+  // Empty friends list for now (to be populated via referrals)
+  const [friendsList, setFriendsList] = useState<LeaderboardUser[]>([]);
   
   // Get leaderboard data
   const leaderboardData = getLeaderboardData();
@@ -53,31 +56,31 @@ const LeaderboardPage: React.FC = () => {
         </div>
         
         {/* Podium for top 3 */}
-        <div className="flex justify-center items-end mt-8 mb-6">
+        <div className="grid grid-cols-3 max-w-md mx-auto items-end mt-8 mb-6">
           {/* Position 2 */}
-          <div className="flex flex-col items-center mr-4">
+          <div className="flex flex-col items-center">
             <motion.div 
               className="relative"
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.1 }}
             >
-              <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-silver bg-white">
+              <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-slate-300 bg-white shadow-md">
                 <img 
                   src={filteredData[1]?.avatar || "/images/avatars/default-1.png"} 
                   alt={filteredData[1]?.name} 
                   className="w-full h-full object-cover"
                 />
               </div>
-              <div className="absolute -bottom-1 -right-1 bg-silver text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold shadow-md">
+              <div className="absolute -bottom-1 -right-1 bg-slate-400 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold shadow-md">
                 2
               </div>
             </motion.div>
-            <div className="mt-2 text-center">
-              <p className="font-bold text-sm">{filteredData[1]?.username}</p>
-              <p className="text-xs text-white/80">{filteredData[1]?.roi.toFixed(1)}% ROI</p>
+            <div className="mt-2 text-center w-full">
+              <p className="font-bold text-sm truncate max-w-[100px] mx-auto">{filteredData[1]?.username}</p>
+              <p className="text-xs text-white/90">{filteredData[1]?.roi.toFixed(1)}% ROI</p>
             </div>
-            <div className="h-20 w-16 bg-silver/60 rounded-t-lg mt-3"></div>
+            <div className="h-20 w-16 bg-slate-400/80 rounded-t-lg mt-3"></div>
           </div>
           
           {/* Position 1 */}
@@ -102,29 +105,29 @@ const LeaderboardPage: React.FC = () => {
                 <Trophy className="w-6 h-6 text-yellow-300 drop-shadow-md" />
               </div>
             </motion.div>
-            <div className="mt-2 text-center">
+            <div className="mt-2 text-center w-full">
               <div className="flex items-center justify-center">
-                <p className="font-bold text-base">{filteredData[0]?.username}</p>
+                <p className="font-bold text-base truncate max-w-[100px] mx-auto">{filteredData[0]?.username}</p>
                 {filteredData[0]?.isVerified && (
                   <div className="ml-1 bg-blue-500 rounded-full p-0.5">
                     <Check className="w-3 h-3 text-white" />
                   </div>
                 )}
               </div>
-              <p className="text-sm text-white/80">{filteredData[0]?.roi.toFixed(1)}% ROI</p>
+              <p className="text-sm text-white/90">{filteredData[0]?.roi.toFixed(1)}% ROI</p>
             </div>
-            <div className="h-28 w-20 bg-yellow-400/70 rounded-t-lg mt-3"></div>
+            <div className="h-28 w-20 bg-yellow-400/80 rounded-t-lg mt-3"></div>
           </div>
           
           {/* Position 3 */}
-          <div className="flex flex-col items-center ml-4">
+          <div className="flex flex-col items-center">
             <motion.div 
               className="relative"
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.2 }}
             >
-              <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-amber-700 bg-white">
+              <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-amber-700 bg-white shadow-md">
                 <img 
                   src={filteredData[2]?.avatar || "/images/avatars/default-2.png"} 
                   alt={filteredData[2]?.name} 
@@ -135,11 +138,11 @@ const LeaderboardPage: React.FC = () => {
                 3
               </div>
             </motion.div>
-            <div className="mt-2 text-center">
-              <p className="font-bold text-sm">{filteredData[2]?.username}</p>
-              <p className="text-xs text-white/80">{filteredData[2]?.roi.toFixed(1)}% ROI</p>
+            <div className="mt-2 text-center w-full">
+              <p className="font-bold text-sm truncate max-w-[100px] mx-auto">{filteredData[2]?.username}</p>
+              <p className="text-xs text-white/90">{filteredData[2]?.roi.toFixed(1)}% ROI</p>
             </div>
-            <div className="h-14 w-16 bg-amber-700/60 rounded-t-lg mt-3"></div>
+            <div className="h-14 w-16 bg-amber-700/80 rounded-t-lg mt-3"></div>
           </div>
         </div>
         
@@ -178,93 +181,113 @@ const LeaderboardPage: React.FC = () => {
       
       {/* Metrics Header */}
       <div className="px-4 mt-6">
-        <div className="bg-white rounded-t-xl border border-slate-200 shadow-sm">
-          <div className="grid grid-cols-[80px_1fr_repeat(4,_minmax(0,_1fr))] items-center px-3 py-3 border-b border-slate-100">
-            <div className="text-xs font-medium text-slate-500">Rank</div>
-            <div className="text-xs font-medium text-slate-500">Investor</div>
-            {metrics.map((metric) => (
-              <div key={metric.key} className="text-xs font-medium text-slate-500 flex items-center justify-center">
-                <span className="mr-1">{metric.name}</span>
-                {metric.icon}
-              </div>
-            ))}
-          </div>
-          
-          {/* Current User's Position */}
-          {currentUser && (
-            <div className="bg-blue-50 border-l-4 border-blue-500">
-              <div className="grid grid-cols-[80px_1fr_repeat(4,_minmax(0,_1fr))] items-center px-3 py-3">
-                <div className="font-bold text-blue-600 flex items-center">
-                  #{currentUser.rank}
-                  <ChevronUp className="w-4 h-4 ml-1 text-green-500" />
-                </div>
-                <div className="flex items-center">
-                  <div className="w-8 h-8 rounded-full overflow-hidden border border-slate-200 mr-2">
-                    <img src={currentUser.avatar} alt={currentUser.name} className="w-full h-full object-cover" />
-                  </div>
-                  <div>
-                    <p className="font-medium text-sm">{currentUser.name}</p>
-                    <p className="text-xs text-slate-500">@{currentUser.username}</p>
-                  </div>
-                </div>
-                {metrics.map((metric) => (
-                  <div key={metric.key} className="font-medium text-center">
-                    {metric.format(currentUser[metric.key as keyof LeaderboardUser] as number)}
-                  </div>
-                ))}
-              </div>
+        {activeTab === 'friends' && friendsList.length === 0 ? (
+          <motion.div 
+            className="bg-white rounded-xl border border-slate-200 shadow-sm p-8 flex flex-col items-center justify-center"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+              <Users className="w-8 h-8 text-blue-500" />
             </div>
-          )}
-          
-          {/* Leaderboard List */}
-          <div className="max-h-[calc(100vh-400px)] overflow-y-auto">
-            {filteredData.map((user, index) => (
-              // Skip the current user as they're shown separately
-              user.id !== "current-user" && (
-                <motion.div 
-                  key={user.id}
-                  className={`grid grid-cols-[80px_1fr_repeat(4,_minmax(0,_1fr))] items-center px-3 py-3 border-t border-slate-100 ${index < 3 ? 'bg-gradient-to-r from-slate-50/50 to-white' : ''}`}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05, duration: 0.2 }}
-                >
-                  <div className="flex items-center">
-                    {index < 3 ? (
-                      <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white ${
-                        index === 0 ? 'bg-yellow-400' : index === 1 ? 'bg-slate-400' : 'bg-amber-700'
-                      }`}>
-                        {index + 1}
-                      </div>
-                    ) : (
-                      <div className="text-sm font-medium text-slate-500">#{index + 1}</div>
-                    )}
+            <h3 className="text-lg font-medium text-slate-800 mb-2">No Friends Yet</h3>
+            <p className="text-sm text-slate-500 text-center mb-4">
+              Invite friends to compete and compare investment performance!
+            </p>
+            <Link to="/" className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-full text-sm font-medium hover:bg-blue-700 transition-colors">
+              <UserPlus className="w-4 h-4 mr-2" />
+              Add Friends via Referral
+            </Link>
+          </motion.div>
+        ) : (
+          <div className="bg-white rounded-t-xl border border-slate-200 shadow-sm">
+            <div className="grid grid-cols-[60px_minmax(120px,1.5fr)_repeat(4,_minmax(60px,1fr))] items-center px-3 py-3 border-b border-slate-100">
+              <div className="text-xs font-medium text-slate-500 text-center">Rank</div>
+              <div className="text-xs font-medium text-slate-500 pl-2">Investor</div>
+              {metrics.map((metric) => (
+                <div key={metric.key} className="text-xs font-medium text-slate-500 flex items-center justify-center">
+                  <span className="mr-1">{metric.name}</span>
+                  {metric.icon}
+                </div>
+              ))}
+            </div>
+            
+            {/* Current User's Position */}
+            {currentUser && (
+              <div className="bg-blue-50 border-l-4 border-blue-500">
+                <div className="grid grid-cols-[60px_minmax(120px,1.5fr)_repeat(4,_minmax(60px,1fr))] items-center px-3 py-3">
+                  <div className="font-bold text-blue-600 flex items-center justify-center">
+                    #{currentUser.rank}
+                    <ChevronUp className="w-4 h-4 ml-1 text-green-500" />
                   </div>
-                  <div className="flex items-center">
-                    <div className="w-8 h-8 rounded-full overflow-hidden border border-slate-200 mr-2">
-                      <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
+                  <div className="flex items-center overflow-hidden">
+                    <div className="w-8 h-8 rounded-full overflow-hidden border border-slate-200 flex-shrink-0 mr-2">
+                      <img src={currentUser.avatar} alt={currentUser.name} className="w-full h-full object-cover" />
                     </div>
-                    <div>
-                      <div className="flex items-center">
-                        <p className="font-medium text-sm">{user.username}</p>
-                        {user.isVerified && (
-                          <div className="ml-1 bg-blue-500 rounded-full p-0.5">
-                            <Check className="w-3 h-3 text-white" />
-                          </div>
-                        )}
-                      </div>
-                      <p className="text-xs text-slate-500">{user.name}</p>
+                    <div className="min-w-0">
+                      <p className="font-medium text-sm truncate">{currentUser.name}</p>
+                      <p className="text-xs text-slate-500 truncate">@{currentUser.username}</p>
                     </div>
                   </div>
                   {metrics.map((metric) => (
-                    <div key={metric.key} className="text-sm text-center">
-                      {metric.format(user[metric.key as keyof LeaderboardUser] as number)}
+                    <div key={metric.key} className="font-medium text-center">
+                      {metric.format(currentUser[metric.key as keyof LeaderboardUser] as number)}
                     </div>
                   ))}
-                </motion.div>
-              )
-            ))}
+                </div>
+              </div>
+            )}
+            
+            {/* Leaderboard List */}
+            <div className="max-h-[calc(100vh-400px)] overflow-y-auto">
+              {filteredData.map((user, index) => (
+                // Skip the current user as they're shown separately
+                user.id !== "current-user" && (
+                  <motion.div 
+                    key={user.id}
+                    className={`grid grid-cols-[60px_minmax(120px,1.5fr)_repeat(4,_minmax(60px,1fr))] items-center px-3 py-3 border-t border-slate-100 ${index < 3 ? 'bg-gradient-to-r from-slate-50/50 to-white' : ''}`}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.05, duration: 0.2 }}
+                  >
+                    <div className="flex items-center justify-center">
+                      {index < 3 ? (
+                        <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white ${
+                          index === 0 ? 'bg-yellow-400' : index === 1 ? 'bg-slate-400' : 'bg-amber-700'
+                        }`}>
+                          {index + 1}
+                        </div>
+                      ) : (
+                        <div className="text-sm font-medium text-slate-500">#{index + 1}</div>
+                      )}
+                    </div>
+                    <div className="flex items-center overflow-hidden">
+                      <div className="w-8 h-8 rounded-full overflow-hidden border border-slate-200 flex-shrink-0 mr-2">
+                        <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
+                      </div>
+                      <div className="min-w-0">
+                        <div className="flex items-center">
+                          <p className="font-medium text-sm truncate">{user.username}</p>
+                          {user.isVerified && (
+                            <div className="ml-1 bg-blue-500 rounded-full p-0.5 flex-shrink-0">
+                              <Check className="w-3 h-3 text-white" />
+                            </div>
+                          )}
+                        </div>
+                        <p className="text-xs text-slate-500 truncate">{user.name}</p>
+                      </div>
+                    </div>
+                    {metrics.map((metric) => (
+                      <div key={metric.key} className="text-sm text-center">
+                        {metric.format(user[metric.key as keyof LeaderboardUser] as number)}
+                      </div>
+                    ))}
+                  </motion.div>
+                )
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </div>
       
       {/* Info Box */}
