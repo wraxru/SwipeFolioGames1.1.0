@@ -162,12 +162,41 @@ export default function PortfolioDashboard() {
         </div>
       </div>
 
-      {/* Portfolio Summary Card - New Simplified Format */}
+      {/* Portfolio Summary Card - Updated Format with Projected Value */}
       <div className="bg-white rounded-xl shadow-md border border-slate-100 mb-4 overflow-hidden">
         {/* Top Metrics Row - Clear Icon-Text Pairing */}
         <div className="grid grid-cols-2 gap-0">
-          {/* Left Side - Quality Score Circle */}
-          <div className="p-4 border-r border-slate-100 flex justify-center items-center">
+          {/* Left Side - Projected 1-Year Value */}
+          <div className="p-4 border-r border-slate-100 flex flex-col justify-center items-center">
+            <div className="flex items-center mb-1">
+              <TrendingUp className="w-4 h-4 text-blue-500 mr-1.5" />
+              <span className="text-sm font-medium text-slate-500">Projected Value</span>
+            </div>
+            
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+              className="text-center"
+            >
+              {/* Calculate projected future value: currentValue + projectedReturn */}
+              <span className="text-2xl font-bold text-slate-800">
+                ${(totalValue + projectedReturn).toFixed(2)}
+              </span>
+              
+              <div className={`flex items-center justify-center text-xs mt-1 ${projectedReturn >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
+                {projectedReturn >= 0 ? (
+                  <ArrowUp className="h-3 w-3 mr-0.5" />
+                ) : (
+                  <ArrowDown className="h-3 w-3 mr-0.5" />
+                )}
+                <span>{projectedReturn >= 0 ? '+' : ''}{projectedReturnPercent.toFixed(1)}%</span>
+              </div>
+            </motion.div>
+          </div>
+          
+          {/* Right Side - Quality Score Circle */}
+          <div className="p-4 flex justify-center items-center">
             <motion.div 
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
@@ -208,28 +237,6 @@ export default function PortfolioDashboard() {
               <span className="text-xs font-medium text-blue-600 mt-1">Quality Score</span>
             </motion.div>
           </div>
-          
-          {/* Right Side - Portfolio Value */}
-          <div className="p-4 flex flex-col justify-center">
-            <div className="flex items-center mb-1">
-              <Wallet className="w-4 h-4 text-blue-500 mr-1.5" />
-              <span className="text-sm font-medium text-slate-500">Total Value</span>
-            </div>
-            <div className="flex items-baseline">
-              <span className="text-2xl font-bold text-slate-800">${totalValue.toFixed(2)}</span>
-            </div>
-          </div>
-        </div>
-        
-        {/* Projection Info - Always show for better UI consistency */}
-        <div className="p-3 bg-gradient-to-r from-slate-50 to-blue-50 flex items-center justify-between">
-          <div className="flex items-center">
-            <Clock className="w-3.5 h-3.5 text-blue-500 mr-1.5" />
-            <span className="text-sm text-slate-700">Projected Growth</span>
-          </div>
-          <span className={`text-sm font-medium ${projectedReturn >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
-            {projectedReturn >= 0 ? '+' : ''}{projectedReturn.toFixed(2)} ({projectedReturn >= 0 ? '+' : ''}{projectedReturnPercent.toFixed(1)}%)
-          </span>
         </div>
       </div>
 

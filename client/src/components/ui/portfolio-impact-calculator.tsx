@@ -237,9 +237,9 @@ export default function PortfolioImpactCalculator({
               {/* Enhanced Modern Header */}
               <div className="p-5 border-b border-slate-100 flex justify-between items-center bg-gradient-to-b from-white to-slate-50">
                 <div className="flex items-center">
-                  <div className="bg-gradient-to-br from-green-500 to-emerald-600 text-white p-2.5 rounded-xl mr-4 shadow-lg flex items-center justify-center w-12 h-12">
+                  <div className="bg-gradient-to-br from-blue-500 to-blue-600 text-white p-2.5 rounded-xl mr-4 shadow-lg flex items-center justify-center w-12 h-12">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
                     </svg>
                   </div>
                   <div>
@@ -247,9 +247,12 @@ export default function PortfolioImpactCalculator({
                       Portfolio Impact
                     </h2>
                     <div className="flex items-center">
-                      <span className="text-sm font-semibold text-green-600 mr-3">
-                        {formatCurrency(cash)}
-                      </span>
+                      {/* Display Stock Rating */}
+                      <div className="flex items-center mr-3">
+                        <span className="px-2 py-0.5 bg-blue-100 text-blue-800 rounded-md text-xs font-bold">
+                          Stock Rating: {(stock as any).qualityScore || impact.newMetrics.qualityScore.toFixed(0)}
+                        </span>
+                      </div>
                       <span className="text-sm text-slate-600 flex items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="mr-1">
                           <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
@@ -522,7 +525,8 @@ export default function PortfolioImpactCalculator({
                   <div className="mt-6">
                     <div className="flex justify-between items-center mb-2">
                       <label className="text-sm font-medium text-slate-700">Invest Amount</label>
-                      <div className="text-xs text-slate-500">
+                      <div className="text-sm font-semibold text-emerald-600 px-2 py-0.5 bg-emerald-50 border border-emerald-100 rounded-md flex items-center">
+                        <DollarSign className="h-3 w-3 mr-1" />
                         Max available: {formatCurrency(maxInvestment)}
                       </div>
                     </div>

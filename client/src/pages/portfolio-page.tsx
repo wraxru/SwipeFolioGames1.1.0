@@ -117,63 +117,42 @@ export default function PortfolioPage() {
             Your Portfolio
           </h1>
           
-          {/* Portfolio Summary Card */}
+          {/* Redesigned Portfolio Summary Card */}
           <div className="bg-white rounded-xl shadow-md border border-slate-200 mb-6">
-            <div className="p-4 border-b border-slate-100">
-              <div className="flex justify-between items-start">
-                <div>
-                  <p className="text-sm text-slate-500 mb-1">Total Value</p>
-                  <p className="text-2xl font-bold text-slate-800">${totalValue.toFixed(2)}</p>
-                </div>
-                
-                {/* Portfolio Quality Score */}
-                <div className="flex items-center -mt-2">
-                  <div className="bg-slate-50 rounded-full py-1 px-3 flex items-center border shadow-sm">
-                    <div className="mr-2">
-                      <p className="text-xs text-slate-500 -mb-0.5">Quality Score</p>
-                      <div className="flex items-center">
-                        <div className={`h-2 w-2 rounded-full ${getQualityScoreBgColor(portfolioMetrics.qualityScore || 59)} mr-1.5`}></div>
-                        <p className={`text-xl font-bold ${getQualityScoreColor(portfolioMetrics.qualityScore || 59)}`}>
-                          {portfolioMetrics.qualityScore || 59}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="h-8 w-1 border-l border-slate-200 mx-1"></div>
-                    <div className="w-8 h-8">
-                      <svg viewBox="0 0 36 36" className="w-full h-full">
-                        <path
-                          className="stroke-slate-200"
-                          fill="none"
-                          strokeWidth="3"
-                          d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                        />
-                        <path
-                          className={getQualityScoreColor(portfolioMetrics.qualityScore || 59).replace('text-', 'stroke-')}
-                          fill="none"
-                          strokeWidth="3"
-                          strokeLinecap="round"
-                          strokeDasharray={`${(portfolioMetrics.qualityScore || 59)}, 100`}
-                          d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                        />
-                      </svg>
-                    </div>
+            <div className="p-4">
+              {/* Top Row - Projected Value and Quality Score */}
+              <div className="flex justify-between items-center mb-4">
+                <div className="flex-1">
+                  <p className="text-sm text-slate-500 mb-1">Projected Value (1-Year)</p>
+                  <div className="flex items-baseline">
+                    <p className="text-2xl font-bold text-slate-800">
+                      ${(totalValue + projectedReturn).toFixed(2)}
+                    </p>
+                    <span className={`ml-2 text-sm font-medium ${projectedReturn >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                      {projectedReturn >= 0 ? '+' : ''}{projectedReturnPercent.toFixed(1)}%
+                    </span>
                   </div>
                 </div>
                 
-                <div className="text-right">
-                  <p className="text-sm text-slate-500 mb-1">Total Return</p>
-                  <p className={`text-lg font-bold flex items-center justify-end ${totalReturn >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                    {totalReturn >= 0 ? (
-                      <ArrowUp className="h-4 w-4 mr-1" />
-                    ) : (
-                      <ArrowDown className="h-4 w-4 mr-1" />
-                    )}
-                    ${Math.abs(totalReturn).toFixed(2)} ({totalReturn >= 0 ? '+' : ''}{totalReturnPercent.toFixed(2)}%)
-                  </p>
+                {/* Redesigned Quality Score with horizontal bar instead of circle */}
+                <div className="bg-slate-50 rounded-lg py-2 px-4 shadow-sm border border-slate-100 min-w-[140px]">
+                  <div className="flex justify-between items-center mb-1">
+                    <p className="text-xs text-slate-500">Quality Score</p>
+                    <p className={`text-lg font-bold ${getQualityScoreColor(portfolioMetrics.qualityScore || 0)}`}>
+                      {portfolioMetrics.qualityScore || 0}
+                    </p>
+                  </div>
+                  <div className="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                    <div 
+                      className={`h-full ${getQualityScoreBgColor(portfolioMetrics.qualityScore || 0)} rounded-full`} 
+                      style={{ width: `${portfolioMetrics.qualityScore || 0}%` }}
+                    ></div>
+                  </div>
                 </div>
               </div>
               
-              <div className="mt-4 grid grid-cols-2 gap-3">
+              {/* Bottom Row - Allocation, Invested/Cash */}
+              <div className="grid grid-cols-2 gap-3">
                 <div className="bg-slate-50 rounded-lg p-3">
                   <p className="text-xs text-slate-500 mb-1">Invested</p>
                   <p className="text-lg font-semibold text-slate-800">${portfolioValue.toFixed(2)}</p>
@@ -183,37 +162,12 @@ export default function PortfolioPage() {
                   <p className="text-lg font-semibold text-emerald-600">${cash.toFixed(2)}</p>
                 </div>
               </div>
-              
-              {/* Projected Return */}
-              {holdings.length > 0 && (
-                <div className="mt-3 bg-blue-50 rounded-lg p-3">
-                  <p className="text-xs text-blue-700 mb-1">Projected 1-Year Return</p>
-                  <p className={`text-lg font-semibold flex items-center ${projectedReturn >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                    {projectedReturn >= 0 ? (
-                      <ArrowUp className="h-4 w-4 mr-1" />
-                    ) : (
-                      <ArrowDown className="h-4 w-4 mr-1" />
-                    )}
-                    ${Math.abs(projectedReturn).toFixed(2)} ({projectedReturn >= 0 ? '+' : ''}{projectedReturnPercent.toFixed(2)}%)
-                  </p>
-                </div>
-              )}
             </div>
             
-            {/* Portfolio Metrics */}
+            {/* Portfolio Metrics - Removed Performance and Stability */}
             <div className="p-4 bg-slate-50 rounded-b-xl">
               <p className="text-sm font-medium text-slate-700 mb-2">Portfolio Metrics</p>
-              <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-                <MetricItem 
-                  label="Performance" 
-                  value={portfolioMetrics.performance} 
-                  color="bg-blue-500" 
-                />
-                <MetricItem 
-                  label="Stability" 
-                  value={portfolioMetrics.stability} 
-                  color="bg-purple-500" 
-                />
+              <div className="grid grid-cols-2 gap-4">
                 <MetricItem 
                   label="Value" 
                   value={portfolioMetrics.value} 
