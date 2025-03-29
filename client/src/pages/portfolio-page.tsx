@@ -46,6 +46,11 @@ export default function PortfolioPage() {
     ? (totalReturn / (portfolioValue - totalReturn)) * 100 
     : 0;
     
+  // Calculate the total invested amount (original purchase cost)
+  const totalInvested = holdings.reduce((total, h) => {
+    return total + (h.shares * h.purchasePrice);
+  }, 0);
+  
   // Calculate projected 1-year return based on holdings
   const projectedReturn = holdings.reduce((total, h) => {
     // Parse the oneYearReturn string (remove % sign and convert to number)
@@ -54,14 +59,19 @@ export default function PortfolioPage() {
       typeof h.stock.oneYearReturn === 'string' ? parseFloat(h.stock.oneYearReturn.replace('%', '')) : 
       0;
     
-    const stockValue = h.shares * h.purchasePrice;
-    const stockReturn = stockValue * (oneYearReturnPercent / 100);
+    // Use the original invested amount (purchase price)
+    const investedAmount = h.shares * h.purchasePrice;
+    const stockReturn = investedAmount * (oneYearReturnPercent / 100);
     return total + stockReturn;
   }, 0);
   
-  const projectedReturnPercent = holdings.length > 0 && portfolioValue > 0
-    ? (projectedReturn / portfolioValue) * 100
+  // Calculate the percentage based on total invested amount
+  const projectedReturnPercent = totalInvested > 0.01
+    ? (projectedReturn / totalInvested) * 100
     : 0;
+    
+  // Calculate the projected future value (invested amount + projected return)
+  const projectedValue = totalInvested + projectedReturn;
   
   const sortedHoldings = [...holdings].sort((a, b) => b.value - a.value);
   
@@ -126,7 +136,7 @@ export default function PortfolioPage() {
                   <p className="text-sm text-slate-500 mb-1">Projected Value (1-Year)</p>
                   <div className="flex items-baseline">
                     <p className="text-2xl font-bold text-slate-800">
-                      ${(totalValue + projectedReturn).toFixed(2)}
+                      ${projectedValue.toFixed(2)}
                     </p>
                     <span className={`ml-2 text-sm font-medium ${projectedReturn >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                       {projectedReturn >= 0 ? '+' : ''}{projectedReturnPercent.toFixed(1)}%
