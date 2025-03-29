@@ -40,49 +40,38 @@ export default function ModernUserWelcome({ name, rank: initialRank = 10 }: Mode
     portfolio?.lastUpdated
   ]);
   
-  // Update rank based on portfolio performance
+  // Update rank based on portfolio quality score
   useEffect(() => {
-    if (portfolio && portfolio.holdings.length > 0) {
-      // Calculate projected 1-year returns
-      const totalInvested = portfolio.holdings.reduce((total, h) => total + (h.shares * h.purchasePrice), 0);
+    if (portfolio && portfolio.portfolioMetrics) {
+      // Use quality score to determine ranking
+      const qualityScore = portfolio.portfolioMetrics.qualityScore;
       
-      if (totalInvested > 0) {
-        const oneYearReturns = portfolio.holdings.reduce((total, h) => {
-          // Parse the oneYearReturn string (remove % sign and convert to number)
-          const oneYearReturnPercent = 
-            typeof h.stock.oneYearReturn === 'number' ? h.stock.oneYearReturn :
-            typeof h.stock.oneYearReturn === 'string' ? parseFloat(h.stock.oneYearReturn.replace('%', '')) : 
-            0;
-            
-          const stockValue = h.shares * h.purchasePrice;
-          const stockReturn = stockValue * (oneYearReturnPercent / 100);
-          return total + stockReturn;
-        }, 0);
-        
-        const projectedReturnPercent = (oneYearReturns / totalInvested) * 100;
-        
-        // Calculate rank based on return percent
-        // Start at rank 10 (lowest) and improve as returns increase
-        let newRank = 10;
-        if (projectedReturnPercent > 0) newRank = 9;
-        if (projectedReturnPercent > 2) newRank = 8;
-        if (projectedReturnPercent > 4) newRank = 7;
-        if (projectedReturnPercent > 6) newRank = 6;
-        if (projectedReturnPercent > 8) newRank = 5;
-        if (projectedReturnPercent > 10) newRank = 4;
-        if (projectedReturnPercent > 12) newRank = 3;
-        if (projectedReturnPercent > 14) newRank = 2;
-        if (projectedReturnPercent > 16) newRank = 1;
-        
-        // Check if rank improved
-        if (newRank < prevRank) {
-          setPrevRank(rank);
-          setRank(newRank);
-          setAnimateRank(true);
-        }
+      // Calculate rank based on quality score
+      // Start at rank 10 (lowest) and improve as quality score increases
+      let newRank = 10;
+      if (qualityScore > 0) newRank = 9;
+      if (qualityScore > 10) newRank = 8;
+      if (qualityScore > 20) newRank = 7;
+      if (qualityScore > 30) newRank = 6;
+      if (qualityScore > 40) newRank = 5;
+      if (qualityScore > 50) newRank = 4;
+      if (qualityScore > 60) newRank = 3;
+      if (qualityScore > 70) newRank = 2;
+      if (qualityScore > 85) newRank = 1;
+      
+      // Check if rank improved
+      if (newRank < prevRank) {
+        setPrevRank(rank);
+        setRank(newRank);
+        setAnimateRank(true);
       }
     }
-  }, [portfolio, prevRank, rank]);
+  }, [
+    portfolio, 
+    portfolio?.portfolioMetrics?.qualityScore, 
+    prevRank, 
+    rank
+  ]);
   
   return (
     <div className="welcome-section mb-6">

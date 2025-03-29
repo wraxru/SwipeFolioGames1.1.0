@@ -15,6 +15,7 @@ interface Investor {
   name: string;
   avatar: string;
   returns: number;
+  qualityScore?: number; // Added for quality score
   isUser?: boolean;
   gain?: string;
 }
@@ -77,6 +78,7 @@ export default function CompetitionTracker() {
       name: user.username,
       avatar: user.avatar,
       returns: user.roi,
+      qualityScore: user.portfolioQuality, // Add quality score
       isUser: user.id === 'current-user'
     }));
     
@@ -121,7 +123,7 @@ export default function CompetitionTracker() {
             </div>
             <div>
               <h3 className="text-slate-800 font-medium">Competition Standings</h3>
-              <p className="text-xs text-slate-500">You're in position #{userRank}</p>
+              <p className="text-xs text-slate-500">Position #{userRank} | <span className="text-indigo-600 font-medium">Quality Score: {portfolio?.portfolioMetrics?.qualityScore || 0}</span></p>
             </div>
           </div>
           <ChevronRight className={`h-5 w-5 text-slate-400 transition-transform duration-300 ${expanded ? 'rotate-90' : ''}`} />
@@ -151,8 +153,13 @@ export default function CompetitionTracker() {
                         <span className="text-sm font-medium text-slate-700">{investor.name}</span>
                       </div>
                     </div>
-                    <div className="text-sm font-semibold text-green-600">
-                      {investor.gain}
+                    <div className="flex flex-col items-end">
+                      <div className="text-sm font-semibold text-green-600">
+                        {investor.gain}
+                      </div>
+                      <div className="text-xs font-bold text-indigo-600">
+                        Quality: {investor.qualityScore || 0}
+                      </div>
                     </div>
                   </motion.div>
                 ))}
@@ -178,8 +185,13 @@ export default function CompetitionTracker() {
                     <span className="ml-2 text-xs text-blue-500 bg-blue-50 px-1.5 py-0.5 rounded-full">You</span>
                   </div>
                 </div>
-                <div className={`text-sm font-semibold ${userPosition.returns > 0 ? 'text-green-600' : 'text-red-600'}`}>
-                  {userPosition.gain}
+                <div className="flex flex-col items-end">
+                  <div className={`text-sm font-semibold ${userPosition.returns > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                    {userPosition.gain}
+                  </div>
+                  <div className="text-xs font-bold text-indigo-600">
+                    Quality: {userPosition.qualityScore || 0}
+                  </div>
                 </div>
               </motion.div>
             </div>
@@ -207,8 +219,13 @@ export default function CompetitionTracker() {
                           <span className="text-sm font-medium text-slate-700">{investor.name}</span>
                         </div>
                       </div>
-                      <div className={`text-sm font-semibold ${investor.returns > 0 ? 'text-green-600' : 'text-red-600'}`}>
-                        {investor.gain}
+                      <div className="flex flex-col items-end">
+                        <div className={`text-sm font-semibold ${investor.returns > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                          {investor.gain}
+                        </div>
+                        <div className="text-xs font-bold text-indigo-600">
+                          Quality: {investor.qualityScore || 0}
+                        </div>
                       </div>
                     </motion.div>
                 ))}

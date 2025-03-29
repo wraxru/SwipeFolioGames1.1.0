@@ -321,7 +321,28 @@ export default function PortfolioImpactCalculator({
                         {/* Central circle */}
                         <circle cx="50" cy="50" r="30" fill="white" />
                         
-                        {/* If no allocations, show empty state text */}
+                        {/* Quality Score in the middle of the pie chart */}
+                        <text 
+                          x="50" 
+                          y="45" 
+                          textAnchor="middle" 
+                          fontSize="14" 
+                          fontWeight="bold" 
+                          fill="#334155"
+                        >
+                          {impact.newMetrics.qualityScore.toFixed(0)}
+                        </text>
+                        <text 
+                          x="50" 
+                          y="55" 
+                          textAnchor="middle" 
+                          fontSize="6" 
+                          fill="#64748b"
+                        >
+                          Quality Score
+                        </text>
+                        
+                        {/* If no allocations, show empty state text instead of quality score */}
                         {Object.entries(impact.industryAllocation).length === 0 && (
                           <text 
                             x="50" 
@@ -416,7 +437,9 @@ export default function PortfolioImpactCalculator({
                   
                   {/* Improved Metrics Grid - More compact and space efficient */}
                   <div className="grid grid-cols-2 gap-2 mb-4">
-                    {Object.entries(impact.impact).map(([metric, change]) => (
+                    {Object.entries(impact.impact)
+                      .filter(([metric]) => ['performance', 'stability', 'value', 'momentum'].includes(metric.toLowerCase()))
+                      .map(([metric, change]) => (
                       <div 
                         key={metric} 
                         className="p-3 bg-white rounded-lg border border-slate-200 shadow-sm hover:shadow-md transition-all duration-200 hover:border-sky-200"

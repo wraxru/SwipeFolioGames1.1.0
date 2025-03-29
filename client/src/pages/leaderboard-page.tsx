@@ -67,8 +67,8 @@ const LeaderboardPage: React.FC = () => {
       user.id === "current-user" ? userStats : user
     );
     
-    // Sort and add ranks
-    const sortedData = [...updatedLeaderboardData].sort((a, b) => b.roi - a.roi)
+    // Sort by portfolioQuality (quality score) instead of ROI
+    const sortedData = [...updatedLeaderboardData].sort((a, b) => b.portfolioQuality - a.portfolioQuality)
       .map((user, index) => ({
         ...user,
         rank: index + 1
@@ -102,7 +102,13 @@ const LeaderboardPage: React.FC = () => {
   const metrics = [
     { name: "ROI", icon: <TrendingUp className="w-4 h-4" />, key: "roi", format: (val: number) => `${val.toFixed(1)}%` },
     { name: "Trades", icon: <BarChart3 className="w-4 h-4" />, key: "trades", format: (val: number) => val.toString() },
-    { name: "Quality", icon: <Star className="w-4 h-4" />, key: "portfolioQuality", format: (val: number) => val.toString() },
+    { 
+      name: "Quality", 
+      icon: <Star className="w-4 h-4" />, 
+      key: "portfolioQuality", 
+      format: (val: number) => val.toString(),
+      isBold: true // Mark this metric to be displayed in bold
+    },
     { name: "Referrals", icon: <Users className="w-4 h-4" />, key: "referrals", format: (val: number) => val.toString() },
   ];
 
@@ -144,7 +150,7 @@ const LeaderboardPage: React.FC = () => {
             </motion.div>
             <div className="mt-2 text-center w-full">
               <p className="font-bold text-sm truncate max-w-[100px] mx-auto">{filteredData[1]?.username}</p>
-              <p className="text-xs text-white/90">{filteredData[1]?.roi.toFixed(1)}% ROI</p>
+              <p className="text-xs text-white/90">Quality: <span className="font-bold">{filteredData[1]?.portfolioQuality}</span></p>
             </div>
             <div className="h-20 w-16 bg-slate-400/80 rounded-t-lg mt-3"></div>
           </div>
@@ -180,7 +186,7 @@ const LeaderboardPage: React.FC = () => {
                   </div>
                 )}
               </div>
-              <p className="text-sm text-white/90">{filteredData[0]?.roi.toFixed(1)}% ROI</p>
+              <p className="text-sm text-white/90">Quality: <span className="font-bold">{filteredData[0]?.portfolioQuality}</span></p>
             </div>
             <div className="h-28 w-20 bg-yellow-400/80 rounded-t-lg mt-3"></div>
           </div>
@@ -206,7 +212,7 @@ const LeaderboardPage: React.FC = () => {
             </motion.div>
             <div className="mt-2 text-center w-full">
               <p className="font-bold text-sm truncate max-w-[100px] mx-auto">{filteredData[2]?.username}</p>
-              <p className="text-xs text-white/90">{filteredData[2]?.roi.toFixed(1)}% ROI</p>
+              <p className="text-xs text-white/90">Quality: <span className="font-bold">{filteredData[2]?.portfolioQuality}</span></p>
             </div>
             <div className="h-14 w-16 bg-amber-700/80 rounded-t-lg mt-3"></div>
           </div>
@@ -296,7 +302,7 @@ const LeaderboardPage: React.FC = () => {
                     </div>
                   </div>
                   {metrics.map((metric) => (
-                    <div key={metric.key} className="font-medium text-center">
+                    <div key={metric.key} className={`${metric.isBold ? 'font-bold' : 'font-medium'} text-center`}>
                       {metric.format(currentUser[metric.key as keyof LeaderboardUser] as number)}
                     </div>
                   ))}
@@ -344,7 +350,7 @@ const LeaderboardPage: React.FC = () => {
                       </div>
                     </div>
                     {metrics.map((metric) => (
-                      <div key={metric.key} className="text-sm text-center">
+                      <div key={metric.key} className={`text-sm text-center ${metric.isBold ? 'font-bold' : ''}`}>
                         {metric.format(user[metric.key as keyof LeaderboardUser] as number)}
                       </div>
                     ))}
@@ -360,7 +366,7 @@ const LeaderboardPage: React.FC = () => {
       <div className="px-4 mt-6">
         <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 text-center">
           <p className="text-sm text-blue-800">
-            Keep investing to improve your ranking! Complete lessons and grow your portfolio to climb the leaderboard.
+            Your <span className="font-bold">Quality Score</span> determines your ranking! Improve your portfolio's performance, stability, value, and momentum metrics to climb the leaderboard.
           </p>
         </div>
       </div>
