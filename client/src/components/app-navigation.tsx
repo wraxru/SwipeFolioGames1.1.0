@@ -1,4 +1,4 @@
-import { Home, BarChart3, Search, Briefcase, User, BellRing } from "lucide-react";
+import { Home, BarChart3, Briefcase, User, Trophy } from "lucide-react";
 import { useLocation } from "wouter";
 
 export default function AppNavigation() {
@@ -19,10 +19,10 @@ export default function AppNavigation() {
         />
         
         <NavItem 
-          icon={<Search className="w-5 h-5" />} 
-          label="Discover" 
-          isActive={isActive("/discover")}
-          href="/discover"
+          icon={<Trophy className="w-5 h-5" />} 
+          label="Leaderboard" 
+          isActive={isActive("/leaderboard")}
+          href="/leaderboard"
         />
         
         <NavItem 

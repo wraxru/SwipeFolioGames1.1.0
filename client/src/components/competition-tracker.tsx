@@ -1,7 +1,9 @@
 import { useState, useEffect, useContext } from 'react';
 import { motion } from 'framer-motion';
-import { Users, ChevronRight } from 'lucide-react';
+import { Users, ChevronRight, ExternalLink } from 'lucide-react';
 import { PortfolioContext } from '@/contexts/portfolio-context';
+import { Link } from 'wouter';
+import { getTopUsers, getCurrentUserRank } from '@/data/leaderboard-data';
 
 // Define the investor type
 interface Investor {
@@ -230,6 +232,21 @@ export default function CompetitionTracker() {
                     </motion.div>
                 ))}
               </div>
+            </div>
+            
+            {/* See full leaderboard button */}
+            <div className="mt-4 text-center">
+              <Link href="/leaderboard">
+                <motion.button
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="bg-gradient-to-r from-blue-500 to-indigo-500 text-white text-sm py-2 px-4 rounded-lg 
+                             font-medium shadow-sm hover:shadow-md transition-all flex items-center justify-center mx-auto"
+                >
+                  <span>See full leaderboard</span>
+                  <ExternalLink className="w-3.5 h-3.5 ml-1.5" />
+                </motion.button>
+              </Link>
             </div>
           </div>
         )}
