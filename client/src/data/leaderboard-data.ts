@@ -19,7 +19,7 @@ export const leaderboardUsers: LeaderboardUser[] = [
     id: "lebron-james",
     name: "Lebron James",
     username: "KingJames",
-    avatar: "/images/Kanye.png",
+    avatar: "/LEBRON.png",
     roi: 245.8,
     trades: 147,
     portfolioQuality: 98,
@@ -81,7 +81,7 @@ export const leaderboardUsers: LeaderboardUser[] = [
     id: "investor-7",
     name: "Michelle Obama",
     username: "MichelleO",
-    avatar: "/images/OBAMA.png",
+    avatar: "/OBAMA.png",
     roi: 65.4,
     trades: 67,
     portfolioQuality: 82,
@@ -133,7 +133,7 @@ export const leaderboardUsers: LeaderboardUser[] = [
 export function getLeaderboardData(): LeaderboardUser[] {
   // Get portfolio context metrics
   const portfolioContext = portfolioContextInstance.getContext();
-  
+
   // Update the current user with latest stats from context
   const updatedUsers = leaderboardUsers.map(user => {
     if (user.id === "current-user" && portfolioContext) {
@@ -146,10 +146,10 @@ export function getLeaderboardData(): LeaderboardUser[] {
     }
     return user;
   });
-  
+
   // Sort by portfolioQuality (highest first)
   const sortedUsers = [...updatedUsers].sort((a, b) => b.portfolioQuality - a.portfolioQuality);
-  
+
   // Add rank property
   return sortedUsers.map((user, index) => ({
     ...user,
@@ -176,47 +176,47 @@ export function calculateTrades(holdings: any[]): number {
 // Calculate portfolio quality (based on equal weighting of performance, momentum, stability, and value)
 export function calculatePortfolioQuality(holdings: any[]): number {
   if (holdings.length === 0) return 0; // Default is 0 for empty portfolio
-  
+
   // 1. PERFORMANCE: Based on projected returns
   const performanceScore = holdings.reduce((total, holding) => {
     const oneYearReturnPercent = 
       typeof holding.stock.oneYearReturn === 'number' ? holding.stock.oneYearReturn :
       typeof holding.stock.oneYearReturn === 'string' ? parseFloat(holding.stock.oneYearReturn.replace('%', '')) : 
       0;
-    
+
     // Scale performance score - 20% return or higher gets full 100 points
     const holdingPerformanceScore = Math.min(100, (oneYearReturnPercent / 20) * 100);
     return total + holdingPerformanceScore;
   }, 0) / (holdings.length || 1);
-  
+
   // 2. MOMENTUM: Based on 3-month returns and RSI
   const momentumScore = holdings.reduce((total, holding) => {
     // Extract RSI if available, or use a default value
     const rsi = holding.stock.rsi || 50;
-    
+
     // Extract 3-month return if available, or use a default value
     const threeMonthReturn = 
       holding.stock.threeMonthReturn || 
       (typeof holding.stock.oneYearReturn === 'number' ? holding.stock.oneYearReturn / 4 : 
       typeof holding.stock.oneYearReturn === 'string' ? parseFloat(holding.stock.oneYearReturn.replace('%', '')) / 4 : 
       0);
-    
+
     // RSI score - 50 is neutral, higher is better up to 70 (above 70 is overbought)
     // Score peaks at RSI of 65 (ideal momentum) and decreases after that
     const rsiScore = rsi <= 65 ? (rsi / 65) * 100 : 100 - ((rsi - 65) / 15) * 100;
-    
+
     // 3-month return score - 5% or higher gets full score
     const returnScore = Math.min(100, (threeMonthReturn / 5) * 100);
-    
+
     // Combined momentum score - equal weight to RSI and 3-month return
     const holdingMomentumScore = (rsiScore + returnScore) / 2;
     return total + holdingMomentumScore;
   }, 0) / (holdings.length || 1);
-  
+
   // 3. STABILITY: Based on diversification and beta
   // Diversification component - more holdings = more stable
   const diversificationScore = Math.min(100, holdings.length * 20); // 5+ holdings = full diversification score
-  
+
   // Beta component - average stock beta, where 1.0 is market average
   // Lower beta = more stable
   const betaScore = holdings.reduce((total, holding) => {
@@ -227,41 +227,41 @@ export function calculatePortfolioQuality(holdings: any[]): number {
     const holdingBetaScore = Math.max(0, 100 - (betaDistance * 50));
     return total + holdingBetaScore;
   }, 0) / (holdings.length || 1);
-  
+
   // Combined stability score
   const stabilityScore = (diversificationScore + betaScore) / 2;
-  
+
   // 4. VALUE: Based on P/E ratio, dividend yield, and price-to-book
   const valueScore = holdings.reduce((total, holding) => {
     // Extract metrics if available, or use default values
     const pe = holding.stock.pe || 20;
     const dividendYield = holding.stock.dividendYield || 0;
     const priceToBook = holding.stock.priceToBook || 3;
-    
+
     // P/E score - lower is better (15 or below is good value)
     const peScore = pe <= 15 ? 100 : Math.max(0, 100 - ((pe - 15) / 25) * 100);
-    
+
     // Dividend yield score - higher is better (4% or above is excellent)
     const dividendScore = Math.min(100, (dividendYield / 4) * 100);
-    
+
     // Price-to-book score - lower is better (1.5 or below is good value)
     const ptbScore = priceToBook <= 1.5 ? 100 : Math.max(0, 100 - ((priceToBook - 1.5) / 3) * 100);
-    
+
     // Combined value score - equal weight to all three metrics
     const holdingValueScore = (peScore + dividendScore + ptbScore) / 3;
     return total + holdingValueScore;
   }, 0) / (holdings.length || 1);
-  
+
   // Final quality score - equal weighting of all four components
   const qualityScore = Math.round((performanceScore + momentumScore + stabilityScore + valueScore) / 4);
-  
+
   // For debugging - log the component scores
   console.log("New portfolio metrics calculated:");
   console.log(`- Performance: ${Math.round(performanceScore)}`);
   console.log(`- Stability: ${Math.round(stabilityScore)}`);
   console.log(`- Value: ${Math.round(valueScore)}`);
   console.log(`- Momentum: ${Math.round(momentumScore)}`);
-  
+
   return qualityScore;
 }
 
