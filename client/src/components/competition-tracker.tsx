@@ -74,7 +74,7 @@ export default function CompetitionTracker() {
     
     // Convert to the format used by this component
     const convertedData: Investor[] = leaderboardUsers.map(user => ({
-      id: Number(user.id.replace(/\D/g, '')) || 99, // Extract number or use 99 for non-numeric
+      id: user.rank || (user.id === 'current-user' ? 999 : Number(user.id.replace(/\D/g, '')) || 99), // Use rank as id, fallback to extracted number
       name: user.username,
       avatar: user.avatar,
       returns: user.roi,
@@ -200,11 +200,17 @@ export default function CompetitionTracker() {
             <div className="mt-3">
               <div className="text-xs text-slate-500 mb-2">Positions to beat</div>
               <div className="space-y-2">
-                {leaderboardData
-                  .filter((_, index) => index === userRank - 2)
+                {/* Find the next position to beat - use proper rank to find it */}
+                {formattedLeaderboardData
+                  .filter(investor => {
+                    // Find the investor with the next rank above the user
+                    return !investor.isUser && // Not the current user
+                           userRank > 1 && // User is not already at the top
+                           investor.id === userRank - 1; // This is the next rank above
+                  })
                   .map((investor) => (
                     <motion.div 
-                      key={investor.id}
+                      key={`next-${investor.id}`}
                       initial={{ opacity: 0, y: 5 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.3 }}
@@ -228,7 +234,26 @@ export default function CompetitionTracker() {
                         </div>
                       </div>
                     </motion.div>
-                ))}
+                  ))
+                }
+                
+                {/* If there are no positions above (user is at rank 1) or no match found, show a motivational message */}
+                {(userRank === 1 || formattedLeaderboardData.filter(inv => !inv.isUser && inv.id === userRank - 1).length === 0) && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="p-2 bg-blue-50 rounded-lg border border-blue-100 text-center"
+                  >
+                    {userRank === 1 ? (
+                      <p className="text-sm text-blue-700 font-medium">🏆 You're at the top! Keep it up!</p>
+                    ) : (
+                      <p className="text-sm text-blue-700 font-medium">
+                        Improve your Quality Score to rank #{userRank - 1}
+                      </p>
+                    )}
+                  </motion.div>
+                )}
               </div>
             </div>
             

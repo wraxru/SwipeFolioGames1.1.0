@@ -2,7 +2,10 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="format-detection" content="telephone=no">
     <title>Swipefolio - Finance Learning Made Fun</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@300;400;500&family=Roboto+Mono&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
@@ -10,6 +13,24 @@
       body {
         font-family: 'Inter', sans-serif;
         touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        user-select: none;
+        /* Prevent overscroll bounce effect on iOS */
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+      }
+      #root {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
       }
       .progress-ring-circle {
         transform: rotate(-90deg);
@@ -62,6 +83,19 @@
       }
       .badge:hover {
         transform: perspective(800px) rotateY(15deg);
+      }
+      /* iOS-specific adjustments */
+      @supports (-webkit-touch-callout: none) {
+        .text-xs {
+          font-size: 0.85rem;
+        }
+        .text-sm {
+          font-size: 0.95rem;
+        }
+        button, a {
+          cursor: pointer;
+          padding: 0.6em 1em; /* Slightly larger touch targets */
+        }
       }
     </style>
   </head>

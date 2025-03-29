@@ -179,14 +179,14 @@ const LeaderboardPage: React.FC = () => {
             </motion.div>
             <div className="mt-2 text-center w-full">
               <div className="flex items-center justify-center">
-                <p className="font-bold text-base truncate max-w-[100px] mx-auto">{filteredData[0]?.username}</p>
+                <p className="font-bold text-lg truncate max-w-[120px] mx-auto">{filteredData[0]?.username}</p>
                 {filteredData[0]?.isVerified && (
                   <div className="ml-1 bg-blue-500 rounded-full p-0.5">
                     <Check className="w-3 h-3 text-white" />
                   </div>
                 )}
               </div>
-              <p className="text-sm text-white/90">Quality: <span className="font-bold">{filteredData[0]?.portfolioQuality}</span></p>
+              <p className="text-sm text-white/90 mt-1">Quality: <span className="font-bold text-base">{filteredData[0]?.portfolioQuality}</span></p>
             </div>
             <div className="h-28 w-20 bg-yellow-400/80 rounded-t-lg mt-3"></div>
           </div>
@@ -311,13 +311,13 @@ const LeaderboardPage: React.FC = () => {
             )}
             
             {/* Leaderboard List */}
-            <div className="max-h-[calc(100vh-400px)] overflow-y-auto">
+            <div className="max-h-[calc(100vh-400px)] overflow-y-auto -webkit-overflow-scrolling-touch">
               {filteredData.map((user, index) => (
                 // Skip the current user as they're shown separately
                 user.id !== "current-user" && (
                   <motion.div 
                     key={user.id}
-                    className={`grid grid-cols-[60px_minmax(120px,1.5fr)_repeat(4,_minmax(60px,1fr))] items-center px-3 py-3 border-t border-slate-100 ${index < 3 ? 'bg-gradient-to-r from-slate-50/50 to-white' : ''}`}
+                    className={`grid grid-cols-[60px_minmax(120px,1.5fr)_repeat(4,_minmax(60px,1fr))] items-center px-3 py-4 border-t border-slate-100 ${index < 3 ? 'bg-gradient-to-r from-slate-50/50 to-white' : ''}`}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.05, duration: 0.2 }}

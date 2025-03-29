@@ -4,16 +4,16 @@ import { ArrowUp, ArrowDown, Wallet, TrendingUp, Clock, DollarSign, PieChart } f
 import { Progress } from './ui/progress'; // Assuming this path is correct
 import { usePortfolio, PortfolioHolding } from '@/contexts/portfolio-context'; // Assuming this path is correct
 
-// Helper component for metrics (Unchanged)
+// Helper component for metrics
 function MetricItem({ label, value, color }: { label: string; value: number; color: string }) {
   return (
-    <div className="bg-slate-50 rounded-lg p-2 border border-slate-100">
-      <p className="text-xs text-slate-500 mb-1">{label}</p>
+    <div className="bg-slate-50 rounded-lg p-3 border border-slate-100">
+      <p className="text-sm text-slate-500 mb-1.5">{label}</p>
       <div className="flex items-center">
-        <div className={`h-2 w-2 rounded-full ${color} mr-2`}></div>
-        <p className="font-bold text-base">{value}</p>
+        <div className={`h-3 w-3 rounded-full ${color} mr-2`}></div>
+        <p className="font-bold text-lg">{value}</p>
       </div>
-      <Progress value={value} className="h-1 mt-1" />
+      <Progress value={value} className="h-2 mt-2" />
     </div>
   );
 }
@@ -174,10 +174,10 @@ export default function PortfolioDashboard() {
             )}
             {/* Quality Score Circle */}
             <div className="flex flex-col items-center justify-center">
-              <div className="flex items-center justify-center bg-indigo-600 text-white rounded-full h-10 w-10 shadow-md">
-                <span className="text-sm font-bold">{portfolioMetrics.qualityScore || 0}</span>
+              <div className="flex items-center justify-center bg-indigo-600 text-white rounded-full h-12 w-12 shadow-md">
+                <span className="text-base font-bold">{portfolioMetrics.qualityScore || 0}</span>
               </div>
-              <span className="text-xs text-indigo-600 font-medium mt-0.5">Quality</span>
+              <span className="text-xs text-indigo-600 font-medium mt-1">Quality</span>
             </div>
           </div>
         </div>
