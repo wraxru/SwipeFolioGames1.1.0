@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth } from "./auth";
+import axios from "axios";
 export async function registerRoutes(app: Express): Promise<Server> {
   // Set up authentication routes
   setupAuth(app);
@@ -182,6 +183,83 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
     
     res.json(dailyProgress);
+  });
+
+  // Ask AI endpoint
+  app.post("/api/ai/ask-stock", async (req, res) => {
+    try {
+      const { userQuestion, stockContext } = req.body;
+      
+      if (!userQuestion || !stockContext) {
+        return res.status(400).json({ 
+          error: "Missing required fields", 
+          message: "Both userQuestion and stockContext are required" 
+        });
+      }
+      
+      const apiKey = process.env.OPENROUTER_API_KEY;
+      if (!apiKey) {
+        return res.status(500).json({ 
+          error: "API key missing", 
+          message: "OpenRouter API key is not configured" 
+        });
+      }
+      
+      // Construct the system prompt and user message
+      const systemPrompt = "You are an educational assistant for the Swipefolio app. " +
+        "Explain financial concepts related to the provided stock context simply. " +
+        "DO NOT give financial advice, recommendations, or price predictions. " +
+        "Answer based only on the context and general knowledge. " +
+        "If asked for advice, state you cannot provide it.";
+      
+      // Build context string with stock information
+      const contextString = `
+        Stock Name: ${stockContext.name}
+        Ticker: ${stockContext.ticker}
+        ${stockContext.description ? `Description: ${stockContext.description}` : ''}
+        ${stockContext.price ? `Current Price: $${stockContext.price}` : ''}
+        ${stockContext.metrics && stockContext.metrics.performance ? `Performance Score: ${stockContext.metrics.performance.value}` : ''}
+        ${stockContext.metrics && stockContext.metrics.value ? `Value Score: ${stockContext.metrics.value.value}` : ''}
+        ${stockContext.industry ? `Industry: ${stockContext.industry}` : ''}
+      `;
+      
+      const userMessage = `Context: ${contextString.trim()}\n\nQuestion: ${userQuestion}`;
+      
+      // Make the API call to OpenRouter
+      const response = await axios.post(
+        'https://openrouter.ai/api/v1/chat/completions',
+        {
+          model: "google/gemini-flash-1.5", // Using Gemini 2.0 flash lite
+          messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: userMessage }
+          ]
+        },
+        {
+          headers: {
+            'Authorization': `Bearer ${apiKey}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      
+      // Extract the AI's response
+      if (response.data && response.data.choices && response.data.choices.length > 0) {
+        const answer = response.data.choices[0].message.content;
+        return res.json({ answer });
+      } else {
+        return res.status(500).json({ 
+          error: "Invalid API response", 
+          message: "The AI service returned an unexpected response format" 
+        });
+      }
+    } catch (error) {
+      console.error("Error in AI request:", error);
+      return res.status(500).json({ 
+        error: "AI service error", 
+        message: error instanceof Error ? error.message : "Unknown error occurred" 
+      });
+    }
   });
 
   const httpServer = createServer(app);

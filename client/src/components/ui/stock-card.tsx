@@ -8,6 +8,7 @@ import PortfolioImpactCalculator from "./portfolio-impact-calculator";
 import OverallAnalysisCard from "@/components/overall-analysis-card";
 import { Skeleton } from "@/components/ui/skeleton";
 import ComparativeAnalysis from "@/components/comparative-analysis";
+import AskAI from "@/components/ask-ai";
 
 interface StockCardProps {
   stock: StockData;
@@ -938,6 +939,15 @@ export default function StockCard({
           onTouchEnd={(e) => e.stopPropagation()}
         >
           <ComparativeAnalysis currentStock={stock} />
+        </div>
+        
+        {/* Ask AI Component */}
+        <div
+          onClick={(e) => e.stopPropagation()}
+          onTouchStart={(e) => e.stopPropagation()}
+          onTouchEnd={(e) => e.stopPropagation()}
+        >
+          <AskAI stock={stock} />
         </div>
 
         {/* Bottom Swipe Instruction */}
