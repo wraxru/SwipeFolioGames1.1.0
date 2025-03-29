@@ -624,12 +624,7 @@ export default function StockCard({
 
             {/* Full analysis */}
             <div className="p-4">
-              <OverallAnalysisCard 
-                ticker={stock.ticker}
-                name={stock.name}
-                rating={stock.rating}
-                analysis={stock.overallAnalysis}
-              />
+              <OverallAnalysisCard stock={stock} />
 
               {/* Industry Position & Comparative Analysis */}
               <ComparativeAnalysis currentStock={stock} />
@@ -960,12 +955,7 @@ export default function StockCard({
         {stock.overallAnalysis && (
           <div className="p-5 bg-gradient-to-b from-white to-slate-50">
             <div className="mb-1">
-              <OverallAnalysisCard
-                ticker={stock.ticker}
-                name={stock.name}
-                rating={stock.rating}
-                analysis={stock.overallAnalysis}
-              />
+              <OverallAnalysisCard stock={stock} />
             </div>
           </div>
         )}

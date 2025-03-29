@@ -1,16 +1,79 @@
-import React from "react";
-import { ChartBar, Lightbulb, LineChart, TrendingUp } from "lucide-react";
+import React, { useState } from "react";
+import { ChartBar, Lightbulb, LineChart, TrendingUp, Send, Loader2, MessageSquare } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
+import { StockData } from "@/lib/stock-data";
 
 interface OverallAnalysisCardProps {
-  ticker: string;
-  name: string;
-  rating: number;
-  analysis: string;
+  stock: StockData;
 }
 
-export default function OverallAnalysisCard({ ticker, name, rating, analysis }: OverallAnalysisCardProps) {
+export default function OverallAnalysisCard({ stock }: OverallAnalysisCardProps) {
+  const { ticker, name, rating, overallAnalysis } = stock;
+  const analysis = overallAnalysis;
+  
+  // State for AI functionality
+  const [userQuestion, setUserQuestion] = useState("");
+  const [aiResponse, setAiResponse] = useState("");
+  const [isLoadingAI, setIsLoadingAI] = useState(false);
+  const [errorAI, setErrorAI] = useState<string | null>(null);
+  
+  // Handler for sending questions to the AI
+  const handleSendStockQuestion = async () => {
+    // Validate input
+    if (!userQuestion.trim()) return;
+    
+    // Reset previous response and set loading state
+    setAiResponse("");
+    setErrorAI(null);
+    setIsLoadingAI(true);
+    
+    try {
+      // Create stock context object with relevant information
+      const stockContext = {
+        ticker: stock.ticker,
+        name: stock.name,
+        description: stock.description,
+        price: stock.price,
+        industry: stock.industry,
+        metrics: {
+          performance: stock.metrics.performance.value,
+          stability: stock.metrics.stability.value,
+          value: stock.metrics.value.value,
+          momentum: stock.metrics.momentum.value
+        }
+      };
+      
+      // Send request to backend
+      const response = await fetch('/api/ai/ask-stock', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userQuestion, stockContext }),
+      });
+      
+      // Handle the response
+      if (response.ok) {
+        const data = await response.json();
+        if (data.answer) {
+          setAiResponse(data.answer);
+        } else {
+          setErrorAI("Received invalid response from server");
+        }
+      } else {
+        const errorData = await response.json();
+        setErrorAI(errorData.message || "Failed to get AI response");
+      }
+    } catch (error) {
+      setErrorAI("Error connecting to AI service. Please try again.");
+      console.error("AI request error:", error);
+    } finally {
+      setIsLoadingAI(false);
+    }
+  };
   // Calculate rating color and style based on the numeric rating (1-10)
   const getRatingColor = (rating: number) => {
     if (rating >= 8) return "text-green-600";
@@ -109,24 +172,65 @@ export default function OverallAnalysisCard({ ticker, name, rating, analysis }: 
               </div>
             </div>
             
-            {/* Key Insight box - enhanced Robinhood-style feature */}
+            {/* Ask AI section */}
             <div className="relative group transition-all duration-300">
               <div className="absolute inset-0 bg-gradient-to-r from-blue-100/30 to-cyan-100/30 rounded-xl blur-sm transform scale-[0.98] translate-y-1 opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
               <div className="p-4 bg-white rounded-xl border border-blue-200 shadow-md hover:shadow-lg transition-all duration-300 relative z-10 overflow-hidden group-hover:border-blue-300">
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-400 to-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <div className="flex gap-3 items-start">
-                  <div className="text-white bg-gradient-to-br from-blue-400 to-blue-600 w-10 h-10 min-w-10 flex items-center justify-center rounded-lg shadow-md">
-                    <Lightbulb className="w-5 h-5" />
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="font-semibold text-base text-slate-800 mb-1">Key Insight</h4>
-                    <div className="text-sm text-slate-700 leading-relaxed font-medium">
-                      {name} ({ticker}) is currently rated <span className={getRatingColor(rating)}>{getRatingText(rating).toLowerCase()}</span> based on financial metrics, market positioning, and growth projections. This stock fits best in a {
-                        rating >= 8 ? 'growth-oriented portfolio.' :
-                        rating >= 6 ? 'balanced investment strategy.' :
-                        rating >= 4 ? 'value-focused portfolio with careful monitoring.' :
-                        'speculative portion of a diversified portfolio.'
-                      }
+                <div className="flex flex-col gap-3">
+                  <div className="flex gap-3 items-start">
+                    <div className="text-white bg-gradient-to-br from-blue-400 to-blue-600 w-10 h-10 min-w-10 flex items-center justify-center rounded-lg shadow-md">
+                      <MessageSquare className="w-5 h-5" />
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-base text-slate-800 mb-1">Ask AI about {ticker}</h4>
+                      
+                      {/* AI Question Input */}
+                      <div className="relative">
+                        <Textarea 
+                          placeholder={`Ask about ${ticker}...`}
+                          value={userQuestion}
+                          onChange={(e) => setUserQuestion(e.target.value)}
+                          className="min-h-[60px] text-slate-900 text-sm border-slate-300 focus:border-blue-300 resize-none mb-2"
+                        />
+                        <Button
+                          size="sm"
+                          onClick={handleSendStockQuestion}
+                          disabled={isLoadingAI || !userQuestion.trim()}
+                          className="mt-1 mb-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white"
+                        >
+                          {isLoadingAI ? (
+                            <>
+                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                              Loading...
+                            </>
+                          ) : (
+                            <>
+                              <Send className="mr-2 h-4 w-4" />
+                              Send
+                            </>
+                          )}
+                        </Button>
+                      </div>
+                      
+                      {/* AI Response */}
+                      {aiResponse && (
+                        <div className="bg-blue-50 p-3 rounded-lg mt-2 border border-blue-100">
+                          <p className="text-sm text-slate-800 leading-relaxed">{aiResponse}</p>
+                        </div>
+                      )}
+                      
+                      {/* Error Message */}
+                      {errorAI && (
+                        <div className="bg-red-50 p-3 rounded-lg mt-2 border border-red-100">
+                          <p className="text-sm text-red-600">{errorAI}</p>
+                        </div>
+                      )}
+                      
+                      {/* Disclaimer */}
+                      <p className="text-xs text-slate-500 mt-2 italic">
+                        AI responses are for educational purposes only and are not financial advice.
+                      </p>
                     </div>
                   </div>
                 </div>
