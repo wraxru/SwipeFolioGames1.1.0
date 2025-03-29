@@ -22,15 +22,15 @@ interface Investor {
 
 // Sample leaderboard data - in a real app this would come from API
 const baseLeaderboardData: Investor[] = [
-  { id: 1, name: 'Investor27', avatar: '👨‍💼', returns: 15.7 },
-  { id: 2, name: 'TradingPro', avatar: '👩‍💼', returns: 12.3 },
-  { id: 3, name: 'WealthMaster', avatar: '🧔', returns: 8.9 },
-  { id: 4, name: 'StockExpert', avatar: '👱‍♀️', returns: 6.5 },
-  { id: 6, name: 'MarketGuru', avatar: '👨‍🦰', returns: 2.4 },
-  { id: 7, name: 'InvestorX', avatar: '👴', returns: 1.2 },
-  { id: 8, name: 'TradeQueen', avatar: '👩‍🦱', returns: -1.8 },
-  { id: 9, name: 'ValueHunter', avatar: '👨‍🦱', returns: -3.5 },
-  { id: 10, name: 'NewTrader', avatar: '🧑', returns: -5.2 },
+  { id: 1, name: 'Investor27', avatar: '/images/avatars/default-1.png', returns: 15.7 },
+  { id: 2, name: 'TradingPro', avatar: '/images/avatars/default-2.png', returns: 12.3 },
+  { id: 3, name: 'WealthMaster', avatar: '/images/avatars/default-3.png', returns: 8.9 },
+  { id: 4, name: 'StockExpert', avatar: '/images/avatars/default-4.png', returns: 6.5 },
+  { id: 6, name: 'MarketGuru', avatar: '/images/avatars/default-5.png', returns: 2.4 },
+  { id: 7, name: 'InvestorX', avatar: '/images/avatars/default-6.png', returns: 1.2 },
+  { id: 8, name: 'TradeQueen', avatar: '/images/avatars/default-7.png', returns: -1.8 },
+  { id: 9, name: 'ValueHunter', avatar: '/images/avatars/default-8.png', returns: -3.5 },
+  { id: 10, name: 'NewTrader', avatar: '/images/avatars/default-9.png', returns: -5.2 },
 ];
 
 export default function CompetitionTracker() {
@@ -103,7 +103,7 @@ export default function CompetitionTracker() {
   // Get top 3 and user's position
   const topThree = formattedLeaderboardData.slice(0, 3);
   const userPosition = formattedLeaderboardData.find(item => item.isUser) || 
-    { id: 5, name: 'Belford&Co', avatar: '👨‍💼', returns: 0, gain: '0.0%', isUser: true };
+    { id: 5, name: 'Belford&Co', avatar: '/images/avatars/belford-avatar.png', returns: 0, gain: '0.0%', isUser: true };
   
   return (
     <motion.div 
@@ -149,7 +149,7 @@ export default function CompetitionTracker() {
                         {index + 1}
                       </div>
                       <div className="flex items-center">
-                        <span className="mr-2">{investor.avatar}</span>
+                        <img src={investor.avatar} alt={investor.name} className="w-6 h-6 rounded-full mr-2 object-cover border border-slate-200" />
                         <span className="text-sm font-medium text-slate-700">{investor.name}</span>
                       </div>
                     </div>
@@ -180,7 +180,7 @@ export default function CompetitionTracker() {
                     {userRank}
                   </div>
                   <div className="flex items-center">
-                    <span className="mr-2">{userPosition.avatar}</span>
+                    <img src={userPosition.avatar} alt={userPosition.name} className="w-6 h-6 rounded-full mr-2 object-cover border border-slate-200" />
                     <span className="text-sm font-medium text-slate-700">{userPosition.name}</span>
                     <span className="ml-2 text-xs text-blue-500 bg-blue-50 px-1.5 py-0.5 rounded-full">You</span>
                   </div>
@@ -221,7 +221,7 @@ export default function CompetitionTracker() {
                           {userRank - 1}
                         </div>
                         <div className="flex items-center">
-                          <span className="mr-2">{investor.avatar}</span>
+                          <img src={investor.avatar} alt={investor.name} className="w-6 h-6 rounded-full mr-2 object-cover border border-slate-200" />
                           <span className="text-sm font-medium text-slate-700">{investor.name}</span>
                         </div>
                       </div>
