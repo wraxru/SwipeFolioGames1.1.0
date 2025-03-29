@@ -164,10 +164,20 @@ export default function PortfolioPage() {
               </div>
             </div>
             
-            {/* Portfolio Metrics - Removed Performance and Stability */}
+            {/* Portfolio Metrics - All 4 metrics displayed */}
             <div className="p-4 bg-slate-50 rounded-b-xl">
               <p className="text-sm font-medium text-slate-700 mb-2">Portfolio Metrics</p>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+                <MetricItem 
+                  label="Performance" 
+                  value={portfolioMetrics.performance} 
+                  color="bg-blue-500" 
+                />
+                <MetricItem 
+                  label="Stability" 
+                  value={portfolioMetrics.stability} 
+                  color="bg-purple-500" 
+                />
                 <MetricItem 
                   label="Value" 
                   value={portfolioMetrics.value} 

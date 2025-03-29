@@ -86,27 +86,34 @@ export default function PortfolioDashboard() {
 
   const projectedReturn = useMemo(() => {
     console.log("Dashboard: Recalculating projectedReturn");
-    return holdings.reduce((total, h) => {
+    // Calculate the weighted 1-year return for the aggregate portfolio
+    let totalWeightedReturn = 0;
+    let totalCurrentValue = 0;
+    
+    // First, calculate the weighted return by current value
+    holdings.forEach(h => {
       // Parse the oneYearReturn string (remove % sign and convert to number)
       const oneYearReturnPercent = 
         typeof h.stock.oneYearReturn === 'number' ? h.stock.oneYearReturn :
         typeof h.stock.oneYearReturn === 'string' ? parseFloat(h.stock.oneYearReturn.replace('%', '')) : 
         0;
       
-      // Base projection on current value or purchase price? Let's use purchase price as in original code
-      const stockInvestedValue = h.shares * h.purchasePrice;
-      const stockReturn = stockInvestedValue * (oneYearReturnPercent / 100);
-      
-      if (!isNaN(stockReturn)) {
-        return total + stockReturn;
-      }
-      return total;
-    }, 0);
-  }, [holdings]); // Recalculate only if holdings array reference changes
+      const currentValue = h.shares * h.stock.price;
+      totalCurrentValue += currentValue;
+      totalWeightedReturn += currentValue * oneYearReturnPercent;
+    });
+    
+    // Calculate the weighted average percentage
+    const weightedReturnPercent = totalCurrentValue > 0 ? 
+      totalWeightedReturn / totalCurrentValue : 0;
+    
+    // Now calculate the actual dollar amount of the projected return  
+    return portfolioValue * (weightedReturnPercent / 100);
+  }, [holdings, portfolioValue]); // Recalculate when holdings or portfolioValue changes
 
   const projectedReturnPercent = useMemo(() => {
       console.log("Dashboard: Recalculating projectedReturnPercent");
-      // Base percentage on current portfolio value
+      // Calculate the percentage based on current portfolio value
       return portfolioValue > 0.01 // Avoid division by zero or near-zero
           ? (projectedReturn / portfolioValue) * 100
           : 0;

@@ -324,25 +324,15 @@ export default function PortfolioImpactCalculator({
                         {/* Central circle */}
                         <circle cx="50" cy="50" r="30" fill="white" />
                         
-                        {/* Quality Score in the middle of the pie chart */}
+                        {/* Empty central circle with portfolio icon instead of quality score */}
                         <text 
                           x="50" 
-                          y="45" 
+                          y="50" 
                           textAnchor="middle" 
                           fontSize="14" 
-                          fontWeight="bold" 
-                          fill="#334155"
-                        >
-                          {impact.newMetrics.qualityScore.toFixed(0)}
-                        </text>
-                        <text 
-                          x="50" 
-                          y="55" 
-                          textAnchor="middle" 
-                          fontSize="6" 
                           fill="#64748b"
                         >
-                          Quality Score
+                          📊
                         </text>
                         
                         {/* If no allocations, show empty state text instead of quality score */}
