@@ -30,6 +30,11 @@ export default function AskAI({ stock }: AskAIProps) {
     setAiResponse("");
     setErrorAI(null);
     
+    console.log("Sending AI request:", {
+      userQuestion,
+      stockContext: stock
+    });
+    
     try {
       // Construct stock context object with relevant data
       const stockContext = {
