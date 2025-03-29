@@ -25,6 +25,7 @@ interface PortfolioContextProps {
     stability: number;
     value: number;
     momentum: number;
+    qualityScore: number;
   };
   buyStock: (stock: StockData, amount: number) => void;
   sellStock: (stockId: string, shares: number) => void;
@@ -34,18 +35,21 @@ interface PortfolioContextProps {
       stability: number;
       value: number;
       momentum: number;
+      qualityScore: number;
     };
     newMetrics: {
       performance: number;
       stability: number;
       value: number;
       momentum: number;
+      qualityScore: number;
     };
     impact: {
       performance: number;
       stability: number;
       value: number;
       momentum: number;
+      qualityScore: number;
     };
     industryAllocation: Record<string, { current: number; new: number }>;
   };
@@ -75,8 +79,18 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
     performance: calculatePortfolioMetric('performance'),
     stability: calculatePortfolioMetric('stability'),
     value: calculatePortfolioMetric('value'),
-    momentum: calculatePortfolioMetric('momentum')
+    momentum: calculatePortfolioMetric('momentum'),
+    qualityScore: calculateQualityScore()
   };
+  
+  // Calculate quality score using equal weighting of all metrics
+  function calculateQualityScore(): number {
+    if (holdings.length === 0) return 59; // Default starting score
+    
+    // Import the calculation from leaderboard data
+    const { calculatePortfolioQuality } = require('@/data/leaderboard-data');
+    return calculatePortfolioQuality(holdings);
+  }
   
   // Calculate individual portfolio metric score using the advanced 0-100 scale
   function calculatePortfolioMetric(metricName: "performance" | "stability" | "value" | "momentum"): number {
@@ -309,7 +323,8 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
       performance: hasExistingHoldings ? portfolioMetrics.performance : 0,
       stability: hasExistingHoldings ? portfolioMetrics.stability : 0,
       value: hasExistingHoldings ? portfolioMetrics.value : 0,
-      momentum: hasExistingHoldings ? portfolioMetrics.momentum : 0
+      momentum: hasExistingHoldings ? portfolioMetrics.momentum : 0,
+      qualityScore: hasExistingHoldings ? portfolioMetrics.qualityScore : 59
     };
     console.log('Current portfolio metrics:', currentMetrics);
     
@@ -342,7 +357,7 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
     // Calculate new metrics with debugging
     console.log('Calculating new portfolio metrics with this stock added:');
     
-    let newPerformance, newStability, newValue, newMomentum;
+    let newPerformance, newStability, newValue, newMomentum, newQualityScore;
     
     if (hasExistingHoldings) {
       console.log('Adding to existing portfolio - calculating weighted averages');
@@ -350,12 +365,17 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
       newStability = calculateNewMetricScore('stability', simulatedHoldings, stock);
       newValue = calculateNewMetricScore('value', simulatedHoldings, stock);
       newMomentum = calculateNewMetricScore('momentum', simulatedHoldings, stock);
+      
+      // Calculate new quality score for simulated portfolio
+      const { calculatePortfolioQuality } = require('@/data/leaderboard-data');
+      newQualityScore = calculatePortfolioQuality(simulatedHoldings);
     } else {
       console.log('First investment - using stock metrics directly');
       newPerformance = stockMetricScore.performance;
       newStability = stockMetricScore.stability;
       newValue = stockMetricScore.value;
       newMomentum = stockMetricScore.momentum;
+      newQualityScore = 59; // Default for first investment
     }
     
     console.log('New portfolio metrics calculated:');
@@ -363,12 +383,14 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
     console.log(`- Stability: ${newStability}`);
     console.log(`- Value: ${newValue}`);
     console.log(`- Momentum: ${newMomentum}`);
+    console.log(`- Quality Score: ${newQualityScore}`);
     
     const newMetrics = {
       performance: newPerformance,
       stability: newStability,
       value: newValue,
-      momentum: newMomentum
+      momentum: newMomentum,
+      qualityScore: newQualityScore
     };
     
     // Calculate industry allocation (current and new)
@@ -419,18 +441,21 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
     const stabilityImpact = parseFloat((newMetrics.stability - currentMetrics.stability).toFixed(1));
     const valueImpact = parseFloat((newMetrics.value - currentMetrics.value).toFixed(1));
     const momentumImpact = parseFloat((newMetrics.momentum - currentMetrics.momentum).toFixed(1));
+    const qualityScoreImpact = parseFloat((newMetrics.qualityScore - currentMetrics.qualityScore).toFixed(1));
     
     console.log('Impact on metrics:');
     console.log(`- Performance: ${currentMetrics.performance} → ${newMetrics.performance} (${performanceImpact > 0 ? '+' : ''}${performanceImpact})`);
     console.log(`- Stability: ${currentMetrics.stability} → ${newMetrics.stability} (${stabilityImpact > 0 ? '+' : ''}${stabilityImpact})`);
     console.log(`- Value: ${currentMetrics.value} → ${newMetrics.value} (${valueImpact > 0 ? '+' : ''}${valueImpact})`);
     console.log(`- Momentum: ${currentMetrics.momentum} → ${newMetrics.momentum} (${momentumImpact > 0 ? '+' : ''}${momentumImpact})`);
+    console.log(`- Quality Score: ${currentMetrics.qualityScore} → ${newMetrics.qualityScore} (${qualityScoreImpact > 0 ? '+' : ''}${qualityScoreImpact})`);
     
     const impact = {
       performance: performanceImpact,
       stability: stabilityImpact,
       value: valueImpact,
-      momentum: momentumImpact
+      momentum: momentumImpact,
+      qualityScore: qualityScoreImpact
     };
     
     console.log('Final industry allocation:', industryAllocation);

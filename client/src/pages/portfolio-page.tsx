@@ -7,6 +7,7 @@ import { PortfolioContext, PortfolioHolding } from '@/contexts/portfolio-context
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { getIndustryAverages } from '@/lib/industry-data';
+import { getQualityScoreColor, getQualityScoreBgColor } from '@/data/leaderboard-data';
 
 export default function PortfolioPage() {
   const portfolio = useContext(PortfolioContext);
@@ -122,6 +123,40 @@ export default function PortfolioPage() {
                 <div>
                   <p className="text-sm text-slate-500 mb-1">Total Value</p>
                   <p className="text-2xl font-bold text-slate-800">${totalValue.toFixed(2)}</p>
+                </div>
+                
+                {/* Portfolio Quality Score */}
+                <div className="flex items-center -mt-2">
+                  <div className="bg-slate-50 rounded-full py-1 px-3 flex items-center border shadow-sm">
+                    <div className="mr-2">
+                      <p className="text-xs text-slate-500 -mb-0.5">Quality Score</p>
+                      <div className="flex items-center">
+                        <div className={`h-2 w-2 rounded-full ${getQualityScoreBgColor(portfolioMetrics.qualityScore || 59)} mr-1.5`}></div>
+                        <p className={`text-xl font-bold ${getQualityScoreColor(portfolioMetrics.qualityScore || 59)}`}>
+                          {portfolioMetrics.qualityScore || 59}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="h-8 w-1 border-l border-slate-200 mx-1"></div>
+                    <div className="w-8 h-8">
+                      <svg viewBox="0 0 36 36" className="w-full h-full">
+                        <path
+                          className="stroke-slate-200"
+                          fill="none"
+                          strokeWidth="3"
+                          d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                        />
+                        <path
+                          className={getQualityScoreColor(portfolioMetrics.qualityScore || 59).replace('text-', 'stroke-')}
+                          fill="none"
+                          strokeWidth="3"
+                          strokeLinecap="round"
+                          strokeDasharray={`${(portfolioMetrics.qualityScore || 59)}, 100`}
+                          d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                        />
+                      </svg>
+                    </div>
+                  </div>
                 </div>
                 
                 <div className="text-right">

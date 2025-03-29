@@ -78,7 +78,7 @@ const LeaderboardPage: React.FC = () => {
       updateUserStats({
         roi: 0,
         trades: 0,
-        portfolioQuality: 59 // Default starting score
+        portfolioQuality: 0 // Default starting score
       });
     }
     
