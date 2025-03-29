@@ -49,7 +49,7 @@ export default function HomePage() {
       <main className="main-content pb-24 pt-20 px-4 bg-gradient-to-b from-slate-50 to-white">
         <AnimatedContainer>
           <HeroSection />
-          <ModernUserWelcome name="Belford&Co" rank={10} />
+          <ModernUserWelcome name="Belford&Co" rank={11} />
         </AnimatedContainer>
         
         <AnimatedContainer delay={0.2}>

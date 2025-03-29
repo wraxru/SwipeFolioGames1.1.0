@@ -17,19 +17,19 @@ export default function StacksExplorer({ stacks }: StacksExplorerProps) {
   const industryDetails: Record<string, { name: string, image: string }> = {
     "Tech": { 
       name: "Tech Titans", 
-      image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=580&auto=format&fit=crop" 
+      image: "Profiles/Industry_Tech.png" 
     },
     "Healthcare": { 
       name: "Med-Tech Innovators", 
-      image: "https://images.unsplash.com/photo-1584036561566-baf8f5f1b144?q=80&w=580&auto=format&fit=crop" 
+      image: "Profiles/savelives.png "
     },
     "Consumer": { 
       name: "Retail Champions", 
-      image: "https://images.unsplash.com/photo-1472851294608-062f824d29cc?q=80&w=580&auto=format&fit=crop" 
+      image: "Profiles/Industry_Retail.png "
     },
     "Real Estate": { 
       name: "Property Players", 
-      image: "https://images.unsplash.com/photo-1582407947304-fd86f028f716?q=80&w=580&auto=format&fit=crop" 
+      image: "Profiles/Industry_RealEstate.png" 
     },
     "Energy": { 
       name: "Energy Innovators", 

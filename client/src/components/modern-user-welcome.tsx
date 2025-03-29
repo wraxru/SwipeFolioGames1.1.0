@@ -2,6 +2,7 @@ import { useState, useEffect, useContext } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronUp, Award } from 'lucide-react';
 import { PortfolioContext } from '@/contexts/portfolio-context';
+import { getCurrentUserRank } from '@/data/leaderboard-data';
 // Use a path that can be dynamically loaded
 const defaultAvatarPath = '/images/default-avatar.png';
 
@@ -10,7 +11,7 @@ interface ModernUserWelcomeProps {
   rank?: number;
 }
 
-export default function ModernUserWelcome({ name, rank: initialRank = 10 }: ModernUserWelcomeProps) {
+export default function ModernUserWelcome({ name, rank: initialRank = 11 }: ModernUserWelcomeProps) {
   const [animateRank, setAnimateRank] = useState(false);
   const [rank, setRank] = useState(initialRank);
   const portfolio = useContext(PortfolioContext);
@@ -41,37 +42,27 @@ export default function ModernUserWelcome({ name, rank: initialRank = 10 }: Mode
     portfolio?.lastUpdated
   ]);
   
-  // Update rank based on portfolio quality score
+  // Update rank based on actual position in leaderboard
   useEffect(() => {
-    if (portfolio && portfolio.portfolioMetrics) {
-      // Use quality score to determine ranking
-      const qualityScore = portfolio.portfolioMetrics.qualityScore;
+    // Get the current user's rank from the leaderboard data
+    const currentUserData = getCurrentUserRank();
+    
+    if (currentUserData && currentUserData.rank) {
+      // Use the rank from the leaderboard data
+      const newRank = currentUserData.rank;
       
-      // Calculate rank based on quality score
-      // Start at rank 10 (lowest) and improve as quality score increases
-      let newRank = 10;
-      if (qualityScore > 0) newRank = 9;
-      if (qualityScore > 10) newRank = 8;
-      if (qualityScore > 20) newRank = 7;
-      if (qualityScore > 30) newRank = 6;
-      if (qualityScore > 40) newRank = 5;
-      if (qualityScore > 50) newRank = 4;
-      if (qualityScore > 60) newRank = 3;
-      if (qualityScore > 70) newRank = 2;
-      if (qualityScore > 85) newRank = 1;
-      
-      // Always update rank, regardless of whether it improved (newRank < prevRank)
-      // This ensures the rank always reflects the current quality score
+      // Only update if rank changed
       if (newRank !== rank) {
         setPrevRank(rank);
         setRank(newRank);
-        // Only animate when the rank improves
+        // Only animate when the rank improves (lower number is better)
         setAnimateRank(newRank < rank);
       }
     }
   }, [
     portfolio, 
-    portfolio?.portfolioMetrics?.qualityScore, 
+    portfolio?.portfolioMetrics?.qualityScore,
+    portfolio?.holdings.length,
     rank
   ]);
   
