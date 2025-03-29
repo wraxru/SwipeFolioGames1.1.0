@@ -132,21 +132,27 @@ export default function AskAI({ stock }: AskAIProps) {
                 {accordionTitle}
               </span>
             </AccordionTrigger>
-            <AccordionContent className="px-4 pt-2 pb-4">
+            <AccordionContent className="px-4 pt-2 pb-4 accordion-content-open">
               <div className="space-y-3 bg-white rounded-md p-3">
                 {/* Question Input */}
                 <div className="flex flex-col gap-3">
                   <Textarea
                     placeholder={`Ask a question about ${stock.ticker}...`}
-                    className="resize-none min-h-[80px] text-sm border-blue-200 text-slate-900"
+                    className="resize-none min-h-[80px] text-sm border-blue-200 text-slate-900 bg-white"
                     value={userQuestion}
                     onChange={(e) => setUserQuestion(e.target.value)}
                     disabled={isLoadingAI}
+                    // Add specific styles to ensure text visibility on all devices
+                    style={{ color: '#1e293b', WebkitTextFillColor: '#1e293b' }}
                   />
                   <Button
-                    onClick={handleSendDebug}
+                    onClick={(e) => {
+                      e.preventDefault(); // Prevent default browser behavior
+                      e.stopPropagation(); // Prevent event bubbling
+                      handleSendDebug(); // Call our handler
+                    }}
                     disabled={isLoadingAI || !userQuestion.trim()}
-                    className="self-end bg-blue-600 hover:bg-blue-700 text-white font-medium"
+                    className="self-end bg-blue-600 hover:bg-blue-700 text-white font-medium ai-send-button"
                     size="sm"
                   >
                     {isLoadingAI ? (

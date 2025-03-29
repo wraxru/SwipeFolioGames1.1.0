@@ -931,21 +931,32 @@ export default function StockCard({
           </div>
         </div>
 
-        {/* Comparative Analysis Section */}
+        {/* Comparative Analysis Section - Modified for better touch interaction */}
         <div 
-          className="bg-white border-t border-b border-slate-100"
-          onClick={(e) => e.stopPropagation()}
-          onTouchStart={(e) => e.stopPropagation()}
-          onTouchEnd={(e) => e.stopPropagation()}
+          className="bg-white border-t border-b border-slate-100 comparative-analysis-container"
+          onClick={(e) => {
+            // Only stop propagation if interacting with an interactive element
+            if (e.target instanceof Element && 
+                (e.target.closest('button') || e.target.closest('input') || 
+                 e.target.closest('select') || e.target.closest('a'))) {
+              e.stopPropagation();
+            }
+          }}
+          // Remove touch handlers that interfere with mobile interactions
         >
           <ComparativeAnalysis currentStock={stock} />
         </div>
         
-        {/* Ask AI Component */}
+        {/* Ask AI Component - Modified to improve touch interaction */}
         <div
-          onClick={(e) => e.stopPropagation()}
-          onTouchStart={(e) => e.stopPropagation()}
-          onTouchEnd={(e) => e.stopPropagation()}
+          onClick={(e) => {
+            // Only stop propagation if the accordion is open to allow swipes when closed
+            if (e.target instanceof Element && e.target.closest('.accordion-content-open')) {
+              e.stopPropagation();
+            }
+          }}
+          // Remove onTouchStart and onTouchEnd handlers that were interfering with button clicks
+          className="ask-ai-container" // Add class for easier debugging
         >
           <AskAI stock={stock} />
         </div>
