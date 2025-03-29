@@ -46,15 +46,15 @@ export default function StackCard({ stack, onClick, imageUrl, category }: StackC
 
   return (
     <motion.div 
-      className="stack-card rounded-xl overflow-hidden flex flex-col shadow-lg border border-gray-800 bg-gray-900 h-64"
+      className="stack-card rounded-xl overflow-hidden flex flex-col shadow-lg border border-gray-200 bg-white h-[340px]"
       onClick={() => onClick(stack.id)}
       whileHover={{ y: -5, transition: { duration: 0.2 } }}
       whileTap={{ scale: 0.98 }}
     >
-      {/* Card Header with Image */}
-      <div className="relative h-36 overflow-hidden">
-        {/* Image with overlay gradient */}
-        <div className="absolute inset-0 bg-black/30 z-10" />
+      {/* Card Header with Image - Taller aspect ratio */}
+      <div className="relative h-44 overflow-hidden">
+        {/* Gradient overlay for better text readability */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/60 z-10" />
 
         <div 
           className="w-full h-full bg-cover bg-center" 
@@ -67,7 +67,7 @@ export default function StackCard({ stack, onClick, imageUrl, category }: StackC
         {showSwipeCues && (
           <>
             <motion.div 
-              className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/70 backdrop-blur-sm rounded-full p-1 z-10"
+              className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/70 backdrop-blur-sm rounded-full p-1 z-20"
               initial={{ opacity: 0, x: -5 }}
               animate={{ opacity: 0.8, x: 0 }}
               transition={{ repeat: 3, duration: 0.8, repeatType: "reverse" }}
@@ -75,7 +75,7 @@ export default function StackCard({ stack, onClick, imageUrl, category }: StackC
               <ChevronLeft className="w-4 h-4 text-white" />
             </motion.div>
             <motion.div 
-              className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/70 backdrop-blur-sm rounded-full p-1 z-10"
+              className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/70 backdrop-blur-sm rounded-full p-1 z-20"
               initial={{ opacity: 0, x: 5 }}
               animate={{ opacity: 0.8, x: 0 }}
               transition={{ repeat: 3, duration: 0.8, repeatType: "reverse" }}
@@ -86,82 +86,87 @@ export default function StackCard({ stack, onClick, imageUrl, category }: StackC
         )}
         
         {/* Card Stack Preview - simulate the edge of the next card */}
-        <div className="absolute -right-1 top-6 bottom-6 w-2 rounded-l-md bg-gray-200/10 backdrop-blur-sm z-10" />
+        <div className="absolute -right-1 top-8 bottom-8 w-2 rounded-l-md bg-white/20 backdrop-blur-sm z-20" />
 
-        {/* Decorative gradient band */}
-        <div className={`absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r ${getGradient()}`} />
-
-        {/* Category badge */}
+        {/* Category badge - Moved to top for better visibility */}
         {category && (
-          <div className="absolute top-3 left-3 bg-black/60 border border-gray-700 backdrop-blur-sm rounded-full px-3 py-1 text-xs font-medium z-10 text-white">
+          <div className="absolute top-3 left-3 bg-black/60 border border-gray-700 backdrop-blur-sm rounded-full px-3 py-1 text-xs font-medium z-20 text-white">
             {category}
           </div>
         )}
 
-        {/* Rating */}
-        <div className="absolute bottom-3 left-3 bg-black/60 backdrop-blur-sm rounded-full px-3 py-1 flex items-center space-x-1 text-xs z-10 border border-gray-700">
-          <Star className="w-3 h-3 text-yellow-400" />
-          <span className="text-white">{stack.rating}.0</span>
-        </div>
+        {/* Bottom indicators row with better spacing */}
+        <div className="absolute bottom-3 left-0 right-0 px-3 flex justify-between items-center z-20">
+          {/* Rating */}
+          <div className="bg-black/60 backdrop-blur-sm rounded-full px-3 py-1 flex items-center space-x-1 text-xs border border-gray-700">
+            <Star className="w-3 h-3 text-yellow-400" />
+            <span className="text-white">{stack.rating}.0</span>
+          </div>
 
-        {/* Card count with progress */}
-        <div className="absolute bottom-3 right-3 bg-black/60 backdrop-blur-sm border border-gray-700 rounded-full px-3 py-1 flex items-center space-x-1 text-xs z-10">
-          <BarChart2 className="w-3 h-3 text-cyan-400" />
-          <span className="text-white">{currentCardIndex}/{totalCards} stocks</span>
+          {/* Card count with progress */}
+          <div className="bg-black/60 backdrop-blur-sm border border-gray-700 rounded-full px-3 py-1 flex items-center space-x-1 text-xs">
+            <BarChart2 className="w-3 h-3 text-cyan-400" />
+            <span className="text-white">{currentCardIndex}/{totalCards} stocks</span>
+          </div>
         </div>
       </div>
 
-      {/* Card Body */}
-      <div className="px-4 py-3 flex-1 flex flex-col justify-between">
-        {/* Title with icon */}
+      {/* Card Body - Better spacing and hierarchy */}
+      <div className="px-4 py-3 flex-1 flex flex-col justify-between bg-white">
+        {/* Title with icon - Improved spacing */}
         <div>
-          <div className="flex items-start justify-between">
-            <h3 className="font-bold text-lg text-gray-800 leading-tight">{stack.title}</h3> {/* Changed text color here */}
-            <div className="p-1.5 rounded-full bg-gray-800">
-              <TrendingUp className="w-4 h-4 text-cyan-400" />
+          <div className="flex items-start justify-between mb-1">
+            <h3 className="font-bold text-base text-gray-800 leading-tight">{stack.title}</h3>
+            <div className="p-1.5 rounded-full bg-gray-100 border border-gray-200">
+              <TrendingUp className="w-4 h-4 text-blue-500" />
             </div>
           </div>
-          <p className="text-xs text-gray-400 mt-1 line-clamp-2">{stack.description}</p>
+          <p className="text-xs text-gray-500 mt-1 line-clamp-2">{stack.description}</p>
         </div>
 
-        {/* Bottom badges */}
-        <div className="mt-3 flex items-center justify-between">
-          <div className={`badge ${
-            stack.difficulty === 'beginner' ? 'bg-green-900/40 text-green-400 border-green-500/30' :
-            stack.difficulty === 'intermediate' ? 'bg-yellow-900/40 text-yellow-400 border-yellow-500/30' :
-            'bg-red-900/40 text-red-400 border-red-500/30'
-          } text-xs px-2 py-1 rounded-full border`}>
-            {stack.difficulty || 'intermediate'}
+        <div className="mt-3 space-y-3">
+          {/* Bottom badges with better spacing */}
+          <div className="flex items-center justify-between">
+            <div className={`badge ${
+              stack.difficulty === 'beginner' ? 'bg-green-50 text-green-600 border-green-200' :
+              stack.difficulty === 'intermediate' ? 'bg-yellow-50 text-yellow-600 border-yellow-200' :
+              'bg-red-50 text-red-600 border-red-200'
+            } text-xs px-2 py-1 rounded-full border`}>
+              {stack.difficulty || 'intermediate'}
+            </div>
+            
+            {/* Favorite button */}
+            <button 
+              className="rounded-full p-1.5 bg-gray-100 hover:bg-gray-200 transition-colors border border-gray-200"
+              onClick={(e) => {
+                e.stopPropagation(); // Prevent triggering the card click
+                // Implement favorite functionality later
+              }}
+            >
+              <Heart className="w-3.5 h-3.5 text-pink-500" />
+            </button>
           </div>
           
-          {/* Favorite button */}
-          <button 
-            className="rounded-full p-1.5 bg-gray-800/30 hover:bg-gray-800/50 transition-colors"
-            onClick={(e) => {
-              e.stopPropagation(); // Prevent triggering the card click
-              // Implement favorite functionality later
-            }}
-          >
-            <Heart className="w-3.5 h-3.5 text-pink-400" />
-          </button>
-        </div>
-        
-        {/* Card navigation dots */}
-        <div className="flex justify-center mt-2 space-x-1">
-          {Array.from({ length: Math.min(5, totalCards) }).map((_, i) => (
-            <button
-              key={i}
-              className={`w-1.5 h-1.5 rounded-full transition-colors ${
-                i === 0 ? 'bg-cyan-500' : 'bg-gray-400/30'
-              }`}
-              onClick={(e) => {
-                e.stopPropagation();
-                setCurrentCardIndex(i + 1);
-              }}
-            />
-          ))}
+          {/* Card navigation dots */}
+          <div className="flex justify-center space-x-1">
+            {Array.from({ length: Math.min(5, totalCards) }).map((_, i) => (
+              <button
+                key={i}
+                className={`w-1.5 h-1.5 rounded-full transition-colors ${
+                  i === 0 ? 'bg-blue-500' : 'bg-gray-200'
+                }`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setCurrentCardIndex(i + 1);
+                }}
+              />
+            ))}
+          </div>
         </div>
       </div>
+
+      {/* Decorative gradient accent line at bottom */}
+      <div className={`h-1 bg-gradient-to-r ${getGradient()}`} />
     </motion.div>
   );
 }
