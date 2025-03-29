@@ -1,8 +1,8 @@
-import React, { useMemo } from 'react'; // Removed useState, useEffect, useCallback, useRef
+import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowUp, ArrowDown, Wallet, TrendingUp, Clock, DollarSign, PieChart } from 'lucide-react';
-import { Progress } from './ui/progress'; // Assuming this path is correct
-import { usePortfolio, PortfolioHolding } from '@/contexts/portfolio-context'; // Assuming this path is correct
+import { Progress } from './ui/progress';
+import { usePortfolio, PortfolioHolding } from '@/contexts/portfolio-context';
 
 // Helper component for metrics with animated progress
 function MetricItem({ label, value, color }: { label: string; value: number; color: string }) {
@@ -30,66 +30,56 @@ function MetricItem({ label, value, color }: { label: string; value: number; col
   );
 }
 
-
 export default function PortfolioDashboard() {
-  // 1. Get LIVE data directly from the context
+  // Get data from context
   const portfolio = usePortfolio();
   const {
     cash,
     holdings,
     portfolioMetrics,
-    lastUpdated, // Use the context's lastUpdated
-    // version // You might not need version directly here anymore
+    lastUpdated
   } = portfolio;
 
-  // 2. Calculate ALL derived values directly within the component body.
-  // Use useMemo for potentially expensive calculations if needed, though often not necessary
-  // unless profiling shows performance issues.
-
+  // Calculate derived values
   const portfolioValue = useMemo(() => {
     console.log("Dashboard: Recalculating portfolioValue");
     return holdings.reduce((total, h) => total + (h.shares * h.stock.price), 0);
-  }, [holdings]); // Recalculate only if holdings array reference changes
+  }, [holdings]);
 
   const totalValue = useMemo(() => {
     console.log("Dashboard: Recalculating totalValue");
     return cash + portfolioValue;
-  }, [cash, portfolioValue]); // Recalculate if cash or portfolioValue changes
+  }, [cash, portfolioValue]);
 
   const totalReturn = useMemo(() => {
     console.log("Dashboard: Recalculating totalReturn");
     return holdings.reduce((total, h) => {
       const currentValue = h.shares * h.stock.price;
       const investedValue = h.shares * h.purchasePrice;
-      // Add a check for valid numbers if necessary
       if (!isNaN(currentValue) && !isNaN(investedValue)) {
-          return total + (currentValue - investedValue);
+        return total + (currentValue - investedValue);
       }
       return total;
     }, 0);
-  }, [holdings]); // Recalculate only if holdings array reference changes
+  }, [holdings]);
 
   const totalInvested = useMemo(() => {
     console.log("Dashboard: Recalculating totalInvested");
-    // Calculate the total amount initially invested
-     return holdings.reduce((total, h) => total + (h.shares * h.purchasePrice), 0);
+    return holdings.reduce((total, h) => total + (h.shares * h.purchasePrice), 0);
   }, [holdings]);
 
   const totalReturnPercent = useMemo(() => {
     console.log("Dashboard: Recalculating totalReturnPercent");
-    // Base the percentage on the total amount invested for a clearer picture
-    return totalInvested > 0.01 // Avoid division by zero or near-zero
+    return totalInvested > 0.01
       ? (totalReturn / totalInvested) * 100
       : 0;
   }, [totalReturn, totalInvested]);
-
 
   const projectedReturn = useMemo(() => {
     console.log("Dashboard: Recalculating projectedReturn");
     
     // Calculate the weighted 1-year return based on the amount invested in each stock
     let totalWeightedReturnDollars = 0;
-    let totalInvestedValue = 0;
     
     holdings.forEach(h => {
       // Parse the oneYearReturn string (remove % sign and convert to number)
@@ -100,7 +90,6 @@ export default function PortfolioDashboard() {
       
       // For each holding, use the original invested amount (not current value)
       const investedAmount = h.shares * h.purchasePrice;
-      totalInvestedValue += investedAmount;
       
       // Calculate the projected return for this holding in dollars
       const holdingProjectedReturn = investedAmount * (oneYearReturnPercent / 100);
@@ -109,25 +98,19 @@ export default function PortfolioDashboard() {
     
     // Return the total projected return in dollars
     return totalWeightedReturnDollars;
-  }, [holdings]); // Recalculate only when holdings change
+  }, [holdings]);
 
   const projectedReturnPercent = useMemo(() => {
     console.log("Dashboard: Recalculating projectedReturnPercent");
-    
-    // Calculate the percentage based on total invested amount
-    // This provides the true aggregate ROI percentage on invested money
-    const totalInvested = holdings.reduce((sum, h) => sum + (h.shares * h.purchasePrice), 0);
-    
-    return totalInvested > 0.01 // Avoid division by zero or near-zero
+    return totalInvested > 0.01
       ? (projectedReturn / totalInvested) * 100
       : 0;
-  }, [projectedReturn, holdings]);
-
+  }, [projectedReturn, totalInvested]);
 
   const allocationPercentage = useMemo(() => {
     console.log("Dashboard: Recalculating allocationPercentage");
     return Math.round((portfolioValue / Math.max(0.01, totalValue)) * 100);
-  }, [portfolioValue, totalValue]); // Recalculate if these change
+  }, [portfolioValue, totalValue]);
 
   // Get metrics directly
   const performanceMetric = portfolioMetrics.performance;
@@ -135,24 +118,18 @@ export default function PortfolioDashboard() {
 
   // Prepare sorted holdings for the "Top Holdings" section
   const sortedHoldings = useMemo(() => {
-      console.log("Dashboard: Recalculating sortedHoldings");
-      // Ensure holding.value is calculated correctly if not already present
-      const holdingsWithValue = holdings.map(h => ({
-        ...h,
-        value: h.shares * h.stock.price // Calculate current value here
-      }));
-      return [...holdingsWithValue] // Create a new array reference for sorting
-          .sort((a, b) => b.value - a.value)
-          .slice(0, 2);
-  }, [holdings]); // Recalculate only if holdings array reference changes
-
-
-  // 3. Render using the direct context data and calculated values
-  // Removed the `key={renderKey}` - not needed anymore.
-  // React will re-render when the `portfolio` context value changes.
+    console.log("Dashboard: Recalculating sortedHoldings");
+    // Ensure holding.value is calculated correctly if not already present
+    const holdingsWithValue = holdings.map(h => ({
+      ...h,
+      value: h.shares * h.stock.price // Calculate current value here
+    }));
+    return [...holdingsWithValue] // Create a new array reference for sorting
+      .sort((a, b) => b.value - a.value)
+      .slice(0, 2);
+  }, [holdings]);
 
   console.log("PortfolioDashboard rendering. Total Value:", totalValue.toFixed(2), "Holdings Count:", holdings.length);
-
 
   return (
     <motion.div
@@ -168,7 +145,6 @@ export default function PortfolioDashboard() {
         </h3>
         <div className="flex items-center text-sm text-slate-500">
           <TrendingUp className={`w-3.5 h-3.5 mr-1 ${portfolioValue > 0 ? 'text-green-500' : 'text-slate-400'}`} />
-          {/* Use lastUpdated from context */}
           <span>Updated {new Date(lastUpdated).toLocaleTimeString()}</span>
         </div>
       </div>
@@ -190,9 +166,9 @@ export default function PortfolioDashboard() {
               transition={{ duration: 0.5 }}
               className="text-center"
             >
-              {/* Calculate projected future value: currentValue + projectedReturn */}
+              {/* Calculate projected future value: invested amount + projected return */}
               <span className="text-2xl font-bold text-slate-800">
-                ${(totalValue + projectedReturn).toFixed(2)}
+                ${(totalInvested + projectedReturn).toFixed(2)}
               </span>
               
               <div className={`flex items-center justify-center text-xs mt-1 ${projectedReturn >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
@@ -254,11 +230,9 @@ export default function PortfolioDashboard() {
       {/* Allocation */}
       <div className="mb-1 flex justify-between items-center">
         <span className="text-sm text-slate-600 font-medium">Portfolio allocation</span>
-        {/* Use calculated allocationPercentage */}
         <span className="text-sm font-medium text-slate-700">{allocationPercentage}%</span>
       </div>
 
-      {/* Use calculated allocationPercentage */}
       <Progress
         value={allocationPercentage}
         className="h-2 mb-3"
@@ -267,18 +241,15 @@ export default function PortfolioDashboard() {
       <div className="flex justify-between text-sm">
         <div className="flex flex-col items-start">
           <span className="text-xs text-slate-500">Invested</span>
-           {/* Use calculated portfolioValue */}
           <span className="font-semibold text-slate-700">${portfolioValue.toFixed(2)}</span>
         </div>
         <div className="flex flex-col items-end">
           <span className="text-xs text-slate-500">Available</span>
-           {/* Use direct cash from context */}
           <span className="font-semibold text-emerald-600">${cash.toFixed(2)}</span>
         </div>
       </div>
 
       {/* Top Holdings */}
-      {/* Use the pre-calculated sortedHoldings */}
       {sortedHoldings.length > 0 && (
         <div className="mt-4">
           <div className="flex items-center justify-between mb-3">
@@ -289,15 +260,13 @@ export default function PortfolioDashboard() {
           </div>
 
           <div className="space-y-2">
-            {/* Map over sortedHoldings */}
             {sortedHoldings.map((holding, index) => {
               // Calculate return percentage for this specific holding
-              const returnPercent = holding.purchasePrice > 0 // Avoid division by zero
+              const returnPercent = holding.purchasePrice > 0
                   ? ((holding.stock.price - holding.purchasePrice) / holding.purchasePrice) * 100
                   : 0;
 
               return (
-                // Key should be stable and unique - ticker is usually good if unique per portfolio
                 <motion.div 
                   key={holding.stock.ticker} 
                   className="flex justify-between items-center p-3 bg-white rounded-lg shadow-sm border border-slate-100 hover:shadow-md transition-shadow duration-200"
