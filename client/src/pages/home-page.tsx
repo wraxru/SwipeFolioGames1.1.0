@@ -59,7 +59,35 @@ export default function HomePage() {
           </div>
         </AnimatedContainer>
         
-
+        {/* AI Portfolio Advisor Banner */}
+        <AnimatedContainer delay={0.25}>
+          <motion.div 
+            className="rounded-xl border border-blue-100 bg-gradient-to-r from-blue-50 to-indigo-50 p-4 my-4 shadow-sm border-l-4 border-l-blue-500"
+            whileHover={{ y: -3, boxShadow: "0 10px 25px -5px rgba(59, 130, 246, 0.1), 0 8px 10px -6px rgba(59, 130, 246, 0.1)" }}
+            transition={{ type: "spring", stiffness: 300, damping: 15 }}
+          >
+            <div className="flex justify-between items-center">
+              <div>
+                <h3 className="font-semibold text-blue-700 text-lg mb-1 flex items-center">
+                  <span className="mr-2">✨</span>
+                  New! Improve your portfolio with AI
+                </h3>
+                <p className="text-blue-700/80 text-sm">
+                  Get personalized advice to boost your investments and climb the leaderboard.
+                </p>
+              </div>
+              
+              <motion.a 
+                href="/portfolio"
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium text-sm shadow-sm flex items-center"
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+              >
+                Analyze My Portfolio
+              </motion.a>
+            </div>
+          </motion.div>
+        </AnimatedContainer>
         
         <AnimatedContainer delay={0.3}>
           <CategoryChips 

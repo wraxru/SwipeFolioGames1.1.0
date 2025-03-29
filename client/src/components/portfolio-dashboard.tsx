@@ -4,17 +4,29 @@ import { ArrowUp, ArrowDown, Wallet, TrendingUp, Clock, DollarSign, PieChart } f
 import { Progress } from './ui/progress'; // Assuming this path is correct
 import { usePortfolio, PortfolioHolding } from '@/contexts/portfolio-context'; // Assuming this path is correct
 
-// Helper component for metrics
+// Helper component for metrics with animated progress
 function MetricItem({ label, value, color }: { label: string; value: number; color: string }) {
   return (
-    <div className="bg-slate-50 rounded-lg p-3 border border-slate-100">
-      <p className="text-sm text-slate-500 mb-1.5">{label}</p>
-      <div className="flex items-center">
-        <div className={`h-3 w-3 rounded-full ${color} mr-2`}></div>
-        <p className="font-bold text-lg">{value}</p>
+    <motion.div 
+      className="bg-white rounded-lg p-4 border border-slate-100 shadow-sm hover:shadow-md transition-shadow duration-200"
+      whileHover={{ y: -2 }}
+      transition={{ type: "spring", stiffness: 400, damping: 10 }}
+    >
+      <div className="flex justify-between items-center mb-2">
+        <p className="text-sm font-medium text-slate-600">{label}</p>
+        <div className={`h-2.5 w-2.5 rounded-full ${color}`}></div>
       </div>
-      <Progress value={value} className="h-2 mt-2" />
-    </div>
+      <div className="flex items-baseline">
+        <p className="font-bold text-2xl text-slate-800">{value}</p>
+        <span className="ml-1 text-xs text-slate-500">/100</span>
+      </div>
+      <Progress 
+        value={value} 
+        className={`h-2.5 mt-2.5 ${
+          color === 'bg-blue-500' ? 'bg-blue-100' : 'bg-purple-100'
+        }`} 
+      />
+    </motion.div>
   );
 }
 
@@ -150,44 +162,91 @@ export default function PortfolioDashboard() {
         </div>
       </div>
 
-      {/* Portfolio Summary Card */}
-      <div className="p-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg mb-3">
-        <div className="flex items-baseline justify-between mb-1">
-          <div>
-            <DollarSign className="w-4 h-4 text-blue-500 inline mr-1" />
-            {/* Use calculated totalValue */}
-            <span className="text-xl font-bold text-slate-800">{totalValue.toFixed(2)}</span>
-            <span className="ml-1 text-xs text-slate-500">total value</span>
-          </div>
-
-          <div className="flex items-center">
-            {holdings.length > 0 && (
-              <div className={`text-sm font-semibold flex items-center mr-3 ${totalReturn >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                {totalReturn >= 0 ? (
-                  <ArrowUp className="h-3 w-3 mr-0.5" />
-                ) : (
-                  <ArrowDown className="h-3 w-3 mr-0.5" />
-                )}
-                {/* Use calculated totalReturn and totalReturnPercent */}
-                ${Math.abs(totalReturn).toFixed(2)} ({totalReturn >= 0 ? '+' : ''}{totalReturnPercent.toFixed(1)}%)
-              </div>
-            )}
-            {/* Quality Score Circle */}
-            <div className="flex flex-col items-center justify-center">
-              <div className="flex items-center justify-center bg-indigo-600 text-white rounded-full h-12 w-12 shadow-md">
-                <span className="text-base font-bold">{portfolioMetrics.qualityScore || 0}</span>
-              </div>
-              <span className="text-xs text-indigo-600 font-medium mt-1">Quality</span>
+      {/* Portfolio Summary Card - New Modular Format */}
+      <div className="bg-white rounded-xl shadow-md border border-slate-100 mb-4 overflow-hidden">
+        {/* Top Metrics Row - Clear Icon-Text Pairing */}
+        <div className="grid grid-cols-2 gap-0">
+          {/* Left Side - Portfolio Value & Return */}
+          <div className="p-4 border-r border-b border-slate-100">
+            <div className="flex items-center mb-1">
+              <Wallet className="w-4 h-4 text-blue-500 mr-1.5" />
+              <span className="text-sm font-medium text-slate-500">Total Value</span>
+            </div>
+            <div className="flex items-baseline">
+              <span className="text-2xl font-bold text-slate-800">${totalValue.toFixed(2)}</span>
             </div>
           </div>
+          
+          {/* Right Side - Quality Score as Circular Stat */}
+          <div className="p-4 border-b border-slate-100 flex justify-between items-center">
+            <div className="flex flex-col justify-center">
+              <div className="flex items-center mb-1">
+                <TrendingUp className="w-4 h-4 text-emerald-500 mr-1.5" />
+                <span className="text-sm font-medium text-slate-500">1-Year Return</span>
+              </div>
+              <div className={`flex items-center ${totalReturn >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
+                <span className="text-2xl font-bold">
+                  {totalReturn >= 0 ? '+' : ''}{totalReturnPercent.toFixed(1)}%
+                </span>
+                {totalReturn >= 0 ? (
+                  <ArrowUp className="h-4 w-4 ml-1" />
+                ) : (
+                  <ArrowDown className="h-4 w-4 ml-1" />
+                )}
+              </div>
+            </div>
+            
+            {/* Quality Score Circle */}
+            <motion.div 
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ 
+                type: "spring", 
+                stiffness: 260, 
+                damping: 20,
+                delay: 0.3
+              }}
+              className="flex flex-col items-center justify-center"
+            >
+              <div className="relative flex items-center justify-center">
+                <svg className="w-16 h-16">
+                  <circle
+                    className="text-gray-200"
+                    strokeWidth="5"
+                    stroke="currentColor"
+                    fill="transparent"
+                    r="25"
+                    cx="32"
+                    cy="32"
+                  />
+                  <circle
+                    className="text-blue-600"
+                    strokeWidth="5"
+                    strokeDasharray={2 * Math.PI * 25}
+                    strokeDashoffset={2 * Math.PI * 25 * (1 - (portfolioMetrics.qualityScore || 0) / 100)}
+                    strokeLinecap="round"
+                    stroke="currentColor"
+                    fill="transparent"
+                    r="25"
+                    cx="32"
+                    cy="32"
+                  />
+                </svg>
+                <span className="absolute font-bold text-lg text-slate-800">{portfolioMetrics.qualityScore || 0}</span>
+              </div>
+              <span className="text-xs font-medium text-blue-600 mt-1">Quality Score</span>
+            </motion.div>
+          </div>
         </div>
-
+        
+        {/* Bottom Row - Projection Info */}
         {holdings.length > 0 && (
-          <div className="flex items-center text-sm">
-            <Clock className="w-3 h-3 mr-1 text-blue-500" />
-            <span className="text-xs text-slate-600">Projected 1-year return: </span>
-            {/* Use calculated projectedReturn and projectedReturnPercent */}
-            <span className={`ml-1 text-xs font-medium ${projectedReturn >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+          <div className="p-3 bg-gradient-to-r from-slate-50 to-blue-50 flex items-center justify-between">
+            <div className="flex items-center">
+              <Clock className="w-3.5 h-3.5 text-blue-500 mr-1.5" />
+              <span className="text-sm text-slate-700">Projected Growth</span>
+            </div>
+            <span className={`text-sm font-medium ${projectedReturn >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
               {projectedReturn >= 0 ? '+' : ''}{projectedReturn.toFixed(2)} ({projectedReturn >= 0 ? '+' : ''}{projectedReturnPercent.toFixed(1)}%)
             </span>
           </div>
@@ -241,41 +300,59 @@ export default function PortfolioDashboard() {
       {/* Top Holdings */}
       {/* Use the pre-calculated sortedHoldings */}
       {sortedHoldings.length > 0 && (
-        <div className="mt-3 pt-3 border-t border-slate-100">
-          <div className="flex items-center justify-between mb-2">
-            <h4 className="text-sm font-medium text-slate-700">Top Holdings</h4>
-            <PieChart className="h-3 w-3 text-slate-400" />
+        <div className="mt-4">
+          <div className="flex items-center justify-between mb-3">
+            <h4 className="text-sm font-semibold text-slate-700 flex items-center">
+              <PieChart className="h-3.5 w-3.5 text-blue-500 mr-1.5" />
+              Top Holdings
+            </h4>
           </div>
 
-          {/* Map over sortedHoldings */}
-          {sortedHoldings.map(holding => {
-            // Calculate return percentage for this specific holding
-            const returnPercent = holding.purchasePrice > 0 // Avoid division by zero
-                ? ((holding.stock.price - holding.purchasePrice) / holding.purchasePrice) * 100
-                : 0;
+          <div className="space-y-2">
+            {/* Map over sortedHoldings */}
+            {sortedHoldings.map((holding, index) => {
+              // Calculate return percentage for this specific holding
+              const returnPercent = holding.purchasePrice > 0 // Avoid division by zero
+                  ? ((holding.stock.price - holding.purchasePrice) / holding.purchasePrice) * 100
+                  : 0;
 
-            return (
-              // Key should be stable and unique - ticker is usually good if unique per portfolio
-              <div key={holding.stock.ticker} className="flex justify-between items-center p-2 hover:bg-slate-50 rounded-md text-sm">
-                <div className="flex items-center">
-                  <div className="w-6 h-6 bg-slate-100 rounded flex items-center justify-center mr-2 text-xs font-medium">
-                    {holding.stock.ticker.substring(0, 2)}
+              return (
+                // Key should be stable and unique - ticker is usually good if unique per portfolio
+                <motion.div 
+                  key={holding.stock.ticker} 
+                  className="flex justify-between items-center p-3 bg-white rounded-lg shadow-sm border border-slate-100 hover:shadow-md transition-shadow duration-200"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 + (index * 0.1) }}
+                >
+                  <div className="flex items-center">
+                    <div className="w-9 h-9 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-md flex items-center justify-center mr-3 text-xs font-bold text-white shadow-sm">
+                      {holding.stock.ticker.substring(0, 2)}
+                    </div>
+                    <div>
+                      <p className="font-medium text-slate-800">{holding.stock.name || holding.stock.ticker}</p>
+                      <div className="flex items-center text-xs text-slate-500">
+                        <span>{holding.shares.toFixed(2)} shares</span>
+                        <span className="mx-1">•</span>
+                        <span>${holding.purchasePrice.toFixed(2)}/share</span>
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <p className="font-medium text-slate-800">{holding.stock.ticker}</p>
-                    <p className="text-xs text-slate-500">{holding.shares.toFixed(4)} shares</p>
+                  <div className="text-right">
+                    <p className="font-semibold text-slate-800">${holding.value.toFixed(2)}</p>
+                    <div className={`flex items-center text-xs justify-end ${returnPercent >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
+                      {returnPercent >= 0 ? (
+                        <ArrowUp className="h-3 w-3 mr-0.5" />
+                      ) : (
+                        <ArrowDown className="h-3 w-3 mr-0.5" />
+                      )}
+                      <span>{returnPercent >= 0 ? '+' : ''}{returnPercent.toFixed(1)}%</span>
+                    </div>
                   </div>
-                </div>
-                <div className="text-right">
-                   {/* Use holding.value calculated in useMemo */}
-                  <p className="font-medium">${holding.value.toFixed(2)}</p>
-                  <p className={`text-xs ${returnPercent >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                    {returnPercent >= 0 ? '+' : ''}{returnPercent.toFixed(1)}%
-                  </p>
-                </div>
-              </div>
-            );
-          })}
+                </motion.div>
+              );
+            })}
+          </div>
         </div>
       )}
     </motion.div>
