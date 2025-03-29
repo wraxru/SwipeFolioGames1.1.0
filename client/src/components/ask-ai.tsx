@@ -46,21 +46,51 @@ export default function AskAI({ stock }: AskAIProps) {
         }
       };
       
+      console.log("API request payload:", { userQuestion, stockContext });
+      
       // Make API request to our backend
       const response = await axios.post("/api/ai/ask-stock", {
         userQuestion,
         stockContext
       });
       
+      console.log("API response received:", response.data);
+      
       // Update state with AI's response
       if (response.data && response.data.answer) {
         setAiResponse(response.data.answer);
       } else {
-        setErrorAI("No answer received from AI service");
+        console.error("Missing answer in response:", response.data);
+        setErrorAI("No answer received from AI service. Please check your API key and try again.");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error getting AI response:", error);
-      setErrorAI(error instanceof Error ? error.message : "Unknown error occurred");
+      
+      // Extract and display more detailed error information
+      let errorMessage = "Unknown error occurred";
+      
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        console.error("Error response data:", error.response.data);
+        console.error("Error response status:", error.response.status);
+        
+        if (error.response.data && error.response.data.message) {
+          errorMessage = `Server error: ${error.response.data.message}`;
+        } else if (error.response.status === 401) {
+          errorMessage = "Authentication error. Please check your API key.";
+        } else if (error.response.status === 500) {
+          errorMessage = "Server error. The AI service might be unavailable.";
+        }
+      } else if (error.request) {
+        // The request was made but no response was received
+        errorMessage = "No response from server. Network issue or server is down.";
+      } else if (error.message) {
+        // Something happened in setting up the request
+        errorMessage = error.message;
+      }
+      
+      setErrorAI(errorMessage);
     } finally {
       setIsLoadingAI(false);
     }
@@ -70,8 +100,14 @@ export default function AskAI({ stock }: AskAIProps) {
   const displayName = stock.name.length > 20 ? stock.name.substring(0, 20) + "..." : stock.name;
   const accordionTitle = `Ask AI about ${stock.ticker} (${displayName})`;
 
+  // Add debugging to see API responses
+  const handleSendDebug = async () => {
+    console.log("Sending AI question:", userQuestion);
+    await handleSendQuestion();
+  };
+
   return (
-    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-t border-b border-blue-100 mb-4 shadow-sm">
+    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-t border-b border-blue-100 mb-4 shadow-md">
       <div className="p-1 border-l-4 border-blue-500">
         <Accordion
           type="single"
@@ -95,15 +131,15 @@ export default function AskAI({ stock }: AskAIProps) {
                 <div className="flex flex-col gap-3">
                   <Textarea
                     placeholder={`Ask a question about ${stock.ticker}...`}
-                    className="resize-none min-h-[80px] text-sm border-blue-200"
+                    className="resize-none min-h-[80px] text-sm border-blue-200 text-slate-900"
                     value={userQuestion}
                     onChange={(e) => setUserQuestion(e.target.value)}
                     disabled={isLoadingAI}
                   />
                   <Button
-                    onClick={handleSendQuestion}
+                    onClick={handleSendDebug}
                     disabled={isLoadingAI || !userQuestion.trim()}
-                    className="self-end bg-blue-600 hover:bg-blue-700"
+                    className="self-end bg-blue-600 hover:bg-blue-700 text-white font-medium"
                     size="sm"
                   >
                     {isLoadingAI ? (

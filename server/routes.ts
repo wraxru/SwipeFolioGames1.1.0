@@ -188,9 +188,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Ask AI endpoint
   app.post("/api/ai/ask-stock", async (req, res) => {
     try {
+      console.log("Received AI request with body:", JSON.stringify(req.body, null, 2));
       const { userQuestion, stockContext } = req.body;
       
       if (!userQuestion || !stockContext) {
+        console.error("Missing required fields in request:", req.body);
         return res.status(400).json({ 
           error: "Missing required fields", 
           message: "Both userQuestion and stockContext are required" 
@@ -199,6 +201,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const apiKey = process.env.OPENROUTER_API_KEY;
       if (!apiKey) {
+        console.error("OpenRouter API key is missing");
         return res.status(500).json({ 
           error: "API key missing", 
           message: "OpenRouter API key is not configured" 
@@ -218,47 +221,78 @@ export async function registerRoutes(app: Express): Promise<Server> {
         Ticker: ${stockContext.ticker}
         ${stockContext.description ? `Description: ${stockContext.description}` : ''}
         ${stockContext.price ? `Current Price: $${stockContext.price}` : ''}
-        ${stockContext.metrics && stockContext.metrics.performance ? `Performance Score: ${stockContext.metrics.performance.value}` : ''}
-        ${stockContext.metrics && stockContext.metrics.value ? `Value Score: ${stockContext.metrics.value.value}` : ''}
+        ${stockContext.metrics && stockContext.metrics.performance ? `Performance Score: ${stockContext.metrics.performance}` : ''}
+        ${stockContext.metrics && stockContext.metrics.value ? `Value Score: ${stockContext.metrics.value}` : ''}
         ${stockContext.industry ? `Industry: ${stockContext.industry}` : ''}
       `;
       
       const userMessage = `Context: ${contextString.trim()}\n\nQuestion: ${userQuestion}`;
       
+      console.log("Making API call to OpenRouter with prompt:", userMessage);
+      console.log("Using API key:", apiKey.substring(0, 5) + "..." + apiKey.substring(apiKey.length - 4));
+      
       // Make the API call to OpenRouter
+      const openRouterUrl = 'https://openrouter.ai/api/v1/chat/completions';
+      const requestData = {
+        model: "google/gemini-flash-1.5", // Using Gemini 2.0 flash lite
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userMessage }
+        ]
+      };
+      
+      console.log("Sending request to OpenRouter:", JSON.stringify(requestData, null, 2));
+      
       const response = await axios.post(
-        'https://openrouter.ai/api/v1/chat/completions',
-        {
-          model: "google/gemini-flash-1.5", // Using Gemini 2.0 flash lite
-          messages: [
-            { role: "system", content: systemPrompt },
-            { role: "user", content: userMessage }
-          ]
-        },
+        openRouterUrl,
+        requestData,
         {
           headers: {
             'Authorization': `Bearer ${apiKey}`,
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'HTTP-Referer': 'https://swipefolio.replit.app',
+            'X-Title': 'Swipefolio Finance'
           }
         }
       );
       
+      console.log("OpenRouter API response status:", response.status);
+      console.log("OpenRouter API response data:", JSON.stringify(response.data, null, 2));
+      
       // Extract the AI's response
       if (response.data && response.data.choices && response.data.choices.length > 0) {
         const answer = response.data.choices[0].message.content;
+        console.log("Successfully extracted answer:", answer.substring(0, 50) + "...");
         return res.json({ answer });
       } else {
+        console.error("Invalid API response format:", response.data);
         return res.status(500).json({ 
           error: "Invalid API response", 
-          message: "The AI service returned an unexpected response format" 
+          message: "The AI service returned an unexpected response format",
+          data: response.data
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error in AI request:", error);
-      return res.status(500).json({ 
+      
+      let errorResponse = { 
         error: "AI service error", 
-        message: error instanceof Error ? error.message : "Unknown error occurred" 
-      });
+        message: error instanceof Error ? error.message : "Unknown error occurred"
+      };
+      
+      // Add more detailed error information if available
+      if (error.response) {
+        console.error("Error response status:", error.response.status);
+        console.error("Error response data:", error.response.data);
+        
+        errorResponse = {
+          ...errorResponse,
+          status: error.response.status,
+          data: error.response.data
+        };
+      }
+      
+      return res.status(500).json(errorResponse);
     }
   });
 
