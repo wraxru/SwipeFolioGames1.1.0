@@ -108,7 +108,7 @@ export default function CompetitionTracker() {
           updateUserStats({
             roi: 0,
             trades: 0,
-            portfolioQuality: 59
+            portfolioQuality: 0 // Default is 0 for empty portfolio
           });
           
           setUserReturns(0);

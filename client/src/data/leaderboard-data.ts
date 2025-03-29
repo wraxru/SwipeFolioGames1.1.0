@@ -119,9 +119,9 @@ export const leaderboardUsers: LeaderboardUser[] = [
     name: "Belford & Co",
     username: "Belford&Co",
     avatar: "/images/avatars/belford-avatar.png",
-    roi: 21.8, // Will be dynamically calculated from portfolio context
-    trades: 12, // Will be dynamically calculated from portfolio context
-    portfolioQuality: 59, // Will be dynamically calculated from portfolio context 
+    roi: 0, // Will be dynamically calculated from portfolio context
+    trades: 0, // Will be dynamically calculated from portfolio context
+    portfolioQuality: 0, // Will be dynamically calculated from portfolio context 
     referrals: 0,
   }
 ];
@@ -130,7 +130,7 @@ export const leaderboardUsers: LeaderboardUser[] = [
 let userStats = {
   roi: 0,
   trades: 0,
-  portfolioQuality: 59,
+  portfolioQuality: 0, // Default is 0 for empty portfolio
 };
 
 // Function to update current user stats - will be called from portfolio context
@@ -184,7 +184,7 @@ export function calculateTrades(holdings: any[]): number {
 
 // Calculate portfolio quality (based on equal weighting of performance, momentum, stability, and value)
 export function calculatePortfolioQuality(holdings: any[]): number {
-  if (holdings.length === 0) return 59; // Default starting value
+  if (holdings.length === 0) return 0; // Default is 0 for empty portfolio
   
   // 1. PERFORMANCE: Based on projected returns
   const performanceScore = holdings.reduce((total, holding) => {
