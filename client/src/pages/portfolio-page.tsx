@@ -126,7 +126,7 @@ export default function PortfolioPage() {
                   <p className="text-sm text-slate-500 mb-1">Projected Value (1-Year)</p>
                   <div className="flex items-baseline">
                     <p className="text-2xl font-bold text-slate-800">
-                      ${(totalInvested + projectedReturn).toFixed(2)}
+                      ${(totalValue + projectedReturn).toFixed(2)}
                     </p>
                     <span className={`ml-2 text-sm font-medium ${projectedReturn >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                       {projectedReturn >= 0 ? '+' : ''}{projectedReturnPercent.toFixed(1)}%
