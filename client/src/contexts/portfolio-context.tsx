@@ -3,6 +3,7 @@ import { StockData, PerformanceDetails, StabilityDetails, ValueDetails, Momentum
 import { useToast } from '@/hooks/use-toast';
 import { getIndustryAverages } from '@/lib/industry-data';
 import { getAdvancedMetricScore, calculatePortfolioScore } from '@/lib/advanced-metric-scoring';
+import { calculatePortfolioQuality, getQualityScoreColor, getQualityScoreBgColor } from '@/data/leaderboard-data';
 
 // Define types
 export interface PortfolioHolding {
@@ -85,10 +86,9 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
   
   // Calculate quality score using equal weighting of all metrics
   function calculateQualityScore(): number {
-    if (holdings.length === 0) return 59; // Default starting score
+    if (holdings.length === 0) return 0; // Empty portfolio starts at 0
     
-    // Import the calculation from leaderboard data
-    const { calculatePortfolioQuality } = require('@/data/leaderboard-data');
+    // Use the imported calculation function
     return calculatePortfolioQuality(holdings);
   }
   
@@ -324,7 +324,7 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
       stability: hasExistingHoldings ? portfolioMetrics.stability : 0,
       value: hasExistingHoldings ? portfolioMetrics.value : 0,
       momentum: hasExistingHoldings ? portfolioMetrics.momentum : 0,
-      qualityScore: hasExistingHoldings ? portfolioMetrics.qualityScore : 59
+      qualityScore: hasExistingHoldings ? portfolioMetrics.qualityScore : 0
     };
     console.log('Current portfolio metrics:', currentMetrics);
     
@@ -367,7 +367,6 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
       newMomentum = calculateNewMetricScore('momentum', simulatedHoldings, stock);
       
       // Calculate new quality score for simulated portfolio
-      const { calculatePortfolioQuality } = require('@/data/leaderboard-data');
       newQualityScore = calculatePortfolioQuality(simulatedHoldings);
     } else {
       console.log('First investment - using stock metrics directly');
@@ -375,7 +374,8 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
       newStability = stockMetricScore.stability;
       newValue = stockMetricScore.value;
       newMomentum = stockMetricScore.momentum;
-      newQualityScore = 59; // Default for first investment
+      // For first investment, calculate quality score from stock metrics
+      newQualityScore = Math.round((performanceScore + stabilityScore + valueScore + momentumScore) / 4);
     }
     
     console.log('New portfolio metrics calculated:');
