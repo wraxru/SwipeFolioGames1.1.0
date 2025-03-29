@@ -147,8 +147,8 @@ export function getLeaderboardData(): LeaderboardUser[] {
     return user;
   });
   
-  // Sort by ROI (highest first)
-  const sortedUsers = [...updatedUsers].sort((a, b) => b.roi - a.roi);
+  // Sort by portfolioQuality (highest first)
+  const sortedUsers = [...updatedUsers].sort((a, b) => b.portfolioQuality - a.portfolioQuality);
   
   // Add rank property
   return sortedUsers.map((user, index) => ({

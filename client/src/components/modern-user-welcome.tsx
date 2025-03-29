@@ -59,17 +59,18 @@ export default function ModernUserWelcome({ name, rank: initialRank = 10 }: Mode
       if (qualityScore > 70) newRank = 2;
       if (qualityScore > 85) newRank = 1;
       
-      // Check if rank improved
-      if (newRank < prevRank) {
+      // Always update rank, regardless of whether it improved (newRank < prevRank)
+      // This ensures the rank always reflects the current quality score
+      if (newRank !== rank) {
         setPrevRank(rank);
         setRank(newRank);
-        setAnimateRank(true);
+        // Only animate when the rank improves
+        setAnimateRank(newRank < rank);
       }
     }
   }, [
     portfolio, 
     portfolio?.portfolioMetrics?.qualityScore, 
-    prevRank, 
     rank
   ]);
   

@@ -160,17 +160,26 @@ export default function PortfolioDashboard() {
             <span className="ml-1 text-xs text-slate-500">total value</span>
           </div>
 
-          {holdings.length > 0 && (
-            <div className={`text-sm font-semibold flex items-center ${totalReturn >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-              {totalReturn >= 0 ? (
-                <ArrowUp className="h-3 w-3 mr-0.5" />
-              ) : (
-                <ArrowDown className="h-3 w-3 mr-0.5" />
-              )}
-              {/* Use calculated totalReturn and totalReturnPercent */}
-              ${Math.abs(totalReturn).toFixed(2)} ({totalReturn >= 0 ? '+' : ''}{totalReturnPercent.toFixed(1)}%)
+          <div className="flex items-center">
+            {holdings.length > 0 && (
+              <div className={`text-sm font-semibold flex items-center mr-3 ${totalReturn >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                {totalReturn >= 0 ? (
+                  <ArrowUp className="h-3 w-3 mr-0.5" />
+                ) : (
+                  <ArrowDown className="h-3 w-3 mr-0.5" />
+                )}
+                {/* Use calculated totalReturn and totalReturnPercent */}
+                ${Math.abs(totalReturn).toFixed(2)} ({totalReturn >= 0 ? '+' : ''}{totalReturnPercent.toFixed(1)}%)
+              </div>
+            )}
+            {/* Quality Score Circle */}
+            <div className="flex flex-col items-center justify-center">
+              <div className="flex items-center justify-center bg-indigo-600 text-white rounded-full h-10 w-10 shadow-md">
+                <span className="text-sm font-bold">{portfolioMetrics.qualityScore || 0}</span>
+              </div>
+              <span className="text-xs text-indigo-600 font-medium mt-0.5">Quality</span>
             </div>
-          )}
+          </div>
         </div>
 
         {holdings.length > 0 && (
