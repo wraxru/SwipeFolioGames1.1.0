@@ -3,7 +3,7 @@ import { StockData, PerformanceDetails, StabilityDetails, ValueDetails, Momentum
 import { useToast } from '@/hooks/use-toast';
 import { getIndustryAverages } from '@/lib/industry-data';
 import { getAdvancedMetricScore, calculatePortfolioScore } from '@/lib/advanced-metric-scoring';
-import { calculatePortfolioQuality, getQualityScoreColor, getQualityScoreBgColor } from '@/data/leaderboard-data';
+import { getQualityScoreColor, getQualityScoreBgColor } from '@/data/leaderboard-data';
 
 // Define types
 export interface PortfolioHolding {
@@ -75,22 +75,25 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
   const portfolioValue = holdings.reduce((total, holding) => total + holding.value, 0);
   const totalValue = cash + portfolioValue;
   
-  // Portfolio metrics
+  // Calculate individual metrics first
+  const performanceScore = calculatePortfolioMetric('performance');
+  const stabilityScore = calculatePortfolioMetric('stability');
+  const valueScore = calculatePortfolioMetric('value');
+  const momentumScore = calculatePortfolioMetric('momentum');
+
+  // Calculate Quality Score as the average of the four metrics (25% each)
+  const qualityScore = holdings.length === 0 
+                     ? 0 
+                     : Math.round((performanceScore + stabilityScore + valueScore + momentumScore) / 4);
+
+  // Portfolio metrics object now uses the calculated scores
   const portfolioMetrics = {
-    performance: calculatePortfolioMetric('performance'),
-    stability: calculatePortfolioMetric('stability'),
-    value: calculatePortfolioMetric('value'),
-    momentum: calculatePortfolioMetric('momentum'),
-    qualityScore: calculateQualityScore()
+    performance: performanceScore,
+    stability: stabilityScore,
+    value: valueScore,
+    momentum: momentumScore,
+    qualityScore: qualityScore // Use the directly calculated average
   };
-  
-  // Calculate quality score using equal weighting of all metrics
-  function calculateQualityScore(): number {
-    if (holdings.length === 0) return 0; // Empty portfolio starts at 0
-    
-    // Use the imported calculation function
-    return calculatePortfolioQuality(holdings);
-  }
   
   // Calculate individual portfolio metric score using the advanced 0-100 scale
   function calculatePortfolioMetric(metricName: "performance" | "stability" | "value" | "momentum"): number {
@@ -366,8 +369,8 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
       newValue = calculateNewMetricScore('value', simulatedHoldings, stock);
       newMomentum = calculateNewMetricScore('momentum', simulatedHoldings, stock);
       
-      // Calculate new quality score for simulated portfolio
-      newQualityScore = calculatePortfolioQuality(simulatedHoldings);
+      // Calculate new quality score for simulated portfolio as the average of the four metrics
+      newQualityScore = Math.round((newPerformance + newStability + newValue + newMomentum) / 4);
     } else {
       console.log('First investment - using stock metrics directly');
       newPerformance = stockMetricScore.performance;
