@@ -86,11 +86,11 @@ export default function PortfolioDashboard() {
 
   const projectedReturn = useMemo(() => {
     console.log("Dashboard: Recalculating projectedReturn");
-    // Calculate the weighted 1-year return for the aggregate portfolio
-    let totalWeightedReturn = 0;
-    let totalCurrentValue = 0;
     
-    // First, calculate the weighted return by current value
+    // Calculate the weighted 1-year return based on the amount invested in each stock
+    let totalWeightedReturnDollars = 0;
+    let totalInvestedValue = 0;
+    
     holdings.forEach(h => {
       // Parse the oneYearReturn string (remove % sign and convert to number)
       const oneYearReturnPercent = 
@@ -98,26 +98,30 @@ export default function PortfolioDashboard() {
         typeof h.stock.oneYearReturn === 'string' ? parseFloat(h.stock.oneYearReturn.replace('%', '')) : 
         0;
       
-      const currentValue = h.shares * h.stock.price;
-      totalCurrentValue += currentValue;
-      totalWeightedReturn += currentValue * oneYearReturnPercent;
+      // For each holding, use the original invested amount (not current value)
+      const investedAmount = h.shares * h.purchasePrice;
+      totalInvestedValue += investedAmount;
+      
+      // Calculate the projected return for this holding in dollars
+      const holdingProjectedReturn = investedAmount * (oneYearReturnPercent / 100);
+      totalWeightedReturnDollars += holdingProjectedReturn;
     });
     
-    // Calculate the weighted average percentage
-    const weightedReturnPercent = totalCurrentValue > 0 ? 
-      totalWeightedReturn / totalCurrentValue : 0;
-    
-    // Now calculate the actual dollar amount of the projected return  
-    return portfolioValue * (weightedReturnPercent / 100);
-  }, [holdings, portfolioValue]); // Recalculate when holdings or portfolioValue changes
+    // Return the total projected return in dollars
+    return totalWeightedReturnDollars;
+  }, [holdings]); // Recalculate only when holdings change
 
   const projectedReturnPercent = useMemo(() => {
-      console.log("Dashboard: Recalculating projectedReturnPercent");
-      // Calculate the percentage based on current portfolio value
-      return portfolioValue > 0.01 // Avoid division by zero or near-zero
-          ? (projectedReturn / portfolioValue) * 100
-          : 0;
-  }, [projectedReturn, portfolioValue]);
+    console.log("Dashboard: Recalculating projectedReturnPercent");
+    
+    // Calculate the percentage based on total invested amount
+    // This provides the true aggregate ROI percentage on invested money
+    const totalInvested = holdings.reduce((sum, h) => sum + (h.shares * h.purchasePrice), 0);
+    
+    return totalInvested > 0.01 // Avoid division by zero or near-zero
+      ? (projectedReturn / totalInvested) * 100
+      : 0;
+  }, [projectedReturn, holdings]);
 
 
   const allocationPercentage = useMemo(() => {
