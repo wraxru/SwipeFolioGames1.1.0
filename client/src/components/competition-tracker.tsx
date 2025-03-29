@@ -8,6 +8,7 @@ import {
   getCurrentUserRank, 
   LeaderboardUser
 } from '@/data/leaderboard-data';
+import belfordAvatar from '../assets/belford-avatar.png';
 
 // Define the investor type
 interface Investor {
@@ -149,7 +150,9 @@ export default function CompetitionTracker() {
                         {index + 1}
                       </div>
                       <div className="flex items-center">
-                        <span className="mr-2">{investor.avatar}</span>
+                        <div className="w-6 h-6 rounded-full overflow-hidden border border-slate-200 flex-shrink-0 mr-2">
+                          <img src={belfordAvatar} alt={investor.name} className="w-full h-full object-cover" />
+                        </div>
                         <span className="text-sm font-medium text-slate-700">{investor.name}</span>
                       </div>
                     </div>
@@ -180,7 +183,9 @@ export default function CompetitionTracker() {
                     {userRank}
                   </div>
                   <div className="flex items-center">
-                    <span className="mr-2">{userPosition.avatar}</span>
+                    <div className="w-8 h-8 rounded-full overflow-hidden border border-slate-200 flex-shrink-0 mr-2">
+                      <img src={belfordAvatar} alt={userPosition.name} className="w-full h-full object-cover" />
+                    </div>
                     <span className="text-sm font-medium text-slate-700">{userPosition.name}</span>
                     <span className="ml-2 text-xs text-blue-500 bg-blue-50 px-1.5 py-0.5 rounded-full">You</span>
                   </div>
@@ -221,7 +226,9 @@ export default function CompetitionTracker() {
                           {userRank - 1}
                         </div>
                         <div className="flex items-center">
-                          <span className="mr-2">{investor.avatar}</span>
+                          <div className="w-6 h-6 rounded-full overflow-hidden border border-slate-200 flex-shrink-0 mr-2">
+                            <img src={belfordAvatar} alt={investor.name} className="w-full h-full object-cover" />
+                          </div>
                           <span className="text-sm font-medium text-slate-700">{investor.name}</span>
                         </div>
                       </div>

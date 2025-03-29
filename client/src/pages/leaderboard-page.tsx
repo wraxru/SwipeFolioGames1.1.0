@@ -21,6 +21,7 @@ import {
   calculateTrades
 } from "@/data/leaderboard-data";
 import { PortfolioContext } from "@/contexts/portfolio-context";
+import belfordAvatar from '../assets/belford-avatar.png';
 
 const LeaderboardPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"all" | "friends">("all");
@@ -139,7 +140,7 @@ const LeaderboardPage: React.FC = () => {
             >
               <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-slate-300 bg-white shadow-md">
                 <img 
-                  src={filteredData[1]?.avatar || "/images/avatars/default-1.png"} 
+                  src={belfordAvatar} 
                   alt={filteredData[1]?.name} 
                   className="w-full h-full object-cover"
                 />
@@ -165,7 +166,7 @@ const LeaderboardPage: React.FC = () => {
             >
               <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-yellow-400 bg-white shadow-xl">
                 <img 
-                  src={filteredData[0]?.avatar || "/images/avatars/default-0.png"} 
+                  src={belfordAvatar} 
                   alt={filteredData[0]?.name} 
                   className="w-full h-full object-cover"
                 />
@@ -201,7 +202,7 @@ const LeaderboardPage: React.FC = () => {
             >
               <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-amber-700 bg-white shadow-md">
                 <img 
-                  src={filteredData[2]?.avatar || "/images/avatars/default-2.png"} 
+                  src={belfordAvatar} 
                   alt={filteredData[2]?.name} 
                   className="w-full h-full object-cover"
                 />
@@ -294,7 +295,7 @@ const LeaderboardPage: React.FC = () => {
                   </div>
                   <div className="flex items-center overflow-hidden">
                     <div className="w-8 h-8 rounded-full overflow-hidden border border-slate-200 flex-shrink-0 mr-2">
-                      <img src={currentUser.avatar} alt={currentUser.name} className="w-full h-full object-cover" />
+                      <img src={belfordAvatar} alt={currentUser.name} className="w-full h-full object-cover" />
                     </div>
                     <div className="min-w-0">
                       <p className="font-medium text-sm truncate">{currentUser.name}</p>
@@ -335,7 +336,7 @@ const LeaderboardPage: React.FC = () => {
                     </div>
                     <div className="flex items-center overflow-hidden">
                       <div className="w-8 h-8 rounded-full overflow-hidden border border-slate-200 flex-shrink-0 mr-2">
-                        <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
+                        <img src={belfordAvatar} alt={user.name} className="w-full h-full object-cover" />
                       </div>
                       <div className="min-w-0">
                         <div className="flex items-center">
