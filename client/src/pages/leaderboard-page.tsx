@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Link } from "wouter";
 import { 
   Trophy, 
@@ -14,17 +14,90 @@ import {
   UserPlus
 } from "lucide-react";
 import { motion } from "framer-motion";
-import { getLeaderboardData, getCurrentUserRank, LeaderboardUser } from "@/data/leaderboard-data";
+import { 
+  getLeaderboardData, 
+  getCurrentUserRank, 
+  LeaderboardUser, 
+  updateUserStats,
+  calculateTrades,
+  calculatePortfolioQuality
+} from "@/data/leaderboard-data";
+import { PortfolioContext } from "@/contexts/portfolio-context";
 
 const LeaderboardPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"all" | "friends">("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
   // Empty friends list for now (to be populated via referrals)
   const [friendsList, setFriendsList] = useState<LeaderboardUser[]>([]);
+  const [leaderboardData, setLeaderboardData] = useState<LeaderboardUser[]>([]);
+  const [currentUser, setCurrentUser] = useState<LeaderboardUser | undefined>();
+  // Get portfolio context
+  const portfolio = useContext(PortfolioContext);
   
-  // Get leaderboard data
-  const leaderboardData = getLeaderboardData();
-  const currentUser = getCurrentUserRank();
+  // Update user stats and refetch leaderboard data when portfolio changes
+  useEffect(() => {
+    if (!portfolio) return;
+    
+    // Calculate projected 1-year returns if there are holdings
+    if (portfolio.holdings.length > 0) {
+      const totalInvested = portfolio.holdings.reduce(
+        (total, h) => total + h.shares * h.purchasePrice, 
+        0
+      );
+      
+      if (totalInvested > 0) {
+        const oneYearReturns = portfolio.holdings.reduce((total, h) => {
+          // Parse the oneYearReturn string (remove % sign and convert to number)
+          const oneYearReturnPercent = 
+            typeof h.stock.oneYearReturn === 'number' ? h.stock.oneYearReturn :
+            typeof h.stock.oneYearReturn === 'string' ? 
+              parseFloat(h.stock.oneYearReturn.replace('%', '')) : 0;
+              
+          const stockValue = h.shares * h.purchasePrice;
+          const stockReturn = stockValue * (oneYearReturnPercent / 100);
+          return total + stockReturn;
+        }, 0);
+        
+        const projectedReturnPercent = (oneYearReturns / totalInvested) * 100;
+        
+        // Calculate trades (number of holdings)
+        const tradeCount = calculateTrades(portfolio.holdings);
+        
+        // Calculate portfolio quality
+        const qualityScore = calculatePortfolioQuality(portfolio.holdings);
+        
+        // Update the global user stats
+        updateUserStats({
+          roi: projectedReturnPercent,
+          trades: tradeCount,
+          portfolioQuality: qualityScore
+        });
+      }
+    } else {
+      // Reset stats if no holdings
+      updateUserStats({
+        roi: 0,
+        trades: 0,
+        portfolioQuality: 59 // Default starting score
+      });
+    }
+    
+    // Get updated leaderboard data
+    setLeaderboardData(getLeaderboardData());
+    setCurrentUser(getCurrentUserRank());
+    
+  }, [
+    portfolio, 
+    portfolio?.holdings.length,
+    portfolio?.version,
+    portfolio?.lastUpdated
+  ]);
+  
+  // Initialize data on component mount
+  useEffect(() => {
+    setLeaderboardData(getLeaderboardData());
+    setCurrentUser(getCurrentUserRank());
+  }, []);
   
   // Filter data based on search query
   const filteredData = leaderboardData.filter(user => 

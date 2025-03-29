@@ -3,7 +3,12 @@ import { motion } from 'framer-motion';
 import { Users, ChevronRight, ExternalLink } from 'lucide-react';
 import { PortfolioContext } from '@/contexts/portfolio-context';
 import { Link } from 'wouter';
-import { getLeaderboardData, getCurrentUserRank, LeaderboardUser } from '@/data/leaderboard-data';
+import { 
+  getLeaderboardData, 
+  getCurrentUserRank, 
+  LeaderboardUser, 
+  updateUserStats 
+} from '@/data/leaderboard-data';
 
 // Define the investor type
 interface Investor {
@@ -34,16 +39,100 @@ export default function CompetitionTracker() {
   const [userRank, setUserRank] = useState(10); // Start at rank 10 (bottom)
   const [userReturns, setUserReturns] = useState(0);
   const [leaderboardData, setLeaderboardData] = useState<Investor[]>([]);
-  const [_, forceUpdate] = useState({});
   
-  // Fetch data from the shared leaderboard data source
+  // Refresh data from shared leaderboard source when portfolio changes 
   useEffect(() => {
+    // Calculate metrics if portfolio exists
+    if (portfolio) {
+      // Schedule a refresh after portfolio updates with small delay for state propagation
+      const timer = setTimeout(() => {
+        console.log("Portfolio updated in CompetitionTracker:", {
+          holdings: portfolio.holdings.length,
+          version: portfolio.version,
+          lastUpdated: new Date(portfolio.lastUpdated).toISOString()
+        });
+        
+        // Calculate and update metrics if there are holdings
+        if (portfolio.holdings.length > 0) {
+          const totalInvested = portfolio.holdings.reduce(
+            (total, h) => total + (h.shares * h.purchasePrice),
+            0
+          );
+          
+          if (totalInvested > 0) {
+            // Calculate projected 1-year returns
+            const oneYearReturns = portfolio.holdings.reduce((total, h) => {
+              const oneYearReturnPercent = 
+                typeof h.stock.oneYearReturn === 'number' ? h.stock.oneYearReturn :
+                typeof h.stock.oneYearReturn === 'string' ? 
+                  parseFloat(h.stock.oneYearReturn.replace('%', '')) : 0;
+                  
+              const stockValue = h.shares * h.purchasePrice;
+              const stockReturn = stockValue * (oneYearReturnPercent / 100);
+              return total + stockReturn;
+            }, 0);
+            
+            const projectedReturnPercent = (oneYearReturns / totalInvested) * 100;
+            
+            // Calculate trades (number of holdings)
+            const tradeCount = portfolio.holdings.length;
+            
+            // Calculate quality score - simple algorithm based on diversity and growth
+            const diversificationScore = Math.min(50, portfolio.holdings.length * 10);
+            const growthScore = portfolio.holdings.reduce((total, h) => {
+              const returnPercent = 
+                typeof h.stock.oneYearReturn === 'number' ? h.stock.oneYearReturn :
+                typeof h.stock.oneYearReturn === 'string' ? 
+                  parseFloat(h.stock.oneYearReturn.replace('%', '')) : 0;
+              
+              const holdingScore = Math.min(50, (returnPercent / 20) * 50);
+              return total + holdingScore;
+            }, 0) / (portfolio.holdings.length || 1);
+            
+            const qualityScore = Math.round((diversificationScore + growthScore) / 2);
+            
+            // Update the shared user stats - will affect all components
+            updateUserStats({
+              roi: projectedReturnPercent,
+              trades: tradeCount,
+              portfolioQuality: qualityScore
+            });
+            
+            setUserReturns(projectedReturnPercent);
+            
+            // Fetch updated leaderboard data
+            fetchUpdatedLeaderboard();
+          }
+        } else {
+          // Reset stats if no holdings
+          updateUserStats({
+            roi: 0,
+            trades: 0,
+            portfolioQuality: 59
+          });
+          
+          setUserReturns(0);
+          fetchUpdatedLeaderboard();
+        }
+      }, 100);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [
+    portfolio, 
+    portfolio?.holdings.length,
+    portfolio?.version,
+    portfolio?.lastUpdated
+  ]);
+  
+  // Function to fetch latest leaderboard data
+  const fetchUpdatedLeaderboard = () => {
     const leaderboardUsers = getLeaderboardData();
     const currentUser = getCurrentUserRank();
     
     // Convert to the format used by this component
     const convertedData: Investor[] = leaderboardUsers.map(user => ({
-      id: Number(user.id.replace('user-', '')),
+      id: Number(user.id.replace(/\D/g, '')) || 99, // Extract number or use 99 for non-numeric
       name: user.username,
       avatar: user.avatar,
       returns: user.roi,
@@ -53,77 +142,14 @@ export default function CompetitionTracker() {
     setLeaderboardData(convertedData);
     
     if (currentUser) {
-      setUserRank(currentUser.rank || 10); // Default to rank 10 if undefined
-      setUserReturns(currentUser.roi || 0); // Default to 0 if undefined
+      setUserRank(currentUser.rank || 10);
     }
+  };
+  
+  // Initial fetch on mount
+  useEffect(() => {
+    fetchUpdatedLeaderboard();
   }, []);
-  
-  // Force update when portfolio changes
-  useEffect(() => {
-    if (portfolio) {
-      // Schedule a re-render after portfolio updates with small delay for state propagation
-      const timer = setTimeout(() => {
-        forceUpdate({ timestamp: Date.now() });
-        console.log("Portfolio updated in CompetitionTracker:", {
-          holdings: portfolio.holdings.length,
-          version: portfolio.version,
-          lastUpdated: new Date(portfolio.lastUpdated).toISOString()
-        });
-      }, 100);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [
-    portfolio, 
-    portfolio?.holdings.length, 
-    portfolio?.cash, 
-    portfolio?.portfolioValue,
-    portfolio?.version,
-    portfolio?.lastUpdated
-  ]);
-  
-  // Calculate projected 1-year return and update leaderboard position
-  useEffect(() => {
-    if (portfolio && portfolio.holdings.length > 0) {
-      // Calculate projected 1-year returns
-      const totalInvested = portfolio.holdings.reduce((total, h) => total + (h.shares * h.purchasePrice), 0);
-      
-      if (totalInvested > 0) {
-        const oneYearReturns = portfolio.holdings.reduce((total, h) => {
-          // Parse the oneYearReturn string (remove % sign and convert to number)
-          const oneYearReturnPercent = 
-            typeof h.stock.oneYearReturn === 'number' ? h.stock.oneYearReturn :
-            typeof h.stock.oneYearReturn === 'string' ? parseFloat(h.stock.oneYearReturn.replace('%', '')) : 
-            0;
-            
-          const stockValue = h.shares * h.purchasePrice;
-          const stockReturn = stockValue * (oneYearReturnPercent / 100);
-          return total + stockReturn;
-        }, 0);
-        
-        const projectedReturnPercent = (oneYearReturns / totalInvested) * 100;
-        setUserReturns(projectedReturnPercent);
-        
-        // Update the current user's data
-        if (leaderboardData.length > 0) {
-          const newLeaderboardData = [...leaderboardData];
-          const currentUserIndex = newLeaderboardData.findIndex(user => user.isUser);
-          
-          if (currentUserIndex >= 0) {
-            newLeaderboardData[currentUserIndex].returns = projectedReturnPercent;
-            
-            // Sort by returns
-            newLeaderboardData.sort((a, b) => b.returns - a.returns);
-            setLeaderboardData(newLeaderboardData);
-            
-            // Find user's rank
-            const rank = newLeaderboardData.findIndex(item => item.isUser) + 1;
-            setUserRank(rank);
-          }
-        }
-      }
-    }
-  }, [portfolio, leaderboardData.length]);
   
   // Format the gain/loss values as percentages (projected ROI)
   const formattedLeaderboardData = leaderboardData.map(item => ({

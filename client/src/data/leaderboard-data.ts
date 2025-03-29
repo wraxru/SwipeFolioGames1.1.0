@@ -126,10 +126,38 @@ export const leaderboardUsers: LeaderboardUser[] = [
   }
 ];
 
+// Private variable to store user stats
+let userStats = {
+  roi: 0,
+  trades: 0,
+  portfolioQuality: 59,
+};
+
+// Function to update current user stats - will be called from portfolio context
+export function updateUserStats(stats: {roi?: number, trades?: number, portfolioQuality?: number}) {
+  userStats = {
+    ...userStats,
+    ...stats
+  };
+}
+
 // Function to get leaderboard data with rankings applied
 export function getLeaderboardData(): LeaderboardUser[] {
+  // Update the current user with latest stats
+  const updatedUsers = leaderboardUsers.map(user => {
+    if (user.id === "current-user") {
+      return {
+        ...user,
+        roi: userStats.roi,
+        trades: userStats.trades,
+        portfolioQuality: userStats.portfolioQuality
+      };
+    }
+    return user;
+  });
+  
   // Sort by ROI (highest first)
-  const sortedUsers = [...leaderboardUsers].sort((a, b) => b.roi - a.roi);
+  const sortedUsers = [...updatedUsers].sort((a, b) => b.roi - a.roi);
   
   // Add rank property
   return sortedUsers.map((user, index) => ({
@@ -147,4 +175,33 @@ export function getTopUsers(count: number = 3): LeaderboardUser[] {
 export function getCurrentUserRank(): LeaderboardUser | undefined {
   const rankedData = getLeaderboardData();
   return rankedData.find(user => user.id === "current-user");
+}
+
+// Calculate trade count from holdings (will be called from components)
+export function calculateTrades(holdings: any[]): number {
+  return holdings.length;
+}
+
+// Calculate portfolio quality (based on diversification and growth potential)
+export function calculatePortfolioQuality(holdings: any[]): number {
+  if (holdings.length === 0) return 59; // Default starting value
+  
+  // Simple quality algorithm based on number of holdings and their growth potential
+  const diversificationScore = Math.min(50, holdings.length * 10); // Max 50 points for diversification
+  
+  // Average growth potential score
+  const growthScore = holdings.reduce((total, holding) => {
+    const oneYearReturnPercent = 
+      typeof holding.stock.oneYearReturn === 'number' ? holding.stock.oneYearReturn :
+      typeof holding.stock.oneYearReturn === 'string' ? parseFloat(holding.stock.oneYearReturn.replace('%', '')) : 
+      0;
+    
+    // Convert return percentage to a 0-50 score
+    // 20% return or higher gets full 50 points, scaling down linearly
+    const holdingScore = Math.min(50, (oneYearReturnPercent / 20) * 50);
+    return total + holdingScore;
+  }, 0) / (holdings.length || 1);
+  
+  // Combine scores and round to nearest integer
+  return Math.round((diversificationScore + growthScore) / 2);
 }
