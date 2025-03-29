@@ -19,7 +19,7 @@ export const leaderboardUsers: LeaderboardUser[] = [
     id: "lebron-james",
     name: "LeBron James",
     username: "KingJames",
-    avatar: "/images/avatars/lebron-james.png",
+    avatar: "/images/lebron-james.png",
     roi: 245.8,
     trades: 147,
     portfolioQuality: 98,
@@ -41,7 +41,7 @@ export const leaderboardUsers: LeaderboardUser[] = [
     id: "outsider-trading",
     name: "Nancy Pelosi",
     username: "OutsiderTrading123",
-    avatar: "/images/avatars/outsider-trading.png",
+    avatar: "/images/outsider-trading.png",
     roi: 128.7,
     trades: 213,
     portfolioQuality: 87,
@@ -121,7 +121,7 @@ export const leaderboardUsers: LeaderboardUser[] = [
     id: "current-user",
     name: "Belford & Co",
     username: "Belford&Co",
-    avatar: "/images/avatars/belford-avatar.png",
+    avatar: "/images/belford-avatar.png",
     roi: 0, // Will be dynamically calculated from portfolio context
     trades: 0, // Will be dynamically calculated from portfolio context
     portfolioQuality: 0, // Will be dynamically calculated from portfolio context 

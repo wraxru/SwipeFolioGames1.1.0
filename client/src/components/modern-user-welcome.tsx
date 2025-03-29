@@ -91,7 +91,7 @@ export default function ModernUserWelcome({ name, rank: initialRank = 10 }: Mode
             <div className="relative w-14 h-14 rounded-full overflow-hidden border-2 border-white shadow-lg">
               {/* Businessman avatar image */}
               <img 
-                src="/images/avatars/belford-avatar.png" 
+                src="/images/belford-avatar.png" 
                 alt="Belford avatar" 
                 className="w-full h-full object-cover"
               />
