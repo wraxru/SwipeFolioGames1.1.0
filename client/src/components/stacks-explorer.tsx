@@ -80,7 +80,8 @@ export default function StacksExplorer({ stacks }: StacksExplorerProps) {
                           stack.title.includes("Basics") || 
                           stack.title.includes("101") ||
                           stack.title.includes("Learn");
-
+                          
+    console.log(`Stack: ${stack.title}, Industry: ${stack.industry}, Educational: ${isEducational}`);
     return !isEducational;
   });
 
@@ -126,12 +127,15 @@ export default function StacksExplorer({ stacks }: StacksExplorerProps) {
   // Enhance stack data with industry details
   const enhancedStacks = industryStacksOnly.map(stack => {
     const details = getIndustryDetails(stack.industry);
+    console.log(`Enhancing stack: ID ${stack.id}, Industry: ${stack.industry}, Display name: ${details.name}`);
     return {
       ...stack,
       title: details.name, // Replace title with industry-specific name
       imageUrl: details.image
     };
   });
+  
+  console.log("Final stacks for display:", enhancedStacks);
 
   return (
     <div className="grid-cols-stacks">

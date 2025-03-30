@@ -16,11 +16,22 @@ export default function StockDetailPage() {
   const [useRealTimeData, setUseRealTimeData] = useState(true);
   
   // Fetch stack data
-  const { data: stack, isLoading } = useQuery<Stack>({
+  const { data: stack, isLoading, error } = useQuery<Stack>({
     queryKey: [`/api/stacks/${stackId}`],
     queryFn: getQueryFn({ on401: "returnNull" }),
     enabled: !!stackId,
   });
+  
+  // Debug logging
+  useEffect(() => {
+    if (error) {
+      console.error("Error fetching stack:", error);
+    }
+    if (stack) {
+      console.log("Successfully fetched stack:", stack);
+      console.log("Stack industry:", stack.industry);
+    }
+  }, [stack, error]);
 
   // Generate stocks data for the industry
   const stocks = useMemo(() => {
