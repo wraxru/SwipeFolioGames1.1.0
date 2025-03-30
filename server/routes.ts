@@ -19,21 +19,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const stack = await storage.getStackById(stackId);
     
     if (!stack) {
-      // Handle default industry stacks
-      if (stackId === 100) {
-        return res.json({
-          id: 100,
-          title: "Tech Titans",
-          description: "Explore top companies in the Tech sector",
-          industry: "Tech",
-          iconName: "trending-up",
-          difficulty: "intermediate",
-          cardCount: 15,
-          rating: 4.5,
-          estimatedMinutes: 15,
-          color: "#000"
-        });
-      }
       return res.status(404).json({ message: "Stack not found" });
     }
     
@@ -413,7 +398,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Make the API call to OpenRouter following their documentation
       const openRouterUrl = 'https://openrouter.ai/api/v1/chat/completions';
       const requestData = {
-        model: "google/gemini-2.0-flash-exp:free",
+        model: "anthropic/claude-3-haiku",
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userMessage }

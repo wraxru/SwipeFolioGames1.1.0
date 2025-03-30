@@ -8,10 +8,9 @@ interface StackCardProps {
   onClick: (stackId: number) => void;
   imageUrl?: string;
   category?: string;
-  isDetailPage?: boolean;
 }
 
-export default function StackCard({ stack, onClick, imageUrl, category, isDetailPage = false }: StackCardProps) {
+export default function StackCard({ stack, onClick, imageUrl, category }: StackCardProps) {
   // State for swipe animation cues
   const [showSwipeCues, setShowSwipeCues] = useState(true);
   const [currentCardIndex, setCurrentCardIndex] = useState(1);
@@ -47,28 +46,17 @@ export default function StackCard({ stack, onClick, imageUrl, category, isDetail
 
   return (
     <motion.div 
-      layoutId={`stack-card-${stack.id}`}
       className="stack-card rounded-xl overflow-hidden flex flex-col shadow-lg border border-gray-200 bg-white h-[340px]"
       onClick={() => onClick(stack.id)}
       whileHover={{ y: -5, transition: { duration: 0.2 } }}
       whileTap={{ scale: 0.98 }}
-      initial={!isDetailPage ? { opacity: 1 } : { opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={!isDetailPage ? { opacity: 0 } : undefined}
     >
       {/* Card Header with Image - Taller aspect ratio */}
-      <motion.div 
-        layoutId={`stack-card-header-${stack.id}`}
-        className="relative h-44 overflow-hidden"
-      >
+      <div className="relative h-44 overflow-hidden">
         {/* Gradient overlay for better text readability */}
-        <motion.div 
-          layoutId={`stack-card-overlay-${stack.id}`}
-          className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/60 z-10" 
-        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/60 z-10" />
 
-        <motion.div 
-          layoutId={`stack-card-image-${stack.id}`}
+        <div 
           className="w-full h-full bg-cover bg-center" 
           style={{ 
             backgroundImage: imageUrl ? `url(${imageUrl})` : 'none'

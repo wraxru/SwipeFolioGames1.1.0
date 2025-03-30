@@ -1,7 +1,6 @@
 import { useLocation } from "wouter";
-import StackCardAnimated from "./ui/stack-card-animated";
+import StackCard from "./ui/stack-card";
 import type { Stack } from "@shared/schema";
-import { useState } from "react";
 
 interface StacksExplorerProps {
   stacks: Stack[];
@@ -9,16 +8,9 @@ interface StacksExplorerProps {
 
 export default function StacksExplorer({ stacks }: StacksExplorerProps) {
   const [_, setLocation] = useLocation();
-  const [clickedStackId, setClickedStackId] = useState<number | null>(null);
 
   const handleStackClick = (stackId: number) => {
-    // Mark which card was clicked before navigating
-    setClickedStackId(stackId);
-    
-    // Short delay before navigation to allow for card animation
-    setTimeout(() => {
-      setLocation(`/stock/${stackId}`);
-    }, 200); // Match this with exit animation duration
+    setLocation(`/stock/${stackId}`);
   };
 
   // Industry names and images with vibrant mobile-friendly imagery
@@ -81,9 +73,9 @@ export default function StacksExplorer({ stacks }: StacksExplorerProps) {
     // Example industries to add if there aren't enough
     const defaultIndustries = ["Tech", "Healthcare", "Consumer", "Real Estate", "ESG"];
     const industryStockCounts: Record<string, number> = {
-      "Real Estate": 10,
+      "Real Estate": 8,
       "Healthcare": 9,
-      "Tech": 15,
+      "Tech": 10,
       "Consumer": 8,
       "ESG": 8
     };
@@ -128,13 +120,12 @@ export default function StacksExplorer({ stacks }: StacksExplorerProps) {
   return (
     <div className="grid-cols-stacks">
       {enhancedStacks.map((stack) => (
-        <StackCardAnimated
+        <StackCard
           key={stack.id}
           stack={stack}
           onClick={handleStackClick}
           imageUrl={stack.imageUrl}
           category={stack.industry}
-          isClicked={clickedStackId === stack.id}
         />
       ))}
     </div>
