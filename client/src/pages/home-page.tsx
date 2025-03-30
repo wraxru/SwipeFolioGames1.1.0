@@ -85,7 +85,6 @@ const AIFeatureCard = ({
 export default function HomePage() {
   const { user } = useAuth();
   const [selectedCategory, setSelectedCategory] = useState("Trending");
-  const [showAIAssistant, setShowAIAssistant] = useState(false);
   
   // Ref for the AI Hub scrolling container
   const aiHubScrollRef = useRef<HTMLDivElement>(null);
@@ -129,12 +128,12 @@ export default function HomePage() {
         <AnimatedContainer>
           <HeroSection />
           <ModernUserWelcome name="Belford&Co" rank={11} />
+          <CompetitionTracker />
         </AnimatedContainer>
         
         <AnimatedContainer delay={0.15}>
-          <div className="md:grid md:grid-cols-2 md:gap-4">
+          <div className="md:grid md:grid-cols-1 md:gap-4">
             <PortfolioDashboard />
-            <CompetitionTracker />
           </div>
         </AnimatedContainer>
         
@@ -234,51 +233,6 @@ export default function HomePage() {
         </AnimatedContainer>
       </main>
       
-      {/* Floating AI Assistant Button */}
-      <motion.button
-        className="fixed right-4 bottom-20 z-30 w-12 h-12 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 shadow-lg flex items-center justify-center"
-        whileHover={{ scale: 1.1, boxShadow: "0 8px 20px rgba(79, 70, 229, 0.3)" }}
-        whileTap={{ scale: 0.95 }}
-        onClick={() => setShowAIAssistant(!showAIAssistant)}
-      >
-        <Bot className="w-6 h-6 text-white" />
-        <span className="absolute right-0 top-0 w-3 h-3 bg-green-400 rounded-full border-2 border-white"></span>
-      </motion.button>
-      
-      {/* AI Assistant Popup */}
-      <AnimatePresence>
-        {showAIAssistant && (
-          <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 10, scale: 0.9 }}
-            className="fixed right-4 bottom-36 z-30 w-64 bg-white rounded-xl shadow-xl border border-gray-200 overflow-hidden"
-          >
-            <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-3 text-white">
-              <h3 className="font-semibold flex items-center">
-                <Bot className="w-4 h-4 mr-1.5" />
-                AI Assistant
-              </h3>
-              <p className="text-xs text-white/90 mt-1">
-                How can I help you today?
-              </p>
-            </div>
-            <div className="p-3">
-              <div className="space-y-2">
-                <a href="/portfolio" className="block w-full text-left text-sm px-3 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-800">
-                  Analyze my portfolio
-                </a>
-                <a href="/portfolio" className="block w-full text-left text-sm px-3 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-800">
-                  Recommend new investments
-                </a>
-                <a href="/markets" className="block w-full text-left text-sm px-3 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-800">
-                  Explain market trends
-                </a>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
       
       <AIAssistant />
       <AppNavigation />

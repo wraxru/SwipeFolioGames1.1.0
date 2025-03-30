@@ -13,13 +13,13 @@ interface Message {
 
 // Predefined questions for beginners
 const suggestedQuestions = [
-  "How do I start investing with a small budget?",
-  "What's the difference between stocks and ETFs?",
-  "How can I build a diversified portfolio?",
-  "What metrics should I look at when evaluating stocks?",
-  "How do I know if a stock is overvalued?",
-  "What's a good investment strategy for beginners?",
-  "How can I learn about market trends?"
+  "How to start investing?",
+  "Stocks vs ETFs?",
+  "Building a diversified portfolio?",
+  "Evaluating stocks?",
+  "Identifying overvalued stocks?",
+  "Beginner strategy?",
+  "Understanding market trends?"
 ];
 
 export default function AIAssistant() {
@@ -51,13 +51,9 @@ export default function AIAssistant() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isExpanded]);
 
-  // Focus input when chat expands
-  useEffect(() => {
-    if (isExpanded) {
-      inputRef.current?.focus();
-    }
-  }, [isExpanded]);
-
+  // We're deliberately NOT focusing the input when expanded to avoid iOS keyboard issues
+  // This prevents the keyboard from automatically popping up on iOS
+  
   const toggleOpen = () => {
     setIsOpen(!isOpen);
     if (!isOpen) {
@@ -325,10 +321,10 @@ export default function AIAssistant() {
                     <button
                       key={index}
                       onClick={() => handlePresetQuestion(question)}
-                      className="w-full text-left text-sm px-3 py-2 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-700 flex items-center justify-between group transition-colors duration-150"
+                      className="w-full text-left text-xs px-3 py-2 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-700 flex items-center justify-between group transition-colors duration-150"
                     >
                       <span className="line-clamp-1">{question}</span>
-                      <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-indigo-500 transition-colors" />
+                      <ChevronRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-indigo-500 transition-colors" />
                     </button>
                   ))}
                 </div>
