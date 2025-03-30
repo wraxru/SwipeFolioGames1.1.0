@@ -10,6 +10,19 @@ import StackCompletedModal from "@/components/stack-completed-modal";
 import { motion } from "framer-motion";
 import StackCardAnimated from "@/components/ui/stack-card-animated";
 
+// Page transition variants
+const pageVariants = {
+  initial: { opacity: 0 },
+  animate: { 
+    opacity: 1,
+    transition: { duration: 0.2 }
+  },
+  exit: { 
+    opacity: 0,
+    transition: { duration: 0.15 } 
+  }
+};
+
 export default function StockDetailPage() {
   const { stackId } = useParams<{ stackId: string }>();
   const [_, setLocation] = useLocation();
@@ -87,7 +100,13 @@ export default function StockDetailPage() {
     : stocks[0]; // Loop back to the first stock if we're at the end
 
   return (
-    <div className="flex flex-col min-h-screen bg-black text-white">
+    <motion.div 
+      className="flex flex-col min-h-screen bg-black text-white"
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      variants={pageVariants}
+    >
       {/* Header */}
       <header className="flex items-center justify-between p-4 border-b border-gray-800 bg-gradient-to-r from-gray-900 to-black relative">
 
@@ -199,6 +218,6 @@ export default function StockDetailPage() {
         stackName={stack?.title || ""}
         stocksCount={stocks.length}
       />
-    </div>
+    </motion.div>
   );
 }

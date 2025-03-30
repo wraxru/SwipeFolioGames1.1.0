@@ -27,6 +27,16 @@ const AnimatedContainer = ({ children, delay = 0 }: { children: React.ReactNode,
   </motion.div>
 );
 
+// Page transition variants
+const pageVariants = {
+  initial: { opacity: 1 },
+  exit: { 
+    opacity: 0.8, 
+    scale: 0.98,
+    transition: { duration: 0.2 } 
+  }
+};
+
 export default function HomePage() {
   const { user } = useAuth();
   const [selectedCategory, setSelectedCategory] = useState("Trending");
@@ -43,7 +53,7 @@ export default function HomePage() {
   };
   
   return (
-    <>
+    <motion.div initial="initial" exit="exit" variants={pageVariants}>
       <AppHeader />
       
       <main className="main-content pb-24 pt-20 px-4 bg-gradient-to-b from-slate-50 to-white">
@@ -119,6 +129,6 @@ export default function HomePage() {
       </main>
       
       <AppNavigation />
-    </>
+    </motion.div>
   );
 }

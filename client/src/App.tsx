@@ -20,7 +20,7 @@ function Router() {
   
   return (
     <PortfolioProvider>
-      <AnimatePresence mode="wait">
+      <AnimatePresence mode="sync">
         <Switch key={location} location={location}>
           <Route path="/" component={HomePage} />
           <Route path="/stock/:stackId" component={StockDetailPage} />
