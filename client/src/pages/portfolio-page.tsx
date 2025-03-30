@@ -26,6 +26,7 @@ import {
 import { StockData, getAllStocks, getIndustryStocks } from '@/lib/stock-data';
 import { getAdvancedMetricScore } from '@/lib/advanced-metric-scoring';
 import { cn } from '@/lib/utils';
+import AIAssistant from '@/components/ui/ai-assistant';
 
 // Define interfaces for impact data
 interface ImpactMetrics {
@@ -725,6 +726,7 @@ export default function PortfolioPage() {
         </Tabs>
       </main>
       
+      <AIAssistant />
       <AppNavigation />
       
       {/* Improve with AI Dialog */}

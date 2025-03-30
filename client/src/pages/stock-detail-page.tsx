@@ -7,6 +7,7 @@ import { getQueryFn } from "@/lib/queryClient";
 import { StockData, getIndustryStocks } from "@/lib/stock-data";
 import StockCard from "@/components/ui/stock-card";
 import StackCompletedModal from "@/components/stack-completed-modal";
+import AIAssistant from "@/components/ui/ai-assistant";
 
 export default function StockDetailPage() {
   const { stackId } = useParams<{ stackId: string }>();
@@ -190,6 +191,9 @@ export default function StockDetailPage() {
         stackName={stack?.title || ""}
         stocksCount={stocks.length}
       />
+      
+      {/* AI Assistant */}
+      <AIAssistant />
     </div>
   );
 }

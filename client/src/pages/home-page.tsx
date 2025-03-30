@@ -15,6 +15,7 @@ import ModernUserWelcome from "@/components/modern-user-welcome";
 import PortfolioDashboard from "@/components/portfolio-dashboard";
 import CompetitionTracker from "@/components/competition-tracker";
 import { PortfolioContext, usePortfolio } from "@/contexts/portfolio-context";
+import AIAssistant from "@/components/ui/ai-assistant";
 
 // Animated gradient background for AI sections
 const GradientBackground = ({ children }: { children: React.ReactNode }) => (
@@ -310,6 +311,7 @@ export default function HomePage() {
         )}
       </AnimatePresence>
       
+      <AIAssistant />
       <AppNavigation />
     </>
   );
