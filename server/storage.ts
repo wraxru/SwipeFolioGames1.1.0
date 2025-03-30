@@ -149,11 +149,24 @@ export class MemStorage implements IStorage {
       rating: 45,
     };
     
+    const esgStack: Omit<Stack, "id"> = {
+      title: "Green Giants",
+      description: "Explore sustainable and environmentally conscious investments",
+      cardCount: 8,
+      estimatedMinutes: 15,
+      industry: "ESG",
+      iconName: "leaf-line",
+      color: "from-green-500 to-green-400",
+      difficulty: "intermediate",
+      rating: 47,
+    };
+
     this.createStack(techStack);
     this.createStack(stockStack);
     this.createStack(realEstateStack);
     this.createStack(cryptoStack);
     this.createStack(healthcareStack);
+    this.createStack(esgStack);
     
     // Create some cards for the Tech stack
     this.createCard({
