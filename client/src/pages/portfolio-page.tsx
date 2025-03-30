@@ -173,33 +173,6 @@ export default function PortfolioPage() {
                 </div>
               </div>
             </div>
-            
-            {/* Portfolio Metrics - All 4 metrics displayed */}
-            <div className="p-4 bg-slate-50 rounded-b-xl">
-              <p className="text-sm font-medium text-slate-700 mb-2">Portfolio Metrics</p>
-              <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-                <MetricItem 
-                  label="Performance" 
-                  value={portfolioMetrics.performance} 
-                  color="bg-blue-500" 
-                />
-                <MetricItem 
-                  label="Stability" 
-                  value={portfolioMetrics.stability} 
-                  color="bg-purple-500" 
-                />
-                <MetricItem 
-                  label="Value" 
-                  value={portfolioMetrics.value} 
-                  color="bg-emerald-500" 
-                />
-                <MetricItem 
-                  label="Momentum" 
-                  value={portfolioMetrics.momentum} 
-                  color="bg-amber-500" 
-                />
-              </div>
-            </div>
           </div>
         </motion.div>
         
@@ -316,11 +289,7 @@ export default function PortfolioPage() {
           
           <TabsContent value="metrics" className="space-y-4">
             <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-medium text-slate-800">Portfolio Performance Metrics</h3>
-                <TrendingUp className="h-4 w-4 text-slate-400" />
-              </div>
-              
+              <p className="text-sm font-medium text-slate-700 mb-3">Portfolio Metrics</p>
               {sortedHoldings.length === 0 ? (
                 <EmptyState 
                   title="No metrics data yet"
@@ -328,66 +297,27 @@ export default function PortfolioPage() {
                   className="py-8"
                 />
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {/* Performance Metrics Card */}
-                  <div className="bg-slate-50 rounded-lg p-4">
-                    <div className="flex items-center mb-3">
-                      <div className="h-3 w-3 rounded-full bg-blue-500 mr-2"></div>
-                      <h4 className="font-medium text-slate-800">Performance</h4>
-                      <p className="ml-auto text-xl font-bold text-slate-800">{portfolioMetrics.performance}</p>
-                    </div>
-                    <div className="mb-3">
-                      <Progress value={portfolioMetrics.performance} className="h-2" />
-                    </div>
-                    <p className="text-sm text-slate-600">
-                      How well your portfolio companies are executing on their business plans, generating revenue and maintaining profitability.
-                    </p>
-                  </div>
-                  
-                  {/* Stability Metrics Card */}
-                  <div className="bg-slate-50 rounded-lg p-4">
-                    <div className="flex items-center mb-3">
-                      <div className="h-3 w-3 rounded-full bg-purple-500 mr-2"></div>
-                      <h4 className="font-medium text-slate-800">Stability</h4>
-                      <p className="ml-auto text-xl font-bold text-slate-800">{portfolioMetrics.stability}</p>
-                    </div>
-                    <div className="mb-3">
-                      <Progress value={portfolioMetrics.stability} className="h-2" />
-                    </div>
-                    <p className="text-sm text-slate-600">
-                      How resilient your portfolio is to market volatility and economic uncertainty, based on company volatility and dividend consistency.
-                    </p>
-                  </div>
-                  
-                  {/* Value Metrics Card */}
-                  <div className="bg-slate-50 rounded-lg p-4">
-                    <div className="flex items-center mb-3">
-                      <div className="h-3 w-3 rounded-full bg-emerald-500 mr-2"></div>
-                      <h4 className="font-medium text-slate-800">Value</h4>
-                      <p className="ml-auto text-xl font-bold text-slate-800">{portfolioMetrics.value}</p>
-                    </div>
-                    <div className="mb-3">
-                      <Progress value={portfolioMetrics.value} className="h-2" />
-                    </div>
-                    <p className="text-sm text-slate-600">
-                      How reasonably priced your investments are relative to their earnings, book value, and dividend yields compared to industry standards.
-                    </p>
-                  </div>
-                  
-                  {/* Momentum Metrics Card */}
-                  <div className="bg-slate-50 rounded-lg p-4">
-                    <div className="flex items-center mb-3">
-                      <div className="h-3 w-3 rounded-full bg-amber-500 mr-2"></div>
-                      <h4 className="font-medium text-slate-800">Momentum</h4>
-                      <p className="ml-auto text-xl font-bold text-slate-800">{portfolioMetrics.momentum}</p>
-                    </div>
-                    <div className="mb-3">
-                      <Progress value={portfolioMetrics.momentum} className="h-2" />
-                    </div>
-                    <p className="text-sm text-slate-600">
-                      How your portfolio is trending in terms of price movement, measured by recent returns and relative performance vs the market.
-                    </p>
-                  </div>
+                <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+                  <MetricItem 
+                    label="Performance" 
+                    value={portfolioMetrics.performance} 
+                    color="bg-blue-500" 
+                  />
+                  <MetricItem 
+                    label="Stability" 
+                    value={portfolioMetrics.stability} 
+                    color="bg-purple-500" 
+                  />
+                  <MetricItem 
+                    label="Value" 
+                    value={portfolioMetrics.value} 
+                    color="bg-emerald-500" 
+                  />
+                  <MetricItem 
+                    label="Momentum" 
+                    value={portfolioMetrics.momentum} 
+                    color="bg-amber-500" 
+                  />
                 </div>
               )}
             </div>
