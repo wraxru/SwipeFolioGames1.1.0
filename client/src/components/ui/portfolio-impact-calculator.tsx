@@ -280,7 +280,7 @@ export default function PortfolioImpactCalculator({
                 <div className="mb-4">
                   {/* Title removed as it's redundant with the header */}
                   
-                  {/* Summary of Investment Impact Card */}
+                  {/* Investment Summary Card */}
                   <div className="bg-slate-50 rounded-xl p-4 mb-4 border border-slate-100">
                     <h3 className="text-sm font-medium text-slate-700 mb-2 flex items-center">
                       <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1">
@@ -309,38 +309,117 @@ export default function PortfolioImpactCalculator({
                         <span className="text-xs font-medium text-green-600">${projectedReturn.toFixed(2)}</span>
                       </div>
                     </div>
+                  </div>
+                  
+                  {/* Modern Pie Chart showing industry allocation */}
+                  <div className="relative h-48 mb-4 bg-white rounded-xl overflow-hidden border border-slate-100 shadow-sm">
+                    <div className="absolute top-0 left-0 p-3">
+                      <h4 className="text-xs font-medium text-slate-700">Industry Allocation</h4>
+                    </div>
                     
-                    {/* Show industry allocation changes as text instead of a chart */}
-                    {Object.entries(impact.industryAllocation).length > 0 && (
-                      <div className="mt-3 pt-3 border-t border-slate-200">
-                        <h4 className="text-xs font-medium text-slate-700 mb-1.5">Industry Allocation</h4>
-                        <div className="space-y-1.5">
-                          {Object.entries(impact.industryAllocation)
-                            .filter(([_, allocation]) => allocation.new > 0)
-                            .map(([industry, allocation], index) => (
-                              <div key={industry} className="flex justify-between items-center">
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <svg viewBox="0 0 100 100" width="160" height="160">
+                        {/* Background circle - lighter when empty */}
+                        <circle 
+                          cx="50" 
+                          cy="50" 
+                          r="40" 
+                          fill="none" 
+                          stroke={Object.keys(impact.industryAllocation).length === 0 ? "#f3f4f6" : "#e5e7eb"} 
+                          strokeWidth="20" 
+                        />
+                        
+                        {/* Dynamic segments - only rendered when data exists */}
+                        {Object.entries(impact.industryAllocation).length > 0 && 
+                          Object.entries(impact.industryAllocation).map(([industry, allocation], index) => {
+                            // Calculate segment parameters
+                            const colors = ["#06b6d4", "#8b5cf6", "#fbbf24", "#34d399", "#f87171"];
+                            const color = colors[index % colors.length];
+                            const segmentPct = allocation.new;
+                            const circumference = 2 * Math.PI * 40;
+                            const previousSegments = Object.entries(impact.industryAllocation)
+                              .slice(0, index)
+                              .reduce((sum, [_, alloc]) => sum + alloc.new, 0);
+                            const rotation = (previousSegments * 3.6) - 90; // -90 to start at top
+                            
+                            // Only render segments with actual percentage values
+                            return segmentPct > 0 ? (
+                              <circle 
+                                key={industry}
+                                cx="50" 
+                                cy="50" 
+                                r="40" 
+                                fill="none" 
+                                stroke={color} 
+                                strokeWidth="20"
+                                strokeDasharray={`${circumference * (segmentPct / 100)} ${circumference}`}
+                                transform={`rotate(${rotation} 50 50)`}
+                                strokeLinecap="butt"
+                              />
+                            ) : null;
+                          })
+                        }
+                        
+                        {/* Central circle - clean white center without emoji */}
+                        <circle cx="50" cy="50" r="30" fill="white" />
+                        
+                        {/* Quality score in center instead of emoji */}
+                        <text 
+                          x="50" 
+                          y="45" 
+                          textAnchor="middle" 
+                          fontSize="10" 
+                          fill="#64748b"
+                          fontWeight="bold"
+                        >
+                          {Object.entries(impact.industryAllocation).length === 0 ? "New" : "Portfolio"}
+                        </text>
+                        <text 
+                          x="50" 
+                          y="57" 
+                          textAnchor="middle" 
+                          fontSize="10" 
+                          fill="#475569"
+                          fontWeight="bold"
+                        >
+                          {Object.entries(impact.industryAllocation).length === 0 ? "Investment" : "Mix"}
+                        </text>
+                      </svg>
+                    </div>
+                    
+                    {/* Modern industry legends on the right side */}
+                    <div className="absolute right-3 inset-y-0 flex flex-col justify-center">
+                      <div className="space-y-1.5 max-w-[120px]">
+                        {Object.entries(impact.industryAllocation)
+                          .filter(([_, allocation]) => allocation.new > 0)
+                          .map(([industry, allocation], index) => {
+                            const colors = ["#06b6d4", "#8b5cf6", "#fbbf24", "#34d399", "#f87171"];
+                            const color = colors[index % colors.length];
+                            
+                            return (
+                              <div key={industry} className="flex items-center justify-between">
                                 <div className="flex items-center">
                                   <div 
                                     className="w-2 h-2 rounded-full mr-1.5" 
-                                    style={{ backgroundColor: ["#06b6d4", "#8b5cf6", "#fbbf24", "#34d399", "#f87171"][index % 5] }}
+                                    style={{ backgroundColor: color }}
                                   ></div>
-                                  <span className="text-xs text-slate-700">{industry}</span>
+                                  <span className="text-xs text-slate-700 truncate">{industry}</span>
                                 </div>
-                                <div className="flex items-center">
+                                <div className="flex items-center ml-2">
                                   <span className="text-xs font-medium text-slate-800">{allocation.new.toFixed(1)}%</span>
                                   {allocation.new !== allocation.current && Math.abs(allocation.new - allocation.current) > 0.1 && (
-                                    <span className={`text-[10px] ml-1 ${allocation.new > allocation.current ? "text-green-600" : "text-red-600"}`}>
+                                    <span className={`text-[9px] ml-0.5 ${allocation.new > allocation.current ? "text-green-600" : "text-red-600"}`}>
                                       {allocation.new > allocation.current ? "+" : ""}
                                       {(allocation.new - allocation.current).toFixed(1)}%
                                     </span>
                                   )}
                                 </div>
                               </div>
-                            ))
-                          }
-                        </div>
+                            );
+                          })
+                        }
                       </div>
-                    )}
+                    </div>
                   </div>
                   
                   {/* Improved Metrics Grid - More compact and space efficient */}
