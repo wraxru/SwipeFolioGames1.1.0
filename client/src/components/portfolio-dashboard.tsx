@@ -244,7 +244,7 @@ export default function PortfolioDashboard() {
                 }}
               >
                 <TrendingUp className="w-3.5 h-3.5 mr-1 text-white" />
-                <span>Boost Your Portfolio</span>
+                <span>Improve with AI</span>
               </motion.button>
             </Link>
           </div>

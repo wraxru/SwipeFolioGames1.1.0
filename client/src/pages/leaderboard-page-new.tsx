@@ -312,23 +312,10 @@ const LeaderboardPage: React.FC = () => {
         </div>
       </div>
       
-      {/* iOS-Style Search */}
-      <div className="px-4 mt-6">
-        <div className="relative">
-          <input
-            type="text"
-            placeholder="Search investors..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-slate-100/70 border border-slate-200 rounded-xl py-3 pl-10 pr-4 shadow-sm 
-                     focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white focus:border-transparent"
-          />
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
-        </div>
-      </div>
+      {/* Removed search bar to bring leaderboard closer to top */}
       
       {/* Leaderboard Content */}
-      <div className="px-4 mt-6">
+      <div className="px-4 mt-3">
         {activeTab === 'friends' && friendsList.length === 0 ? (
           <motion.div 
             className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8 flex flex-col items-center justify-center"
