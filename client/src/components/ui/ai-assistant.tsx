@@ -54,6 +54,20 @@ export default function AIAssistant() {
   // We're deliberately NOT focusing the input when expanded to avoid iOS keyboard issues
   // This prevents the keyboard from automatically popping up on iOS
   
+  // Add event listener for external components to open the AI Assistant
+  useEffect(() => {
+    const handleOpenAIAssistant = () => {
+      setIsOpen(true);
+      setIsExpanded(true);
+    };
+    
+    window.addEventListener('openAIAssistant', handleOpenAIAssistant);
+    
+    return () => {
+      window.removeEventListener('openAIAssistant', handleOpenAIAssistant);
+    };
+  }, []);
+  
   const toggleOpen = () => {
     setIsOpen(!isOpen);
     if (!isOpen) {
@@ -151,7 +165,7 @@ export default function AIAssistant() {
     <>
       {/* Floating button */}
       <motion.button
-        className="fixed right-6 bottom-24 z-40 w-14 h-14 rounded-full shadow-xl flex items-center justify-center"
+        className="fixed right-6 bottom-24 z-40 w-14 h-14 rounded-full shadow-xl flex items-center justify-center app-ai-bot"
         style={{
           background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
           boxShadow: '0 10px 25px -5px rgba(99, 102, 241, 0.5)'

@@ -154,76 +154,7 @@ export default function HomePage() {
           </div>
         </AnimatedContainer>
         
-        {/* AI Hub - Expanded, Modern Section */}
         <AnimatedContainer delay={0.25}>
-          <GradientBackground>
-            <div className="p-4">
-              <div className="flex items-center justify-between mb-3">
-                <h2 className="text-base font-bold text-slate-800 flex items-center">
-                  <Sparkles className="w-4 h-4 mr-1.5 text-purple-500" />
-                  AI Hub
-                </h2>
-                <a href="/portfolio" className="text-xs text-blue-600 font-medium flex items-center">
-                  View All
-                  <ChevronRight className="w-3.5 h-3.5" />
-                </a>
-              </div>
-              
-              {/* Scrollable AI tools cards with iOS-style fade edges */}
-              <div className="relative">
-                {showLeftShadow && (
-                  <div className="absolute left-0 top-0 bottom-0 w-10 bg-gradient-to-r from-indigo-50/70 to-transparent z-10 pointer-events-none backdrop-blur-sm" />
-                )}
-                
-                <div 
-                  className="flex space-x-4 py-2 px-1 overflow-x-auto scrollbar-hide scroll-smooth"
-                  ref={aiHubScrollRef}
-                >
-                  <AIFeatureCard 
-                    icon={<Brain className="w-5 h-5" />}
-                    title="Portfolio Analyzer"
-                    description="Get instant insights on your investments"
-                    link="/portfolio"
-                  />
-                  
-                  <AIFeatureCard 
-                    icon={<Zap className="w-5 h-5" />}
-                    title="Performance Booster"
-                    description="AI recommendations to maximize returns"
-                    link="/portfolio"
-                  />
-                  
-                  <AIFeatureCard 
-                    icon={<TrendingUp className="w-5 h-5" />}
-                    title="Growth Predictor"
-                    description="See potential future performance"
-                    link="/portfolio"
-                  />
-                  
-                  <AIFeatureCard 
-                    icon={<BarChart3 className="w-5 h-5" />}
-                    title="Market Insights"
-                    description="AI-powered market trend analysis"
-                    link="/markets"
-                  />
-                  
-                  <AIFeatureCard 
-                    icon={<PieChart className="w-5 h-5" />}
-                    title="Diversification Helper"
-                    description="Balance your portfolio optimally"
-                    link="/portfolio"
-                  />
-                </div>
-                
-                {showRightShadow && (
-                  <div className="absolute right-0 top-0 bottom-0 w-10 bg-gradient-to-l from-indigo-50/70 to-transparent z-10 pointer-events-none backdrop-blur-sm" />
-                )}
-              </div>
-            </div>
-          </GradientBackground>
-        </AnimatedContainer>
-        
-        <AnimatedContainer delay={0.3}>
           <CategoryChips 
             onCategoryChange={setSelectedCategory}
           />

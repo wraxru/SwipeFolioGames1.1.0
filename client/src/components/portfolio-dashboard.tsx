@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowUp, ArrowDown, Wallet, TrendingUp, Clock, DollarSign, PieChart } from 'lucide-react';
+import { ArrowUp, ArrowDown, Wallet, TrendingUp, Clock, DollarSign, PieChart, Bot } from 'lucide-react';
 import { Progress } from './ui/progress';
 import { usePortfolio, PortfolioHolding } from '@/contexts/portfolio-context';
 
@@ -239,62 +239,59 @@ export default function PortfolioDashboard() {
           className="h-2.5 mb-0.5"
         />
       </div>
-
-      {/* Top Holdings */}
-      {sortedHoldings.length > 0 && (
-        <div className="mt-4">
-          <div className="flex items-center justify-between mb-3">
-            <h4 className="text-sm font-semibold text-slate-700 flex items-center">
-              <PieChart className="h-3.5 w-3.5 text-blue-500 mr-1.5" />
-              Top Holdings
-            </h4>
+      
+      {/* iOS-Style AI Assistant Promotional Widget */}
+      <motion.div 
+        className="mt-3.5 mb-1 relative overflow-hidden"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3, type: "spring", stiffness: 300, damping: 15 }}
+      >
+        {/* Light pastel gradient background with frosted glass effect */}
+        <motion.div
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          className="relative py-3.5 px-4 rounded-xl flex items-center justify-between cursor-pointer"
+          style={{
+            background: "linear-gradient(135deg, #D0EFFF 0%, #E1BEE7 100%)",
+            boxShadow: "0 8px 20px -5px rgba(0,0,0,0.1)",
+          }}
+          onClick={() => {
+            // Create a custom event to open the AI Assistant
+            const event = new CustomEvent('openAIAssistant');
+            window.dispatchEvent(event);
+          }}
+        >
+          {/* Inner elements have slight glow/shadow for depth */}
+          <div className="flex items-center">
+            <div className="mr-3 bg-white/30 w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-sm shadow-sm">
+              <Bot className="w-5 h-5 text-indigo-600" />
+            </div>
+            <div>
+              <h4 className="font-semibold text-sm text-slate-800">Unlock Your Portfolio's Potential</h4>
+              <p className="text-xs text-slate-600">Get personalized AI insights today</p>
+            </div>
           </div>
-
-          <div className="space-y-2">
-            {sortedHoldings.map((holding, index) => {
-              // Calculate return percentage for this specific holding
-              const returnPercent = holding.purchasePrice > 0
-                  ? ((holding.stock.price - holding.purchasePrice) / holding.purchasePrice) * 100
-                  : 0;
-
-              return (
-                <motion.div 
-                  key={holding.stock.ticker} 
-                  className="flex justify-between items-center p-3 bg-white rounded-lg shadow-sm border border-slate-100 hover:shadow-md transition-shadow duration-200"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2 + (index * 0.1) }}
-                >
-                  <div className="flex items-center">
-                    <div className="w-9 h-9 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-md flex items-center justify-center mr-3 text-xs font-bold text-white shadow-sm">
-                      {holding.stock.ticker.substring(0, 2)}
-                    </div>
-                    <div>
-                      <p className="font-medium text-slate-800">{holding.stock.name || holding.stock.ticker}</p>
-                      <div className="flex items-center text-xs text-slate-500">
-                        <span>{holding.shares.toFixed(2)} shares</span>
-                        <span className="mx-1">•</span>
-                        <span>${holding.purchasePrice.toFixed(2)}/share</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-semibold text-slate-800">${holding.value.toFixed(2)}</p>
-                    <div className={`flex items-center text-xs justify-end ${returnPercent >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
-                      {returnPercent >= 0 ? (
-                        <ArrowUp className="h-3 w-3 mr-0.5" />
-                      ) : (
-                        <ArrowDown className="h-3 w-3 mr-0.5" />
-                      )}
-                      <span>{returnPercent >= 0 ? '+' : ''}{returnPercent.toFixed(1)}%</span>
-                    </div>
-                  </div>
-                </motion.div>
-              );
-            })}
+          
+          {/* Call-to-action with subtle glow */}
+          <div className="flex items-center">
+            <motion.div 
+              className="px-3 py-1.5 bg-indigo-500 text-white rounded-full text-xs font-medium shadow-sm"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              style={{
+                boxShadow: "0 0 10px rgba(99, 102, 241, 0.3)"
+              }}
+            >
+              Try Now
+            </motion.div>
           </div>
-        </div>
-      )}
+          
+          {/* Subtle background glow effect */}
+          <div className="absolute right-2 bottom-2 w-16 h-16 rounded-full bg-purple-300/20 blur-xl -z-10"></div>
+          <div className="absolute left-2 top-2 w-10 h-10 rounded-full bg-blue-300/20 blur-xl -z-10"></div>
+        </motion.div>
+      </motion.div>
     </motion.div>
   );
 }
