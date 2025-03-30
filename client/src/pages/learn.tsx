@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import AppNavigation from "@/components/app-navigation";
-import { motion, AnimatePresence, useSpring } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Brain,
   Trophy,
@@ -20,10 +20,12 @@ import {
   ArrowLeft,
   DollarSign,
   Lightbulb,
-  AlertTriangle
+  AlertTriangle,
+  Globe
 } from "lucide-react";
 import { useLocation } from "wouter";
 import { NORMAL_DECISIONS, BOARDROOM_DECISIONS } from '@/constants/ceo-decisions';
+import MacroMastermind from "@/components/MacroMastermind";
 
 interface Company {
   name: string;
@@ -380,7 +382,7 @@ const MetricBar = ({ title, value, icon, previousValue }) => {
 
 export default function LearnPage() {
   const [, setLocation] = useLocation();
-  const [showCEOGame, setShowCEOGame] = useState(false);
+  const [activeGame, setActiveGame] = useState<'ceo' | 'macro' | null>(null);
   const [isBoardRoomMode, setIsBoardRoomMode] = useState(false);
   const [showResetConfirmation, setShowResetConfirmation] = useState(false);
   const [gameState, setGameState] = useState({
@@ -403,11 +405,11 @@ export default function LearnPage() {
   // Add effect to track state changes
   useEffect(() => {
     console.log('Game state changed:', {
-      showCEOGame,
+      activeGame,
       gameState,
       timestamp: new Date().toISOString()
     });
-  }, [gameState, showCEOGame]);
+  }, [gameState, activeGame]);
 
   const xpProgress = (gameState.xp % 100) / 100 * 100;
 
@@ -547,39 +549,39 @@ export default function LearnPage() {
       <div className="fixed inset-0 bg-white z-50">
         <div 
           ref={scrollRef}
-          className="container mx-auto px-4 py-8 h-full overflow-y-auto"
+          className="container mx-auto px-4 py-4 sm:py-8 h-full overflow-y-auto"
         >
-          <div className="mb-6 sticky top-0 bg-white z-10 py-4">
-            <div className="flex justify-between items-center">
+          <div className="mb-4 sm:mb-6 sticky top-0 bg-white z-10 py-2 sm:py-4">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
               <Button
                 onClick={() => {
-                  setShowCEOGame(false);
+                  setActiveGame(null);
                   setIsBoardRoomMode(false);
                 }}
                 variant="outline"
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 w-full sm:w-auto"
               >
                 <ArrowLeft className="w-4 h-4" />
                 Back to Games
               </Button>
-              <div className="flex items-center gap-4">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4">
                 <div className={`flex items-center gap-2 ${isBoardRoomMode ? 'text-red-600' : 'text-blue-600'}`}>
                   {isBoardRoomMode ? (
                     <>
                       <Building2 className="w-5 h-5" />
-                      <span className="font-semibold">CEO Simulator - Board Room Mode</span>
+                      <span className="font-semibold text-sm sm:text-base">CEO Simulator - Board Room Mode</span>
                     </>
                   ) : (
                     <>
                       <Briefcase className="w-5 h-5" />
-                      <span className="font-semibold">CEO Simulator - Normal Mode</span>
+                      <span className="font-semibold text-sm sm:text-base">CEO Simulator - Normal Mode</span>
                     </>
                   )}
                 </div>
                 <Button
                   onClick={() => setShowResetConfirmation(true)}
                   variant="outline"
-                  className="flex items-center gap-2"
+                  className="flex items-center gap-2 w-full sm:w-auto"
                 >
                   <Save className="w-4 h-4" />
                   Reset Game
@@ -588,13 +590,13 @@ export default function LearnPage() {
             </div>
           </div>
 
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold mb-2">{gameState.company.name}</h1>
-            <p className="text-gray-600">Level {gameState.level} • {gameState.decisions} Decisions Made</p>
+          <div className="mb-4 sm:mb-8">
+            <h1 className="text-2xl sm:text-3xl font-bold mb-2">{gameState.company.name}</h1>
+            <p className="text-gray-600 text-sm sm:text-base">Level {gameState.level} • {gameState.decisions} Decisions Made</p>
           </div>
 
           {/* Numerical Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4 mb-4 sm:mb-8">
             <StatCard
               title="Company Value"
               value={gameState.company.value}
@@ -619,9 +621,9 @@ export default function LearnPage() {
           </div>
 
           {/* Percentage Metrics */}
-          <Card className="mb-8">
-            <CardContent className="pt-6">
-              <div className="grid gap-6">
+          <Card className="mb-4 sm:mb-8">
+            <CardContent className="pt-4 sm:pt-6">
+              <div className="grid gap-4 sm:gap-6">
                 <MetricBar
                   title="Employee Happiness"
                   value={gameState.company.happiness}
@@ -645,28 +647,28 @@ export default function LearnPage() {
           </Card>
 
           {/* Current Decision */}
-          <div className="mb-8">
+          <div className="mb-4 sm:mb-8">
             {gameState.currentDecision ? (
               <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-3">
+                <CardHeader className="p-4 sm:p-6">
+                  <CardTitle className="flex items-center gap-3 text-lg sm:text-xl">
                     {gameState.currentDecision.icon && (
-                      <gameState.currentDecision.icon 
-                        className={`w-6 h-6 ${gameState.currentDecision.iconColor}`} 
-                      />
+                      <div className={`${gameState.currentDecision.iconColor}`}>
+                        {gameState.currentDecision.icon}
+                      </div>
                     )}
                     {gameState.currentDecision.title}
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <p className="text-gray-600 mb-4">{gameState.currentDecision.description}</p>
-                  <div className="grid gap-3">
+                <CardContent className="p-4 sm:p-6">
+                  <p className="text-gray-600 mb-4 text-sm sm:text-base">{gameState.currentDecision.description}</p>
+                  <div className="grid gap-2 sm:gap-3">
                     {gameState.currentDecision.options.map((option, index) => (
                       <Button
                         key={index}
                         onClick={() => handleDecision(option.effects)}
                         variant="outline"
-                        className="w-full text-left justify-start h-auto py-3 px-4"
+                        className="w-full text-left justify-start h-auto py-2 sm:py-3 px-3 sm:px-4 text-sm sm:text-base"
                       >
                         {option.text}
                       </Button>
@@ -678,7 +680,7 @@ export default function LearnPage() {
               <div className="flex justify-center">
                 <Button 
                   onClick={() => generateDecision()}
-                  className="bg-blue-600 hover:bg-blue-700"
+                  className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto"
                 >
                   Next Decision
                 </Button>
@@ -688,22 +690,22 @@ export default function LearnPage() {
 
           {/* Decision History */}
           {gameState.decisionHistory.length > 0 && (
-            <div className="mt-8">
-              <h2 className="text-2xl font-bold mb-4">Decision History</h2>
-              <div className="space-y-4">
+            <div className="mt-4 sm:mt-8">
+              <h2 className="text-xl sm:text-2xl font-bold mb-4">Decision History</h2>
+              <div className="space-y-2 sm:space-y-4">
                 {gameState.decisionHistory.map((historyItem, index) => (
                   <Card key={index} className="bg-gray-50">
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-3 text-lg">
+                    <CardHeader className="p-4 sm:p-6">
+                      <CardTitle className="flex items-center gap-3 text-base sm:text-lg">
                         {historyItem.decision.icon && (
-                          <historyItem.decision.icon 
-                            className={`w-6 h-6 ${historyItem.decision.iconColor}`}
-                          />
+                          <div className={`${historyItem.decision.iconColor}`}>
+                            {historyItem.decision.icon}
+                          </div>
                         )}
                         {historyItem.decision.title}
                       </CardTitle>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="p-4 sm:p-6">
                       <p className="text-sm text-gray-600">
                         {new Date(historyItem.timestamp).toLocaleString()}
                       </p>
@@ -718,90 +720,6 @@ export default function LearnPage() {
       </div>
     );
   };
-
-  const ModeSelection = () => (
-    <div className="fixed inset-0 bg-white z-50 overflow-y-auto">
-      <div className="container mx-auto px-4 py-8 min-h-screen">
-        <div className="mb-6 sticky top-0 bg-white z-10 py-4">
-          <Button
-            onClick={() => setShowCEOGame(false)}
-            variant="outline"
-            className="flex items-center gap-2"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back to Games
-          </Button>
-        </div>
-        
-        <h1 className="text-3xl font-bold mb-2">CEO Simulator</h1>
-        <p className="text-gray-600 mb-8">Choose your preferred mode to start making decisions as a CEO</p>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-20">
-          <Card className="hover:shadow-lg transition-shadow duration-200">
-            <CardHeader>
-              <div className="flex items-center gap-4">
-                <div className="p-2 bg-blue-100 rounded-lg">
-                  <Briefcase className="w-6 h-6 text-blue-600" />
-                </div>
-                <div>
-                  <CardTitle className="text-xl">Normal Mode</CardTitle>
-                  <CardDescription>Day-to-day operational decisions</CardDescription>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <ul className="list-disc pl-5 space-y-2 mb-6 text-gray-600">
-                <li>Manage routine operations</li>
-                <li>Lower risk decisions</li>
-                <li>Steady progression</li>
-                <li>Perfect for learning</li>
-              </ul>
-              <Button 
-                className="w-full bg-blue-600 hover:bg-blue-700"
-                onClick={() => {
-                  setIsBoardRoomMode(false);
-                  generateDecision();
-                }}
-              >
-                Start Normal Mode
-              </Button>
-            </CardContent>
-          </Card>
-
-          <Card className="hover:shadow-lg transition-shadow duration-200">
-            <CardHeader>
-              <div className="flex items-center gap-4">
-                <div className="p-2 bg-red-100 rounded-lg">
-                  <Building2 className="w-6 h-6 text-red-600" />
-                </div>
-                <div>
-                  <CardTitle className="text-xl">Board Room Mode</CardTitle>
-                  <CardDescription>High-stakes strategic decisions</CardDescription>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <ul className="list-disc pl-5 space-y-2 mb-6 text-gray-600">
-                <li>Strategic company-wide decisions</li>
-                <li>High risk, high reward</li>
-                <li>Major impact on metrics</li>
-                <li>For experienced players</li>
-              </ul>
-              <Button 
-                className="w-full bg-red-600 hover:bg-red-700"
-                onClick={() => {
-                  setIsBoardRoomMode(true);
-                  generateDecision();
-                }}
-              >
-                Start Board Room Mode
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    </div>
-  );
 
   const container = {
     hidden: { opacity: 0 },
@@ -819,165 +737,186 @@ export default function LearnPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
-      <div className="container mx-auto px-4 py-8">
-        <motion.h1 
-          className="text-3xl font-bold mb-8 text-gray-900"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          Learning Games
-        </motion.h1>
-        <motion.div 
-          className="grid grid-cols-1 md:grid-cols-2 gap-6"
-          variants={container}
-          initial="hidden"
-          animate="show"
-        >
-          {/* CEO Simulator Card */}
-          <motion.div variants={item}>
-            <Card className="hover:shadow-lg transition-shadow duration-200 relative overflow-hidden">
-              <motion.div
-                className="absolute inset-0 bg-gradient-to-br from-orange-100/50 to-transparent"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.5 }}
-              />
-              <CardHeader>
-                <div className="flex items-center gap-4">
-                  <motion.div 
-                    className="p-2 bg-orange-100 rounded-lg"
-                    whileHover={{ scale: 1.1, rotate: 5 }}
-                  >
-                    <Briefcase className="w-6 h-6 text-orange-600" />
-                  </motion.div>
-                  <div>
-                    <CardTitle className="text-xl">CEO Simulator</CardTitle>
-                    <CardDescription>Make strategic decisions as a CEO in two exciting modes: Board Room (high-stakes) or Normal (day-to-day operations)</CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <Button 
-                  className="w-full bg-orange-600 hover:bg-orange-700 transform transition-transform hover:scale-102 active:scale-98"
-                  onClick={() => setShowCEOGame(true)}
-                >
-                  Start CEO Simulator
-                </Button>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          {/* Time Attack Quiz */}
-          <motion.div variants={item}>
-            <Card className="hover:shadow-lg transition-shadow duration-200 relative overflow-hidden">
-              <motion.div
-                className="absolute inset-0 bg-gradient-to-br from-green-100/50 to-transparent"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.5 }}
-              />
-              <CardHeader>
-                <div className="flex items-center gap-4">
-                  <motion.div 
-                    className="p-2 bg-green-100 rounded-lg"
-                    whileHover={{ scale: 1.1, rotate: -5 }}
-                  >
-                    <Trophy className="w-6 h-6 text-green-600" />
-                  </motion.div>
-                  <div>
-                    <CardTitle className="text-xl">Ticket Time Attack</CardTitle>
-                    <CardDescription>Test your knowledge with quick questions about investing and earn raffle tickets</CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <Button 
-                  className="w-full bg-green-600 hover:bg-green-700 transform transition-transform hover:scale-102 active:scale-98"
-                  onClick={() => setLocation("/time-attack")}
-                >
-                  Start Game
-                </Button>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          {/* Market Adventure */}
-          <motion.div variants={item}>
-            <Card className="hover:shadow-lg transition-shadow duration-200 relative overflow-hidden">
-              <motion.div
-                className="absolute inset-0 bg-gradient-to-br from-yellow-100/50 to-transparent"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.5 }}
-              />
-              <CardHeader>
-                <div className="flex items-center gap-4">
-                  <motion.div 
-                    className="p-2 bg-yellow-100 rounded-lg"
-                    whileHover={{ scale: 1.1, rotate: -5 }}
-                  >
-                    <Gamepad2 className="w-6 h-6 text-yellow-600" />
-                  </motion.div>
-                  <div>
-                    <CardTitle className="text-xl">Market Adventure</CardTitle>
-                    <CardDescription>Simulate market trading and build your virtual portfolio</CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <Button 
-                  className="w-full bg-yellow-600 hover:bg-yellow-700 transform transition-transform hover:scale-102 active:scale-98"
-                  onClick={() => setLocation("/market-adventure")}
-                >
-                  Start Adventure
-                </Button>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          {/* Historical Simulations */}
-          <motion.div variants={item}>
-            <Card className="hover:shadow-lg transition-shadow duration-200 relative overflow-hidden">
-              <motion.div
-                className="absolute inset-0 bg-gradient-to-br from-purple-100/50 to-transparent"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.5 }}
-              />
-              <CardHeader>
-                <div className="flex items-center gap-4">
-                  <motion.div 
-                    className="p-2 bg-purple-100 rounded-lg"
-                    whileHover={{ scale: 1.1, rotate: 5 }}
-                  >
-                    <History className="w-6 h-6 text-purple-600" />
-                  </motion.div>
-                  <div>
-                    <CardTitle className="text-xl">Historical Investor Journey</CardTitle>
-                    <CardDescription>Walk through the career of famous investors and their key decisions</CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <Button 
-                  className="w-full bg-purple-600 hover:bg-purple-700 transform transition-transform hover:scale-102 active:scale-98"
-                  onClick={() => setLocation("/investor-simulator")}
-                >
-                  Start Journey
-                </Button>
-              </CardContent>
-            </Card>
-          </motion.div>
-        </motion.div>
-      </div>
+    <div className="min-h-screen bg-gray-50">
       <AppNavigation />
       
-      <AnimatePresence mode="wait">
-        {showCEOGame && !gameState.currentDecision && <ModeSelection />}
-        {showCEOGame && gameState.currentDecision && <CEOGameInterface />}
-      </AnimatePresence>
+      <div className="container mx-auto px-4 py-4 sm:py-8">
+        <AnimatePresence mode="wait">
+          {!activeGame ? (
+            <motion.div
+              key="game-selection"
+              variants={container}
+              initial="hidden"
+              animate="show"
+              exit={{ opacity: 0, y: -20 }}
+            >
+              <motion.h1 
+                className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-8 text-gray-900"
+                variants={item}
+              >
+                Learning Games
+              </motion.h1>
+              
+              <motion.div 
+                className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6"
+                variants={container}
+              >
+                {/* CEO Simulator Card */}
+                <motion.div variants={item}>
+                  <Card 
+                    className="hover:shadow-lg transition-shadow duration-200 relative overflow-hidden cursor-pointer"
+                    onClick={() => setActiveGame('ceo')}
+                  >
+                    <motion.div
+                      className="absolute inset-0 bg-gradient-to-br from-orange-100/50 to-transparent"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.5 }}
+                    />
+                    <CardHeader className="p-4 sm:p-6">
+                      <div className="flex items-center gap-3 sm:gap-4">
+                        <motion.div 
+                          className="p-2 bg-orange-100 rounded-lg"
+                          whileHover={{ scale: 1.1, rotate: 5 }}
+                        >
+                          <Briefcase className="w-5 h-5 sm:w-6 sm:h-6 text-orange-600" />
+                        </motion.div>
+                        <div>
+                          <CardTitle className="text-lg sm:text-xl">CEO Simulator</CardTitle>
+                          <CardDescription className="text-sm sm:text-base">Make strategic decisions as a CEO in two exciting modes: Board Room (high-stakes) or Normal (day-to-day operations)</CardDescription>
+                        </div>
+                      </div>
+                    </CardHeader>
+                  </Card>
+                </motion.div>
+
+                {/* Macro Mastermind Card */}
+                <motion.div variants={item}>
+                  <Card 
+                    className="hover:shadow-lg transition-shadow duration-200 relative overflow-hidden cursor-pointer"
+                    onClick={() => setActiveGame('macro')}
+                  >
+                    <motion.div
+                      className="absolute inset-0 bg-gradient-to-br from-blue-100/50 to-transparent"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.5 }}
+                    />
+                    <CardHeader className="p-4 sm:p-6">
+                      <div className="flex items-center gap-3 sm:gap-4">
+                        <motion.div 
+                          className="p-2 bg-blue-100 rounded-lg"
+                          whileHover={{ scale: 1.1, rotate: -5 }}
+                        >
+                          <Globe className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
+                        </motion.div>
+                        <div>
+                          <CardTitle className="text-lg sm:text-xl">Macro Mastermind</CardTitle>
+                          <CardDescription className="text-sm sm:text-base">Navigate global economic crises and shape world markets as a chief economic advisor</CardDescription>
+                        </div>
+                      </div>
+                    </CardHeader>
+                  </Card>
+                </motion.div>
+
+                {/* Market Adventure Card */}
+                <motion.div variants={item}>
+                  <Card 
+                    className="hover:shadow-lg transition-shadow duration-200 relative overflow-hidden cursor-pointer"
+                    onClick={() => setLocation("/market-adventure")}
+                  >
+                    <motion.div
+                      className="absolute inset-0 bg-gradient-to-br from-yellow-100/50 to-transparent"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.5 }}
+                    />
+                    <CardHeader className="p-4 sm:p-6">
+                      <div className="flex items-center gap-3 sm:gap-4">
+                        <motion.div 
+                          className="p-2 bg-yellow-100 rounded-lg"
+                          whileHover={{ scale: 1.1, rotate: -5 }}
+                        >
+                          <Gamepad2 className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-600" />
+                        </motion.div>
+                        <div>
+                          <CardTitle className="text-lg sm:text-xl">Market Adventure</CardTitle>
+                          <CardDescription className="text-sm sm:text-base">Simulate market trading and build your virtual portfolio</CardDescription>
+                        </div>
+                      </div>
+                    </CardHeader>
+                  </Card>
+                </motion.div>
+
+                {/* Historical Investor Journey Card */}
+                <motion.div variants={item}>
+                  <Card 
+                    className="hover:shadow-lg transition-shadow duration-200 relative overflow-hidden cursor-pointer"
+                    onClick={() => setLocation("/investor-simulator")}
+                  >
+                    <motion.div
+                      className="absolute inset-0 bg-gradient-to-br from-purple-100/50 to-transparent"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.5 }}
+                    />
+                    <CardHeader className="p-4 sm:p-6">
+                      <div className="flex items-center gap-3 sm:gap-4">
+                        <motion.div 
+                          className="p-2 bg-purple-100 rounded-lg"
+                          whileHover={{ scale: 1.1, rotate: 5 }}
+                        >
+                          <History className="w-5 h-5 sm:w-6 sm:h-6 text-purple-600" />
+                        </motion.div>
+                        <div>
+                          <CardTitle className="text-lg sm:text-xl">Historical Investor Journey</CardTitle>
+                          <CardDescription className="text-sm sm:text-base">Walk through the career of famous investors and their key decisions</CardDescription>
+                        </div>
+                      </div>
+                    </CardHeader>
+                  </Card>
+                </motion.div>
+              </motion.div>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="active-game"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="relative"
+            >
+              <Button
+                variant="ghost"
+                className="mb-4 w-full sm:w-auto"
+                onClick={() => {
+                  setActiveGame(null);
+                  setGameState({
+                    company: INITIAL_COMPANY,
+                    previousCompany: null,
+                    level: 1,
+                    xp: 0,
+                    decisions: 0,
+                    currentDecision: null,
+                    decisionHistory: []
+                  });
+                }}
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to Games
+              </Button>
+
+              {activeGame === 'ceo' ? (
+                <CEOGameInterface />
+              ) : (
+                <MacroMastermind />
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      {showResetConfirmation && <ResetConfirmationDialog />}
     </div>
   );
 } 

@@ -73,7 +73,7 @@ export function BoardRoomGame() {
 
   return (
     <motion.div 
-      className="container mx-auto px-4 py-8"
+      className="container mx-auto px-4 py-4 sm:py-8"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
@@ -93,9 +93,9 @@ export function BoardRoomGame() {
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
           >
-            <Card className="mb-6">
+            <Card className="mb-4 sm:mb-6">
               <motion.div 
-                className="p-6 text-center"
+                className="p-4 sm:p-6 text-center"
                 initial={{ scale: 0.95 }}
                 animate={{ scale: 1 }}
                 transition={{ delay: 0.2 }}
@@ -105,10 +105,10 @@ export function BoardRoomGame() {
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.4 }}
                 >
-                  <Building2 className="w-12 h-12 mx-auto mb-4 text-blue-600" />
+                  <Building2 className="w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-3 sm:mb-4 text-blue-600" />
                 </motion.div>
                 <motion.h2 
-                  className="text-2xl font-bold mb-4"
+                  className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4"
                   initial={{ y: 10, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.6 }}
@@ -116,7 +116,7 @@ export function BoardRoomGame() {
                   Welcome to the Board Room
                 </motion.h2>
                 <motion.p 
-                  className="text-gray-600 mb-6"
+                  className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6"
                   initial={{ y: 10, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.8 }}
@@ -147,26 +147,26 @@ export function BoardRoomGame() {
             exit={{ opacity: 0, x: -50 }}
             transition={{ duration: 0.3 }}
           >
-            <Card className="mb-6">
+            <Card className="mb-4 sm:mb-6">
               <motion.div 
-                className="p-6"
+                className="p-4 sm:p-6"
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.2 }}
               >
                 <motion.h3 
-                  className="text-xl font-bold mb-4"
+                  className="text-lg sm:text-xl font-bold mb-3 sm:mb-4"
                   layoutId="decision-title"
                 >
                   {decisions[currentDecision].title}
                 </motion.h3>
                 <motion.p 
-                  className="text-gray-600 mb-6"
+                  className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6"
                   layoutId="decision-description"
                 >
                   {decisions[currentDecision].description}
                 </motion.p>
-                <motion.div className="space-y-4">
+                <motion.div className="space-y-3 sm:space-y-4">
                   {decisions[currentDecision].options.map((option, index) => (
                     <motion.div
                       key={index}

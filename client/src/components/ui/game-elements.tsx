@@ -16,40 +16,40 @@ interface GameHeaderProps {
 export function GameHeader({ title, timeLeft, tickets, level, xp }: GameHeaderProps) {
   return (
     <motion.div 
-      className="flex justify-between items-center p-4 bg-white shadow-sm rounded-lg mb-6"
+      className="flex flex-col sm:flex-row sm:justify-between sm:items-center p-3 sm:p-4 bg-white shadow-sm rounded-lg mb-4 sm:mb-6 gap-2 sm:gap-0"
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.3 }}
     >
-      <h1 className="text-xl font-bold">{title}</h1>
-      <div className="flex items-center space-x-4">
+      <h1 className="text-lg sm:text-xl font-bold">{title}</h1>
+      <div className="flex items-center flex-wrap gap-2 sm:gap-4">
         {timeLeft !== undefined && (
           <motion.div 
-            className="flex items-center"
+            className="flex items-center text-sm sm:text-base"
             whileHover={{ scale: 1.05 }}
             transition={{ type: "spring", stiffness: 400, damping: 10 }}
           >
-            <Timer className="w-5 h-5 mr-2 text-blue-500" />
+            <Timer className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2 text-blue-500" />
             <span>{timeLeft}s</span>
           </motion.div>
         )}
         {tickets !== undefined && (
           <motion.div 
-            className="flex items-center"
+            className="flex items-center text-sm sm:text-base"
             whileHover={{ scale: 1.05 }}
             transition={{ type: "spring", stiffness: 400, damping: 10 }}
           >
-            <Ticket className="w-5 h-5 mr-2 text-green-500" />
+            <Ticket className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2 text-green-500" />
             <span>{tickets}</span>
           </motion.div>
         )}
         {level !== undefined && (
           <motion.div 
-            className="flex items-center"
+            className="flex items-center text-sm sm:text-base"
             whileHover={{ scale: 1.05 }}
             transition={{ type: "spring", stiffness: 400, damping: 10 }}
           >
-            <Star className="w-5 h-5 mr-2 text-yellow-500" />
+            <Star className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2 text-yellow-500" />
             <span>Level {level}</span>
           </motion.div>
         )}
@@ -106,7 +106,7 @@ export function GameButton({ onClick, variant = 'default', children }: GameButto
       <Button
         variant="outline"
         onClick={onClick}
-        className={`${variantClasses[variant]} transition-all duration-200`}
+        className={`${variantClasses[variant]} transition-all duration-200 w-full sm:w-auto text-sm sm:text-base py-2 sm:py-3 px-3 sm:px-4`}
       >
         {children}
       </Button>
@@ -122,7 +122,7 @@ interface GameProgressProps {
 export function GameProgress({ current, total }: GameProgressProps) {
   return (
     <motion.div 
-      className="space-y-2"
+      className="space-y-1 sm:space-y-2"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
@@ -132,10 +132,10 @@ export function GameProgress({ current, total }: GameProgressProps) {
         animate={{ scaleX: 1 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
       >
-        <Progress value={(current / total) * 100} className="w-full" />
+        <Progress value={(current / total) * 100} className="w-full h-1.5 sm:h-2" />
       </motion.div>
       <motion.p 
-        className="text-sm text-gray-500 text-center"
+        className="text-xs sm:text-sm text-gray-500 text-center"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.2 }}
