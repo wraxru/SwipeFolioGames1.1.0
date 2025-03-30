@@ -88,744 +88,744 @@ export interface StockData {
 const hardcodedStocks: Record<string, StockData[]> = {
   
   "ESG": [
-      {
-        name: "Tesla Inc",
-        ticker: "TSLA",
-        price: 263.55,
-        change: 2.5, // Placeholder
-        rating: 4.5, // Placeholder
-        smartScore: "Poor", // Calculated Placeholder
-        description: "Designs, develops, manufactures, leases, and sells electric vehicles, and energy generation and storage systems.",
-        oneYearReturn: "48.34%",
-        predictedPrice: "$358.70",
-        metrics: {
-          performance: {
-            value: "Poor", // Score: 19
-            color: "red",
-            details: {
-              revenueGrowth: 0.95,
-              profitMargin: 7.30,
-              returnOnCapital: 8.56,
-              revenueGrowthExplanation: "Sales growth nearly stalled (+0.95%) – way slow for ESG expectations.",
-              profitMarginExplanation: "Keeps 7.3¢ profit per $1 sold – kinda low.",
-              returnOnCapitalExplanation: "Earns back 8.6% on investments – meh efficiency."
-            },
-            explanation: "Tesla's growth has hit the brakes, and profits/efficiency are weak compared to ESG averages."
+    {
+      name: "Tesla Inc",
+      ticker: "TSLA",
+      price: 263.55,
+      change: 2.5, // Placeholder
+      rating: 4.5, // Placeholder
+      smartScore: "Poor", // Calculated Placeholder
+      description: "Designs, develops, manufactures, leases, and sells electric vehicles, and energy generation and storage systems.",
+      oneYearReturn: "48.34%",
+      predictedPrice: "$358.70",
+      metrics: {
+        performance: {
+          value: "Poor", // Score: 19
+          color: "red",
+          details: {
+            revenueGrowth: 0.95,
+            profitMargin: 7.30,
+            returnOnCapital: 8.56,
+            revenueGrowthExplanation: "Sales growth nearly stalled (+0.95%) – way slow for ESG expectations.",
+            profitMarginExplanation: "Keeps 7.3¢ profit per $1 sold – kinda low.",
+            returnOnCapitalExplanation: "Earns back 8.6% on investments – meh efficiency."
           },
-          stability: {
-            value: "Poor", // Score: 2
-            color: "red",
-            details: {
-              volatility: 61.3, // Using raw % value
-              beta: 2.58,
-              dividendConsistency: "N/A", // No dividend
-              volatilityExplanation: "Super volatile (61.3%)! Expect HUGE swings daily.",
-              betaExplanation: "Moves >2.5x the market (2.58 beta)! Extra wild.",
-              dividendConsistencyExplanation: "Doesn't pay dividends."
-            },
-            explanation: "Tesla is EXTREMELY volatile and reacts massively to market shifts. No dividends."
-          },
-          value: {
-            value: "Poor", // Score: 0 (Capped)
-            color: "red",
-            details: {
-              peRatio: 129.3,
-              pbRatio: 11.62,
-              dividendYield: 0,
-              peRatioExplanation: "Costs $129 per $1 profit (P/E) – insanely expensive!",
-              pbRatioExplanation: "Stock price ~11.6x 'book value' (P/B) – sky-high.",
-              dividendYieldExplanation: "Pays no dividend."
-            },
-            explanation: "Tesla costs a fortune relative to its profits and assets. You're paying purely for future hype."
-          },
-          momentum: {
-            value: "Poor", // Score: 14
-            color: "red",
-            details: {
-              threeMonthReturn: -42.99,
-              relativePerformance: -35.4,
-              rsi: 45.19,
-              threeMonthReturnExplanation: "Down 43% recently – total collapse.",
-              relativePerformanceExplanation: "Did WAY worse than the market index (-35.4%).",
-              rsiExplanation: "Buying is super weak (RSI 45.2), very oversold."
-            },
-            explanation: "Tesla stock crashed hard recently, badly underperforming. Looks extremely weak and oversold."
-          }
+          explanation: "Tesla's growth has hit the brakes, and profits/efficiency are weak compared to ESG averages."
         },
-        synopsis: { // Placeholder
-          price: "Highly volatile, driven by EV sentiment and production numbers.",
-          company: "Leader in electric vehicles, expanding into energy storage and AI.",
-          role: "High-risk, high-reward growth stock tied to EV adoption."
+        stability: {
+          value: "Poor", // Score: 2
+          color: "red",
+          details: {
+            volatility: 61.3, // Using raw % value
+            beta: 2.58,
+            dividendConsistency: "N/A", // No dividend
+            volatilityExplanation: "Super volatile (61.3%)! Expect HUGE swings daily.",
+            betaExplanation: "Moves >2.5x the market (2.58 beta)! Extra wild.",
+            dividendConsistencyExplanation: "Doesn't pay dividends."
+          },
+          explanation: "Tesla is EXTREMELY volatile and reacts massively to market shifts. No dividends."
         },
-        overallAnalysis: "Tesla is the EV king but comes with extreme volatility and a very high price tag. Recent performance and momentum are poor.",
-        chartData: [300, 290, 280, 270, 260, 250, 255, 260, 265, 270, 265, 263.55], // Placeholder
-        industry: "ESG" // Mapped from Auto
+        value: {
+          value: "Poor", // Score: 0 (Capped)
+          color: "red",
+          details: {
+            peRatio: 129.3,
+            pbRatio: 11.62,
+            dividendYield: 0,
+            peRatioExplanation: "Costs $129 per $1 profit (P/E) – insanely expensive!",
+            pbRatioExplanation: "Stock price ~11.6x 'book value' (P/B) – sky-high.",
+            dividendYieldExplanation: "Pays no dividend."
+          },
+          explanation: "Tesla costs a fortune relative to its profits and assets. You're paying purely for future hype."
+        },
+        momentum: {
+          value: "Poor", // Score: 14
+          color: "red",
+          details: {
+            threeMonthReturn: -42.99,
+            relativePerformance: -35.4,
+            rsi: 45.19,
+            threeMonthReturnExplanation: "Down 43% recently – total collapse.",
+            relativePerformanceExplanation: "Did WAY worse than the market index (-35.4%).",
+            rsiExplanation: "Buying is super weak (RSI 45.2), very oversold."
+          },
+          explanation: "Tesla stock crashed hard recently, badly underperforming. Looks extremely weak and oversold."
+        }
       },
-      {
-        name: "NextEra Energy",
-        ticker: "NEE",
-        price: 70.45,
-        change: 0.5, // Placeholder
-        rating: 7.0, // Placeholder
-        smartScore: "Good", // Calculated Placeholder
-        description: "Electric power and energy infrastructure company, leader in renewable energy.",
-        oneYearReturn: "14.68%",
-        predictedPrice: "$86.00",
-        metrics: {
-          performance: {
-            value: "Good", // Score: 79
-            color: "green",
-            details: {
-              revenueGrowth: 26.91,
-              profitMargin: 28.46,
-              returnOnCapital: 5.65,
-              revenueGrowthExplanation: "Sales grew 26.9% - super strong growth!",
-              profitMarginExplanation: "Keeps 28.5¢ profit per $1 sold – very profitable for a utility!",
-              returnOnCapitalExplanation: "Earns back 5.6% on investments – a bit low, expected for utilities."
-            },
-            explanation: "NextEra grows fast and is very profitable for a utility, though returns on big investments are modest."
-          },
-          stability: {
-            value: "Good", // Score: 79
-            color: "green",
-            details: {
-              volatility: 31.85,
-              beta: 0.59,
-              dividendConsistency: "High", // 1=High
-              volatilityExplanation: "Above average volatility (31.8%) for a utility.",
-              betaExplanation: "Moves way less than the market (0.59 beta) - very stable anchor!",
-              dividendConsistencyExplanation: "Super reliable dividend payer."
-            },
-            explanation: "NextEra is way less reactive to market swings than most stocks and pays reliable dividends, though daily price swings are notable."
-          },
-          value: {
-            value: "Average", // Score: 62
-            color: "yellow",
-            details: {
-              peRatio: 20.88,
-              pbRatio: 2.89,
-              dividendYield: 3.0,
-              peRatioExplanation: "Costs $20.88 per $1 profit (P/E) – slightly pricey for ESG.",
-              pbRatioExplanation: "Stock price ~2.9x 'book value' (P/B) – fair value.",
-              dividendYieldExplanation: "Pays a solid dividend (3.0%) - nice income!"
-            },
-            explanation: "NextEra is fairly valued, maybe a little pricey on earnings, but offers a great dividend yield for the ESG space."
-          },
-          momentum: {
-            value: "Average", // Score: 57
-            color: "yellow",
-            details: {
-              threeMonthReturn: -3.37,
-              relativePerformance: 4.22,
-              rsi: 48.14,
-              threeMonthReturnExplanation: "Down 3.4% recently – small dip.",
-              relativePerformanceExplanation: "Still beat the market index slightly (+4.2%)!",
-              rsiExplanation: "Buying interest is neutral (RSI 48.1)."
-            },
-            explanation: "NextEra dipped slightly but still outperformed the market. Momentum is neutral right now."
-          }
-        },
-        synopsis: { // Placeholder
-          price: "Stable utility with strong renewable energy portfolio.",
-          company: "Leading US utility investing heavily in wind and solar.",
-          role: "Core ESG holding, provides defensive qualities and dividend growth."
-        },
-        overallAnalysis: "NextEra is a top renewable energy utility. It offers strong growth for its sector, great stability, and a solid dividend. A core ESG choice.",
-        chartData: [75, 74, 73, 72, 71, 70, 71, 72, 70, 69, 70, 70.45], // Placeholder
-        industry: "ESG" // Mapped from Utilities
+      synopsis: { // Placeholder
+        price: "Highly volatile, driven by EV sentiment and production numbers.",
+        company: "Leader in electric vehicles, expanding into energy storage and AI.",
+        role: "High-risk, high-reward growth stock tied to EV adoption."
       },
-      // ... Add Brookfield Renewable (BEP) ...
-      {
-        name: "Brookfield Renewable",
-        ticker: "BEP",
-        price: 22.25,
-        change: -0.1, // Placeholder
-        rating: 4.0, // Placeholder
-        smartScore: "Poor", // Calculated Placeholder
-        description: "Owns and operates renewable power assets globally.",
-        oneYearReturn: "-2.71%",
-        predictedPrice: "$29.86",
-        metrics: {
-          performance: {
-            value: "Poor", // Score: 28
-            color: "red",
-            details: {
-              revenueGrowth: 20.29,
-              profitMargin: -4.45, // Negative
-              returnOnCapital: -0.75, // Negative
-              revenueGrowthExplanation: "Sales grew 20.3% - strong growth!",
-              profitMarginExplanation: "Loses 4.5¢ per $1 sold – currently unprofitable.",
-              returnOnCapitalExplanation: "Losing money (-0.75%) on its investments."
-            },
-            explanation: "Brookfield Renewable is growing sales fast but losing money right now, making it inefficient financially."
+      overallAnalysis: "Tesla is the EV king but comes with extreme volatility and a very high price tag. Recent performance and momentum are poor.",
+      chartData: [300, 290, 280, 270, 260, 250, 255, 260, 265, 270, 265, 263.55], // Placeholder
+      industry: "ESG" // Mapped from Auto
+    },
+    {
+      name: "NextEra Energy",
+      ticker: "NEE",
+      price: 70.45,
+      change: 0.5, // Placeholder
+      rating: 7.0, // Placeholder
+      smartScore: "Good", // Calculated Placeholder
+      description: "Electric power and energy infrastructure company, leader in renewable energy.",
+      oneYearReturn: "14.68%",
+      predictedPrice: "$86.00",
+      metrics: {
+        performance: {
+          value: "Good", // Score: 79
+          color: "green",
+          details: {
+            revenueGrowth: 26.91,
+            profitMargin: 28.46,
+            returnOnCapital: 5.65,
+            revenueGrowthExplanation: "Sales grew 26.9% - super strong growth!",
+            profitMarginExplanation: "Keeps 28.5¢ profit per $1 sold – very profitable for a utility!",
+            returnOnCapitalExplanation: "Earns back 5.6% on investments – a bit low, expected for utilities."
           },
-          stability: {
-            value: "Poor", // Score: 30
-            color: "red",
-            details: {
-              volatility: 46.8, // Using raw % value
-              beta: 1.04,
-              dividendConsistency: "High", // 1=High
-              volatilityExplanation: "Very volatile (46.8%) - expect big swings.",
-              betaExplanation: "Moves slightly more than the market (1.04 beta).",
-              dividendConsistencyExplanation: "Reliable dividend payer, surprisingly."
-            },
-            explanation: "Brookfield stock is quite volatile and moves with the market, but it surprisingly pays reliable dividends despite losses."
-          },
-          value: {
-            value: "Good", // Score: 86 (PE N/A, uses PB & Yield)
-            color: "green",
-            details: {
-              peRatio: 9999, // N/A
-              pbRatio: 1.76,
-              dividendYield: 6.46,
-              peRatioExplanation: "Losing money, so P/E doesn't apply.",
-              pbRatioExplanation: "Stock price 1.76x 'book value' (P/B) – looks cheap on assets!",
-              dividendYieldExplanation: "HUGE dividend (6.46%)! Massive income potential."
-            },
-            explanation: "Brookfield looks cheap based on its assets and pays a massive dividend, but it's currently unprofitable."
-          },
-          momentum: {
-            value: "Average", // Score: 58
-            color: "yellow",
-            details: {
-              threeMonthReturn: -4.67,
-              relativePerformance: 2.92,
-              rsi: 43.04,
-              threeMonthReturnExplanation: "Down 4.7% recently – slight dip.",
-              relativePerformanceExplanation: "Still managed to beat the market index (+2.9%).",
-              rsiExplanation: "Buying interest is weak (RSI 43), getting oversold."
-            },
-            explanation: "Brookfield dipped recently but still beat the market. Buying momentum is weak."
-          }
+          explanation: "NextEra grows fast and is very profitable for a utility, though returns on big investments are modest."
         },
-        synopsis: { // Placeholder
-          price: "Trading lower, high dividend yield attracts income investors.",
-          company: "Globally diversified renewable power operator.",
-          role: "High-yield ESG play, sensitive to interest rates."
+        stability: {
+          value: "Good", // Score: 79
+          color: "green",
+          details: {
+            volatility: 31.85,
+            beta: 0.59,
+            dividendConsistency: "High", // 1=High
+            volatilityExplanation: "Above average volatility (31.8%) for a utility.",
+            betaExplanation: "Moves way less than the market (0.59 beta) - very stable anchor!",
+            dividendConsistencyExplanation: "Super reliable dividend payer."
+          },
+          explanation: "NextEra is way less reactive to market swings than most stocks and pays reliable dividends, though daily price swings are notable."
         },
-        overallAnalysis: "Brookfield Renewable offers exposure to global green energy and a huge dividend. However, it's currently unprofitable and volatile. High risk, high yield.",
-        chartData: [24, 23.5, 23, 22.5, 22, 21.5, 22, 22.5, 23, 22.8, 22.5, 22.25], // Placeholder
-        industry: "ESG" // Mapped from Utilities
+        value: {
+          value: "Average", // Score: 62
+          color: "yellow",
+          details: {
+            peRatio: 20.88,
+            pbRatio: 2.89,
+            dividendYield: 3.0,
+            peRatioExplanation: "Costs $20.88 per $1 profit (P/E) – slightly pricey for ESG.",
+            pbRatioExplanation: "Stock price ~2.9x 'book value' (P/B) – fair value.",
+            dividendYieldExplanation: "Pays a solid dividend (3.0%) - nice income!"
+          },
+          explanation: "NextEra is fairly valued, maybe a little pricey on earnings, but offers a great dividend yield for the ESG space."
+        },
+        momentum: {
+          value: "Average", // Score: 57
+          color: "yellow",
+          details: {
+            threeMonthReturn: -3.37,
+            relativePerformance: 4.22,
+            rsi: 48.14,
+            threeMonthReturnExplanation: "Down 3.4% recently – small dip.",
+            relativePerformanceExplanation: "Still beat the market index slightly (+4.2%)!",
+            rsiExplanation: "Buying interest is neutral (RSI 48.1)."
+          },
+          explanation: "NextEra dipped slightly but still outperformed the market. Momentum is neutral right now."
+        }
       },
-      // ... Add First Solar (FSLR) ...
-      {
-        name: "First Solar",
-        ticker: "FSLR",
-        price: 127.32,
-        change: -2.5, // Placeholder
-        rating: 4.8, // Placeholder
-        smartScore: "Poor", // Calculated Placeholder
-        description: "Designs, manufactures, and sells photovoltaic solar modules.",
-        oneYearReturn: "-16.87%",
-        predictedPrice: "$243.43",
-        metrics: {
-          performance: {
-            value: "Good", // Score: 89
-            color: "green",
-            details: {
-              revenueGrowth: 26.75,
-              profitMargin: 30.72,
-              returnOnCapital: 15.30,
-              revenueGrowthExplanation: "Sales grew 26.7% - very strong!",
-              profitMarginExplanation: "Keeps 30.7¢ profit per $1 sold – highly profitable!",
-              returnOnCapitalExplanation: "Earns back 15.3% on investments – good efficiency!"
-            },
-            explanation: "First Solar shows fantastic growth, profits, and efficiency. Top-tier performance in the solar space."
-          },
-          stability: {
-            value: "Poor", // Score: 12
-            color: "red",
-            details: {
-              volatility: 69.84,
-              beta: 1.49,
-              dividendConsistency: "N/A", // 0=N/A
-              volatilityExplanation: "Extremely volatile (69.8%) - massive swings!",
-              betaExplanation: "Moves ~50% more than the market (1.49 beta).",
-              dividendConsistencyExplanation: "Doesn't pay dividends."
-            },
-            explanation: "First Solar is super volatile and reactive to market changes. Don't expect dividends."
-          },
-          value: {
-            value: "Good", // Score: 78
-            color: "green",
-            details: {
-              peRatio: 10.60,
-              pbRatio: 1.71,
-              dividendYield: 0,
-              peRatioExplanation: "Costs $10.60 per $1 profit (P/E) – super cheap for tech/ESG!",
-              pbRatioExplanation: "Stock price 1.7x 'book value' (P/B) – looks very cheap!",
-              dividendYieldExplanation: "Pays no dividend."
-            },
-            explanation: "First Solar looks surprisingly cheap based on profits and assets, a rare find for a high-performer. No dividend."
-          },
-          momentum: {
-            value: "Poor", // Score: 1
-            color: "red",
-            details: {
-              threeMonthReturn: -31.63,
-              relativePerformance: -24.04,
-              rsi: 37.79,
-              threeMonthReturnExplanation: "Down 31.6% recently – collapsed.",
-              relativePerformanceExplanation: "Way underperformed the market (-24%).",
-              rsiExplanation: "Very weak buying (RSI 37.8), looks very oversold."
-            },
-            explanation: "First Solar stock crashed hard recently, badly underperforming. Looks extremely weak and oversold."
-          }
-        },
-        synopsis: { // Placeholder
-          price: "Under pressure due to solar industry volatility and competition.",
-          company: "Leading US-based thin-film solar panel manufacturer.",
-          role: "Cyclical growth stock tied to solar installations and policy."
-        },
-        overallAnalysis: "First Solar is a major US solar panel maker with strong performance, but the stock is incredibly volatile and momentum is terrible right now. Looks cheap, but very risky.",
-        chartData: [150, 145, 140, 135, 130, 125, 128, 132, 130, 128, 126, 127.32], // Placeholder
-        industry: "ESG" // Mapped from Solar
+      synopsis: { // Placeholder
+        price: "Stable utility with strong renewable energy portfolio.",
+        company: "Leading US utility investing heavily in wind and solar.",
+        role: "Core ESG holding, provides defensive qualities and dividend growth."
       },
-      // ... Add Enphase Energy (ENPH) ...
-       {
-        name: "Enphase Energy",
-        ticker: "ENPH",
-        price: 61.65,
-        change: -1.8, // Placeholder
-        rating: 3.2, // Placeholder
-        smartScore: "Poor", // Calculated Placeholder
-        description: "Designs, develops, manufactures, and sells home energy solutions for the solar photovoltaic industry.",
-        oneYearReturn: "-43.62%",
-        predictedPrice: "$78.15",
-        metrics: {
-          performance: {
-            value: "Poor", // Score: 8
-            color: "red",
-            details: {
-              revenueGrowth: -41.92, // Negative Growth
-              profitMargin: 7.72,
-              returnOnCapital: 4.99,
-              revenueGrowthExplanation: "Sales collapsed (-41.9%)! Big trouble.",
-              profitMarginExplanation: "Keeps only 7.7¢ profit per $1 sold – weak profit.",
-              returnOnCapitalExplanation: "Earns back only 5% on investments – low efficiency."
-            },
-            explanation: "Enphase's sales have plummeted, and profits/efficiency are low. Very poor recent performance."
+      overallAnalysis: "NextEra is a top renewable energy utility. It offers strong growth for its sector, great stability, and a solid dividend. A core ESG choice.",
+      chartData: [75, 74, 73, 72, 71, 70, 71, 72, 70, 69, 70, 70.45], // Placeholder
+      industry: "ESG" // Mapped from Utilities
+    },
+    // ... Add Brookfield Renewable (BEP) ...
+    {
+      name: "Brookfield Renewable",
+      ticker: "BEP",
+      price: 22.25,
+      change: -0.1, // Placeholder
+      rating: 4.0, // Placeholder
+      smartScore: "Poor", // Calculated Placeholder
+      description: "Owns and operates renewable power assets globally.",
+      oneYearReturn: "-2.71%",
+      predictedPrice: "$29.86",
+      metrics: {
+        performance: {
+          value: "Poor", // Score: 28
+          color: "red",
+          details: {
+            revenueGrowth: 20.29,
+            profitMargin: -4.45, // Negative
+            returnOnCapital: -0.75, // Negative
+            revenueGrowthExplanation: "Sales grew 20.3% - strong growth!",
+            profitMarginExplanation: "Loses 4.5¢ per $1 sold – currently unprofitable.",
+            returnOnCapitalExplanation: "Losing money (-0.75%) on its investments."
           },
-          stability: {
-            value: "Poor", // Score: 9
-            color: "red",
-            details: {
-              volatility: 53.26,
-              beta: 1.98,
-              dividendConsistency: "N/A", // 0=N/A
-              volatilityExplanation: "Very volatile (53.3%) - big swings.",
-              betaExplanation: "Moves almost twice the market (1.98 beta) - very reactive.",
-              dividendConsistencyExplanation: "Doesn't pay dividends."
-            },
-            explanation: "Enphase stock is very volatile and reacts strongly to market news. No dividend income."
-          },
-          value: {
-            value: "Poor", // Score: 10
-            color: "red",
-            details: {
-              peRatio: 83.51,
-              pbRatio: 9.80,
-              dividendYield: 0,
-              peRatioExplanation: "Costs $83.51 per $1 profit (P/E) – extremely expensive!",
-              pbRatioExplanation: "Stock price ~10x 'book value' (P/B) – very high expectations.",
-              dividendYieldExplanation: "Pays no dividend."
-            },
-            explanation: "Enphase is priced very expensively, likely based on past growth, despite current struggles. No dividend."
-          },
-          momentum: {
-            value: "Average", // Score: 46
-            color: "yellow",
-            details: {
-              threeMonthReturn: -15.87,
-              relativePerformance: -8.28,
-              rsi: 50.12,
-              threeMonthReturnExplanation: "Down 15.9% recently – sharp drop.",
-              relativePerformanceExplanation: "Also underperformed the market (-8.3%).",
-              rsiExplanation: "Perfectly neutral buying interest (RSI 50.1)."
-            },
-            explanation: "Enphase stock dropped sharply, lagging the market. Buying momentum is totally flat right now."
-          }
+          explanation: "Brookfield Renewable is growing sales fast but losing money right now, making it inefficient financially."
         },
-        synopsis: { // Placeholder
-          price: "Struggling near lows amid solar installation slowdown.",
-          company: "Microinverter leader facing inventory issues and weaker demand.",
-          role: "Volatile solar stock, sensitive to interest rates and consumer spending."
+        stability: {
+          value: "Poor", // Score: 30
+          color: "red",
+          details: {
+            volatility: 46.8, // Using raw % value
+            beta: 1.04,
+            dividendConsistency: "High", // 1=High
+            volatilityExplanation: "Very volatile (46.8%) - expect big swings.",
+            betaExplanation: "Moves slightly more than the market (1.04 beta).",
+            dividendConsistencyExplanation: "Reliable dividend payer, surprisingly."
+          },
+          explanation: "Brookfield stock is quite volatile and moves with the market, but it surprisingly pays reliable dividends despite losses."
         },
-        overallAnalysis: "Enphase, a leader in solar microinverters, is facing a major sales downturn and inventory problems. The stock is volatile, expensive, and performing poorly.",
-        chartData: [75, 70, 68, 65, 63, 60, 62, 64, 63, 61, 60, 61.65], // Placeholder
-        industry: "ESG" // Mapped from Solar
+        value: {
+          value: "Good", // Score: 86 (PE N/A, uses PB & Yield)
+          color: "green",
+          details: {
+            peRatio: 9999, // N/A
+            pbRatio: 1.76,
+            dividendYield: 6.46,
+            peRatioExplanation: "Losing money, so P/E doesn't apply.",
+            pbRatioExplanation: "Stock price 1.76x 'book value' (P/B) – looks cheap on assets!",
+            dividendYieldExplanation: "HUGE dividend (6.46%)! Massive income potential."
+          },
+          explanation: "Brookfield looks cheap based on its assets and pays a massive dividend, but it's currently unprofitable."
+        },
+        momentum: {
+          value: "Average", // Score: 58
+          color: "yellow",
+          details: {
+            threeMonthReturn: -4.67,
+            relativePerformance: 2.92,
+            rsi: 43.04,
+            threeMonthReturnExplanation: "Down 4.7% recently – slight dip.",
+            relativePerformanceExplanation: "Still managed to beat the market index (+2.9%).",
+            rsiExplanation: "Buying interest is weak (RSI 43), getting oversold."
+          },
+          explanation: "Brookfield dipped recently but still beat the market. Buying momentum is weak."
+        }
       },
-      // ... Add SolarEdge (SEDG) ...
-      {
-        name: "SolarEdge Tech.",
-        ticker: "SEDG",
-        price: 15.85,
-        change: 0.2, // Placeholder
-        rating: 1.2, // Placeholder
-        smartScore: "Underperform", // Calculated Placeholder
-        description: "Designs, develops, and sells direct current (DC) optimized inverter systems for solar PV installations.",
-        oneYearReturn: "-75.01%",
-        predictedPrice: "$17.33",
-        metrics: {
-          performance: {
-            value: "Poor", // Score: 0 (Capped)
-            color: "red",
-            details: {
-              revenueGrowth: -68.86, // Negative
-              profitMargin: -192.13, // Negative
-              returnOnCapital: -168.40, // Negative
-              revenueGrowthExplanation: "Sales crashed (-68.9%)! Disaster zone.",
-              profitMarginExplanation: "Losing almost $2 for every $1 sold! Burning cash intensely.",
-              returnOnCapitalExplanation: "Massive negative return (-168%) on investments."
-            },
-            explanation: "SolarEdge is in deep trouble. Sales collapsed, and it's losing huge amounts of money."
-          },
-          stability: {
-            value: "Poor", // Score: 16
-            color: "red",
-            details: {
-              volatility: 66.0, // Using raw % value
-              beta: 1.66,
-              dividendConsistency: "N/A", // 0=N/A
-              volatilityExplanation: "Extremely volatile (66%) - huge swings.",
-              betaExplanation: "Moves ~66% more than the market (1.66 beta).",
-              dividendConsistencyExplanation: "Doesn't pay dividends."
-            },
-            explanation: "SolarEdge stock is extremely volatile and reactive. No dividends here."
-          },
-          value: {
-            value: "Poor", // Score: 42 (PE N/A, uses PB & Yield)
-            color: "red",
-            details: {
-              peRatio: 9999, // N/A
-              pbRatio: 1.40,
-              dividendYield: 0,
-              peRatioExplanation: "Losing money, P/E doesn't apply.",
-              pbRatioExplanation: "Stock price 1.4x 'book value' (P/B) – looks cheap on assets!",
-              dividendYieldExplanation: "Pays no dividend."
-            },
-            explanation: "SolarEdge isn't profitable. Looks cheap based on assets (low P/B), likely reflecting its major problems."
-          },
-          momentum: {
-            value: "Average", // Score: 67
-            color: "yellow",
-            details: {
-              threeMonthReturn: 6.88,
-              relativePerformance: 14.47,
-              rsi: 46.76,
-              threeMonthReturnExplanation: "Up 6.9% recently – small bounce?",
-              relativePerformanceExplanation: "Still managed to beat the market index (+14.5%) lately!",
-              rsiExplanation: "Buying interest is average (RSI 46.8)."
-            },
-            explanation: "SolarEdge bounced a bit recently, beating the market, but overall trend is terrible. Momentum is neutral."
-          }
-        },
-        synopsis: { // Placeholder
-          price: "Deeply depressed stock price, trying to stabilize.",
-          company: "Solar inverter company hit hard by industry slowdown.",
-          role: "Extremely speculative turnaround bet in the solar sector."
-        },
-        overallAnalysis: "SolarEdge is another solar company facing a severe downturn, with collapsing sales and massive losses. Extremely volatile and risky.",
-        chartData: [20, 18, 16, 15, 14, 13, 14, 15, 16, 17, 16, 15.85], // Placeholder
-        industry: "ESG" // Mapped from Solar
+      synopsis: { // Placeholder
+        price: "Trading lower, high dividend yield attracts income investors.",
+        company: "Globally diversified renewable power operator.",
+        role: "High-yield ESG play, sensitive to interest rates."
       },
-       // --- Add Plug Power (PLUG) ---
-      {
-        name: "Plug Power",
-        ticker: "PLUG",
-        price: 1.34,
-        change: -0.1, // Placeholder
-        rating: 0.8, // Placeholder
-        smartScore: "Underperform", // Calculated Placeholder
-        description: "Provides hydrogen fuel cell turnkey solutions.",
-        oneYearReturn: "-58.39%",
-        predictedPrice: "$2.23",
-        metrics: {
-          performance: {
-            value: "Poor", // Score: 0 (Capped)
-            color: "red",
-            details: {
-              revenueGrowth: -29.45, // Negative
-              profitMargin: -334.71, // Negative
-              returnOnCapital: -81.38, // Negative
-              revenueGrowthExplanation: "Sales dropped 29.5% - bad sign.",
-              profitMarginExplanation: "Losing over $3 for every $1 sold!! Burning cash extremely fast.",
-              returnOnCapitalExplanation: "Huge negative return (-81%) on investments."
-            },
-            explanation: "Plug Power's sales are falling, and it's losing enormous amounts of money. Dire financial performance."
+      overallAnalysis: "Brookfield Renewable offers exposure to global green energy and a huge dividend. However, it's currently unprofitable and volatile. High risk, high yield.",
+      chartData: [24, 23.5, 23, 22.5, 22, 21.5, 22, 22.5, 23, 22.8, 22.5, 22.25], // Placeholder
+      industry: "ESG" // Mapped from Utilities
+    },
+    // ... Add First Solar (FSLR) ...
+    {
+      name: "First Solar",
+      ticker: "FSLR",
+      price: 127.32,
+      change: -2.5, // Placeholder
+      rating: 4.8, // Placeholder
+      smartScore: "Poor", // Calculated Placeholder
+      description: "Designs, manufactures, and sells photovoltaic solar modules.",
+      oneYearReturn: "-16.87%",
+      predictedPrice: "$243.43",
+      metrics: {
+        performance: {
+          value: "Good", // Score: 89
+          color: "green",
+          details: {
+            revenueGrowth: 26.75,
+            profitMargin: 30.72,
+            returnOnCapital: 15.30,
+            revenueGrowthExplanation: "Sales grew 26.7% - very strong!",
+            profitMarginExplanation: "Keeps 30.7¢ profit per $1 sold – highly profitable!",
+            returnOnCapitalExplanation: "Earns back 15.3% on investments – good efficiency!"
           },
-          stability: {
-            value: "Poor", // Score: 5
-            color: "red",
-            details: {
-              volatility: 78.3, // Using raw % value
-              beta: 2.06,
-              dividendConsistency: "N/A", // 0=N/A
-              volatilityExplanation: "Insanely volatile (78.3%) - wild west stock!",
-              betaExplanation: "Moves more than twice the market (2.06 beta)!",
-              dividendConsistencyExplanation: "Doesn't pay dividends."
-            },
-            explanation: "Plug Power is about as volatile and market-sensitive as it gets. Extremely risky, no dividend."
-          },
-          value: {
-            value: "Poor", // Score: 50 (PE N/A, uses PB & Yield)
-            color: "red",
-            details: {
-              peRatio: 9999, // N/A
-              pbRatio: 0.71,
-              dividendYield: 0,
-              peRatioExplanation: "No profits, P/E doesn't apply.",
-              pbRatioExplanation: "Stock price below 'book value' (0.71 P/B) – looks super cheap on assets!",
-              dividendYieldExplanation: "Pays no dividend."
-            },
-            explanation: "Plug Power isn't profitable. The stock trades for less than its assets are worth, likely due to its massive losses."
-          },
-          momentum: {
-            value: "Poor", // Score: 0 (Capped)
-            color: "red",
-            details: {
-              threeMonthReturn: -44.63,
-              relativePerformance: -37.04,
-              rsi: 29.48,
-              threeMonthReturnExplanation: "Down 44.6% recently – collapsed further.",
-              relativePerformanceExplanation: "Way underperformed the market (-37%).",
-              rsiExplanation: "Extremely weak buying (RSI 29.5), deeply oversold."
-            },
-            explanation: "Plug Power stock continued its crash, badly lagging the market. Looks extremely weak and oversold."
-          }
+          explanation: "First Solar shows fantastic growth, profits, and efficiency. Top-tier performance in the solar space."
         },
-        synopsis: { // Placeholder
-          price: "Penny stock territory, facing existential financial challenges.",
-          company: "Hydrogen fuel cell company struggling with costs and profitability.",
-          role: "Highly speculative, high-risk bet on hydrogen economy adoption."
+        stability: {
+          value: "Poor", // Score: 12
+          color: "red",
+          details: {
+            volatility: 69.84,
+            beta: 1.49,
+            dividendConsistency: "N/A", // 0=N/A
+            volatilityExplanation: "Extremely volatile (69.8%) - massive swings!",
+            betaExplanation: "Moves ~50% more than the market (1.49 beta).",
+            dividendConsistencyExplanation: "Doesn't pay dividends."
+          },
+          explanation: "First Solar is super volatile and reactive to market changes. Don't expect dividends."
         },
-        overallAnalysis: "Plug Power is a hydrogen fuel cell company burning through cash with massive losses and falling sales. Extremely volatile and risky 'penny stock'.",
-        chartData: [2.5, 2.2, 2.0, 1.8, 1.6, 1.5, 1.4, 1.3, 1.2, 1.4, 1.3, 1.34], // Placeholder
-        industry: "ESG" // Mapped from Electrical Equip.
+        value: {
+          value: "Good", // Score: 78
+          color: "green",
+          details: {
+            peRatio: 10.60,
+            pbRatio: 1.71,
+            dividendYield: 0,
+            peRatioExplanation: "Costs $10.60 per $1 profit (P/E) – super cheap for tech/ESG!",
+            pbRatioExplanation: "Stock price 1.7x 'book value' (P/B) – looks very cheap!",
+            dividendYieldExplanation: "Pays no dividend."
+          },
+          explanation: "First Solar looks surprisingly cheap based on profits and assets, a rare find for a high-performer. No dividend."
+        },
+        momentum: {
+          value: "Poor", // Score: 1
+          color: "red",
+          details: {
+            threeMonthReturn: -31.63,
+            relativePerformance: -24.04,
+            rsi: 37.79,
+            threeMonthReturnExplanation: "Down 31.6% recently – collapsed.",
+            relativePerformanceExplanation: "Way underperformed the market (-24%).",
+            rsiExplanation: "Very weak buying (RSI 37.8), looks very oversold."
+          },
+          explanation: "First Solar stock crashed hard recently, badly underperforming. Looks extremely weak and oversold."
+        }
       },
-      // --- Add ChargePoint (CHPT) ---
-      {
-        name: "ChargePoint",
-        ticker: "CHPT",
-        price: 0.62,
-        change: -0.05, // Placeholder
-        rating: 1.0, // Placeholder
-        smartScore: "Underperform", // Calculated Placeholder
-        description: "Provides electric vehicle (EV) charging networks and solutions.",
-        oneYearReturn: "-64.45%",
-        predictedPrice: "$1.36",
-        metrics: {
-          performance: {
-            value: "Poor", // Score: 0 (Capped)
-            color: "red",
-            details: {
-              revenueGrowth: -17.68, // Negative
-              profitMargin: -67.83, // Negative
-              returnOnCapital: -63.25, // Negative
-              revenueGrowthExplanation: "Sales dropped 17.7% - going backwards.",
-              profitMarginExplanation: "Losing 68¢ per $1 sold – significant losses.",
-              returnOnCapitalExplanation: "Massive negative return (-63%) on investments."
-            },
-            explanation: "ChargePoint's sales are falling, and it's losing a lot of money. Very poor financial performance."
-          },
-          stability: {
-            value: "Poor", // Score: 5
-            color: "red",
-            details: {
-              volatility: 80.0, // Estimated raw value
-              beta: 2.04,
-              dividendConsistency: "N/A", // 0=N/A
-              volatilityExplanation: "Dangerously volatile (~80%) - extreme swings!",
-              betaExplanation: "Moves more than twice the market (2.04 beta)!",
-              dividendConsistencyExplanation: "Doesn't pay dividends."
-            },
-            explanation: "ChargePoint is extremely volatile and reactive to market trends. High risk, no dividends."
-          },
-          value: {
-            value: "Poor", // Score: 37 (PE N/A, uses PB & Yield)
-            color: "red",
-            details: {
-              peRatio: 9999, // N/A
-              pbRatio: 2.14,
-              dividendYield: 0,
-              peRatioExplanation: "No profits, P/E doesn't apply.",
-              pbRatioExplanation: "Stock price ~2.1x 'book value' (P/B) – maybe fair based on assets?",
-              dividendYieldExplanation: "Pays no dividend."
-            },
-            explanation: "ChargePoint isn't profitable. It looks somewhat reasonably priced based on assets, but the losses are huge."
-          },
-          momentum: {
-            value: "Poor", // Score: 3
-            color: "red",
-            details: {
-              threeMonthReturn: -46.68,
-              relativePerformance: -39.09,
-              rsi: 37.84,
-              threeMonthReturnExplanation: "Down 46.7% recently – another collapse.",
-              relativePerformanceExplanation: "Way underperformed the market (-39.1%).",
-              rsiExplanation: "Very weak buying (RSI 37.8), looks very oversold."
-            },
-            explanation: "ChargePoint stock collapsed again, badly lagging the market. Looks extremely weak and oversold."
-          }
-        },
-        synopsis: { // Placeholder
-          price: "Deeply distressed stock price, facing EV charging competition.",
-          company: "EV charging network provider struggling with profitability.",
-          role: "Highly speculative bet on EV infrastructure growth."
-        },
-        overallAnalysis: "ChargePoint operates EV charging stations, a growing market, but faces intense competition and significant losses. Very high risk, poor performance.",
-        chartData: [1.5, 1.3, 1.1, 0.9, 0.8, 0.7, 0.6, 0.5, 0.7, 0.65, 0.6, 0.62], // Placeholder
-        industry: "ESG" // Mapped from Specialty Retail
+      synopsis: { // Placeholder
+        price: "Under pressure due to solar industry volatility and competition.",
+        company: "Leading US-based thin-film solar panel manufacturer.",
+        role: "Cyclical growth stock tied to solar installations and policy."
       },
-      // --- Add Hannon Armstrong (HASI) ---
-      {
-        name: "Hannon Armstrong",
-        ticker: "HASI",
-        price: 29.44,
-        change: 0.8, // Placeholder
-        rating: 6.8, // Placeholder
-        smartScore: "Good", // Calculated Placeholder
-        description: "Invests in climate solutions, providing capital to companies in energy efficiency, renewable energy, and sustainable infrastructure.",
-        oneYearReturn: "10.14%",
-        predictedPrice: "$39.25",
-        metrics: {
-          performance: {
-            value: "Good", // Score: 81
-            color: "green",
-            details: {
-              revenueGrowth: 19.92,
-              profitMargin: 51.63,
-              returnOnCapital: 2.96,
-              revenueGrowthExplanation: "Sales grew 19.9% - strong growth!",
-              profitMarginExplanation: "Keeps 51.6¢ profit per $1 sold – very profitable!",
-              returnOnCapitalExplanation: "Earns back only 3% on investments – low efficiency."
-            },
-            explanation: "Hannon Armstrong is growing fast and is highly profitable, but doesn't get great returns on its investments yet."
+      overallAnalysis: "First Solar is a major US solar panel maker with strong performance, but the stock is incredibly volatile and momentum is terrible right now. Looks cheap, but very risky.",
+      chartData: [150, 145, 140, 135, 130, 125, 128, 132, 130, 128, 126, 127.32], // Placeholder
+      industry: "ESG" // Mapped from Solar
+    },
+    // ... Add Enphase Energy (ENPH) ...
+     {
+      name: "Enphase Energy",
+      ticker: "ENPH",
+      price: 61.65,
+      change: -1.8, // Placeholder
+      rating: 3.2, // Placeholder
+      smartScore: "Poor", // Calculated Placeholder
+      description: "Designs, develops, manufactures, and sells home energy solutions for the solar photovoltaic industry.",
+      oneYearReturn: "-43.62%",
+      predictedPrice: "$78.15",
+      metrics: {
+        performance: {
+          value: "Poor", // Score: 8
+          color: "red",
+          details: {
+            revenueGrowth: -41.92, // Negative Growth
+            profitMargin: 7.72,
+            returnOnCapital: 4.99,
+            revenueGrowthExplanation: "Sales collapsed (-41.9%)! Big trouble.",
+            profitMarginExplanation: "Keeps only 7.7¢ profit per $1 sold – weak profit.",
+            returnOnCapitalExplanation: "Earns back only 5% on investments – low efficiency."
           },
-          stability: {
-            value: "Poor", // Score: 15
-            color: "red",
-            details: {
-              volatility: 45.9, // Using raw % value
-              beta: 1.86,
-              dividendConsistency: "High", // 1=High
-              volatilityExplanation: "Very volatile (45.9%) - big swings.",
-              betaExplanation: "Moves almost twice the market (1.86 beta) - reactive.",
-              dividendConsistencyExplanation: "Reliable dividend payer."
-            },
-            explanation: "Hannon Armstrong is volatile and market-sensitive, but it does pay reliable dividends."
-          },
-          value: {
-            value: "Good", // Score: 75
-            color: "green",
-            details: {
-              peRatio: 19.01,
-              pbRatio: 1.50,
-              dividendYield: 5.64,
-              peRatioExplanation: "Costs $19 per $1 profit (P/E) – looks fairly priced.",
-              pbRatioExplanation: "Stock price 1.5x 'book value' (P/B) – looks cheap on assets!",
-              dividendYieldExplanation: "HUGE dividend (5.64%)! Great income."
-            },
-            explanation: "Hannon Armstrong seems fairly priced to cheap, and offers a very attractive dividend yield."
-          },
-          momentum: {
-            value: "Good", // Score: 72
-            color: "green",
-            details: {
-              threeMonthReturn: 6.20,
-              relativePerformance: 13.79,
-              rsi: 54.99,
-              threeMonthReturnExplanation: "Up 6.2% recently – solid gain.",
-              relativePerformanceExplanation: "Beat the market index nicely (+13.8%)!",
-              rsiExplanation: "Decent buying interest (RSI 55), balanced momentum."
-            },
-            explanation: "Hannon Armstrong stock has solid momentum, gaining nicely and beating the market recently."
-          }
+          explanation: "Enphase's sales have plummeted, and profits/efficiency are low. Very poor recent performance."
         },
-        synopsis: { // Placeholder
-          price: "Gaining momentum, benefiting from renewable energy investments.",
-          company: "Finances sustainable infrastructure projects.",
-          role: "ESG investment with focus on climate solutions and income."
+        stability: {
+          value: "Poor", // Score: 9
+          color: "red",
+          details: {
+            volatility: 53.26,
+            beta: 1.98,
+            dividendConsistency: "N/A", // 0=N/A
+            volatilityExplanation: "Very volatile (53.3%) - big swings.",
+            betaExplanation: "Moves almost twice the market (1.98 beta) - very reactive.",
+            dividendConsistencyExplanation: "Doesn't pay dividends."
+          },
+          explanation: "Enphase stock is very volatile and reacts strongly to market news. No dividend income."
         },
-        overallAnalysis: "Hannon Armstrong invests in green projects and offers a hefty dividend. Growth and profitability are strong, but efficiency and stability are low. Looks reasonably valued with good momentum.",
-        chartData: [25, 26, 27, 28, 29, 30, 29.5, 29, 28.5, 29, 29.5, 29.44], // Placeholder
-        industry: "ESG" // Mapped from REIT/Infra
+        value: {
+          value: "Poor", // Score: 10
+          color: "red",
+          details: {
+            peRatio: 83.51,
+            pbRatio: 9.80,
+            dividendYield: 0,
+            peRatioExplanation: "Costs $83.51 per $1 profit (P/E) – extremely expensive!",
+            pbRatioExplanation: "Stock price ~10x 'book value' (P/B) – very high expectations.",
+            dividendYieldExplanation: "Pays no dividend."
+          },
+          explanation: "Enphase is priced very expensively, likely based on past growth, despite current struggles. No dividend."
+        },
+        momentum: {
+          value: "Average", // Score: 46
+          color: "yellow",
+          details: {
+            threeMonthReturn: -15.87,
+            relativePerformance: -8.28,
+            rsi: 50.12,
+            threeMonthReturnExplanation: "Down 15.9% recently – sharp drop.",
+            relativePerformanceExplanation: "Also underperformed the market (-8.3%).",
+            rsiExplanation: "Perfectly neutral buying interest (RSI 50.1)."
+          },
+          explanation: "Enphase stock dropped sharply, lagging the market. Buying momentum is totally flat right now."
+        }
       },
-       // --- Add AES Corp (AES) ---
-      {
-        name: "AES Corp",
-        ticker: "AES",
-        price: 12.41,
-        change: -0.2, // Placeholder
-        rating: 4.3, // Placeholder
-        smartScore: "Average", // Calculated Placeholder
-        description: "A diversified power generation and utility company.",
-        oneYearReturn: "-25.42%",
-        predictedPrice: "$14.60",
-        metrics: {
-          performance: {
-            value: "Poor", // Score: 36
-            color: "red",
-            details: {
-              revenueGrowth: -3.14, // Negative
-              profitMargin: 13.78,
-              returnOnCapital: 5.56,
-              revenueGrowthExplanation: "Sales shrank 3.1% - slipping backwards.",
-              profitMarginExplanation: "Keeps 13.8¢ profit per $1 sold – okay margin.",
-              returnOnCapitalExplanation: "Earns back 5.6% on investments – low efficiency."
-            },
-            explanation: "AES Corp's sales are falling, and while margins are okay, its efficiency is low. Weak performance."
+      synopsis: { // Placeholder
+        price: "Struggling near lows amid solar installation slowdown.",
+        company: "Microinverter leader facing inventory issues and weaker demand.",
+        role: "Volatile solar stock, sensitive to interest rates and consumer spending."
+      },
+      overallAnalysis: "Enphase, a leader in solar microinverters, is facing a major sales downturn and inventory problems. The stock is volatile, expensive, and performing poorly.",
+      chartData: [75, 70, 68, 65, 63, 60, 62, 64, 63, 61, 60, 61.65], // Placeholder
+      industry: "ESG" // Mapped from Solar
+    },
+    // ... Add SolarEdge (SEDG) ...
+    {
+      name: "SolarEdge Tech.",
+      ticker: "SEDG",
+      price: 15.85,
+      change: 0.2, // Placeholder
+      rating: 1.2, // Placeholder
+      smartScore: "Underperform", // Calculated Placeholder
+      description: "Designs, develops, and sells direct current (DC) optimized inverter systems for solar PV installations.",
+      oneYearReturn: "-75.01%",
+      predictedPrice: "$17.33",
+      metrics: {
+        performance: {
+          value: "Poor", // Score: 0 (Capped)
+          color: "red",
+          details: {
+            revenueGrowth: -68.86, // Negative
+            profitMargin: -192.13, // Negative
+            returnOnCapital: -168.40, // Negative
+            revenueGrowthExplanation: "Sales crashed (-68.9%)! Disaster zone.",
+            profitMarginExplanation: "Losing almost $2 for every $1 sold! Burning cash intensely.",
+            returnOnCapitalExplanation: "Massive negative return (-168%) on investments."
           },
-          stability: {
-            value: "Good", // Score: 80
-            color: "green",
-            details: {
-              volatility: 45.08, // Using raw % value
-              beta: 0.82,
-              dividendConsistency: "High", // 1=High
-              volatilityExplanation: "Very volatile (45.1%) for a utility!",
-              betaExplanation: "Moves less than the market (0.82 beta) - relatively stable.",
-              dividendConsistencyExplanation: "Reliable dividend payer."
-            },
-            explanation: "AES Corp is surprisingly volatile day-to-day for a utility, but overall less reactive to market trends. Pays reliable dividends."
-          },
-          value: {
-            value: "Poor", // Score: 38
-            color: "red",
-            details: {
-              peRatio: 37.79,
-              pbRatio: 2.42,
-              dividendYield: 5.59,
-              peRatioExplanation: "Costs $37.79 per $1 profit (P/E) – very expensive!",
-              pbRatioExplanation: "Stock price ~2.4x 'book value' (P/B) – seems fair.",
-              dividendYieldExplanation: "HUGE dividend (5.6%)! Great income source."
-            },
-            explanation: "AES Corp looks very expensive based on earnings, but fairly valued on assets. Its huge dividend is the main appeal."
-          },
-          momentum: {
-            value: "Good", // Score: 72
-            color: "green",
-            details: {
-              threeMonthReturn: -4.69,
-              relativePerformance: 2.90,
-              rsi: 56.02,
-              threeMonthReturnExplanation: "Down 4.7% recently – slight dip.",
-              relativePerformanceExplanation: "Still beat the market index slightly (+2.9%).",
-              rsiExplanation: "Good buying interest (RSI 56), solid momentum."
-            },
-            explanation: "AES stock dipped recently but still edged out the market. Momentum looks decent right now."
-          }
+          explanation: "SolarEdge is in deep trouble. Sales collapsed, and it's losing huge amounts of money."
         },
-        synopsis: { // Placeholder
-          price: "Utility stock offering high yield, navigating energy transition.",
-          company: "Global power company shifting towards renewable energy sources.",
-          role: "High-dividend utility stock with exposure to energy transition."
+        stability: {
+          value: "Poor", // Score: 16
+          color: "red",
+          details: {
+            volatility: 66.0, // Using raw % value
+            beta: 1.66,
+            dividendConsistency: "N/A", // 0=N/A
+            volatilityExplanation: "Extremely volatile (66%) - huge swings.",
+            betaExplanation: "Moves ~66% more than the market (1.66 beta).",
+            dividendConsistencyExplanation: "Doesn't pay dividends."
+          },
+          explanation: "SolarEdge stock is extremely volatile and reactive. No dividends here."
         },
-        overallAnalysis: "AES is a utility company offering a very high dividend. Performance is weak and it's expensive, but stability is good and momentum is picking up. Primarily an income play.",
-        chartData: [14, 13.5, 13, 12.5, 12, 11.8, 12.0, 12.2, 12.5, 12.3, 12.2, 12.41], // Placeholder
-        industry: "ESG" // Mapped from Utilities
-      }
+        value: {
+          value: "Poor", // Score: 42 (PE N/A, uses PB & Yield)
+          color: "red",
+          details: {
+            peRatio: 9999, // N/A
+            pbRatio: 1.40,
+            dividendYield: 0,
+            peRatioExplanation: "Losing money, P/E doesn't apply.",
+            pbRatioExplanation: "Stock price 1.4x 'book value' (P/B) – looks cheap on assets!",
+            dividendYieldExplanation: "Pays no dividend."
+          },
+          explanation: "SolarEdge isn't profitable. Looks cheap based on assets (low P/B), likely reflecting its major problems."
+        },
+        momentum: {
+          value: "Average", // Score: 67
+          color: "yellow",
+          details: {
+            threeMonthReturn: 6.88,
+            relativePerformance: 14.47,
+            rsi: 46.76,
+            threeMonthReturnExplanation: "Up 6.9% recently – small bounce?",
+            relativePerformanceExplanation: "Still managed to beat the market index (+14.5%) lately!",
+            rsiExplanation: "Buying interest is average (RSI 46.8)."
+          },
+          explanation: "SolarEdge bounced a bit recently, beating the market, but overall trend is terrible. Momentum is neutral."
+        }
+      },
+      synopsis: { // Placeholder
+        price: "Deeply depressed stock price, trying to stabilize.",
+        company: "Solar inverter company hit hard by industry slowdown.",
+        role: "Extremely speculative turnaround bet in the solar sector."
+      },
+      overallAnalysis: "SolarEdge is another solar company facing a severe downturn, with collapsing sales and massive losses. Extremely volatile and risky.",
+      chartData: [20, 18, 16, 15, 14, 13, 14, 15, 16, 17, 16, 15.85], // Placeholder
+      industry: "ESG" // Mapped from Solar
+    },
+     // --- Add Plug Power (PLUG) ---
+    {
+      name: "Plug Power",
+      ticker: "PLUG",
+      price: 1.34,
+      change: -0.1, // Placeholder
+      rating: 0.8, // Placeholder
+      smartScore: "Underperform", // Calculated Placeholder
+      description: "Provides hydrogen fuel cell turnkey solutions.",
+      oneYearReturn: "-58.39%",
+      predictedPrice: "$2.23",
+      metrics: {
+        performance: {
+          value: "Poor", // Score: 0 (Capped)
+          color: "red",
+          details: {
+            revenueGrowth: -29.45, // Negative
+            profitMargin: -334.71, // Negative
+            returnOnCapital: -81.38, // Negative
+            revenueGrowthExplanation: "Sales dropped 29.5% - bad sign.",
+            profitMarginExplanation: "Losing over $3 for every $1 sold!! Burning cash extremely fast.",
+            returnOnCapitalExplanation: "Huge negative return (-81%) on investments."
+          },
+          explanation: "Plug Power's sales are falling, and it's losing enormous amounts of money. Dire financial performance."
+        },
+        stability: {
+          value: "Poor", // Score: 5
+          color: "red",
+          details: {
+            volatility: 78.3, // Using raw % value
+            beta: 2.06,
+            dividendConsistency: "N/A", // 0=N/A
+            volatilityExplanation: "Insanely volatile (78.3%) - wild west stock!",
+            betaExplanation: "Moves more than twice the market (2.06 beta)!",
+            dividendConsistencyExplanation: "Doesn't pay dividends."
+          },
+          explanation: "Plug Power is about as volatile and market-sensitive as it gets. Extremely risky, no dividend."
+        },
+        value: {
+          value: "Poor", // Score: 50 (PE N/A, uses PB & Yield)
+          color: "red",
+          details: {
+            peRatio: 9999, // N/A
+            pbRatio: 0.71,
+            dividendYield: 0,
+            peRatioExplanation: "No profits, P/E doesn't apply.",
+            pbRatioExplanation: "Stock price below 'book value' (0.71 P/B) – looks super cheap on assets!",
+            dividendYieldExplanation: "Pays no dividend."
+          },
+          explanation: "Plug Power isn't profitable. The stock trades for less than its assets are worth, likely due to its massive losses."
+        },
+        momentum: {
+          value: "Poor", // Score: 0 (Capped)
+          color: "red",
+          details: {
+            threeMonthReturn: -44.63,
+            relativePerformance: -37.04,
+            rsi: 29.48,
+            threeMonthReturnExplanation: "Down 44.6% recently – collapsed further.",
+            relativePerformanceExplanation: "Way underperformed the market (-37%).",
+            rsiExplanation: "Extremely weak buying (RSI 29.5), deeply oversold."
+          },
+          explanation: "Plug Power stock continued its crash, badly lagging the market. Looks extremely weak and oversold."
+        }
+      },
+      synopsis: { // Placeholder
+        price: "Penny stock territory, facing existential financial challenges.",
+        company: "Hydrogen fuel cell company struggling with costs and profitability.",
+        role: "Highly speculative, high-risk bet on hydrogen economy adoption."
+      },
+      overallAnalysis: "Plug Power is a hydrogen fuel cell company burning through cash with massive losses and falling sales. Extremely volatile and risky 'penny stock'.",
+      chartData: [2.5, 2.2, 2.0, 1.8, 1.6, 1.5, 1.4, 1.3, 1.2, 1.4, 1.3, 1.34], // Placeholder
+      industry: "ESG" // Mapped from Electrical Equip.
+    },
+    // --- Add ChargePoint (CHPT) ---
+    {
+      name: "ChargePoint",
+      ticker: "CHPT",
+      price: 0.62,
+      change: -0.05, // Placeholder
+      rating: 1.0, // Placeholder
+      smartScore: "Underperform", // Calculated Placeholder
+      description: "Provides electric vehicle (EV) charging networks and solutions.",
+      oneYearReturn: "-64.45%",
+      predictedPrice: "$1.36",
+      metrics: {
+        performance: {
+          value: "Poor", // Score: 0 (Capped)
+          color: "red",
+          details: {
+            revenueGrowth: -17.68, // Negative
+            profitMargin: -67.83, // Negative
+            returnOnCapital: -63.25, // Negative
+            revenueGrowthExplanation: "Sales dropped 17.7% - going backwards.",
+            profitMarginExplanation: "Losing 68¢ per $1 sold – significant losses.",
+            returnOnCapitalExplanation: "Massive negative return (-63%) on investments."
+          },
+          explanation: "ChargePoint's sales are falling, and it's losing a lot of money. Very poor financial performance."
+        },
+        stability: {
+          value: "Poor", // Score: 5
+          color: "red",
+          details: {
+            volatility: 80.0, // Estimated raw value
+            beta: 2.04,
+            dividendConsistency: "N/A", // 0=N/A
+            volatilityExplanation: "Dangerously volatile (~80%) - extreme swings!",
+            betaExplanation: "Moves more than twice the market (2.04 beta)!",
+            dividendConsistencyExplanation: "Doesn't pay dividends."
+          },
+          explanation: "ChargePoint is extremely volatile and reactive to market trends. High risk, no dividends."
+        },
+        value: {
+          value: "Poor", // Score: 37 (PE N/A, uses PB & Yield)
+          color: "red",
+          details: {
+            peRatio: 9999, // N/A
+            pbRatio: 2.14,
+            dividendYield: 0,
+            peRatioExplanation: "No profits, P/E doesn't apply.",
+            pbRatioExplanation: "Stock price ~2.1x 'book value' (P/B) – maybe fair based on assets?",
+            dividendYieldExplanation: "Pays no dividend."
+          },
+          explanation: "ChargePoint isn't profitable. It looks somewhat reasonably priced based on assets, but the losses are huge."
+        },
+        momentum: {
+          value: "Poor", // Score: 3
+          color: "red",
+          details: {
+            threeMonthReturn: -46.68,
+            relativePerformance: -39.09,
+            rsi: 37.84,
+            threeMonthReturnExplanation: "Down 46.7% recently – another collapse.",
+            relativePerformanceExplanation: "Way underperformed the market (-39.1%).",
+            rsiExplanation: "Very weak buying (RSI 37.8), looks very oversold."
+          },
+          explanation: "ChargePoint stock collapsed again, badly lagging the market. Looks extremely weak and oversold."
+        }
+      },
+      synopsis: { // Placeholder
+        price: "Deeply distressed stock price, facing EV charging competition.",
+        company: "EV charging network provider struggling with profitability.",
+        role: "Highly speculative bet on EV infrastructure growth."
+      },
+      overallAnalysis: "ChargePoint operates EV charging stations, a growing market, but faces intense competition and significant losses. Very high risk, poor performance.",
+      chartData: [1.5, 1.3, 1.1, 0.9, 0.8, 0.7, 0.6, 0.5, 0.7, 0.65, 0.6, 0.62], // Placeholder
+      industry: "ESG" // Mapped from Specialty Retail
+    },
+    // --- Add Hannon Armstrong (HASI) ---
+    {
+      name: "Hannon Armstrong",
+      ticker: "HASI",
+      price: 29.44,
+      change: 0.8, // Placeholder
+      rating: 6.8, // Placeholder
+      smartScore: "Good", // Calculated Placeholder
+      description: "Invests in climate solutions, providing capital to companies in energy efficiency, renewable energy, and sustainable infrastructure.",
+      oneYearReturn: "10.14%",
+      predictedPrice: "$39.25",
+      metrics: {
+        performance: {
+          value: "Good", // Score: 81
+          color: "green",
+          details: {
+            revenueGrowth: 19.92,
+            profitMargin: 51.63,
+            returnOnCapital: 2.96,
+            revenueGrowthExplanation: "Sales grew 19.9% - strong growth!",
+            profitMarginExplanation: "Keeps 51.6¢ profit per $1 sold – very profitable!",
+            returnOnCapitalExplanation: "Earns back only 3% on investments – low efficiency."
+          },
+          explanation: "Hannon Armstrong is growing fast and is highly profitable, but doesn't get great returns on its investments yet."
+        },
+        stability: {
+          value: "Poor", // Score: 15
+          color: "red",
+          details: {
+            volatility: 45.9, // Using raw % value
+            beta: 1.86,
+            dividendConsistency: "High", // 1=High
+            volatilityExplanation: "Very volatile (45.9%) - big swings.",
+            betaExplanation: "Moves almost twice the market (1.86 beta) - reactive.",
+            dividendConsistencyExplanation: "Reliable dividend payer."
+          },
+          explanation: "Hannon Armstrong is volatile and market-sensitive, but it does pay reliable dividends."
+        },
+        value: {
+          value: "Good", // Score: 75
+          color: "green",
+          details: {
+            peRatio: 19.01,
+            pbRatio: 1.50,
+            dividendYield: 5.64,
+            peRatioExplanation: "Costs $19 per $1 profit (P/E) – looks fairly priced.",
+            pbRatioExplanation: "Stock price 1.5x 'book value' (P/B) – looks cheap on assets!",
+            dividendYieldExplanation: "HUGE dividend (5.64%)! Great income."
+          },
+          explanation: "Hannon Armstrong seems fairly priced to cheap, and offers a very attractive dividend yield."
+        },
+        momentum: {
+          value: "Good", // Score: 72
+          color: "green",
+          details: {
+            threeMonthReturn: 6.20,
+            relativePerformance: 13.79,
+            rsi: 54.99,
+            threeMonthReturnExplanation: "Up 6.2% recently – solid gain.",
+            relativePerformanceExplanation: "Beat the market index nicely (+13.8%)!",
+            rsiExplanation: "Decent buying interest (RSI 55), balanced momentum."
+          },
+          explanation: "Hannon Armstrong stock has solid momentum, gaining nicely and beating the market recently."
+        }
+      },
+      synopsis: { // Placeholder
+        price: "Gaining momentum, benefiting from renewable energy investments.",
+        company: "Finances sustainable infrastructure projects.",
+        role: "ESG investment with focus on climate solutions and income."
+      },
+      overallAnalysis: "Hannon Armstrong invests in green projects and offers a hefty dividend. Growth and profitability are strong, but efficiency and stability are low. Looks reasonably valued with good momentum.",
+      chartData: [25, 26, 27, 28, 29, 30, 29.5, 29, 28.5, 29, 29.5, 29.44], // Placeholder
+      industry: "ESG" // Mapped from REIT/Infra
+    },
+     // --- Add AES Corp (AES) ---
+    {
+      name: "AES Corp",
+      ticker: "AES",
+      price: 12.41,
+      change: -0.2, // Placeholder
+      rating: 4.3, // Placeholder
+      smartScore: "Average", // Calculated Placeholder
+      description: "A diversified power generation and utility company.",
+      oneYearReturn: "-25.42%",
+      predictedPrice: "$14.60",
+      metrics: {
+        performance: {
+          value: "Poor", // Score: 36
+          color: "red",
+          details: {
+            revenueGrowth: -3.14, // Negative
+            profitMargin: 13.78,
+            returnOnCapital: 5.56,
+            revenueGrowthExplanation: "Sales shrank 3.1% - slipping backwards.",
+            profitMarginExplanation: "Keeps 13.8¢ profit per $1 sold – okay margin.",
+            returnOnCapitalExplanation: "Earns back 5.6% on investments – low efficiency."
+          },
+          explanation: "AES Corp's sales are falling, and while margins are okay, its efficiency is low. Weak performance."
+        },
+        stability: {
+          value: "Good", // Score: 80
+          color: "green",
+          details: {
+            volatility: 45.08, // Using raw % value
+            beta: 0.82,
+            dividendConsistency: "High", // 1=High
+            volatilityExplanation: "Very volatile (45.1%) for a utility!",
+            betaExplanation: "Moves less than the market (0.82 beta) - relatively stable.",
+            dividendConsistencyExplanation: "Reliable dividend payer."
+          },
+          explanation: "AES Corp is surprisingly volatile day-to-day for a utility, but overall less reactive to market trends. Pays reliable dividends."
+        },
+        value: {
+          value: "Poor", // Score: 38
+          color: "red",
+          details: {
+            peRatio: 37.79,
+            pbRatio: 2.42,
+            dividendYield: 5.59,
+            peRatioExplanation: "Costs $37.79 per $1 profit (P/E) – very expensive!",
+            pbRatioExplanation: "Stock price ~2.4x 'book value' (P/B) – seems fair.",
+            dividendYieldExplanation: "HUGE dividend (5.6%)! Great income source."
+          },
+          explanation: "AES Corp looks very expensive based on earnings, but fairly valued on assets. Its huge dividend is the main appeal."
+        },
+        momentum: {
+          value: "Good", // Score: 72
+          color: "green",
+          details: {
+            threeMonthReturn: -4.69,
+            relativePerformance: 2.90,
+            rsi: 56.02,
+            threeMonthReturnExplanation: "Down 4.7% recently – slight dip.",
+            relativePerformanceExplanation: "Still beat the market index slightly (+2.9%).",
+            rsiExplanation: "Good buying interest (RSI 56), solid momentum."
+          },
+          explanation: "AES stock dipped recently but still edged out the market. Momentum looks decent right now."
+        }
+      },
+      synopsis: { // Placeholder
+        price: "Utility stock offering high yield, navigating energy transition.",
+        company: "Global power company shifting towards renewable energy sources.",
+        role: "High-dividend utility stock with exposure to energy transition."
+      },
+      overallAnalysis: "AES is a utility company offering a very high dividend. Performance is weak and it's expensive, but stability is good and momentum is picking up. Primarily an income play.",
+      chartData: [14, 13.5, 13, 12.5, 12, 11.8, 12.0, 12.2, 12.5, 12.3, 12.2, 12.41], // Placeholder
+      industry: "ESG" // Mapped from Utilities
+    }
   ],
 
   "Healthcare": [
@@ -3689,11 +3689,13 @@ export const getIndustryStocks = (industry: string): StockData[] => {
     "Tech": "Tech",
     "Retail": "Retail",
     "Real Estate": "Real Estate",
+
     
     // Map stack explorer industry names to our existing hardcoded stocks
     "Technology": "Tech",
+    "Consumer": "Retail",
     "Healthcare": "Healthcare", // Temporarily using Tech stocks for Healthcare until we have real healthcare data
-    "ESG": "ESG", // Temporarily using Tech stocks for ESG until we have real ESG data
+    "ESG": "Tech", // Temporarily using Tech stocks for ESG until we have real ESG data
     
     // Map server-defined stack industries to our hardcoded stock industries
     "Investing": "Tech", // Fallback to Tech for now

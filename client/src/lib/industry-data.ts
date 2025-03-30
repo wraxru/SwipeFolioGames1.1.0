@@ -23,24 +23,24 @@ export const industryAverages: Record<string, {
 }> = {
   "Tech": {
     performance: {
-      revenueGrowth: 12,
-      profitMargin: 22,
-      returnOnCapital: 14
+      revenueGrowth: 21.74,
+      profitMargin: 12.38,
+      returnOnCapital: 22.74
     },
     stability: {
-      volatility: 1.0,
-      beta: 1.1,
+      volatility: 44.3,
+      beta: 1.54,
       dividendConsistency: "Medium"
     },
     value: {
-      peRatio: 22.0,
-      pbRatio: 3.5,
-      dividendYield: 0.9
+      peRatio: 36.4,
+      pbRatio: 19.4,
+      dividendYield: 0.38
     },
     momentum: {
-      threeMonthReturn: 4.5,
-      relativePerformance: 1.8,
-      rsi: 55
+      threeMonthReturn: -13.62,
+      relativePerformance: 19.0,
+      rsi: 39.5
     }
   },
   "ESG": {
