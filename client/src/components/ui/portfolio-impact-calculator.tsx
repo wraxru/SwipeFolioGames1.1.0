@@ -280,43 +280,8 @@ export default function PortfolioImpactCalculator({
                 <div className="mb-4">
                   {/* Title removed as it's redundant with the header */}
                   
-                  {/* Investment Summary Card */}
-                  <div className="bg-slate-50 rounded-xl p-4 mb-4 border border-slate-100">
-                    <h3 className="text-sm font-medium text-slate-700 mb-2 flex items-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1">
-                        <path d="M2 9.5V4a2 2 0 0 1 2-2h4.586a1 1 0 0 1 .707.293l10.414 10.414a1 1 0 0 1 0 1.414l-4.586 4.586a1 1 0 0 1-1.414 0L3.293 8.293A1 1 0 0 1 3 7.586V4"></path>
-                        <path d="M7 9.96 9.95 7"></path>
-                        <path d="M11 13.96 13.95 11"></path>
-                        <path d="M13 15h9v6h-9z"></path>
-                      </svg>
-                      Investment Summary
-                    </h3>
-                    <div className="grid grid-cols-2 gap-y-2 gap-x-3">
-                      <div className="flex justify-between">
-                        <span className="text-xs text-slate-500">Current Price:</span>
-                        <span className="text-xs font-medium text-slate-700">${stock.price.toFixed(2)}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-xs text-slate-500">Shares:</span>
-                        <span className="text-xs font-medium text-slate-700">{shares.toFixed(4)}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-xs text-slate-500">Investment:</span>
-                        <span className="text-xs font-medium text-slate-700">${investmentAmount.toFixed(2)}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-xs text-slate-500">1-Year Projection:</span>
-                        <span className="text-xs font-medium text-green-600">${projectedReturn.toFixed(2)}</span>
-                      </div>
-                    </div>
-                  </div>
-                  
                   {/* Modern Pie Chart showing industry allocation */}
                   <div className="relative h-48 mb-4 bg-white rounded-xl overflow-hidden border border-slate-100 shadow-sm">
-                    <div className="absolute top-0 left-0 p-3">
-                      <h4 className="text-xs font-medium text-slate-700">Industry Allocation</h4>
-                    </div>
-                    
                     <div className="absolute inset-0 flex items-center justify-center">
                       <svg viewBox="0 0 100 100" width="160" height="160">
                         {/* Background circle - lighter when empty */}
@@ -360,36 +325,14 @@ export default function PortfolioImpactCalculator({
                           })
                         }
                         
-                        {/* Central circle - clean white center without emoji */}
+                        {/* Central circle - clean white center */}
                         <circle cx="50" cy="50" r="30" fill="white" />
-                        
-                        {/* Quality score in center instead of emoji */}
-                        <text 
-                          x="50" 
-                          y="45" 
-                          textAnchor="middle" 
-                          fontSize="10" 
-                          fill="#64748b"
-                          fontWeight="bold"
-                        >
-                          {Object.entries(impact.industryAllocation).length === 0 ? "New" : "Portfolio"}
-                        </text>
-                        <text 
-                          x="50" 
-                          y="57" 
-                          textAnchor="middle" 
-                          fontSize="10" 
-                          fill="#475569"
-                          fontWeight="bold"
-                        >
-                          {Object.entries(impact.industryAllocation).length === 0 ? "Investment" : "Mix"}
-                        </text>
                       </svg>
                     </div>
                     
-                    {/* Modern industry legends on the right side */}
-                    <div className="absolute right-3 inset-y-0 flex flex-col justify-center">
-                      <div className="space-y-1.5 max-w-[120px]">
+                    {/* Simple industry indicators in the top left */}
+                    <div className="absolute top-3 left-3">
+                      <div className="space-y-1">
                         {Object.entries(impact.industryAllocation)
                           .filter(([_, allocation]) => allocation.new > 0)
                           .map(([industry, allocation], index) => {
@@ -397,23 +340,12 @@ export default function PortfolioImpactCalculator({
                             const color = colors[index % colors.length];
                             
                             return (
-                              <div key={industry} className="flex items-center justify-between">
-                                <div className="flex items-center">
-                                  <div 
-                                    className="w-2 h-2 rounded-full mr-1.5" 
-                                    style={{ backgroundColor: color }}
-                                  ></div>
-                                  <span className="text-xs text-slate-700 truncate">{industry}</span>
-                                </div>
-                                <div className="flex items-center ml-2">
-                                  <span className="text-xs font-medium text-slate-800">{allocation.new.toFixed(1)}%</span>
-                                  {allocation.new !== allocation.current && Math.abs(allocation.new - allocation.current) > 0.1 && (
-                                    <span className={`text-[9px] ml-0.5 ${allocation.new > allocation.current ? "text-green-600" : "text-red-600"}`}>
-                                      {allocation.new > allocation.current ? "+" : ""}
-                                      {(allocation.new - allocation.current).toFixed(1)}%
-                                    </span>
-                                  )}
-                                </div>
+                              <div key={industry} className="flex items-center">
+                                <div 
+                                  className="w-2.5 h-2.5 rounded-full mr-1.5" 
+                                  style={{ backgroundColor: color }}
+                                ></div>
+                                <span className="text-xs text-slate-700">{industry}</span>
                               </div>
                             );
                           })
