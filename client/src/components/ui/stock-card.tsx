@@ -766,7 +766,6 @@ export default function StockCard({
           <div className="w-32 h-32 rounded-full bg-gradient-to-tr from-blue-400/20 to-indigo-300/20"></div>
         </div>
       </div>
-      
       {/* Skipped message - shows when swiping left */}
       {showSkippedMessage && (
         <motion.div
@@ -791,12 +790,38 @@ export default function StockCard({
         animate={cardControls}
         style={{ x, opacity: cardOpacity, rotateZ: cardRotate, scale: cardScale }}
       >
-        {/* Stock Header (at the VERY top) */}
-        <div className="bg-white pt-5 pb-3 px-4 flex flex-col border-b border-slate-100 shadow-sm">
+        {/* Time Frame Selector - Enhanced with better visual contrast */}
+        <div className="flex justify-center space-x-1 px-4 py-3 border-b border-slate-100 bg-white shadow-sm">
+          {["1D", "5D", "1M", "6M", "YTD", "1Y", "5Y", "MAX"].map((period) => (
+            <button
+              key={period}
+              className={`px-3 py-1 text-xs rounded-full transition-all duration-200 ${
+                timeFrame === period 
+                  ? `${realTimeChange >= 0 ? 'text-green-600 bg-green-50 border border-green-200 shadow-sm' : 'text-red-600 bg-red-50 border border-red-200 shadow-sm'} font-medium` 
+                  : 'text-slate-600 hover:bg-slate-50 border border-transparent'
+              }`}
+              onClick={() => setTimeFrame(period as TimeFrame)}
+            >
+              {period}
+            </button>
+          ))}
+        </div>
+
+        {/* Stock Price and Chart - Enhanced with better visual hierarchy */}
+        <div className="bg-white p-4 flex flex-col border-b border-slate-100 shadow-sm">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1.5">
               <h2 className="text-xl font-bold text-slate-900">{stock.name}</h2>
               <span className="text-slate-500 font-medium bg-slate-50 px-2 py-0.5 rounded-md">{stock.ticker}</span>
+            </div>
+            <div className="flex items-center">
+              <button 
+                onClick={refreshData}
+                className="p-1.5 rounded-full hover:bg-slate-100 transition-colors"
+                disabled={isRefreshing}
+              >
+                <RefreshCw size={17} className={`text-slate-500 ${isRefreshing ? 'animate-spin' : ''}`} />
+              </button>
             </div>
           </div>
 
@@ -817,24 +842,6 @@ export default function StockCard({
             <span className="mr-2">Day's Range:</span>
             <span className="font-medium">${(parseFloat(displayPrice) * 0.98).toFixed(2)} - ${(parseFloat(displayPrice) * 1.02).toFixed(2)}</span>
           </div>
-        </div>
-
-        {/* Time Frame Selector - Below the header */}
-        <div className="flex justify-center space-x-1 px-4 py-3 bg-white shadow-sm">
-          {["1D", "5D", "1M", "6M", "YTD", "1Y", "5Y", "MAX"].map((period) => (
-            <button
-              key={period}
-              className={`px-3 py-1 text-xs rounded-full transition-all duration-200 ${
-                timeFrame === period 
-                  ? `${realTimeChange >= 0 ? 'text-green-600 bg-green-50 border border-green-200 shadow-sm' : 'text-red-600 bg-red-50 border border-red-200 shadow-sm'} font-medium` 
-                  : 'text-slate-600 hover:bg-slate-50 border border-transparent'
-              }`}
-              onClick={() => setTimeFrame(period as TimeFrame)}
-            >
-              {period}
-            </button>
-          ))}
-        </div>
 
           {/* Chart placeholder - visualize the data */}
           <div className="relative mt-3 h-44 py-2">
