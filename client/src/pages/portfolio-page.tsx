@@ -1,6 +1,10 @@
 import { useContext, useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowUp, ArrowDown, MoreHorizontal, PieChart, TrendingUp, Briefcase, Settings, Clock, DollarSign, MessageSquare } from 'lucide-react';
+import { 
+  ArrowUp, ArrowDown, MoreHorizontal, PieChart, TrendingUp, Briefcase, 
+  Settings, Clock, DollarSign, MessageSquare, Sparkles, Loader2,
+  AlertTriangle, BarChart2
+} from 'lucide-react';
 import AppHeader from '@/components/app-header';
 import AppNavigation from '@/components/app-navigation';
 import { PortfolioContext, PortfolioHolding } from '@/contexts/portfolio-context';
@@ -8,11 +12,155 @@ import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { getIndustryAverages } from '@/lib/industry-data';
 import { getQualityScoreColor, getQualityScoreBgColor } from '@/data/leaderboard-data';
-import PortfolioAnalyzer from '@/components/portfolio-analyzer';
+// import PortfolioAnalyzer from '@/components/portfolio-analyzer';
+import { 
+  Dialog, DialogContent, DialogHeader, DialogTitle, 
+  DialogDescription, DialogFooter 
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { 
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue 
+} from '@/components/ui/select';
+import { StockData, getAllStocks, getIndustryStocks } from '@/lib/stock-data';
+import { getAdvancedMetricScore } from '@/lib/advanced-metric-scoring';
+import { cn } from '@/lib/utils';
+
+// Define interfaces for impact data
+interface ImpactMetrics {
+  performance: number;
+  stability: number;
+  value: number;
+  momentum: number;
+  qualityScore: number;
+  trades: number;
+  roi: number;
+}
+
+// Define type for stock suggestion with impact data
+interface StockSuggestion {
+  stock: StockData;
+  impact: {
+    performance: number;
+    stability: number;
+    value: number;
+    momentum: number;
+    qualityScore: number;
+    trades: number;
+    roi: number;
+    industryAllocation: Record<string, { current: number; new: number }>;
+  };
+}
 
 export default function PortfolioPage() {
   const portfolio = useContext(PortfolioContext);
   const [activeTab, setActiveTab] = useState('metrics');
+  
+  // Improve with AI feature states
+  const [isImproveDialogOpen, setIsImproveDialogOpen] = useState(false);
+  const [improvementGoal, setImprovementGoal] = useState('roi');
+  const [selectedIndustry, setSelectedIndustry] = useState('all');
+  const [investmentAmount, setInvestmentAmount] = useState('10');
+  const [suggestions, setSuggestions] = useState<StockSuggestion[]>([]);
+  const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
+  const [errorSuggestions, setErrorSuggestions] = useState('');
+  
+  // Handler for finding stock suggestions based on selected improvement goal
+  const handleFindSuggestions = async () => {
+    setIsLoadingSuggestions(true);
+    setErrorSuggestions('');
+    setSuggestions([]);
+    
+    try {
+      // Validate investment amount
+      const amount = parseFloat(investmentAmount);
+      if (isNaN(amount) || amount <= 0) {
+        throw new Error('Please enter a valid investment amount');
+      }
+      
+      if (amount > cash) {
+        throw new Error(`You only have $${cash.toFixed(2)} available to invest`);
+      }
+      
+      // Get stocks based on selected industry or all stocks
+      const availableStocks = selectedIndustry === 'all' 
+        ? getAllStocks() 
+        : getIndustryStocks(selectedIndustry);
+      
+      // Filter out stocks already in portfolio to avoid duplicates
+      const filteredStocks = availableStocks.filter(stock => 
+        !holdings.some(holding => holding.stock.ticker === stock.ticker)
+      );
+      
+      if (filteredStocks.length === 0) {
+        throw new Error(
+          selectedIndustry === 'all' 
+            ? 'No new stocks available to suggest' 
+            : `No new ${selectedIndustry} stocks available to suggest`
+        );
+      }
+      
+      // Rank stocks based on selected goal
+      let rankedStocks: StockData[] = [];
+      
+      switch (improvementGoal) {
+        case 'roi':
+          // Rank by projected 1-year return
+          rankedStocks = filteredStocks.sort((a, b) => {
+            const aReturn = typeof a.oneYearReturn === 'number' ? a.oneYearReturn :
+                           typeof a.oneYearReturn === 'string' ? parseFloat(a.oneYearReturn.replace('%', '')) : 0;
+            const bReturn = typeof b.oneYearReturn === 'number' ? b.oneYearReturn :
+                           typeof b.oneYearReturn === 'string' ? parseFloat(b.oneYearReturn.replace('%', '')) : 0;
+            return bReturn - aReturn; // Descending order (highest first)
+          });
+          break;
+          
+        case 'performance':
+        case 'stability':
+        case 'value':
+        case 'momentum':
+          // Rank by the specific metric score
+          rankedStocks = filteredStocks.sort((a, b) => {
+            const aScore = getAdvancedMetricScore(a, improvementGoal as any);
+            const bScore = getAdvancedMetricScore(b, improvementGoal as any);
+            return bScore - aScore; // Descending order (highest first)
+          });
+          break;
+          
+        default:
+          throw new Error('Invalid improvement goal selected');
+      }
+      
+      // Get top 3 suggestions and calculate impact
+      const topSuggestions = rankedStocks.slice(0, 3);
+      const suggestionsWithImpact = await Promise.all(topSuggestions.map(async (stock) => {
+        // Non-null assertion is safe because we check for portfolio existence earlier
+        const impactData = portfolio!.calculateImpact(stock, amount);
+        
+        // Convert to our StockSuggestion type
+        return { 
+          stock, 
+          impact: {
+            performance: impactData.impact.performance,
+            stability: impactData.impact.stability,
+            value: impactData.impact.value,
+            momentum: impactData.impact.momentum,
+            qualityScore: impactData.impact.qualityScore,
+            trades: impactData.impact.trades,
+            roi: impactData.impact.roi,
+            industryAllocation: impactData.industryAllocation
+          } 
+        };
+      }));
+      
+      setSuggestions(suggestionsWithImpact);
+    } catch (error) {
+      setErrorSuggestions(error instanceof Error ? error.message : 'An error occurred');
+    } finally {
+      setIsLoadingSuggestions(false);
+    }
+  };
   
   if (!portfolio) {
     return (
@@ -289,7 +437,20 @@ export default function PortfolioPage() {
           
           <TabsContent value="metrics" className="space-y-4">
             <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
-              <p className="text-sm font-medium text-slate-700 mb-3">Portfolio Metrics</p>
+              <div className="flex justify-between items-center mb-3">
+                <p className="text-sm font-medium text-slate-700">Portfolio Metrics</p>
+                {sortedHoldings.length > 0 && (
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="flex items-center text-xs text-blue-600 hover:text-blue-800 font-medium"
+                    onClick={() => setIsImproveDialogOpen(true)}
+                  >
+                    <Sparkles className="h-3.5 w-3.5 mr-1" />
+                    See How You Can Improve
+                  </Button>
+                )}
+              </div>
               {sortedHoldings.length === 0 ? (
                 <EmptyState 
                   title="No metrics data yet"
@@ -360,24 +521,299 @@ export default function PortfolioPage() {
           </TabsContent>
           
           <TabsContent value="ai-advisor" className="space-y-4">
-            <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-              <div className="p-0">
-                {sortedHoldings.length === 0 ? (
-                  <EmptyState 
-                    title="Start building your portfolio"
-                    description="The AI advisor can help analyze your investments once you have holdings"
-                    className="py-8"
-                  />
-                ) : (
-                  <PortfolioAnalyzer />
+            <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-medium text-slate-800">Portfolio Advisor</h3>
+                {sortedHoldings.length > 0 && (
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => setIsImproveDialogOpen(true)}
+                    className="flex items-center text-sm"
+                  >
+                    <Sparkles className="h-3.5 w-3.5 mr-1.5 text-blue-500" />
+                    Improve with AI
+                  </Button>
                 )}
               </div>
+              
+              {sortedHoldings.length === 0 ? (
+                <EmptyState 
+                  title="Start building your portfolio"
+                  description="The AI advisor can help analyze your investments once you have holdings"
+                  className="py-8"
+                />
+              ) : (
+                <div className="space-y-4">
+                  <p className="text-sm text-slate-600">
+                    Based on your current portfolio, we have the following suggestions:
+                  </p>
+                  
+                  <div className="bg-slate-50 p-4 rounded-lg">
+                    <div className="flex items-start">
+                      <AlertTriangle className="h-5 w-5 text-amber-500 mr-3 mt-0.5" />
+                      <div>
+                        <p className="text-sm font-medium text-slate-800">Diversification Opportunity</p>
+                        <p className="text-sm text-slate-600 mt-1">
+                          Your portfolio is currently concentrated in {sortedIndustries.length} {sortedIndustries.length === 1 ? 'industry' : 'industries'}.
+                          Consider adding stocks from different sectors to reduce risk.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-slate-50 p-4 rounded-lg">
+                    <div className="flex items-start">
+                      <BarChart2 className="h-5 w-5 text-blue-500 mr-3 mt-0.5" />
+                      <div>
+                        <p className="text-sm font-medium text-slate-800">Performance Analysis</p>
+                        <p className="text-sm text-slate-600 mt-1">
+                          Your portfolio has a projected 1-year return of {projectedReturnPercent.toFixed(1)}%.
+                          {projectedReturnPercent < 10 
+                            ? " There's potential to increase your returns with tactical adjustments."
+                            : " This is a solid projected return based on current holdings."}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-slate-50 p-4 rounded-lg">
+                    <div className="flex items-start">
+                      <TrendingUp className="h-5 w-5 text-green-500 mr-3 mt-0.5" />
+                      <div>
+                        <p className="text-sm font-medium text-slate-800">Growth Potential</p>
+                        <p className="text-sm text-slate-600 mt-1">
+                          Your portfolio's quality score is {portfolioMetrics.qualityScore}.
+                          {portfolioMetrics.qualityScore < 70 
+                            ? " There's room for optimizing your investments for better performance."
+                            : " This is a strong score indicating a well-balanced portfolio."}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="mt-6 pt-4 border-t border-slate-200">
+                    <p className="text-sm text-slate-700 mb-3 font-medium">Ready to optimize your portfolio?</p>
+                    <Button 
+                      onClick={() => setIsImproveDialogOpen(true)}
+                      className="w-full flex items-center justify-center"
+                    >
+                      <Sparkles className="h-4 w-4 mr-2" />
+                      Get AI-Powered Suggestions
+                    </Button>
+                  </div>
+                </div>
+              )}
             </div>
           </TabsContent>
         </Tabs>
       </main>
       
       <AppNavigation />
+      
+      {/* Improve with AI Dialog */}
+      <Dialog open={isImproveDialogOpen} onOpenChange={setIsImproveDialogOpen}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center">
+              <Sparkles className="h-4 w-4 mr-2 text-blue-500" />
+              Improve Your Portfolio
+            </DialogTitle>
+            <DialogDescription>
+              Discover stocks that could enhance your portfolio based on your investment goals.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="grid gap-4 py-4">
+            {/* Improvement Goal Selection */}
+            <div className="grid grid-cols-1 gap-2">
+              <Label htmlFor="improvement-goal">What would you like to improve?</Label>
+              <Select 
+                value={improvementGoal} 
+                onValueChange={setImprovementGoal}
+              >
+                <SelectTrigger id="improvement-goal">
+                  <SelectValue placeholder="Select a goal" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="roi">Projected ROI</SelectItem>
+                  <SelectItem value="performance">Performance</SelectItem>
+                  <SelectItem value="stability">Stability</SelectItem>
+                  <SelectItem value="value">Value</SelectItem>
+                  <SelectItem value="momentum">Momentum</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            {/* Industry Selection */}
+            <div className="grid grid-cols-1 gap-2">
+              <Label htmlFor="industry">Industry Preference (Optional)</Label>
+              <Select 
+                value={selectedIndustry} 
+                onValueChange={setSelectedIndustry}
+              >
+                <SelectTrigger id="industry">
+                  <SelectValue placeholder="Select an industry" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Industries</SelectItem>
+                  <SelectItem value="Tech">Technology</SelectItem>
+                  <SelectItem value="Retail">Retail</SelectItem>
+                  <SelectItem value="Real Estate">Real Estate</SelectItem>
+                  <SelectItem value="Healthcare">Healthcare</SelectItem>
+                  <SelectItem value="ESG">ESG / Sustainable</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            {/* Investment Amount */}
+            <div className="grid grid-cols-1 gap-2">
+              <Label htmlFor="investment-amount">
+                Investment Amount (Max: ${cash.toFixed(2)})
+              </Label>
+              <Input
+                id="investment-amount"
+                type="number"
+                min="1"
+                max={cash}
+                step="1"
+                value={investmentAmount}
+                onChange={(e) => setInvestmentAmount(e.target.value)}
+                className="w-full"
+              />
+            </div>
+          </div>
+          
+          {/* Loading State */}
+          {isLoadingSuggestions && (
+            <div className="py-8 text-center">
+              <Loader2 className="h-6 w-6 animate-spin mx-auto mb-2 text-blue-500" />
+              <p className="text-sm text-slate-500">Analyzing portfolio and finding suggestions...</p>
+            </div>
+          )}
+          
+          {/* Error State */}
+          {errorSuggestions && (
+            <div className="py-4 text-center">
+              <p className="text-sm text-red-500">{errorSuggestions}</p>
+            </div>
+          )}
+          
+          {/* Results */}
+          {!isLoadingSuggestions && suggestions.length > 0 && (
+            <div className="space-y-4">
+              <h3 className="text-sm font-medium text-slate-700">Top Recommendations</h3>
+              
+              {suggestions.map(({ stock, impact }) => (
+                <div 
+                  key={stock.ticker} 
+                  className="border border-slate-200 rounded-lg p-4 hover:shadow-sm transition-shadow duration-200"
+                >
+                  <div className="flex justify-between items-start mb-3">
+                    <div>
+                      <h4 className="font-medium text-slate-800 flex items-center">
+                        {stock.name}
+                        <span className="ml-2 text-xs text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">
+                          {stock.ticker}
+                        </span>
+                      </h4>
+                      <p className="text-xs text-slate-500">{stock.industry}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm font-medium text-slate-800">${stock.price.toFixed(2)}</p>
+                      {stock.oneYearReturn && (
+                        <p className={`text-xs ${
+                          (typeof stock.oneYearReturn === 'string' 
+                            ? parseFloat(stock.oneYearReturn) >= 0 
+                            : (stock.oneYearReturn as number) >= 0)
+                            ? 'text-green-600' 
+                            : 'text-red-600'
+                        }`}>
+                          {stock.oneYearReturn}% (1Y)
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <div className="mb-3">
+                    <p className="text-xs font-medium text-slate-700 mb-2">
+                      Projected Impact on Your Portfolio
+                    </p>
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+                      <ImpactMetricDisplay 
+                        label="Performance" 
+                        value={impact.performance} 
+                        color="text-blue-500"
+                      />
+                      <ImpactMetricDisplay 
+                        label="Stability" 
+                        value={impact.stability} 
+                        color="text-purple-500"
+                      />
+                      <ImpactMetricDisplay 
+                        label="Value" 
+                        value={impact.value} 
+                        color="text-emerald-500"
+                      />
+                      <ImpactMetricDisplay 
+                        label="Momentum" 
+                        value={impact.momentum} 
+                        color="text-amber-500"
+                      />
+                      <div className="col-span-2">
+                        <ImpactMetricDisplay 
+                          label="Quality Score" 
+                          value={impact.qualityScore} 
+                          color="text-indigo-500"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="text-center">
+                    <Button 
+                      onClick={() => {
+                        portfolio.buyStock(stock, parseFloat(investmentAmount));
+                        setIsImproveDialogOpen(false);
+                      }}
+                      className="w-full"
+                    >
+                      Invest ${investmentAmount} in {stock.ticker}
+                    </Button>
+                  </div>
+                </div>
+              ))}
+              
+              <p className="text-xs text-slate-500 text-center italic">
+                AI-powered recommendations based on your portfolio metrics and goals.
+              </p>
+            </div>
+          )}
+          
+          <DialogFooter>
+            <div className="flex justify-between w-full">
+              <Button 
+                variant="outline" 
+                onClick={() => setIsImproveDialogOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button 
+                onClick={handleFindSuggestions} 
+                disabled={isLoadingSuggestions}
+                className="flex items-center"
+              >
+                {isLoadingSuggestions ? (
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                ) : (
+                  <Sparkles className="h-4 w-4 mr-2" />
+                )}
+                Find Suggestions
+              </Button>
+            </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
@@ -525,6 +961,33 @@ function EmptyState({
       <Settings className="h-10 w-10 mx-auto mb-3 text-slate-300" />
       <h3 className="text-lg font-medium text-slate-700 mb-1">{title}</h3>
       <p className="text-sm text-slate-500">{description}</p>
+    </div>
+  );
+}
+
+// Impact metric display component for portfolio suggestions
+function ImpactMetricDisplay({ 
+  label, 
+  value, 
+  color 
+}: { 
+  label: string; 
+  value: number; 
+  color: string;
+}) {
+  const isPositive = value >= 0;
+  
+  return (
+    <div className="flex items-center justify-between">
+      <span className="text-sm text-slate-600">{label}</span>
+      <span className={`flex items-center text-sm font-medium ${isPositive ? 'text-green-600' : 'text-red-600'}`}>
+        {isPositive ? (
+          <ArrowUp className="h-3 w-3 mr-1" />
+        ) : (
+          <ArrowDown className="h-3 w-3 mr-1" />
+        )}
+        {isPositive ? '+' : ''}{value.toFixed(1)}
+      </span>
     </div>
   );
 }

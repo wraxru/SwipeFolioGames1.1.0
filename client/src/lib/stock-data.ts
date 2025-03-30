@@ -3703,6 +3703,19 @@ Object.keys(hardcodedStocks).forEach(industry => {
   });
 });
 
+// Get all available stocks from all industries
+export const getAllStocks = (): StockData[] => {
+  const allStocks: StockData[] = [];
+  
+  // Combine stocks from all available industries
+  Object.keys(hardcodedStocks).forEach(industry => {
+    allStocks.push(...hardcodedStocks[industry]);
+  });
+  
+  console.log(`Found ${allStocks.length} total stocks across all industries`);
+  return allStocks;
+};
+
 export const getIndustryStocks = (industry: string): StockData[] => {
   // Map from the stack industry names to the hardcoded stock industry names
   const industryMapping: Record<string, string> = {
