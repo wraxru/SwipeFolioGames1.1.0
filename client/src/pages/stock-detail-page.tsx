@@ -25,7 +25,10 @@ export default function StockDetailPage() {
   // Generate stocks data for the industry
   const stocks = useMemo(() => {
     if (!stack) return [];
-    return getIndustryStocks(stack.industry);
+    console.log("Fetching stocks for industry:", stack.industry);
+    const industryStocks = getIndustryStocks(stack.industry);
+    console.log(`Found ${industryStocks.length} stocks for industry ${stack.industry}`);
+    return industryStocks;
   }, [stack]);
 
   // Handle navigation between stocks

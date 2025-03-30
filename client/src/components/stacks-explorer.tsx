@@ -21,11 +21,15 @@ export default function StacksExplorer({ stacks }: StacksExplorerProps) {
     },
     "Healthcare": { 
       name: "Med-Tech Innovators", 
-      image: "Profiles/savelives.png "
+      image: "Profiles/savelives.png"
     },
     "Consumer": { 
       name: "Retail Champions", 
-      image: "Profiles/Industry_Retail.png "
+      image: "Profiles/Industry_Retail.png"
+    },
+    "Retail": { 
+      name: "Retail Champions", 
+      image: "Profiles/Industry_Retail.png"
     },
     "Real Estate": { 
       name: "Property Players", 
@@ -54,6 +58,18 @@ export default function StacksExplorer({ stacks }: StacksExplorerProps) {
     "Communication": { 
       name: "Media Movers", 
       image: "https://images.unsplash.com/photo-1516321497487-e288fb19713f?q=80&w=580&auto=format&fit=crop" 
+    },
+    "Technology": {
+      name: "Tech Titans",
+      image: "Profiles/Industry_Tech.png"
+    },
+    "Investing": {
+      name: "Investment Essentials",
+      image: "https://images.unsplash.com/photo-1621951753163-ee63e7fc0743?q=80&w=580&auto=format&fit=crop"
+    },
+    "Cryptocurrency": {
+      name: "Crypto Explorer",
+      image: "https://images.unsplash.com/photo-1518546305927-5a555bb7020d?q=80&w=580&auto=format&fit=crop"
     }
   };
 
@@ -71,13 +87,13 @@ export default function StacksExplorer({ stacks }: StacksExplorerProps) {
   // Add some default industry stacks if we don't have enough
   if (industryStacksOnly.length < 5) {
     // Example industries to add if there aren't enough
-    const defaultIndustries = ["Tech", "Healthcare", "Consumer", "Real Estate", "ESG"];
+    const defaultIndustries = ["Tech", "Healthcare", "Retail", "Real Estate", "ESG"];
     const industryStockCounts: Record<string, number> = {
-      "Real Estate": 8,
-      "Healthcare": 9,
-      "Tech": 10,
-      "Consumer": 8,
-      "ESG": 8
+      "Real Estate": 10, // We have real estate stocks
+      "Healthcare": 6,   // Currently using tech stocks as a fallback
+      "Tech": 10,        // We have tech stocks
+      "Retail": 8,       // We have retail stocks
+      "ESG": 6           // Currently using tech stocks as a fallback
     };
 
     // Add missing industries from our defaults
