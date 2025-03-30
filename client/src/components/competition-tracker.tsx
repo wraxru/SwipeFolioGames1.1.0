@@ -20,7 +20,7 @@ interface Investor {
   gain?: string;
 }
 
-export default function CompetitionTracker({ defaultExpanded = true }: { defaultExpanded?: boolean }) {
+export default function CompetitionTracker({ defaultExpanded = false }: { defaultExpanded?: boolean }) {
   const portfolio = useContext(PortfolioContext);
   const [expanded, setExpanded] = useState(defaultExpanded);
   const [userRank, setUserRank] = useState(10); // Start at rank 10 (bottom)

@@ -227,26 +227,17 @@ export default function PortfolioDashboard() {
         </div>
       </div>
 
-      {/* Allocation */}
-      <div className="mb-1 flex justify-between items-center">
-        <span className="text-sm text-slate-600 font-medium">Portfolio allocation</span>
-        <span className="text-sm font-medium text-slate-700">{allocationPercentage}%</span>
-      </div>
-
-      <Progress
-        value={allocationPercentage}
-        className="h-2 mb-3"
-      />
-
-      <div className="flex justify-between text-sm">
-        <div className="flex flex-col items-start">
-          <span className="text-xs text-slate-500">Invested</span>
-          <span className="font-semibold text-slate-700">${portfolioValue.toFixed(2)}</span>
+      {/* Allocation - using a frosted glass effect and iOS-style progress bar */}
+      <div className="px-4 py-3 mb-3 rounded-xl bg-gradient-to-r from-slate-50/90 to-slate-100/90 backdrop-blur-lg border border-slate-200/80 shadow-sm">
+        <div className="mb-1.5 flex justify-between items-center">
+          <span className="text-sm text-slate-700 font-medium">Portfolio allocation</span>
+          <span className="text-sm font-medium text-indigo-600">{allocationPercentage}%</span>
         </div>
-        <div className="flex flex-col items-end">
-          <span className="text-xs text-slate-500">Available</span>
-          <span className="font-semibold text-emerald-600">${cash.toFixed(2)}</span>
-        </div>
+
+        <Progress
+          value={allocationPercentage}
+          className="h-2.5 mb-0.5"
+        />
       </div>
 
       {/* Top Holdings */}

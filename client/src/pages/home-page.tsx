@@ -17,26 +17,32 @@ import CompetitionTracker from "@/components/competition-tracker";
 import { PortfolioContext, usePortfolio } from "@/contexts/portfolio-context";
 import AIAssistant from "@/components/ui/ai-assistant";
 
-// Animated gradient background for AI sections
+// iOS-style frosted glass background for AI sections
 const GradientBackground = ({ children }: { children: React.ReactNode }) => (
-  <div className="relative overflow-hidden rounded-xl">
-    {/* Animated gradient background */}
-    <div className="absolute inset-0 bg-gradient-to-br from-violet-500/20 via-blue-500/20 to-purple-600/20 animate-gradient-slow rounded-xl" />
+  <div className="relative overflow-hidden rounded-xl mb-4">
+    {/* Subtle gradient background - iOS style */}
+    <div className="absolute inset-0 bg-gradient-to-br from-indigo-50/70 via-blue-50/70 to-violet-50/70 rounded-xl" />
     
-    {/* Subtle animated particles */}
+    {/* iOS-style blur effect overlay */}
+    <div className="absolute inset-0 backdrop-blur-md bg-white/50 rounded-xl" />
+    
+    {/* Subtle animated particles - more subtle for iOS feel */}
     <div className="absolute inset-0 overflow-hidden">
-      {[...Array(20)].map((_, i) => (
+      {[...Array(12)].map((_, i) => (
         <div 
           key={i}
-          className="absolute w-1 h-1 rounded-full bg-white opacity-40"
+          className="absolute w-[2px] h-[2px] rounded-full bg-blue-400 opacity-20"
           style={{
             top: `${Math.random() * 100}%`,
             left: `${Math.random() * 100}%`,
-            animation: `float ${6 + Math.random() * 5}s infinite ease-in-out ${Math.random() * 5}s`,
+            animation: `float ${7 + Math.random() * 8}s infinite ease-in-out ${Math.random() * 5}s`,
           }}
         />
       ))}
     </div>
+    
+    {/* iOS-style inner shadow border */}
+    <div className="absolute inset-0 rounded-xl shadow-inner border border-slate-200/80" />
     
     {/* Content */}
     <div className="relative z-10">
@@ -56,7 +62,7 @@ const AnimatedContainer = ({ children, delay = 0 }: { children: React.ReactNode,
   </motion.div>
 );
 
-// AI Feature Card for the AI Hub
+// iOS-style AI Feature Card for the AI Hub
 const AIFeatureCard = ({ 
   icon, 
   title, 
@@ -70,15 +76,26 @@ const AIFeatureCard = ({
 }) => (
   <motion.a
     href={link}
-    className="flex-shrink-0 w-48 p-3 bg-white/90 rounded-xl border border-blue-100 shadow-sm hover:shadow-md transition-all duration-300"
-    whileHover={{ y: -4, scale: 1.02 }}
-    whileTap={{ scale: 0.98 }}
+    className="flex-shrink-0 w-48 p-4 rounded-xl backdrop-blur-sm bg-white/60 border border-slate-200/60 shadow-sm transition-all duration-300"
+    whileHover={{ 
+      y: -3, 
+      scale: 1.01,
+      boxShadow: "0 8px 20px -5px rgba(0, 0, 0, 0.08)",
+      backgroundColor: "rgba(255, 255, 255, 0.8)"
+    }}
+    whileTap={{ scale: 0.97, y: 0 }}
+    style={{ 
+      boxShadow: "0 4px 12px -2px rgba(0, 0, 0, 0.05)",
+    }}
   >
-    <div className="w-10 h-10 mb-2 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white">
+    {/* iOS style icon with subtle gradient and slight shadow */}
+    <div className="w-11 h-11 mb-3 rounded-xl bg-gradient-to-br from-indigo-500 to-blue-500 flex items-center justify-center text-white shadow-sm">
       {icon}
     </div>
-    <h3 className="font-semibold text-sm text-slate-800 mb-1">{title}</h3>
-    <p className="text-xs text-slate-500">{description}</p>
+    
+    {/* iOS-style typography */}
+    <h3 className="font-semibold text-sm text-slate-800 mb-1 tracking-tight">{title}</h3>
+    <p className="text-xs leading-relaxed text-slate-500">{description}</p>
   </motion.a>
 );
 
@@ -152,14 +169,14 @@ export default function HomePage() {
                 </a>
               </div>
               
-              {/* Scrollable AI tools cards with shadows */}
+              {/* Scrollable AI tools cards with iOS-style fade edges */}
               <div className="relative">
                 {showLeftShadow && (
-                  <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
+                  <div className="absolute left-0 top-0 bottom-0 w-10 bg-gradient-to-r from-indigo-50/70 to-transparent z-10 pointer-events-none backdrop-blur-sm" />
                 )}
                 
                 <div 
-                  className="flex space-x-3 py-2 overflow-x-auto scrollbar-hide scroll-smooth"
+                  className="flex space-x-4 py-2 px-1 overflow-x-auto scrollbar-hide scroll-smooth"
                   ref={aiHubScrollRef}
                 >
                   <AIFeatureCard 
@@ -199,7 +216,7 @@ export default function HomePage() {
                 </div>
                 
                 {showRightShadow && (
-                  <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
+                  <div className="absolute right-0 top-0 bottom-0 w-10 bg-gradient-to-l from-indigo-50/70 to-transparent z-10 pointer-events-none backdrop-blur-sm" />
                 )}
               </div>
             </div>

@@ -10,8 +10,8 @@ export default function AppNavigation() {
   };
 
   return (
-    <div className="app-navigation fixed bottom-0 left-0 right-0 z-20 bg-white border-t border-gray-100 shadow-lg">
-      <div className="flex items-center justify-around px-4 py-2">
+    <div className="app-navigation fixed bottom-0 left-0 right-0 z-20 bg-white/95 backdrop-blur-md border-t border-slate-200/70 shadow-sm">
+      <div className="flex items-center justify-around px-2 py-1.5">
         <NavItem 
           icon={<Home className="w-5 h-5" />} 
           label="Home" 
@@ -47,6 +47,11 @@ export default function AppNavigation() {
           href="/profile"
         />
       </div>
+      
+      {/* Add home indicator line for iOS-like feel */}
+      <div className="flex justify-center pb-1">
+        <div className="w-[134px] h-1 bg-slate-400/30 rounded-full"></div>
+      </div>
     </div>
   );
 }
@@ -68,13 +73,15 @@ function NavItem({ icon, label, isActive, href }: NavItemProps) {
   // Define animation variants for tab indicators and icons
   const tabVariants = {
     active: {
-      scale: 1,
+      scale: 1.1,
       opacity: 1,
-      transition: { type: "spring", stiffness: 300, damping: 15 }
+      y: -2,
+      transition: { type: "spring", stiffness: 400, damping: 17 }
     },
     inactive: {
-      scale: 0.85,
-      opacity: 0.7,
+      scale: 1,
+      opacity: 0.75,
+      y: 0,
       transition: { duration: 0.2 }
     }
   };
@@ -82,7 +89,7 @@ function NavItem({ icon, label, isActive, href }: NavItemProps) {
   // Define glow effect for active tab
   const glowVariants = {
     active: {
-      opacity: 1,
+      opacity: 0.8,
       scale: 1,
       transition: { duration: 0.3 }
     },
@@ -97,33 +104,33 @@ function NavItem({ icon, label, isActive, href }: NavItemProps) {
   const indicatorVariants = {
     active: {
       opacity: 1,
-      y: 0,
-      transition: { duration: 0.3 }
+      scale: 1,
+      transition: { type: "spring", stiffness: 500, damping: 25 }
     },
     inactive: {
       opacity: 0,
-      y: 10,
-      transition: { duration: 0.3 }
+      scale: 0.8,
+      transition: { duration: 0.2 }
     }
   };
   
   return (
     <motion.button 
-      className="flex flex-col items-center justify-center py-2 relative"
+      className="flex flex-col items-center justify-center py-1.5 px-2 relative"
       onClick={handleClick}
-      whileTap={{ scale: 0.95 }}
+      whileTap={{ scale: 0.92, y: 1 }}
     >
-      {/* Glow effect behind icon for active state */}
+      {/* Glow effect behind icon for active state - iOS style with subtle gradient */}
       <motion.div
-        className="absolute w-9 h-9 rounded-full bg-gradient-to-r from-blue-400/20 to-purple-400/20 blur-md"
+        className="absolute w-10 h-10 rounded-full bg-gradient-to-br from-indigo-400/15 to-blue-500/25 blur-md"
         initial="inactive"
         animate={isActive ? "active" : "inactive"}
         variants={glowVariants}
       />
       
-      {/* Icon container */}
+      {/* Icon container with iOS-style animation */}
       <motion.div 
-        className={`relative z-10 ${isActive ? 'text-indigo-600' : 'text-slate-500'}`}
+        className={`relative z-10 ${isActive ? 'text-indigo-600' : 'text-slate-400'}`}
         initial="inactive"
         animate={isActive ? "active" : "inactive"}
         variants={tabVariants}
@@ -131,22 +138,26 @@ function NavItem({ icon, label, isActive, href }: NavItemProps) {
         {icon}
       </motion.div>
       
-      {/* Bottom pill indicator for active state */}
-      <div className="h-[20px] relative">
-        <motion.div 
-          className="absolute inset-x-0 top-0 flex justify-center"
-          initial="inactive"
-          animate={isActive ? "active" : "inactive"}
-          variants={indicatorVariants}
-        >
-          <div className="h-1 w-4 rounded-full bg-indigo-600" />
-        </motion.div>
-        
-        {/* Label */}
-        <span className={`text-xs font-medium ${isActive ? 'text-indigo-600' : 'text-slate-500'}`}>
-          {label}
-        </span>
-      </div>
+      {/* Label - iOS-style smaller text */}
+      <motion.span 
+        className={`text-[10px] mt-1 font-medium ${isActive ? 'text-indigo-600' : 'text-slate-400'}`}
+        animate={{ 
+          opacity: isActive ? 1 : 0.7,
+          y: isActive ? 0 : 1
+        }}
+      >
+        {label}
+      </motion.span>
+      
+      {/* iOS-style subtle dot indicator under active tab */}
+      <motion.div 
+        className="absolute -bottom-0.5 left-1/2 transform -translate-x-1/2"
+        initial="inactive"
+        animate={isActive ? "active" : "inactive"}
+        variants={indicatorVariants}
+      >
+        <div className="h-1 w-1 rounded-full bg-indigo-600" />
+      </motion.div>
     </motion.button>
   );
 }
