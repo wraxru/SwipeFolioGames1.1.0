@@ -131,38 +131,7 @@ export default function HomePage() {
           <ModernUserWelcome name="Belford&Co" rank={11} />
         </AnimatedContainer>
         
-        {/* Dynamic Competition Banner with Countdown */}
         <AnimatedContainer delay={0.15}>
-          <div className="bg-gradient-to-r from-indigo-600 to-blue-600 rounded-xl p-3 mb-4 shadow-lg relative overflow-hidden">
-            {/* Decorative elements */}
-            <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full blur-xl -mr-10 -mt-10" />
-            <div className="absolute bottom-0 left-0 w-16 h-16 bg-white/10 rounded-full blur-lg -ml-6 -mb-6" />
-            
-            <div className="flex items-center justify-between">
-              <div className="text-white">
-                <h3 className="font-bold text-sm flex items-center">
-                  <Trophy className="w-4 h-4 mr-1.5" />
-                  Weekly Competition
-                </h3>
-                <div className="flex items-center mt-1">
-                  <span className="text-xs font-semibold bg-white/20 px-2 py-0.5 rounded-md">
-                    3d 5h 18m left
-                  </span>
-                  <span className="ml-2 text-xs text-white/80">
-                    Rank 11 → Top 10 to level up! 
-                  </span>
-                </div>
-              </div>
-              
-              <button className="bg-white/20 hover:bg-white/30 text-white text-xs px-2.5 py-1.5 rounded-lg font-medium flex items-center transition">
-                View Ranking
-                <ChevronRight className="w-3.5 h-3.5 ml-0.5" />
-              </button>
-            </div>
-          </div>
-        </AnimatedContainer>
-        
-        <AnimatedContainer delay={0.2}>
           <div className="md:grid md:grid-cols-2 md:gap-4">
             <PortfolioDashboard />
             <CompetitionTracker />
