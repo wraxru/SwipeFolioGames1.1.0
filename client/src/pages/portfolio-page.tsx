@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { 
   ArrowUp, ArrowDown, MoreHorizontal, PieChart, TrendingUp, Briefcase, 
   Settings, Clock, DollarSign, MessageSquare, Sparkles, Loader2,
-  AlertTriangle, BarChart2
+  AlertTriangle, BarChart2, X
 } from 'lucide-react';
 import AppHeader from '@/components/app-header';
 import AppNavigation from '@/components/app-navigation';
@@ -613,9 +613,15 @@ export default function PortfolioPage() {
       
       {/* Improve with AI Dialog */}
       <Dialog open={isImproveDialogOpen} onOpenChange={setIsImproveDialogOpen}>
-        <DialogContent className="sm:max-w-[500px]">
-          <DialogHeader>
-            <DialogTitle className="flex items-center">
+        <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
+          <DialogHeader className="relative">
+            <button 
+              className="absolute right-0 top-0 p-2 rounded-full hover:bg-slate-100 transition-colors" 
+              onClick={() => setIsImproveDialogOpen(false)}
+            >
+              <X className="h-4 w-4 text-slate-500" />
+            </button>
+            <DialogTitle className="flex items-center pr-8">
               <Sparkles className="h-4 w-4 mr-2 text-blue-500" />
               Improve Your Portfolio
             </DialogTitle>
