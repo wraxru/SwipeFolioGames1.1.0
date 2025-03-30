@@ -47,25 +47,26 @@ export default function StackCardAnimated({ stack, onClick, imageUrl, category, 
 
   return (
     <motion.div 
-      layoutId={`stack-card-${stack.id}`}
       className="stack-card rounded-xl overflow-hidden flex flex-col shadow-lg border border-gray-200 bg-white h-[340px]"
       onClick={() => onClick(stack.id)}
       whileHover={!isDetailPage ? { y: -5, transition: { duration: 0.2 } } : undefined}
       whileTap={!isDetailPage ? { scale: 0.98 } : undefined}
+      exit={{ 
+        opacity: 0, 
+        scale: 0.95,  // Scale DOWN slightly on exit
+        transition: { duration: 0.2 } // Make exit fast
+      }}
     >
       {/* Card Header with Image - Taller aspect ratio */}
       <motion.div 
-        layoutId={`stack-card-header-${stack.id}`}
         className="relative h-44 overflow-hidden"
       >
         {/* Gradient overlay for better text readability */}
         <motion.div 
-          layoutId={`stack-card-overlay-${stack.id}`}
           className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/60 z-10" 
         />
 
         <motion.div 
-          layoutId={`stack-card-image-${stack.id}`}
           className="w-full h-full bg-cover bg-center" 
           style={{ 
             backgroundImage: imageUrl ? `url(${imageUrl})` : 'none'
@@ -116,27 +117,23 @@ export default function StackCardAnimated({ stack, onClick, imageUrl, category, 
 
       {/* Card Body - Better spacing and hierarchy */}
       <motion.div 
-        layoutId={`stack-card-body-${stack.id}`}
         className="px-4 py-3 flex-1 flex flex-col justify-between bg-white"
       >
         {/* Title with icon - Improved spacing */}
         <div>
           <div className="flex items-start justify-between mb-1">
             <motion.h3 
-              layoutId={`stack-card-title-${stack.id}`}
               className="font-bold text-base text-gray-800 leading-tight"
             >
               {stack.title}
             </motion.h3>
             <motion.div 
-              layoutId={`stack-card-icon-${stack.id}`}
               className="p-1.5 rounded-full bg-gray-100 border border-gray-200"
             >
               <TrendingUp className="w-4 h-4 text-blue-500" />
             </motion.div>
           </div>
           <motion.p 
-            layoutId={`stack-card-description-${stack.id}`}
             className="text-xs text-gray-500 mt-1 line-clamp-2"
           >
             {stack.description}
@@ -144,13 +141,11 @@ export default function StackCardAnimated({ stack, onClick, imageUrl, category, 
         </div>
 
         <motion.div 
-          layoutId={`stack-card-footer-${stack.id}`}
           className="mt-3 space-y-3"
         >
           {/* Bottom badges with better spacing */}
           <div className="flex items-center justify-between">
             <motion.div 
-              layoutId={`stack-card-difficulty-${stack.id}`}
               className={`badge ${
                 stack.difficulty === 'beginner' ? 'bg-green-50 text-green-600 border-green-200' :
                 stack.difficulty === 'intermediate' ? 'bg-yellow-50 text-yellow-600 border-yellow-200' :
@@ -192,7 +187,6 @@ export default function StackCardAnimated({ stack, onClick, imageUrl, category, 
 
       {/* Decorative gradient accent line at bottom */}
       <motion.div 
-        layoutId={`stack-card-gradient-${stack.id}`}
         className={`h-1 bg-gradient-to-r ${getGradient()}`} 
       />
     </motion.div>

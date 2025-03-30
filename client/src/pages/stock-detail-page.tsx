@@ -90,25 +90,6 @@ export default function StockDetailPage() {
     <div className="flex flex-col min-h-screen bg-black text-white">
       {/* Header */}
       <header className="flex items-center justify-between p-4 border-b border-gray-800 bg-gradient-to-r from-gray-900 to-black relative">
-        {/* TARGET for layout animation - Placed correctly */}
-        <motion.div
-          layoutId={`stack-card-${parseInt(stackId)}`}
-          className="absolute inset-0 bg-transparent -z-10"
-          animate={{ opacity: 0, transition: { delay: 0.5, duration: 0.2 } }}
-        >
-          <motion.div 
-            layoutId={`stack-card-header-${parseInt(stackId)}`}
-            className="absolute inset-0"
-          />
-          <motion.div 
-            layoutId={`stack-card-image-${parseInt(stackId)}`}
-            className="absolute inset-0"
-          />
-          <motion.div 
-            layoutId={`stack-card-overlay-${parseInt(stackId)}`}
-            className="absolute inset-0"
-          />
-        </motion.div>
 
         <motion.button 
           onClick={handleBack}
@@ -142,13 +123,20 @@ export default function StockDetailPage() {
 
       {/* Main content */}
       <div className="flex-1 relative">
-        {/* Show the actual stock card with fade-in animation */}
+        {/* Show the actual stock card with pop-up animation */}
         {stocks.length > 0 && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.4, duration: 0.4 }}
-            className="flex-1 relative"
+            initial={{ opacity: 0, scale: 0.9, y: 40 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{
+              type: "spring",
+              stiffness: 380,
+              damping: 30,
+              mass: 1,
+              delay: 0.05,  // Reduced delay for faster start
+              duration: 0.4  // Slightly faster overall duration
+            }}
+            className="flex-1 relative flex flex-col items-start"
           >
             <StockCard
               stock={currentStock}
