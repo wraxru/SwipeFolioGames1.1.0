@@ -22,7 +22,6 @@ import PortfolioImpactCalculator from "./portfolio-impact-calculator";
 import OverallAnalysisCard from "@/components/overall-analysis-card";
 import { Skeleton } from "@/components/ui/skeleton";
 import ComparativeAnalysis from "@/components/comparative-analysis";
-import AskAI from "./ask-ai";
 
 interface StockCardProps {
   stock: StockData;
@@ -133,7 +132,7 @@ export default function StockCard({
   currentIndex, 
   totalCount,
   nextStock,
-  displayMode = 'realtime'
+  displayMode = 'simple'
 }: StockCardProps) {
   const cardControls = useAnimation();
   const x = useMotionValue(0);
@@ -158,7 +157,7 @@ export default function StockCard({
     data: any;
   } | null>(null);
 
-  // State for portfolio impact calculator (real-time mode only)
+  // State for portfolio impact calculator
   const [isPortfolioImpactOpen, setIsPortfolioImpactOpen] = useState(false);
 
   // Use static data only
@@ -247,7 +246,7 @@ export default function StockCard({
           opacity: 0,
           transition: { duration: 0.3 }
         }).then(() => {
-          onNext();
+          onPrevious(); // Changed to go back instead of forward
           cardControls.set({ x: 0, opacity: 1 });
           setSwipeDirection(null);
         });
@@ -289,7 +288,7 @@ export default function StockCard({
           opacity: 0,
           transition: { duration: 0.3 }
         }).then(() => {
-          onNext();
+          onPrevious(); // Changed to go back instead of forward
           cardControls.set({ x: 0, opacity: 1 });
           setSwipeDirection(null);
         });
@@ -460,21 +459,17 @@ export default function StockCard({
     }
 
     // Get industry average data
-    const industryAverage = displayMode === 'realtime' 
+    const industryAverage = displayMode === 'realtime'
       ? getIndustryAverageData(stock, metricName.toLowerCase())
       : [];
 
-    // Set selected metric data and open popup
+    // Set the selected metric data
     setSelectedMetric({
       name: metricName,
       color,
       data: {
-        values: metricValues,
-        rating: metricObj.value,
-        industryAverage,
-        industry: stock.industry,
-        explanation: metricObj.explanation || "",
-        name: stock.name
+        metrics: metricValues,
+        industry: industryAverage
       }
     });
 
@@ -597,106 +592,40 @@ export default function StockCard({
                       }`} />
                     </div>
                     
-                    <div 
-                      className={`text-2xl font-bold ${
-                        metricObj.color === 'green' ? 'text-green-300' :
-                        metricObj.color === 'yellow' ? 'text-yellow-300' : 
-                        'text-red-300'
-                      }`}
-                    >
-                      {metricObj.value}
-                    </div>
-                    
-                    <div className="text-white text-sm font-medium capitalize mt-1 mb-3">
+                    <div className="text-lg font-bold mb-1 flex items-center text-white">
+                      {key === 'performance' && <TrendingUp className="w-4 h-4 mr-1.5 text-green-400" />}
+                      {key === 'stability' && <Shield className="w-4 h-4 mr-1.5 text-blue-400" />}
+                      {key === 'value' && <DollarSign className="w-4 h-4 mr-1.5 text-purple-400" />}
+                      {key === 'momentum' && <Zap className="w-4 h-4 mr-1.5 text-amber-400" />}
                       {metricName}
                     </div>
-                    
-                    {/* Subtle glow effect */}
-                    <div className={`absolute bottom-1 left-1 w-12 h-12 rounded-full opacity-20 blur-xl -z-10 ${
-                      metricObj.color === 'green' ? 'bg-green-400' :
-                      metricObj.color === 'yellow' ? 'bg-yellow-400' : 
-                      'bg-red-400'
-                    }`} />
+                    <div className={`text-2xl font-bold mb-1 ${
+                      metricObj.color === 'green' ? 'text-green-300' :
+                      metricObj.color === 'yellow' ? 'text-yellow-300' : 
+                      'text-red-300'
+                    }`}>
+                      {metricObj.value}
+                    </div>
+                    <p className="text-xs text-gray-400">
+                      {metricObj.description}
+                    </p>
                   </motion.div>
                 );
               })}
             </div>
 
-            {/* Stock Synopsis with AI Integration */}
+            {/* Overall Analysis - Enhanced with shadows and transitions */}
             <div className="p-5 border-b border-gray-800">
-              <h3 className="text-lg font-bold text-white mb-3 flex items-center">
+              <h3 className="text-white text-lg font-bold mb-4 flex items-center">
                 <MessageCircle className="w-5 h-5 mr-2 text-purple-400" />
-                Ask AI About {stock.ticker}
-              </h3>
-
-              {/* Ask AI component integrated in dark mode with enhanced visuals */}
-              <motion.div 
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.2 }}
-                className="rounded-xl border border-gray-700/50 overflow-hidden shadow-lg relative"
-              >
-                {/* Subtle purple glow effect behind the component */}
-                <div className="absolute -inset-1 bg-purple-500/5 blur-xl rounded-xl z-0"></div>
-                <div className="relative z-10">
-                  <AskAI stock={stock} />
-                </div>
-              </motion.div>
-            </div>
-
-            {/* Future predictions with enhanced premium styling */}
-            <div className="p-5 border-b border-gray-800">
-              <h3 className="text-lg font-bold text-white mb-4 flex items-center">
-                <TrendingUp className="w-5 h-5 mr-2 text-amber-400" />
-                Price Forecast 
-                <span className="text-xs bg-gradient-to-r from-amber-800 to-amber-600 text-amber-100 px-3 py-1 rounded-full ml-2 shadow-inner shadow-amber-900/20 border border-amber-700/30">Premium</span>
-              </h3>
-
-              <motion.div 
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.3 }}
-                className="grid grid-cols-2 gap-4"
-              >
-                <div>
-                  <h4 className="text-sm font-medium text-gray-300 mb-2 flex items-center">
-                    <Calendar className="w-4 h-4 mr-1 text-gray-400" />
-                    1-Year Return
-                  </h4>
-                  <div className="p-3 bg-gradient-to-br from-gray-800/60 to-gray-900/60 rounded-lg border border-gray-700/50 shadow-lg">
-                    <span className="text-white text-lg font-bold">{stock.oneYearReturn || "N/A"}</span>
-                  </div>
-                </div>
-
-                <div>
-                  <h4 className="text-sm font-medium text-gray-300 mb-2 flex items-center">
-                    <Lock className="w-4 h-4 mr-1 text-amber-400" />
-                    Predicted Price
-                  </h4>
-                  <div className="p-3 bg-gradient-to-br from-amber-900/20 to-gray-900/90 rounded-lg border border-amber-700/30 relative overflow-hidden shadow-lg">
-                    <span className="text-white text-lg font-bold blur-sm select-none">{stock.predictedPrice || "$0.00"}</span>
-                    <div className="absolute inset-0 flex items-center justify-center backdrop-blur-sm bg-black/30">
-                      <div className="flex items-center bg-amber-800/90 text-amber-100 px-3 py-1.5 rounded-lg border border-amber-600/50 shadow-md">
-                        <Lock className="w-4 h-4 mr-2" />
-                        <span className="text-sm font-medium">Unlock with Premium</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            </div>
-
-            {/* Full analysis with enhanced styling */}
-            <div className="p-5">
-              <h3 className="text-lg font-bold text-white mb-4 flex items-center">
-                <BarChart3 className="w-5 h-5 mr-2 text-blue-400" />
-                Stock Analysis
+                Overall Analysis
               </h3>
               
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.4 }}
+                className="p-4 rounded-xl bg-gradient-to-br from-gray-800/70 to-gray-900/80 border border-gray-700/50 shadow-lg"
               >
                 <OverallAnalysisCard stock={stock} />
               </motion.div>
@@ -836,52 +765,51 @@ export default function StockCard({
           ))}
         </div>
 
-          {/* Chart placeholder - visualize the data */}
-          <div className="relative mt-3 h-44 py-2">
-            {/* Chart visual */}
-            <div className="absolute inset-0 px-4">
-              {/* Y-axis labels */}
-              <div className="absolute left-0 top-0 bottom-0 flex flex-col justify-between text-[10px] text-slate-900 font-medium pointer-events-none py-3 z-10 w-12">
-                <span>${Math.round(priceRangeMax)}</span>
-                <span>${Math.round((priceRangeMax + priceRangeMin) / 2)}</span>
-                <span>${Math.round(priceRangeMin)}</span>
-              </div>
-
-              {/* Chart path - dynamically draw based on chartData with extension to edge */}
-              <div className="absolute inset-0 pl-12 pr-4">
-                <svg className="w-full h-full" viewBox={`0 0 100 100`} preserveAspectRatio="none">
-                  {/* Main chart line only - no fill */}
-                  <path
-                    d={`M-5,${100 - ((chartData[0] - minValue) / (maxValue - minValue)) * 100} ${chartData.map((point, i) => {
-                      // Plot points with x-coordinates extending beyond the visible area
-                      const x = (i / (chartData.length - 1)) * 110 - 5; // Extend from -5 to 105
-                      const y = 100 - ((point - minValue) / (maxValue - minValue)) * 100;
-                      return `L${x},${y}`;
-                    }).join(' ')} L105,${100 - ((chartData[chartData.length-1] - minValue) / (maxValue - minValue)) * 100}`}
-                    className={`${realTimeChange >= 0 ? 'stroke-green-500' : 'stroke-red-500'} fill-none`}
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </div>
+        {/* Chart placeholder - visualize the data */}
+        <div className="relative mt-3 h-44 py-2">
+          {/* Chart visual */}
+          <div className="absolute inset-0 px-4">
+            {/* Y-axis labels */}
+            <div className="absolute left-0 top-0 bottom-0 flex flex-col justify-between text-[10px] text-slate-900 font-medium pointer-events-none py-3 z-10 w-12">
+              <span>${Math.round(priceRangeMax)}</span>
+              <span>${Math.round((priceRangeMax + priceRangeMin) / 2)}</span>
+              <span>${Math.round(priceRangeMin)}</span>
             </div>
 
-            {/* X-axis labels */}
-            <div className="absolute left-0 right-0 bottom-1 pl-12 pr-4 flex justify-between text-[10px] text-slate-900 font-medium pointer-events-none">
-              {timeScaleLabels.map((label, index) => (
-                <span key={index}>{label}</span>
-              ))}
+            {/* Chart path - dynamically draw based on chartData with extension to edge */}
+            <div className="absolute inset-0 pl-12 pr-4">
+              <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+                {/* Main chart line only - no fill */}
+                <path
+                  d={`M-5,${100 - ((chartData[0] - minValue) / (maxValue - minValue)) * 100} ${chartData.map((point, i) => {
+                    // Plot points with x-coordinates extending beyond the visible area
+                    const x = (i / (chartData.length - 1)) * 110 - 5; // Extend from -5 to 105
+                    const y = 100 - ((point - minValue) / (maxValue - minValue)) * 100;
+                    return `L${x},${y}`;
+                  }).join(' ')} L105,${100 - ((chartData[chartData.length-1] - minValue) / (maxValue - minValue)) * 100}`}
+                  className={`${realTimeChange >= 0 ? 'stroke-green-500' : 'stroke-red-500'} fill-none`}
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
             </div>
           </div>
 
-          {/* Trading date and swipe instruction */}
-          <div className="mt-4 flex items-center justify-between text-xs h-6">
-            <span className="text-slate-900 font-medium">Last updated: {latestTradingDay}</span>
-            <span className="text-slate-700 italic">Swipe <span className="text-red-600 font-medium">left to skip</span> • Swipe <span className="text-green-600 font-medium">right to invest</span></span>
+          {/* X-axis labels */}
+          <div className="absolute left-0 right-0 bottom-1 pl-12 pr-4 flex justify-between text-[10px] text-slate-900 font-medium pointer-events-none">
+            {timeScaleLabels.map((label, index) => (
+              <span key={index}>{label}</span>
+            ))}
           </div>
         </div>
 
+        {/* Trading date and swipe instruction */}
+        <div className="mt-4 flex items-center justify-between text-xs h-6">
+          <span className="text-slate-900 font-medium">Last updated: {latestTradingDay}</span>
+          <span className="text-slate-700 italic">Swipe <span className="text-red-600 font-medium">left to skip</span> • Swipe <span className="text-green-600 font-medium">right to invest</span></span>
+        </div>
+    
         {/* Stock Metrics - Enhanced Card Style */}
         <div className="grid grid-cols-2 gap-4 p-4 bg-white border-b border-slate-100">
           {Object.entries(stock.metrics).map(([key, metricObj]) => {
@@ -897,8 +825,7 @@ export default function StockCard({
                 <div className={`absolute inset-0 rounded-xl blur-sm transform scale-[0.98] translate-y-1 opacity-0 group-hover:opacity-100 transition-all duration-300
                   ${metricObj.color === 'green' ? 'bg-gradient-to-r from-green-100/30 to-emerald-100/30' :
                   metricObj.color === 'yellow' ? 'bg-gradient-to-r from-amber-100/30 to-yellow-100/30' : 
-                  'bg-gradient-to-r from-red-100/30 to-rose-100/30'}`}>
-                </div>
+                  'bg-gradient-to-r from-red-100/30 to-rose-100/30'}`} />
 
                 {/* Metric Card */}
                 <div 
@@ -911,8 +838,7 @@ export default function StockCard({
                   <div className={`absolute top-0 left-0 w-full h-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300
                     ${metricObj.color === 'green' ? 'bg-gradient-to-r from-green-400 to-emerald-500' :
                     metricObj.color === 'yellow' ? 'bg-gradient-to-r from-amber-400 to-yellow-500' : 
-                    'bg-gradient-to-r from-red-400 to-rose-500'}`}>
-                  </div>
+                    'bg-gradient-to-r from-red-400 to-rose-500'}`} />
 
                   {/* Metric indicator with icon */}
                   <div className="flex items-center justify-between mb-2">
@@ -1025,17 +951,14 @@ export default function StockCard({
               e.stopPropagation();
             }
           }}
-          // Remove touch handlers that interfere with mobile interactions
         >
           <ComparativeAnalysis currentStock={stock} />
         </div>
         
-        {/* Ask AI Component has been removed */}
-
         {/* Bottom Swipe Instruction */}
         <div className="p-4 bg-white border-t border-b border-slate-100 mb-4">
           <div className="text-center text-sm font-medium text-slate-600 my-2">
-            Swipe <span className="text-red-600 font-medium">left to skip</span> • Swipe <span className="text-green-600 font-medium">right to invest</span>
+            Swipe <span className="text-red-600 font-medium">left to go back</span> • Swipe <span className="text-green-600 font-medium">right to invest</span>
           </div>
         </div>
 
@@ -1050,7 +973,7 @@ export default function StockCard({
       </motion.div>
 
       {/* Metric Popup */}
-      {selectedMetric && (
+      {isMetricPopupOpen && selectedMetric && (
         <MetricPopup
           isOpen={isMetricPopupOpen}
           onClose={() => setIsMetricPopupOpen(false)}
@@ -1064,19 +987,13 @@ export default function StockCard({
       <button 
         className="hidden"
         data-testid="buy-button"
-        onClick={openPortfolioCalculator}
-      >
-        Buy
-      </button>
+        onClick={handleInvestButtonClick}
+      ></button>
 
-      {/* Portfolio Impact Calculator */}
+      {/* Portfolio Impact Calculator Modal */}
       <PortfolioImpactCalculator
         isOpen={isPortfolioImpactOpen}
         onClose={() => setIsPortfolioImpactOpen(false)}
-        onInvest={() => {
-          // Handle successful investment
-          onNext(); // Move to next stock after investing
-        }}
         stock={stock}
       />
     </div>
