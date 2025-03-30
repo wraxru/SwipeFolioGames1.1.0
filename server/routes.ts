@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth } from "./auth";
 import axios from "axios";
+import { getAIResponse } from "./ai-service";
 export async function registerRoutes(app: Express): Promise<Server> {
   // Set up authentication routes
   setupAuth(app);
@@ -439,6 +440,62 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error("Error in portfolio analysis request:", error);
       
       // Structure for our error response
+      interface AIErrorResponse {
+        error: string;
+        message: string;
+        details?: {
+          status?: number;
+          data?: any;
+        };
+      }
+      
+      let errorResponse: AIErrorResponse = { 
+        error: "AI service error", 
+        message: error instanceof Error ? error.message : "Unknown error occurred"
+      };
+      
+      // Add more detailed error information if available
+      if (error.response) {
+        console.error("Error response status:", error.response.status);
+        console.error("Error response data:", error.response.data);
+        
+        errorResponse = {
+          error: "AI service error", 
+          message: error instanceof Error ? error.message : "Unknown error occurred",
+          details: {
+            status: error.response.status,
+            data: error.response.data
+          }
+        };
+      }
+      
+      return res.status(500).json(errorResponse);
+    }
+  });
+
+  // AI Chat endpoint - General purpose chatbot for the application
+  app.post("/api/ai/chat", async (req, res) => {
+    try {
+      console.log("Received AI chat request");
+      const { message, context } = req.body;
+      
+      // Validate request body
+      if (!message) {
+        return res.status(400).json({ 
+          error: "INVALID_REQUEST", 
+          message: "A message is required" 
+        });
+      }
+      
+      // Get AI response using our service
+      const response = await getAIResponse(message, context);
+      
+      // Return the response
+      return res.json({ response });
+    } catch (error: any) {
+      console.error("Error in AI chat request:", error);
+      
+      // Define the structure for our error response
       interface AIErrorResponse {
         error: string;
         message: string;
