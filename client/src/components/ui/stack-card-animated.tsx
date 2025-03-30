@@ -50,11 +50,8 @@ export default function StackCardAnimated({ stack, onClick, imageUrl, category, 
       layoutId={`stack-card-${stack.id}`}
       className="stack-card rounded-xl overflow-hidden flex flex-col shadow-lg border border-gray-200 bg-white h-[340px]"
       onClick={() => onClick(stack.id)}
-      whileHover={{ y: -5, transition: { duration: 0.2 } }}
-      whileTap={{ scale: 0.98 }}
-      initial={!isDetailPage ? { opacity: 1 } : { opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={!isDetailPage ? { opacity: 0 } : undefined}
+      whileHover={!isDetailPage ? { y: -5, transition: { duration: 0.2 } } : undefined}
+      whileTap={!isDetailPage ? { scale: 0.98 } : undefined}
     >
       {/* Card Header with Image - Taller aspect ratio */}
       <motion.div 
