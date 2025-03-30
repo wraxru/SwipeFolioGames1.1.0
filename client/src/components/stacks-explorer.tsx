@@ -9,7 +9,23 @@ interface StacksExplorerProps {
 export default function StacksExplorer({ stacks }: StacksExplorerProps) {
   const [_, setLocation] = useLocation();
 
+  // When a stack card is clicked, navigate to the industry view
+  // We'll use a special format for our generated industry stacks: 'industry/[name]'
+  // This way we can distinguish between server stacks and our client-generated industry stacks
   const handleStackClick = (stackId: number) => {
+    // For stacks with IDs above 50, these are our client-generated ones
+    // Use the industry name for routing instead
+    if (stackId >= 100) {
+      // Find the stack
+      const stack = industryStacksOnly.find(s => s.id === stackId);
+      if (stack) {
+        console.log(`Navigating to industry view: ${stack.industry}`);
+        setLocation(`/industry/${encodeURIComponent(stack.industry)}`);
+        return;
+      }
+    }
+    
+    // Regular stack, use the ID
     setLocation(`/stock/${stackId}`);
   };
 

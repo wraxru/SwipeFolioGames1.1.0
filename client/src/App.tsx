@@ -8,6 +8,7 @@ import AuthPage from "@/pages/auth-page";
 import LessonPage from "@/pages/lesson-page";
 import OnboardingPage from "@/pages/onboarding-page";
 import StockDetailPage from "@/pages/stock-detail-page";
+import IndustryPage from "@/pages/industry-page";
 import PortfolioPage from "@/pages/portfolio-page";
 import LeaderboardPage from "@/pages/leaderboard-page-new";
 import { AuthProvider } from "@/hooks/use-auth";
@@ -20,6 +21,7 @@ function Router() {
       <Switch>
         <Route path="/" component={HomePage} />
         <Route path="/stock/:stackId" component={StockDetailPage} />
+        <Route path="/industry/:industryName" component={IndustryPage} />
         <Route path="/lesson/:stackId" component={LessonPage} />
         <Route path="/learn" component={HomePage} />
         <Route path="/market" component={HomePage} />
