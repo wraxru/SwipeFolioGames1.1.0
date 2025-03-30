@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { 
   ArrowUp, ArrowDown, MoreHorizontal, PieChart, TrendingUp, Briefcase, 
   Settings, Clock, DollarSign, MessageSquare, Sparkles, Loader2,
-  AlertTriangle, BarChart2, X
+  AlertTriangle, BarChart2, X, Rocket
 } from 'lucide-react';
 import AppHeader from '@/components/app-header';
 import AppNavigation from '@/components/app-navigation';
@@ -492,13 +492,6 @@ export default function PortfolioPage() {
                     value={portfolioMetrics.momentum} 
                     color="bg-amber-500" 
                   />
-                  <div className="col-span-2">
-                    <MetricItem 
-                      label="Quality Score" 
-                      value={portfolioMetrics.qualityScore} 
-                      color={getQualityScoreBgColor(portfolioMetrics.qualityScore)} 
-                    />
-                  </div>
                 </div>
               )}
             </div>
@@ -692,23 +685,13 @@ export default function PortfolioPage() {
                         </div>
                       </div>
                       
-                      <div className="flex flex-col sm:flex-row gap-3 mt-4">
+                      <div className="flex justify-center mt-4">
                         <Button 
-                          className="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 shadow-md"
-                          onClick={() => {
-                            setImprovementGoal('roi');
-                            setIsImproveDialogOpen(true);
-                          }}
-                        >
-                          <TrendingUp className="h-4 w-4 mr-1.5" />
-                          Maximize Returns
-                        </Button>
-                        <Button 
-                          className="flex-1 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 shadow-md"
+                          className="bg-gradient-to-r from-blue-400 to-blue-500 hover:from-blue-500 hover:to-blue-600 shadow-md px-8"
                           onClick={() => setIsImproveDialogOpen(true)}
                         >
                           <Sparkles className="h-4 w-4 mr-2" />
-                          Custom Recommendations
+                          Get Stock Recommendations
                         </Button>
                       </div>
                     </div>
@@ -725,14 +708,8 @@ export default function PortfolioPage() {
       {/* Improve with AI Dialog */}
       <Dialog open={isImproveDialogOpen} onOpenChange={setIsImproveDialogOpen}>
         <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto rounded-xl shadow-lg bg-gradient-to-b from-white to-slate-50 border-0">
-          <DialogHeader className="relative">
-            <button 
-              className="absolute right-0 top-0 p-2 rounded-full hover:bg-slate-100 transition-colors" 
-              onClick={() => setIsImproveDialogOpen(false)}
-            >
-              <X className="h-4 w-4 text-slate-500" />
-            </button>
-            <DialogTitle className="flex items-center pr-8">
+          <DialogHeader>
+            <DialogTitle className="flex items-center">
               <Sparkles className="h-4 w-4 mr-2 text-blue-500" />
               Improve Your Portfolio
             </DialogTitle>
@@ -753,6 +730,7 @@ export default function PortfolioPage() {
                   <SelectValue placeholder="Select a goal" />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="balanced">All-Round Improvement</SelectItem>
                   <SelectItem value="roi">Projected ROI</SelectItem>
                   <SelectItem value="performance">Performance</SelectItem>
                   <SelectItem value="stability">Stability</SelectItem>
@@ -818,94 +796,128 @@ export default function PortfolioPage() {
           
           {/* Results */}
           {!isLoadingSuggestions && suggestions.length > 0 && (
-            <div className="space-y-4">
-              <h3 className="text-sm font-medium text-slate-700">Top Recommendations</h3>
+            <div className="space-y-5">
+              <div className="flex items-center mb-1">
+                <Rocket className="h-4 w-4 mr-2 text-blue-500" />
+                <h3 className="text-md font-medium text-slate-800">Top Recommendations</h3>
+              </div>
+              <p className="text-xs text-slate-600 mb-3">
+                Discover personalized stock picks based on your goals
+              </p>
               
-              {suggestions.map(({ stock, impact }) => (
-                <div 
-                  key={stock.ticker} 
-                  className="border border-slate-200 rounded-xl p-4 bg-gradient-to-br from-white to-slate-50 shadow-sm hover:shadow-md transition-all duration-200"
-                >
-                  <div className="flex justify-between items-start mb-3">
-                    <div>
-                      <h4 className="font-medium text-slate-800 flex items-center">
-                        {stock.name}
-                        <span className="ml-2 text-xs text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">
-                          {stock.ticker}
-                        </span>
-                      </h4>
-                      <p className="text-xs text-slate-500">{stock.industry}</p>
+              <div className="grid gap-4">
+                {suggestions.map(({ stock, impact }) => (
+                  <div 
+                    key={stock.ticker} 
+                    className="rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-all duration-200 border border-slate-200"
+                  >
+                    {/* Header with gradient */}
+                    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-3 border-b border-slate-200">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <h4 className="font-semibold text-slate-800 flex items-center text-lg">
+                            {stock.name}
+                            <span className="ml-2 text-xs font-normal text-slate-500 bg-white px-2 py-0.5 rounded-full border border-slate-200">
+                              {stock.ticker}
+                            </span>
+                          </h4>
+                          <p className="text-xs text-slate-500 mt-0.5">{stock.industry}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-md font-semibold text-slate-800">${stock.price.toFixed(2)}</p>
+                          {stock.oneYearReturn && (
+                            <p className={`text-xs font-medium ${
+                              (typeof stock.oneYearReturn === 'string' 
+                                ? parseFloat(stock.oneYearReturn) >= 0 
+                                : (stock.oneYearReturn as number) >= 0)
+                                ? 'text-green-600' 
+                                : 'text-red-600'
+                            }`}>
+                              {stock.oneYearReturn}% (1Y)
+                            </p>
+                          )}
+                        </div>
+                      </div>
                     </div>
-                    <div className="text-right">
-                      <p className="text-sm font-medium text-slate-800">${stock.price.toFixed(2)}</p>
-                      {stock.oneYearReturn && (
-                        <p className={`text-xs ${
-                          (typeof stock.oneYearReturn === 'string' 
-                            ? parseFloat(stock.oneYearReturn) >= 0 
-                            : (stock.oneYearReturn as number) >= 0)
-                            ? 'text-green-600' 
-                            : 'text-red-600'
-                        }`}>
-                          {stock.oneYearReturn}% (1Y)
+                    
+                    {/* Card body */}
+                    <div className="p-4 bg-white">
+                      {/* AI Rationale */}
+                      <div className="mb-4 bg-slate-50 p-2 rounded-lg border border-slate-100">
+                        <p className="text-xs text-slate-700 font-medium mb-1 flex items-center">
+                          <MessageSquare className="h-3 w-3 mr-1 text-blue-500" />
+                          Why this stock fits your goals
                         </p>
-                      )}
+                        <p className="text-xs text-slate-600 leading-relaxed">
+                          {improvementGoal === 'balanced' && 'This stock provides a good balance of metrics, strengthening your overall portfolio quality.'}
+                          {improvementGoal === 'roi' && 'This stock has strong growth potential that should boost your portfolio\'s projected returns.'}
+                          {improvementGoal === 'performance' && 'This stock shows excellent revenue growth and profitability metrics to enhance performance.'}
+                          {improvementGoal === 'stability' && 'This stock offers lower volatility and more consistent returns to improve stability.'}
+                          {improvementGoal === 'value' && 'This stock is reasonably priced relative to its fundamentals, adding value to your portfolio.'}
+                          {improvementGoal === 'momentum' && 'This stock shows positive price momentum and could continue its upward trend.'}
+                        </p>
+                      </div>
+                      
+                      {/* Portfolio Impact Metrics */}
+                      <div className="mb-4">
+                        <p className="text-xs font-medium text-slate-700 mb-2 flex items-center">
+                          <BarChart2 className="h-3 w-3 mr-1 text-slate-500" />
+                          Impact on Your Portfolio
+                        </p>
+                        <div className="grid grid-cols-2 gap-x-4 gap-y-2 bg-white p-2 rounded-lg border border-slate-100">
+                          <ImpactMetricDisplay 
+                            label="Performance" 
+                            value={impact.performance} 
+                            color="text-blue-500"
+                          />
+                          <ImpactMetricDisplay 
+                            label="Stability" 
+                            value={impact.stability} 
+                            color="text-purple-500"
+                          />
+                          <ImpactMetricDisplay 
+                            label="Value" 
+                            value={impact.value} 
+                            color="text-emerald-500"
+                          />
+                          <ImpactMetricDisplay 
+                            label="Momentum" 
+                            value={impact.momentum} 
+                            color="text-amber-500"
+                          />
+                          <ImpactMetricDisplay 
+                            label="Quality Score" 
+                            value={impact.qualityScore} 
+                            color="text-indigo-500"
+                          />
+                          <ImpactMetricDisplay 
+                            label="Projected Return" 
+                            value={impact.roi} 
+                            color="text-green-600"
+                          />
+                        </div>
+                      </div>
+                      
+                      {/* Invest Button */}
+                      <div className="mt-4">
+                        <Button 
+                          onClick={() => {
+                            portfolio.buyStock(stock, parseFloat(investmentAmount));
+                            setIsImproveDialogOpen(false);
+                          }}
+                          className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 shadow-md text-base py-5"
+                        >
+                          <DollarSign className="h-4 w-4 mr-2" />
+                          Invest ${investmentAmount} in {stock.ticker}
+                        </Button>
+                      </div>
                     </div>
                   </div>
-                  
-                  <div className="mb-3">
-                    <p className="text-xs font-medium text-slate-700 mb-2">
-                      Projected Impact on Your Portfolio
-                    </p>
-                    <div className="grid grid-cols-2 gap-x-4 gap-y-2">
-                      <ImpactMetricDisplay 
-                        label="Performance" 
-                        value={impact.performance} 
-                        color="text-blue-500"
-                      />
-                      <ImpactMetricDisplay 
-                        label="Stability" 
-                        value={impact.stability} 
-                        color="text-purple-500"
-                      />
-                      <ImpactMetricDisplay 
-                        label="Value" 
-                        value={impact.value} 
-                        color="text-emerald-500"
-                      />
-                      <ImpactMetricDisplay 
-                        label="Quality Score" 
-                        value={impact.qualityScore} 
-                        color="text-indigo-500"
-                      />
-                      <ImpactMetricDisplay 
-                        label="Momentum" 
-                        value={impact.momentum} 
-                        color="text-amber-500"
-                      />
-                      <ImpactMetricDisplay 
-                        label="Projected Return" 
-                        value={impact.roi} 
-                        color="text-green-600"
-                      />
-                    </div>
-                  </div>
-                  
-                  <div className="text-center">
-                    <Button 
-                      onClick={() => {
-                        portfolio.buyStock(stock, parseFloat(investmentAmount));
-                        setIsImproveDialogOpen(false);
-                      }}
-                      className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 shadow-md"
-                    >
-                      Invest ${investmentAmount} in {stock.ticker}
-                    </Button>
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
               
-              <p className="text-xs text-slate-500 text-center italic">
-                AI-powered recommendations based on your portfolio metrics and goals.
+              <p className="text-xs text-slate-500 text-center italic mt-2 px-2">
+                AI-powered recommendations based on your portfolio metrics and investment goals.
               </p>
             </div>
           )}
