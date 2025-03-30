@@ -13,13 +13,20 @@ export const marketAverages = {
   value: {
     peRatio: 16, // P/E of 16x
     pbRatio: 3, // P/B of 3x
-    dividendYield: 2.5 // 2.50%
+    dividendYield: 2.5, // 2.50%
+    predictedUpside: 10.0 // 10.0% average predicted price increase
   },
   momentum: {
     threeMonthReturn: 3, // 3%
     relativePerformance: 0, // 0 (market average by definition)
     rsi: 50, // RSI of 50 (neutral by definition)
-    oneYearReturnAvg: 10
+    oneYearReturnAvg: 10,
+    oneYearReturn: 10.0 // 10.0% average 1-year return
+  },
+  potential: {
+    predictedUpside: 10.0, // 10.0% average predicted price increase
+    revenueGrowth: 7.0, // 7.0% average revenue growth
+    relativePerformance: 0.0 // 0.0% average market-relative performance
   }
 };
 

@@ -9,23 +9,63 @@ import { getIndustryAverages } from './industry-data'; // Needs oneYearReturnAvg
 import { marketAverages, getDividendConsistencyScore } from './market-averages'; // Needs oneYearReturnAvg added
 
 // --- Configuration ---
+/**
+ * Minimum cap for any score calculation
+ */
 const SCORE_CAP_MIN = 0;
+
+/**
+ * Maximum cap for any score calculation
+ */
 const SCORE_CAP_MAX = 100;
+
+/**
+ * Neutral score (50) is the baseline for comparing metrics
+ */
 const NEUTRAL_SCORE = 50;
+
+/**
+ * Scale factors that control how much each metric difference impacts the score
+ * Higher values = more impact on the final score
+ */
 const SCALE_FACTORS = {
-  revenueGrowth: 2.0,
-  profitMargin: 1.5,
-  returnOnCapital: 2.0,
-  volatility: 2.0,
-  peRatio: 1.0,
-  pbRatio: 10.0,
-  dividendYield: 10.0,
-  predictedUpside: 2.0,
-  oneYearReturn: 2.0, // +/- 25% diff = +/- 50 score
-  threeMonthReturn: 2.5,
-  relativePerformance: 2.5,
+  // Performance metrics
+  revenueGrowth: 2.0,     // Revenue growth %
+  profitMargin: 1.5,      // Profit margin %
+  returnOnCapital: 2.0,   // Return on capital %
+  
+  // Stability metrics
+  volatility: 2.0,        // Price volatility
+  
+  // Value metrics
+  peRatio: 1.0,           // Price-to-earnings ratio
+  pbRatio: 10.0,          // Price-to-book ratio
+  dividendYield: 10.0,    // Dividend yield %
+  predictedUpside: 2.0,   // Predicted price increase %
+  
+  // Momentum metrics
+  oneYearReturn: 2.0,     // 1-year return % (+/- 25% diff = +/- 50 score)
+  threeMonthReturn: 2.5,  // 3-month return %
+  relativePerformance: 2.5, // Performance vs. index %
 };
+
+/**
+ * Weight used for industry strength modifier
+ * Controls how much a stock's score is affected by how its industry
+ * performs relative to the overall market
+ */
 const INDUSTRY_STRENGTH_MODIFIER_WEIGHT = 0.2;
+
+/**
+ * Weights used for calculating the overall Swipefolio score
+ */
+const OVERALL_SCORE_WEIGHTS = {
+  performance: 0.20,
+  stability: 0.15,
+  value: 0.15,
+  momentum: 0.20,
+  potential: 0.30
+};
 
 // --- Helper Functions (capScore, safeRatio, normalizeDifference, calculateIndustryStrengthFactor - same as v4) ---
 const capScore = (score: number): number => {
@@ -179,7 +219,12 @@ export const calculateValueScore = (
   return capScore(score);
 };
 
-// Momentum calculation UPDATED to include 1-Year Return
+/**
+ * Calculates a momentum score based on 1-year return, relative performance, 3-month return, and RSI
+ * @param stock The stock data
+ * @param industry The industry to compare against
+ * @returns A score from 0-100
+ */
 export const calculateMomentumScore = (
   stock: StockData, // Pass full stock data to get oneYearReturn
   industry: string
@@ -223,18 +268,117 @@ export const calculateMomentumScore = (
   return capScore(score);
 };
 
+/**
+ * Calculates a potential score based on predicted upside, revenue growth, and relative momentum
+ * This is the fifth core metric: forward-looking growth prospects
+ * @param stock The stock data 
+ * @param industry The industry to compare against
+ * @returns A score from 0-100
+ */
+export const calculatePotentialScore = (
+  stock: StockData,
+  industry: string
+): number => {
+  const industryAvgs = getIndustryAverages(industry);
+  const marketAvgs = marketAverages;
+  // Weights: Predicted Upside 50%, Revenue Growth 30%, Relative Performance 20%
+  const weights = { predictedUpside: 0.50, revenueGrowth: 0.30, relativePerformance: 0.20 };
+  let score = 0;
+  
+  // --- Predicted Upside --- (Higher is Better)
+  let predictedUpsideScore = NEUTRAL_SCORE;
+  let stockPredictedUpside = 0;
+  
+  if (stock.predictedPrice && stock.price > 0) {
+    const predictedPriceStr = String(stock.predictedPrice);
+    const predictedPriceNum = parseFloat(predictedPriceStr.replace('$', ''));
+    if (!isNaN(predictedPriceNum)) {
+      stockPredictedUpside = ((predictedPriceNum - stock.price) / stock.price) * 100;
+      // Compare to 0 baseline instead of industry average for absolute potential
+      predictedUpsideScore = normalizeDifference(stockPredictedUpside, 0, SCALE_FACTORS.predictedUpside);
+    }
+  }
+  score += weights.predictedUpside * predictedUpsideScore;
+  
+  // --- Revenue Growth --- (Higher is Better)
+  const revenueGrowth = stock.metrics.performance.details.revenueGrowth;
+  const revenueGrowthScore = normalizeDifference(
+    revenueGrowth, 
+    industryAvgs.performance.revenueGrowth, 
+    SCALE_FACTORS.revenueGrowth
+  );
+  const revenueGrowthIndustryStrength = calculateIndustryStrengthFactor(
+    industryAvgs.performance.revenueGrowth, 
+    marketAvgs.performance.revenueGrowth, 
+    SCALE_FACTORS.revenueGrowth
+  );
+  score += weights.revenueGrowth * (revenueGrowthScore * (1 + (revenueGrowthIndustryStrength - 0.5) * INDUSTRY_STRENGTH_MODIFIER_WEIGHT));
+  
+  // --- Relative Performance --- (Higher is Better)
+  const relativePerformance = stock.metrics.momentum.details.relativePerformance;
+  const relativePerformanceScore = normalizeDifference(
+    relativePerformance, 
+    industryAvgs.momentum.relativePerformance, 
+    SCALE_FACTORS.relativePerformance
+  );
+  const relativePerformanceIndustryStrength = calculateIndustryStrengthFactor(
+    industryAvgs.momentum.relativePerformance, 
+    marketAvgs.momentum.relativePerformance, 
+    SCALE_FACTORS.relativePerformance
+  );
+  score += weights.relativePerformance * (relativePerformanceScore * (1 + (relativePerformanceIndustryStrength - 0.5) * INDUSTRY_STRENGTH_MODIFIER_WEIGHT));
+  
+  console.log(`Potential (v5) (Upside:${stockPredictedUpside.toFixed(1)}%, RevGrowth:${revenueGrowth}%, RelPerf:${relativePerformance}%): Scores(Upside:${predictedUpsideScore}, RevGrowth:${revenueGrowthScore}, RelPerf:${relativePerformanceScore}) -> Final ${capScore(score)}`);
+  return capScore(score);
+};
+
+/**
+ * Calculates the overall Swipefolio score by combining all five category scores
+ * @param stock The stock data
+ * @returns A score from 0-100
+ */
+export const calculateOverallSwipefolioScore = (stock: StockData): number => {
+  try {
+    // Get the five category scores
+    const performanceScore = getAdvancedMetricScore(stock, 'performance');
+    const stabilityScore = getAdvancedMetricScore(stock, 'stability');
+    const valueScore = getAdvancedMetricScore(stock, 'value');
+    const momentumScore = getAdvancedMetricScore(stock, 'momentum');
+    const potentialScore = calculatePotentialScore(stock, stock.industry);
+    
+    // Apply weights from OVERALL_SCORE_WEIGHTS
+    const overallScore = 
+      (performanceScore * OVERALL_SCORE_WEIGHTS.performance) +
+      (stabilityScore * OVERALL_SCORE_WEIGHTS.stability) +
+      (valueScore * OVERALL_SCORE_WEIGHTS.value) +
+      (momentumScore * OVERALL_SCORE_WEIGHTS.momentum) +
+      (potentialScore * OVERALL_SCORE_WEIGHTS.potential);
+    
+    console.log(`Overall Swipefolio Score (v5) - ${stock.ticker}: Performance:${performanceScore}, Stability:${stabilityScore}, Value:${valueScore}, Momentum:${momentumScore}, Potential:${potentialScore} -> Final Score: ${capScore(overallScore)}`);
+    return capScore(overallScore);
+  } catch (error) {
+    console.error(`Error calculating overall score for ${stock.ticker}:`, error);
+    return 0;
+  }
+};
 
 // --- Main Exported Functions ---
 
+/**
+ * Gets the score for a specific metric category
+ * @param stock The stock data
+ * @param metricName The metric category to calculate
+ * @returns A score from 0-100
+ */
 export const getAdvancedMetricScore = (
   stock: StockData,
-  metricName: "performance" | "stability" | "value" | "momentum"
+  metricName: "performance" | "stability" | "value" | "momentum" | "potential"
 ): number => {
   if (!stock || !stock.metrics || !stock.metrics[metricName]?.details) {
       console.warn(`Missing metric details for ${stock?.ticker} in category ${metricName}`);
       return 0;
   }
-  const metricDetails = stock.metrics[metricName].details;
+  const metricDetails = stock.metrics[metricName]?.details;
 
   try {
       switch (metricName) {
@@ -246,6 +390,8 @@ export const getAdvancedMetricScore = (
               return calculateValueScore(stock, stock.industry); // Pass full stock
           case 'momentum':
               return calculateMomentumScore(stock, stock.industry); // Pass full stock
+          case 'potential':
+              return calculatePotentialScore(stock, stock.industry); // New category
           default:
               console.warn(`Unknown metric category: ${metricName}`);
               return 0;
@@ -256,19 +402,33 @@ export const getAdvancedMetricScore = (
   }
 };
 
-// Portfolio score calculation remains the same, using the updated getAdvancedMetricScore
+/**
+ * Calculates the weighted average score for a specific metric across a portfolio
+ * @param holdings Array of holdings (stock and value)
+ * @param metricName The metric category to calculate
+ * @returns A score from 0-100
+ */
 export const calculatePortfolioScore = (
   holdings: Array<{ stock: StockData, value: number }>,
-  metricName: "performance" | "stability" | "value" | "momentum"
+  metricName: "performance" | "stability" | "value" | "momentum" | "potential"
 ): number => {
   if (!holdings || holdings.length === 0) return 0;
   let weightedScoreSum = 0;
   let totalValue = 0;
 
+  console.log(`\nCalculating weighted ${metricName} score for portfolio with ${holdings.length} holdings:`);
+
   holdings.forEach(holding => {
     const holdingValue = (holding && typeof holding.value === 'number' && Number.isFinite(holding.value)) ? holding.value : 0;
     if (holdingValue > 0 && holding.stock) {
-        const score = getAdvancedMetricScore(holding.stock, metricName);
+        let score: number;
+        
+        if (metricName === 'potential') {
+          score = calculatePotentialScore(holding.stock, holding.stock.industry);
+        } else {
+          score = getAdvancedMetricScore(holding.stock, metricName);
+        }
+        
         weightedScoreSum += score * holdingValue;
         totalValue += holdingValue;
     }
@@ -276,5 +436,40 @@ export const calculatePortfolioScore = (
 
   if (totalValue === 0) return 0;
   const finalScore = weightedScoreSum / totalValue;
+  console.log(`Advanced portfolio ${metricName} score: ${capScore(finalScore)}`);
   return capScore(finalScore);
+};
+
+/**
+ * Calculates the overall Swipefolio score for a portfolio using the weighted metrics
+ * @param holdings Array of holdings (stock and value)
+ * @returns A score from 0-100
+ */
+export const calculateOverallPortfolioScore = (
+  holdings: Array<{ stock: StockData, value: number }>
+): number => {
+  if (!holdings || holdings.length === 0) return 0;
+  
+  try {
+    // Calculate each category score
+    const performanceScore = calculatePortfolioScore(holdings, 'performance');
+    const stabilityScore = calculatePortfolioScore(holdings, 'stability');
+    const valueScore = calculatePortfolioScore(holdings, 'value');
+    const momentumScore = calculatePortfolioScore(holdings, 'momentum');
+    const potentialScore = calculatePortfolioScore(holdings, 'potential');
+    
+    // Apply weights from OVERALL_SCORE_WEIGHTS
+    const overallScore = 
+      (performanceScore * OVERALL_SCORE_WEIGHTS.performance) +
+      (stabilityScore * OVERALL_SCORE_WEIGHTS.stability) +
+      (valueScore * OVERALL_SCORE_WEIGHTS.value) +
+      (momentumScore * OVERALL_SCORE_WEIGHTS.momentum) +
+      (potentialScore * OVERALL_SCORE_WEIGHTS.potential);
+    
+    console.log(`Overall Portfolio Score (v5): Performance:${performanceScore}, Stability:${stabilityScore}, Value:${valueScore}, Momentum:${momentumScore}, Potential:${potentialScore} -> Final Score: ${capScore(overallScore)}`);
+    return capScore(overallScore);
+  } catch (error) {
+    console.error(`Error calculating overall portfolio score:`, error);
+    return 0;
+  }
 };

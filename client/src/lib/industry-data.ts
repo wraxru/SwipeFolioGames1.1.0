@@ -1,3 +1,7 @@
+// Import statements should go at the top
+import { PerformanceDetails, StabilityDetails, ValueDetails, MomentumDetails, PotentialDetails, StockData } from './stock-data';
+import { getAdvancedMetricScore, calculatePotentialScore } from './advanced-metric-scoring';
+
 // Industry average constants based on provided real estate data
 export const industryAverages: Record<string, {
   performance: {
@@ -14,13 +18,19 @@ export const industryAverages: Record<string, {
     peRatio: number;
     pbRatio: number;
     dividendYield: number;
+    predictedUpside?: number; // Added for new scoring system
   };
   momentum: {
     threeMonthReturn: number;
     relativePerformance: number;
     rsi: number;
-    oneYearReturnAvg: number;
-    
+    oneYearReturnAvg: number; 
+    oneYearReturn?: number; // Added for new scoring system
+  };
+  potential?: {
+    predictedUpside?: number;
+    revenueGrowth?: number;
+    relativePerformance?: number;
   };
 }> = {
   "Tech": {
@@ -37,13 +47,20 @@ export const industryAverages: Record<string, {
     value: {
       peRatio: 36.4,
       pbRatio: 19.4,
-      dividendYield: 0.38
+      dividendYield: 0.38,
+      predictedUpside: 15.0
     },
     momentum: {
       threeMonthReturn: -13.62,
       relativePerformance: 19.0,
       rsi: 39.5,
-      oneYearReturnAvg: 18
+      oneYearReturnAvg: 18,
+      oneYearReturn: 18.0
+    },
+    potential: {
+      predictedUpside: 15.0,
+      revenueGrowth: 21.74,
+      relativePerformance: 19.0
     }
   },
   "ESG": {
@@ -60,13 +77,20 @@ export const industryAverages: Record<string, {
     value: {
       peRatio: 24.0,
       pbRatio: 3.0,
-      dividendYield: 2.0
+      dividendYield: 2.0,
+      predictedUpside: 18.0
     },
     momentum: {
       threeMonthReturn: -12.0,
       relativePerformance: -10.0,
       rsi: 45,
-      oneYearReturnAvg: 15
+      oneYearReturnAvg: 15,
+      oneYearReturn: 15.0
+    },
+    potential: {
+      predictedUpside: 18.0,
+      revenueGrowth: 7.0,
+      relativePerformance: -10.0
     }
   },
   "Healthcare": {
@@ -83,13 +107,20 @@ export const industryAverages: Record<string, {
     value: {
       peRatio: 37.0,
       pbRatio: 4.0,
-      dividendYield: 1.5
+      dividendYield: 1.5,
+      predictedUpside: 12.0
     },
     momentum: {
       threeMonthReturn: 4.0,
       relativePerformance: 5.0,
       rsi: 44,
-      oneYearReturnAvg: 10
+      oneYearReturnAvg: 10,
+      oneYearReturn: 10.0
+    },
+    potential: {
+      predictedUpside: 12.0,
+      revenueGrowth: 8.0,
+      relativePerformance: 5.0
     }
   },
   "Financial Planning": {
@@ -106,13 +137,20 @@ export const industryAverages: Record<string, {
     value: {
       peRatio: 17.0,
       pbRatio: 2.5,
-      dividendYield: 2.2
+      dividendYield: 2.2,
+      predictedUpside: 9.0
     },
     momentum: {
       threeMonthReturn: 3.5,
       relativePerformance: 1.0,
       rsi: 51,
-      oneYearReturnAvg: 10
+      oneYearReturnAvg: 10,
+      oneYearReturn: 10.0
+    },
+    potential: {
+      predictedUpside: 9.0,
+      revenueGrowth: 7.0,
+      relativePerformance: 1.0
     }
   },
   "Consumer": {
@@ -129,13 +167,20 @@ export const industryAverages: Record<string, {
     value: {
       peRatio: 19.0,
       pbRatio: 2.5,
-      dividendYield: 1.8
+      dividendYield: 1.8,
+      predictedUpside: 8.0
     },
     momentum: {
       threeMonthReturn: 3.0,
       relativePerformance: 1.0,
       rsi: 54,
-      oneYearReturnAvg: 11
+      oneYearReturnAvg: 11,
+      oneYearReturn: 11.0
+    },
+    potential: {
+      predictedUpside: 8.0,
+      revenueGrowth: 5.0,
+      relativePerformance: 1.0
     }
   },
   "Real Estate": {
@@ -152,13 +197,20 @@ export const industryAverages: Record<string, {
     value: {
       peRatio: 36.0,
       pbRatio: 2.5,
-      dividendYield: 4.0
+      dividendYield: 4.0,
+      predictedUpside: 11.0
     },
     momentum: {
       threeMonthReturn: 2.0,
       relativePerformance: -5,
       rsi: 49,
-      oneYearReturnAvg: 10.6
+      oneYearReturnAvg: 10.6,
+      oneYearReturn: 10.6
+    },
+    potential: {
+      predictedUpside: 11.0,
+      revenueGrowth: 5.0,
+      relativePerformance: -5.0
     }
   },
   // Default values for other categories
@@ -176,13 +228,20 @@ export const industryAverages: Record<string, {
     value: {
       peRatio: 18.0,
       pbRatio: 2.5,
-      dividendYield: 1.5
+      dividendYield: 1.5,
+      predictedUpside: 10.0
     },
     momentum: {
       threeMonthReturn: 3.5,
       relativePerformance: 1.2,
       rsi: 52,
-      oneYearReturnAvg: 9
+      oneYearReturnAvg: 9,
+      oneYearReturn: 9.0
+    },
+    potential: {
+      predictedUpside: 10.0,
+      revenueGrowth: 7.0,
+      relativePerformance: 1.2
     }
   }
 };
@@ -191,10 +250,6 @@ export const industryAverages: Record<string, {
 export const getIndustryAverages = (industry: string) => {
   return industryAverages[industry] || industryAverages["Real Estate"];
 };
-
-// Helper functions to return ratings based on industry averages
-import { PerformanceDetails, StabilityDetails, ValueDetails, MomentumDetails, StockData } from './stock-data';
-import { getAdvancedMetricScore } from './advanced-metric-scoring';
 
 // These utility functions are responsible for providing comparison indicators
 // Note: The actual metric scoring now happens in advanced-metric-scoring.ts
@@ -276,10 +331,12 @@ function convertScoreToRating(advancedScore: number): {
   };
 }
 
+// Add case for potential metric in getMetricRating
+
 // Helper to generate metric ratings based on values compared to industry averages
 export const getMetricRating = (
-  metricName: 'performance' | 'stability' | 'value' | 'momentum',
-  metrics: PerformanceDetails | StabilityDetails | ValueDetails | MomentumDetails,
+  metricName: 'performance' | 'stability' | 'value' | 'momentum' | 'potential',
+  metrics: PerformanceDetails | StabilityDetails | ValueDetails | MomentumDetails | PotentialDetails,
   industryAvgs: any
 ): { value: string; color: string; explanation: string } => {
   // Create a temporary stock object to use with the advanced scoring system
@@ -316,6 +373,12 @@ export const getMetricRating = (
         value: 'Fair',
         color: 'yellow',
         details: metrics as MomentumDetails,
+        explanation: ''
+      },
+      potential: {
+        value: 'Fair',
+        color: 'yellow',
+        details: metrics as PotentialDetails,
         explanation: ''
       }
     },
@@ -390,6 +453,21 @@ export const getMetricRating = (
       }
       break;
     }
+    
+    case 'potential': {
+      // Handle potential metrics which is a new category
+      const potentialMetrics = metrics as PotentialDetails;
+      
+      // Create default explanation based on the category score
+      if (categoryScore.rating === "Good") {
+        explanation = `This stock shows strong potential for future growth based on predicted price targets, revenue trends, and momentum indicators. Analysts expect significant upside potential, indicating confidence in the company's growth strategy and market position. The combination of positive revenue growth and strong momentum suggests this stock may outperform its peers in the coming year.`;
+      } else if (categoryScore.rating === "Poor") {
+        explanation = `This stock shows limited potential for near-term growth based on predicted price targets, revenue trends, and momentum indicators. Analysts anticipate modest gains at best, reflecting concerns about the company's growth trajectory or competitive position. The combination of weak predicted upside and concerning momentum indicators suggests this stock may underperform its peers in the coming year.`;
+      } else {
+        explanation = `This stock shows moderate potential for future growth based on predicted price targets, revenue trends, and momentum indicators. Analysts expect reasonable upside in line with overall market performance. The stock appears fairly positioned within its industry with acceptable growth prospects reflecting its current operating environment.`;
+      }
+      break;
+    }
       
     default:
       explanation = "Insufficient data to provide a detailed analysis.";
@@ -413,6 +491,10 @@ export const getMetricRating = (
     case 'momentum':
       ratingValue = categoryScore.rating === "Good" ? "Strong" : 
                     categoryScore.rating === "Poor" ? "Weak" : "Fair";
+      break;
+    case 'potential':
+      ratingValue = categoryScore.rating === "Good" ? "High" : 
+                    categoryScore.rating === "Poor" ? "Low" : "Fair";
       break;
     default:
       ratingValue = "Fair";

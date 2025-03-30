@@ -23,20 +23,35 @@ export interface ValueDetails {
   peRatio: number;
   pbRatio: number;
   dividendYield: number | string;
+  predictedUpside?: number; // Added for consistency with advanced metric scoring
   // Individual metric 1-liners
   peRatioExplanation?: string;
   pbRatioExplanation?: string;
   dividendYieldExplanation?: string;
+  predictedUpsideExplanation?: string;
 }
 
 export interface MomentumDetails {
   threeMonthReturn: number;
   relativePerformance: number;
   rsi: number;
+  oneYearReturn?: number; // Added for consistency with advanced metric scoring
+  oneYearReturnAvg?: number; // Added for consistency with industry averages
   // Individual metric 1-liners
   threeMonthReturnExplanation?: string;
   relativePerformanceExplanation?: string;
   rsiExplanation?: string;
+  oneYearReturnExplanation?: string;
+}
+
+export interface PotentialDetails {
+  predictedUpside?: number;
+  revenueGrowth?: number;
+  relativePerformance?: number;
+  // Individual metric 1-liners
+  predictedUpsideExplanation?: string;
+  revenueGrowthExplanation?: string;
+  relativePerformanceExplanation?: string;
 }
 
 export interface StockData {
@@ -72,6 +87,12 @@ export interface StockData {
       value: string;
       color: string;
       details: MomentumDetails;
+      explanation: string;
+    };
+    potential?: {
+      value: string;
+      color: string;
+      details: PotentialDetails;
       explanation: string;
     };
   };
