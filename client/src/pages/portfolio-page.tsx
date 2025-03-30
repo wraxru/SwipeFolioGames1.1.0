@@ -436,20 +436,33 @@ export default function PortfolioPage() {
           </TabsContent>
           
           <TabsContent value="metrics" className="space-y-4">
-            <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
-              <div className="flex justify-between items-center mb-3">
-                <p className="text-sm font-medium text-slate-700">Portfolio Metrics</p>
+            <div className="bg-white rounded-xl border border-slate-200 shadow-md mb-6 overflow-hidden">
+              <div className="bg-gradient-to-r from-blue-500 to-blue-600 p-4 text-white relative">
+                <div className="absolute top-0 right-0 w-24 h-24 opacity-10">
+                  <Sparkles className="w-full h-full" />
+                </div>
+                <h3 className="text-lg font-bold mb-1 flex items-center">
+                  <Sparkles className="h-5 w-5 mr-2" />
+                  Boost Your Portfolio
+                </h3>
+                <p className="text-sm text-blue-100">
+                  Our AI can analyze your portfolio and suggest optimizations
+                </p>
                 {sortedHoldings.length > 0 && (
                   <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="flex items-center text-xs text-blue-600 hover:text-blue-800 font-medium"
-                    onClick={() => setIsImproveDialogOpen(true)}
+                    onClick={() => setIsImproveDialogOpen(true)} 
+                    className="mt-3 bg-white text-blue-600 hover:bg-blue-50 shadow-md"
                   >
-                    <Sparkles className="h-3.5 w-3.5 mr-1" />
+                    <Sparkles className="h-4 w-4 mr-2 text-blue-500" />
                     See How You Can Improve
                   </Button>
                 )}
+              </div>
+            </div>
+            
+            <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
+              <div className="flex justify-between items-center mb-3">
+                <p className="text-sm font-medium text-slate-700">Portfolio Metrics</p>
               </div>
               {sortedHoldings.length === 0 ? (
                 <EmptyState 
@@ -458,7 +471,7 @@ export default function PortfolioPage() {
                   className="py-8"
                 />
               ) : (
-                <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+                <div className="grid grid-cols-2 gap-4">
                   <MetricItem 
                     label="Performance" 
                     value={portfolioMetrics.performance} 
@@ -479,6 +492,13 @@ export default function PortfolioPage() {
                     value={portfolioMetrics.momentum} 
                     color="bg-amber-500" 
                   />
+                  <div className="col-span-2">
+                    <MetricItem 
+                      label="Quality Score" 
+                      value={portfolioMetrics.qualityScore} 
+                      color={getQualityScoreBgColor(portfolioMetrics.qualityScore)} 
+                    />
+                  </div>
                 </div>
               )}
             </div>
@@ -521,89 +541,180 @@ export default function PortfolioPage() {
           </TabsContent>
           
           <TabsContent value="ai-advisor" className="space-y-4">
-            <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-medium text-slate-800">Portfolio Advisor</h3>
-                {sortedHoldings.length > 0 && (
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={() => setIsImproveDialogOpen(true)}
-                    className="flex items-center text-sm"
-                  >
-                    <Sparkles className="h-3.5 w-3.5 mr-1.5 text-blue-500" />
-                    Improve with AI
-                  </Button>
-                )}
+            <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+              <div className="bg-gradient-to-br from-indigo-600 to-blue-600 p-4 border-b border-slate-200 text-white">
+                <h3 className="text-lg font-semibold flex items-center">
+                  <MessageSquare className="h-5 w-5 mr-2" />
+                  Portfolio Advisor
+                </h3>
+                <p className="text-sm text-indigo-100 mt-1">
+                  Expert insights to optimize your investment strategy
+                </p>
               </div>
               
-              {sortedHoldings.length === 0 ? (
-                <EmptyState 
-                  title="Start building your portfolio"
-                  description="The AI advisor can help analyze your investments once you have holdings"
-                  className="py-8"
-                />
-              ) : (
-                <div className="space-y-4">
-                  <p className="text-sm text-slate-600">
-                    Based on your current portfolio, we have the following suggestions:
-                  </p>
-                  
-                  <div className="bg-slate-50 p-4 rounded-lg">
-                    <div className="flex items-start">
-                      <AlertTriangle className="h-5 w-5 text-amber-500 mr-3 mt-0.5" />
-                      <div>
-                        <p className="text-sm font-medium text-slate-800">Diversification Opportunity</p>
-                        <p className="text-sm text-slate-600 mt-1">
-                          Your portfolio is currently concentrated in {sortedIndustries.length} {sortedIndustries.length === 1 ? 'industry' : 'industries'}.
-                          Consider adding stocks from different sectors to reduce risk.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="bg-slate-50 p-4 rounded-lg">
-                    <div className="flex items-start">
-                      <BarChart2 className="h-5 w-5 text-blue-500 mr-3 mt-0.5" />
-                      <div>
-                        <p className="text-sm font-medium text-slate-800">Performance Analysis</p>
-                        <p className="text-sm text-slate-600 mt-1">
-                          Your portfolio has a projected 1-year return of {projectedReturnPercent.toFixed(1)}%.
-                          {projectedReturnPercent < 10 
-                            ? " There's potential to increase your returns with tactical adjustments."
-                            : " This is a solid projected return based on current holdings."}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="bg-slate-50 p-4 rounded-lg">
-                    <div className="flex items-start">
-                      <TrendingUp className="h-5 w-5 text-green-500 mr-3 mt-0.5" />
-                      <div>
-                        <p className="text-sm font-medium text-slate-800">Growth Potential</p>
-                        <p className="text-sm text-slate-600 mt-1">
-                          Your portfolio's quality score is {portfolioMetrics.qualityScore}.
-                          {portfolioMetrics.qualityScore < 70 
-                            ? " There's room for optimizing your investments for better performance."
-                            : " This is a strong score indicating a well-balanced portfolio."}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="mt-6 pt-4 border-t border-slate-200">
-                    <p className="text-sm text-slate-700 mb-3 font-medium">Ready to optimize your portfolio?</p>
+              <div className="p-4">
+                {sortedHoldings.length === 0 ? (
+                  <div className="text-center py-6">
+                    <AlertTriangle className="h-10 w-10 mx-auto mb-2 text-amber-400" />
+                    <h4 className="font-medium text-slate-800 mb-1">No Portfolio Data Yet</h4>
+                    <p className="text-sm text-slate-500 mb-4">Start investing to receive AI-powered advice</p>
                     <Button 
-                      onClick={() => setIsImproveDialogOpen(true)}
-                      className="w-full flex items-center justify-center"
+                      onClick={() => setActiveTab('holdings')}
+                      variant="outline"
+                      className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white hover:text-white border-0 shadow-md"
                     >
-                      <Sparkles className="h-4 w-4 mr-2" />
-                      Get AI-Powered Suggestions
+                      <Briefcase className="h-4 w-4 mr-2" />
+                      Go to Holdings
                     </Button>
                   </div>
-                </div>
-              )}
+                ) : (
+                  <div className="space-y-5">
+                    <div className="p-4 bg-slate-50 rounded-lg border border-slate-200">
+                      <h4 className="font-medium text-slate-800 mb-2 flex items-center">
+                        <BarChart2 className="h-4 w-4 mr-2 text-blue-500" />
+                        Portfolio Analysis
+                      </h4>
+                      <p className="text-sm text-slate-600 mb-3">
+                        {portfolioMetrics.qualityScore > 70 
+                          ? "Your portfolio has strong fundamentals with excellent potential for long-term growth. The combination of stocks shows good balance across key metrics, particularly in performance and stability."
+                          : portfolioMetrics.qualityScore > 50
+                          ? "Your portfolio has moderate strength but could use some optimization. We recommend focusing on adding stocks with stronger value metrics to improve overall portfolio quality."
+                          : "Your portfolio needs attention to core metrics. We recommend adding stocks with better stability and stronger fundamentals to improve your long-term outlook."}
+                      </p>
+                      
+                      <div className="grid grid-cols-2 gap-x-3 gap-y-2 mb-3">
+                        <div className="col-span-2">
+                          <p className="text-xs text-slate-500">Portfolio Quality Score</p>
+                          <div className="flex items-center">
+                            <div className={`h-2.5 w-2.5 rounded-full ${getQualityScoreBgColor(portfolioMetrics.qualityScore || 0)} mr-1.5`}></div>
+                            <p className="font-semibold">{portfolioMetrics.qualityScore || 0}</p>
+                          </div>
+                        </div>
+                        <div>
+                          <p className="text-xs text-slate-500">Top Strength</p>
+                          <p className="font-medium text-sm">
+                            {Math.max(
+                              portfolioMetrics.performance || 0,
+                              portfolioMetrics.stability || 0,
+                              portfolioMetrics.value || 0,
+                              portfolioMetrics.momentum || 0
+                            ) === (portfolioMetrics.performance || 0) ? "Performance" :
+                            Math.max(
+                              portfolioMetrics.performance || 0,
+                              portfolioMetrics.stability || 0,
+                              portfolioMetrics.value || 0,
+                              portfolioMetrics.momentum || 0
+                            ) === (portfolioMetrics.stability || 0) ? "Stability" :
+                            Math.max(
+                              portfolioMetrics.performance || 0,
+                              portfolioMetrics.stability || 0,
+                              portfolioMetrics.value || 0,
+                              portfolioMetrics.momentum || 0
+                            ) === (portfolioMetrics.value || 0) ? "Value" : "Momentum"}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-slate-500">Needs Improvement</p>
+                          <p className="font-medium text-sm">
+                            {Math.min(
+                              portfolioMetrics.performance || 100,
+                              portfolioMetrics.stability || 100,
+                              portfolioMetrics.value || 100,
+                              portfolioMetrics.momentum || 100
+                            ) === (portfolioMetrics.performance || 100) ? "Performance" :
+                            Math.min(
+                              portfolioMetrics.performance || 100,
+                              portfolioMetrics.stability || 100,
+                              portfolioMetrics.value || 100,
+                              portfolioMetrics.momentum || 100
+                            ) === (portfolioMetrics.stability || 100) ? "Stability" :
+                            Math.min(
+                              portfolioMetrics.performance || 100,
+                              portfolioMetrics.stability || 100,
+                              portfolioMetrics.value || 100,
+                              portfolioMetrics.momentum || 100
+                            ) === (portfolioMetrics.value || 100) ? "Value" : "Momentum"}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-3">
+                      <h4 className="font-medium text-slate-800">Strategic Recommendations</h4>
+                      
+                      <div className="bg-white p-4 rounded-lg border border-slate-200 shadow-sm">
+                        {sortedIndustries.length < 3 ? (
+                          <div className="flex items-start">
+                            <AlertTriangle className="h-5 w-5 text-amber-500 mr-3 mt-0.5 flex-shrink-0" />
+                            <div>
+                              <p className="text-sm font-medium text-slate-800">Diversify Your Holdings</p>
+                              <p className="text-sm text-slate-600 mt-1">
+                                Your portfolio is concentrated in {sortedIndustries.length === 1 
+                                  ? `only the ${sortedIndustries[0]?.industry} sector` 
+                                  : `just ${sortedIndustries.length} sectors`}. 
+                                To reduce risk, consider adding stocks from {sortedIndustries.length === 1 
+                                  ? "at least 2-3 additional sectors" 
+                                  : "other industries"} like 
+                                {!sortedIndustries.some(i => i.industry === "Tech") && " Technology,"} 
+                                {!sortedIndustries.some(i => i.industry === "Healthcare") && " Healthcare,"} 
+                                {!sortedIndustries.some(i => i.industry === "Real Estate") && " Real Estate,"} 
+                                {!sortedIndustries.some(i => i.industry === "Financial") && " Financial"}.
+                              </p>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="flex items-start">
+                            <TrendingUp className="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
+                            <div>
+                              <p className="text-sm font-medium text-slate-800">Optimize Top Performers</p>
+                              <p className="text-sm text-slate-600 mt-1">
+                                Your diversification is good with {sortedIndustries.length} sectors. 
+                                Now focus on increasing allocation to your top-performing sectors 
+                                like {sortedIndustries[0]?.industry} while maintaining balance.
+                              </p>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                      
+                      <div className="bg-white p-4 rounded-lg border border-slate-200 shadow-sm">
+                        <div className="flex items-start">
+                          <BarChart2 className="h-5 w-5 text-blue-500 mr-3 mt-0.5 flex-shrink-0" />
+                          <div>
+                            <p className="text-sm font-medium text-slate-800">Return Potential</p>
+                            <p className="text-sm text-slate-600 mt-1">
+                              Your portfolio shows a projected return of {projectedReturnPercent.toFixed(1)}% over the next year.
+                              {projectedReturnPercent < 15 
+                                ? ` We recommend adding growth-oriented stocks to boost this potential. Consider tech stocks like AAPL or MSFT, which can provide stronger returns.`
+                                : ` This is an excellent projection. Consider adding some stability-focused stocks to help protect these gains.`}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="flex flex-col sm:flex-row gap-3 mt-4">
+                        <Button 
+                          className="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 shadow-md"
+                          onClick={() => {
+                            setImprovementGoal('roi');
+                            setIsImproveDialogOpen(true);
+                          }}
+                        >
+                          <TrendingUp className="h-4 w-4 mr-1.5" />
+                          Maximize Returns
+                        </Button>
+                        <Button 
+                          className="flex-1 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 shadow-md"
+                          onClick={() => setIsImproveDialogOpen(true)}
+                        >
+                          <Sparkles className="h-4 w-4 mr-2" />
+                          Custom Recommendations
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </TabsContent>
         </Tabs>
@@ -613,7 +724,7 @@ export default function PortfolioPage() {
       
       {/* Improve with AI Dialog */}
       <Dialog open={isImproveDialogOpen} onOpenChange={setIsImproveDialogOpen}>
-        <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
+        <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto rounded-xl shadow-lg bg-gradient-to-b from-white to-slate-50 border-0">
           <DialogHeader className="relative">
             <button 
               className="absolute right-0 top-0 p-2 rounded-full hover:bg-slate-100 transition-colors" 
@@ -713,7 +824,7 @@ export default function PortfolioPage() {
               {suggestions.map(({ stock, impact }) => (
                 <div 
                   key={stock.ticker} 
-                  className="border border-slate-200 rounded-lg p-4 hover:shadow-sm transition-shadow duration-200"
+                  className="border border-slate-200 rounded-xl p-4 bg-gradient-to-br from-white to-slate-50 shadow-sm hover:shadow-md transition-all duration-200"
                 >
                   <div className="flex justify-between items-start mb-3">
                     <div>
@@ -762,17 +873,20 @@ export default function PortfolioPage() {
                         color="text-emerald-500"
                       />
                       <ImpactMetricDisplay 
+                        label="Quality Score" 
+                        value={impact.qualityScore} 
+                        color="text-indigo-500"
+                      />
+                      <ImpactMetricDisplay 
                         label="Momentum" 
                         value={impact.momentum} 
                         color="text-amber-500"
                       />
-                      <div className="col-span-2">
-                        <ImpactMetricDisplay 
-                          label="Quality Score" 
-                          value={impact.qualityScore} 
-                          color="text-indigo-500"
-                        />
-                      </div>
+                      <ImpactMetricDisplay 
+                        label="Projected Return" 
+                        value={impact.roi} 
+                        color="text-green-600"
+                      />
                     </div>
                   </div>
                   
@@ -782,7 +896,7 @@ export default function PortfolioPage() {
                         portfolio.buyStock(stock, parseFloat(investmentAmount));
                         setIsImproveDialogOpen(false);
                       }}
-                      className="w-full"
+                      className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 shadow-md"
                     >
                       Invest ${investmentAmount} in {stock.ticker}
                     </Button>
@@ -801,13 +915,14 @@ export default function PortfolioPage() {
               <Button 
                 variant="outline" 
                 onClick={() => setIsImproveDialogOpen(false)}
+                className="border-slate-300"
               >
                 Cancel
               </Button>
               <Button 
                 onClick={handleFindSuggestions} 
                 disabled={isLoadingSuggestions}
-                className="flex items-center"
+                className="flex items-center bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 shadow-md transition-all duration-200"
               >
                 {isLoadingSuggestions ? (
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
