@@ -185,10 +185,10 @@ export default function CompetitionTracker({ defaultExpanded = false }: { defaul
                           {index + 1}
                         </div>
                         <div className="flex items-center">
-                          <div className="w-12 h-12 rounded-full overflow-hidden border border-slate-200 flex-shrink-0 mr-3 shadow-sm">
+                          <div className="w-16 h-16 rounded-full overflow-hidden border border-slate-200 flex-shrink-0 mr-3 shadow-sm">
                             <img src={investor.avatar || "/images/default-avatar.png"} alt={investor.name} className="w-full h-full object-cover" />
                           </div>
-                          <span className="text-base font-semibold text-slate-800">{investor.name}</span>
+                          <span className="text-lg font-semibold text-slate-800">{investor.name}</span>
                         </div>
                       </div>
                       <div className="flex flex-col items-end">
@@ -232,7 +232,7 @@ export default function CompetitionTracker({ defaultExpanded = false }: { defaul
                       {userRank}
                     </div>
                     <div className="flex items-center">
-                      <div className="w-14 h-14 rounded-full overflow-hidden border border-slate-200 flex-shrink-0 mr-3 shadow-sm">
+                      <div className="w-18 h-18 rounded-full overflow-hidden border border-slate-200 flex-shrink-0 mr-3 shadow-sm">
                         <img src={userPosition.avatar || "/images/default-avatar.png"} alt={userPosition.name} className="w-full h-full object-cover" />
                       </div>
                       <div className="flex flex-col">
@@ -289,11 +289,11 @@ export default function CompetitionTracker({ defaultExpanded = false }: { defaul
                             {userRank - 1}
                           </div>
                           <div className="flex items-center">
-                            <div className="w-12 h-12 rounded-full overflow-hidden border border-slate-200 shadow-sm flex-shrink-0 mr-3">
+                            <div className="w-16 h-16 rounded-full overflow-hidden border border-slate-200 shadow-sm flex-shrink-0 mr-3">
                               <img src={investor.avatar || "/images/default-avatar.png"} alt={investor.name} className="w-full h-full object-cover" />
                             </div>
                             <div className="flex flex-col">
-                              <span className="text-base font-semibold text-slate-800">{investor.name}</span>
+                              <span className="text-lg font-semibold text-slate-800">{investor.name}</span>
                               <span className="text-xs text-blue-600 mt-0.5">Next position to beat</span>
                             </div>
                           </div>

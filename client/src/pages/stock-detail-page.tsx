@@ -101,32 +101,29 @@ export default function StockDetailPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-black text-white">
-      {/* Header */}
-      <header className="flex items-center justify-between p-4 border-b border-gray-800 bg-gradient-to-r from-gray-900 to-black">
+      {/* Back button placed at the top-left corner */}
+      <div className="absolute top-4 left-4 z-20">
         <button 
           onClick={handleBack}
-          className="text-cyan-400 hover:bg-gray-800 p-2 rounded-full transition-colors"
+          className="text-cyan-400 hover:bg-gray-800 p-2 rounded-full transition-colors bg-black/60 backdrop-blur-sm"
         >
           <ArrowLeft size={20} />
         </button>
-        <div className="flex items-center gap-2">
-          <h1 className="text-xl font-bold text-green-400">Swipefolio</h1>
-          <button
-            onClick={() => setUseRealTimeData(!useRealTimeData)}
-            className={`ml-2 text-xs px-3 py-1 rounded-full transition-colors ${
-              useRealTimeData 
-                ? 'bg-green-800 text-green-200 hover:bg-green-700' 
-                : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-            }`}
-          >
-            {useRealTimeData ? 'Live Data' : 'Simple View'}
-          </button>
-        </div>
-        <button className="text-green-400 hover:bg-gray-800 p-2 rounded-full transition-colors relative">
-          <div className="absolute top-1 right-1 w-2 h-2 bg-green-400 rounded-full"></div>
-          <BellRing size={20} />
+      </div>
+      
+      {/* View toggle button in top-right */}
+      <div className="absolute top-4 right-4 z-20">
+        <button
+          onClick={() => setUseRealTimeData(!useRealTimeData)}
+          className={`text-xs px-3 py-1.5 rounded-full transition-colors backdrop-blur-sm ${
+            useRealTimeData 
+              ? 'bg-green-800/90 text-green-200 hover:bg-green-700' 
+              : 'bg-gray-800/90 text-gray-300 hover:bg-gray-700'
+          }`}
+        >
+          {useRealTimeData ? 'Live Data' : 'Simple View'}
         </button>
-      </header>
+      </div>
 
       {/* Main content */}
       <div className="flex-1 relative">
