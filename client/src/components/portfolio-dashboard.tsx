@@ -136,7 +136,8 @@ export default function PortfolioDashboard() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.2 }}
-      className="portfolio-dashboard rounded-xl p-4 mb-6 border border-slate-200 shadow-md bg-white"
+      className="portfolio-dashboard rounded-xl p-4 mb-6 border border-slate-200 shadow-lg bg-white"
+      style={{ boxShadow: "0 10px 30px -5px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.05)" }}
     >
       <div className="flex items-center justify-between mb-3">
         <h3 className="flex items-center text-slate-800 font-semibold">
@@ -150,7 +151,7 @@ export default function PortfolioDashboard() {
       </div>
 
       {/* Portfolio Summary Card - Updated Format with Projected Value */}
-      <div className="bg-white rounded-xl shadow-md border border-slate-100 mb-4 overflow-hidden">
+      <div className="bg-white rounded-xl shadow-lg border border-slate-200 mb-4 overflow-hidden" style={{ boxShadow: "0 8px 25px -5px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.03)" }}>
         {/* Top Metrics Row - Clear Icon-Text Pairing */}
         <div className="grid grid-cols-2 gap-0">
           {/* Left Side - Projected 1-Year Value */}
@@ -228,13 +229,13 @@ export default function PortfolioDashboard() {
       </div>
 
       {/* Allocation with integrated AI promotion button - using a frosted glass effect and iOS-style progress bar */}
-      <div className="px-4 py-3 mb-3 rounded-xl bg-gradient-to-r from-slate-50/90 to-slate-100/90 backdrop-blur-lg border border-slate-200/80 shadow-sm relative overflow-hidden">
+      <div className="px-4 py-3 mb-3 rounded-xl bg-gradient-to-r from-slate-50/95 to-slate-100/95 backdrop-blur-lg border border-slate-200 shadow-md relative overflow-hidden" style={{ boxShadow: "0 10px 30px -5px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.03)" }}>
         <div className="mb-1.5 flex justify-between items-center">
           <div className="flex items-center">
             <span className="text-sm text-slate-700 font-medium">Portfolio allocation</span>
             <motion.button
-              className="ml-2 px-3 py-0.5 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-xs font-medium text-white shadow-sm flex items-center"
-              whileHover={{ scale: 1.05 }}
+              className="ml-2 px-3 py-0.5 rounded-full bg-indigo-500 text-xs font-medium text-white shadow-sm flex items-center"
+              whileHover={{ scale: 1.05, backgroundColor: "#4F46E5" }}
               whileTap={{ scale: 0.95 }}
               onClick={() => {
                 // Create a custom event to open the AI Assistant

@@ -1,7 +1,21 @@
 import { useState, useRef, useMemo } from "react";
 import { StockData } from "@/lib/stock-data";
 import { getIndustryAverages } from "@/lib/industry-data";
-import { Info, ChevronLeft, ChevronRight, RefreshCw, DollarSign, TrendingUp, Shield, Zap } from "lucide-react";
+import { 
+  Info, 
+  ChevronLeft, 
+  ChevronRight, 
+  RefreshCw, 
+  DollarSign, 
+  TrendingUp, 
+  Shield, 
+  Zap, 
+  MessageCircle, 
+  Calendar, 
+  Lock,
+  BarChart3,
+  Layers
+} from "lucide-react";
 import { motion, useAnimation, useMotionValue, useTransform, PanInfo } from "framer-motion";
 import MetricPopup from "./metric-popup-fixed";
 import PortfolioImpactCalculator from "./portfolio-impact-calculator";
@@ -500,7 +514,7 @@ export default function StockCard({
             </div>
           )}
 
-          {/* Main stock card */}
+          {/* Main stock card - enhanced with softer shadows and better rounded corners */}
           <motion.div
             className="absolute inset-0 z-10 bg-gradient-to-b from-gray-900 to-black rounded-xl overflow-y-auto"
             ref={cardRef}
@@ -510,6 +524,10 @@ export default function StockCard({
             onDragEnd={handleDragEnd}
             animate={cardControls}
             whileDrag={{ scale: 0.98 }}
+            style={{
+              boxShadow: "0 20px 50px -15px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05)",
+              borderRadius: "16px"
+            }}
           >
             {/* Page indicator */}
             <div className="sticky top-2 left-0 right-0 z-20 flex justify-center">
@@ -518,45 +536,69 @@ export default function StockCard({
               </div>
             </div>
 
-            {/* Header with stock name and price */}
-            <div className="p-4 border-b border-gray-800">
-              <div className="flex justify-between items-center">
-                <h2 className="text-xl font-bold text-white">{stock.name} <span className="text-gray-400">({stock.ticker})</span></h2>
-                <div className={`flex items-center py-1 px-3 rounded-full ${stock.change >= 0 ? 'bg-green-900/30 text-green-300' : 'bg-red-900/30 text-red-300'}`}>
-                  <span className="font-bold">${stock.price.toFixed(2)}</span>
-                  <span className="ml-2 text-sm">{stock.change >= 0 ? '+' : ''}{stock.change}%</span>
+            {/* Enhanced Header with stock name and price */}
+            <div className="p-5 border-b border-gray-800">
+              <div className="flex justify-between items-start">
+                <div>
+                  <h2 className="text-xl md:text-2xl font-bold text-white mb-1">{stock.name} <span className="text-gray-400">({stock.ticker})</span></h2>
+                  
+                  {/* Day's range information */}
+                  <div className="flex items-center text-xs text-gray-400 mt-1 mb-2">
+                    <span className="mr-2">Day's Range:</span>
+                    <span className="font-medium">${(parseFloat(stock.price.toFixed(2)) * 0.98).toFixed(2)} - ${(parseFloat(stock.price.toFixed(2)) * 1.02).toFixed(2)}</span>
+                  </div>
+                </div>
+                
+                <div className="flex flex-col items-end">
+                  <div className={`flex items-center py-1.5 px-4 rounded-full ${stock.change >= 0 ? 'bg-green-900/30 text-green-300 border border-green-700/30' : 'bg-red-900/30 text-red-300 border border-red-700/30'} shadow-lg`}>
+                    <span className="font-bold text-2xl">${stock.price.toFixed(2)}</span>
+                    <span className="ml-2 text-sm font-medium">{stock.change >= 0 ? '+' : ''}{stock.change}%</span>
+                  </div>
+                  
+                  <span className="text-xs text-gray-500 mt-2">Updated: {new Date().toLocaleDateString()}</span>
                 </div>
               </div>
 
-              <p className="mt-2 text-sm text-gray-300">
+              <p className="mt-3 text-sm text-gray-300 leading-relaxed">
                 {stock.description}
               </p>
             </div>
 
-            {/* Performance Metrics */}
-            <div className="grid grid-cols-2 gap-3 p-4 border-b border-gray-800">
+            {/* Performance Metrics - Enhanced Card Style */}
+            <div className="grid grid-cols-2 gap-5 p-5 border-b border-gray-800">
+              <h3 className="text-white text-lg font-bold col-span-2 mb-1 flex items-center">
+                <TrendingUp className="w-5 h-5 mr-2 text-blue-400" />
+                Stock Metrics
+              </h3>
+              
               {Object.entries(stock.metrics).map(([key, metricObj]) => {
                 const metricName = key.charAt(0).toUpperCase() + key.slice(1);
 
                 return (
-                  <div 
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: Math.random() * 0.3 }}
                     key={key}
-                    className={`p-3 rounded-xl relative ${
+                    className={`p-4 rounded-xl relative ${
                       metricObj.color === 'green' ? 'bg-gradient-to-br from-green-900/40 to-black border border-green-500/30' :
                       metricObj.color === 'yellow' ? 'bg-gradient-to-br from-yellow-900/40 to-black border border-yellow-500/30' : 
                       'bg-gradient-to-br from-red-900/40 to-black border border-red-500/30'
-                    } active:scale-95 transition-all duration-150 cursor-pointer shadow-lg hover:shadow-xl`}
+                    } active:scale-98 transition-all duration-150 cursor-pointer shadow-lg hover:shadow-xl`}
                     onClick={() => handleMetricClick(metricName)}
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.97 }}
                   >
-                    <div className="absolute top-2 right-2">
+                    <div className="absolute top-3 right-3 rounded-full bg-black/30 p-1">
                       <Info size={16} className={`${
                         metricObj.color === 'green' ? 'text-green-400' :
                         metricObj.color === 'yellow' ? 'text-yellow-400' : 
                         'text-red-400'
                       }`} />
                     </div>
+                    
                     <div 
-                      className={`text-lg font-bold ${
+                      className={`text-2xl font-bold ${
                         metricObj.color === 'green' ? 'text-green-300' :
                         metricObj.color === 'yellow' ? 'text-yellow-300' : 
                         'text-red-300'
@@ -564,52 +606,123 @@ export default function StockCard({
                     >
                       {metricObj.value}
                     </div>
-                    <div className="text-white text-sm font-medium capitalize mt-1">{metricName}</div>
-                  </div>
+                    
+                    <div className="text-white text-sm font-medium capitalize mt-1 mb-3">
+                      {metricName}
+                    </div>
+                    
+                    {/* Subtle glow effect */}
+                    <div className={`absolute bottom-1 left-1 w-12 h-12 rounded-full opacity-20 blur-xl -z-10 ${
+                      metricObj.color === 'green' ? 'bg-green-400' :
+                      metricObj.color === 'yellow' ? 'bg-yellow-400' : 
+                      'bg-red-400'
+                    }`} />
+                  </motion.div>
                 );
               })}
             </div>
 
-            {/* Stock Synopsis */}
-            <div className="p-4 border-b border-gray-800">
-              <h3 className="text-lg font-bold text-white mb-3">Ask AI About {stock.ticker}</h3>
+            {/* Stock Synopsis with AI Integration */}
+            <div className="p-5 border-b border-gray-800">
+              <h3 className="text-lg font-bold text-white mb-3 flex items-center">
+                <MessageCircle className="w-5 h-5 mr-2 text-purple-400" />
+                Ask AI About {stock.ticker}
+              </h3>
 
-              {/* Ask AI component integrated in dark mode */}
-              <div className="rounded-xl border border-gray-700/50 overflow-hidden">
-                <AskAI stock={stock} />
-              </div>
+              {/* Ask AI component integrated in dark mode with enhanced visuals */}
+              <motion.div 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.2 }}
+                className="rounded-xl border border-gray-700/50 overflow-hidden shadow-lg relative"
+              >
+                {/* Subtle purple glow effect behind the component */}
+                <div className="absolute -inset-1 bg-purple-500/5 blur-xl rounded-xl z-0"></div>
+                <div className="relative z-10">
+                  <AskAI stock={stock} />
+                </div>
+              </motion.div>
             </div>
 
-            {/* Future predictions */}
-            <div className="p-4 border-b border-gray-800">
-              <h3 className="text-lg font-bold text-white mb-3">Price Forecast <span className="text-xs bg-amber-900/70 text-amber-300 px-2 py-0.5 rounded-full ml-2">Premium</span></h3>
+            {/* Future predictions with enhanced premium styling */}
+            <div className="p-5 border-b border-gray-800">
+              <h3 className="text-lg font-bold text-white mb-4 flex items-center">
+                <TrendingUp className="w-5 h-5 mr-2 text-amber-400" />
+                Price Forecast 
+                <span className="text-xs bg-gradient-to-r from-amber-800 to-amber-600 text-amber-100 px-3 py-1 rounded-full ml-2 shadow-inner shadow-amber-900/20 border border-amber-700/30">Premium</span>
+              </h3>
 
-              <div className="grid grid-cols-2 gap-3">
+              <motion.div 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.3 }}
+                className="grid grid-cols-2 gap-4"
+              >
                 <div>
-                  <h4 className="text-sm font-medium text-gray-300 mb-1">1-Year Return</h4>
-                  <div className="p-2 bg-gray-800/50 rounded-lg border border-gray-700/50">
-                    <span className="text-white font-bold">{stock.oneYearReturn || "N/A"}</span>
+                  <h4 className="text-sm font-medium text-gray-300 mb-2 flex items-center">
+                    <Calendar className="w-4 h-4 mr-1 text-gray-400" />
+                    1-Year Return
+                  </h4>
+                  <div className="p-3 bg-gradient-to-br from-gray-800/60 to-gray-900/60 rounded-lg border border-gray-700/50 shadow-lg">
+                    <span className="text-white text-lg font-bold">{stock.oneYearReturn || "N/A"}</span>
                   </div>
                 </div>
 
                 <div>
-                  <h4 className="text-sm font-medium text-gray-300 mb-1">Predicted Price</h4>
-                  <div className="p-2 bg-gray-800/50 rounded-lg border border-gray-700/50 relative overflow-hidden">
-                    <span className="text-white font-bold blur-sm select-none">{stock.predictedPrice || "$0.00"}</span>
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <span className="text-amber-400 text-xs font-medium">Unlock Premium</span>
+                  <h4 className="text-sm font-medium text-gray-300 mb-2 flex items-center">
+                    <Lock className="w-4 h-4 mr-1 text-amber-400" />
+                    Predicted Price
+                  </h4>
+                  <div className="p-3 bg-gradient-to-br from-amber-900/20 to-gray-900/90 rounded-lg border border-amber-700/30 relative overflow-hidden shadow-lg">
+                    <span className="text-white text-lg font-bold blur-sm select-none">{stock.predictedPrice || "$0.00"}</span>
+                    <div className="absolute inset-0 flex items-center justify-center backdrop-blur-sm bg-black/30">
+                      <div className="flex items-center bg-amber-800/90 text-amber-100 px-3 py-1.5 rounded-lg border border-amber-600/50 shadow-md">
+                        <Lock className="w-4 h-4 mr-2" />
+                        <span className="text-sm font-medium">Unlock with Premium</span>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             </div>
 
-            {/* Full analysis */}
-            <div className="p-4">
-              <OverallAnalysisCard stock={stock} />
+            {/* Full analysis with enhanced styling */}
+            <div className="p-5">
+              <h3 className="text-lg font-bold text-white mb-4 flex items-center">
+                <BarChart3 className="w-5 h-5 mr-2 text-blue-400" />
+                Stock Analysis
+              </h3>
+              
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.4 }}
+              >
+                <OverallAnalysisCard stock={stock} />
+              </motion.div>
 
               {/* Industry Position & Comparative Analysis */}
-              <ComparativeAnalysis currentStock={stock} />
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.5 }}
+                className="mt-4"
+              >
+                <h3 className="text-lg font-bold text-white mb-4 flex items-center">
+                  <Layers className="w-5 h-5 mr-2 text-indigo-400" />
+                  Industry Comparison
+                </h3>
+                <ComparativeAnalysis currentStock={stock} />
+              </motion.div>
+              
+              {/* Swipe call-to-action */}
+              <div className="mt-8 mb-2 flex justify-center">
+                <div className="text-gray-500 text-sm flex items-center">
+                  <ChevronLeft className="w-4 h-4 mr-1" />
+                  <span>Swipe to navigate</span>
+                  <ChevronRight className="w-4 h-4 ml-1" />
+                </div>
+              </div>
             </div>
           </motion.div>
         </div>

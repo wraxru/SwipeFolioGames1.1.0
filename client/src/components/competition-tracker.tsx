@@ -99,7 +99,7 @@ export default function CompetitionTracker({ defaultExpanded = false }: { defaul
       transition={{ duration: 0.5, delay: 0.3 }}
       className="competition-tracker mb-6"
     >
-      <div className="bg-white/90 backdrop-blur-lg rounded-xl overflow-hidden border border-slate-200/80 shadow-md">
+      <div className="bg-white/95 backdrop-blur-lg rounded-xl overflow-hidden border border-slate-200 shadow-lg" style={{ boxShadow: "0 10px 30px -5px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.05)" }}>
         {/* iOS-style header with subtle gradient */}
         <motion.div 
           onClick={() => setExpanded(!expanded)}
