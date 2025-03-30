@@ -145,15 +145,15 @@ export default function StockDetailPage() {
         {/* Show the actual stock card with pop-up animation */}
         {stocks.length > 0 && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.9, y: 40 }}
+            initial={{ opacity: 0, scale: 0.98, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{
               type: "spring",
-              stiffness: 380,
-              damping: 30,
+              stiffness: 400,
+              damping: 35,
               mass: 1,
-              delay: 0.05,  // Reduced delay for faster start
-              duration: 0.4  // Slightly faster overall duration
+              delay: 0,  // Start immediately after the previous page exits
+              duration: 0.35  // Keep duration relatively short
             }}
             className="flex-1 relative flex flex-col items-start"
           >
