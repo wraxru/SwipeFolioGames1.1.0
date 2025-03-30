@@ -3692,9 +3692,8 @@ export const getIndustryStocks = (industry: string): StockData[] => {
     
     // Map stack explorer industry names to our existing hardcoded stocks
     "Technology": "Tech",
-    "Consumer": "Retail",
-    "Healthcare": "Real Estate", // Temporarily using Tech stocks for Healthcare until we have real healthcare data
-    "ESG": "Tech", // Temporarily using Tech stocks for ESG until we have real ESG data
+    "Healthcare": "Healthcare", // Temporarily using Tech stocks for Healthcare until we have real healthcare data
+    "ESG": "ESG", // Temporarily using Tech stocks for ESG until we have real ESG data
     
     // Map server-defined stack industries to our hardcoded stock industries
     "Investing": "Tech", // Fallback to Tech for now
