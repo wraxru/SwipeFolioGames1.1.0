@@ -11,7 +11,7 @@ interface StackCardProps {
   isDetailPage?: boolean;
 }
 
-export default function StackCard({ stack, onClick, imageUrl, category, isDetailPage = false }: StackCardProps) {
+export default function StackCardAnimated({ stack, onClick, imageUrl, category, isDetailPage = false }: StackCardProps) {
   // State for swipe animation cues
   const [showSwipeCues, setShowSwipeCues] = useState(true);
   const [currentCardIndex, setCurrentCardIndex] = useState(1);
@@ -115,31 +115,53 @@ export default function StackCard({ stack, onClick, imageUrl, category, isDetail
             <span className="text-white">{totalCards}</span>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Card Body - Better spacing and hierarchy */}
-      <div className="px-4 py-3 flex-1 flex flex-col justify-between bg-white">
+      <motion.div 
+        layoutId={`stack-card-body-${stack.id}`}
+        className="px-4 py-3 flex-1 flex flex-col justify-between bg-white"
+      >
         {/* Title with icon - Improved spacing */}
         <div>
           <div className="flex items-start justify-between mb-1">
-            <h3 className="font-bold text-base text-gray-800 leading-tight">{stack.title}</h3>
-            <div className="p-1.5 rounded-full bg-gray-100 border border-gray-200">
+            <motion.h3 
+              layoutId={`stack-card-title-${stack.id}`}
+              className="font-bold text-base text-gray-800 leading-tight"
+            >
+              {stack.title}
+            </motion.h3>
+            <motion.div 
+              layoutId={`stack-card-icon-${stack.id}`}
+              className="p-1.5 rounded-full bg-gray-100 border border-gray-200"
+            >
               <TrendingUp className="w-4 h-4 text-blue-500" />
-            </div>
+            </motion.div>
           </div>
-          <p className="text-xs text-gray-500 mt-1 line-clamp-2">{stack.description}</p>
+          <motion.p 
+            layoutId={`stack-card-description-${stack.id}`}
+            className="text-xs text-gray-500 mt-1 line-clamp-2"
+          >
+            {stack.description}
+          </motion.p>
         </div>
 
-        <div className="mt-3 space-y-3">
+        <motion.div 
+          layoutId={`stack-card-footer-${stack.id}`}
+          className="mt-3 space-y-3"
+        >
           {/* Bottom badges with better spacing */}
           <div className="flex items-center justify-between">
-            <div className={`badge ${
-              stack.difficulty === 'beginner' ? 'bg-green-50 text-green-600 border-green-200' :
-              stack.difficulty === 'intermediate' ? 'bg-yellow-50 text-yellow-600 border-yellow-200' :
-              'bg-red-50 text-red-600 border-red-200'
-            } text-xs px-2 py-1 rounded-full border`}>
+            <motion.div 
+              layoutId={`stack-card-difficulty-${stack.id}`}
+              className={`badge ${
+                stack.difficulty === 'beginner' ? 'bg-green-50 text-green-600 border-green-200' :
+                stack.difficulty === 'intermediate' ? 'bg-yellow-50 text-yellow-600 border-yellow-200' :
+                'bg-red-50 text-red-600 border-red-200'
+              } text-xs px-2 py-1 rounded-full border`}
+            >
               {stack.difficulty || 'intermediate'}
-            </div>
+            </motion.div>
             
             {/* Favorite button */}
             <button 
@@ -168,11 +190,14 @@ export default function StackCard({ stack, onClick, imageUrl, category, isDetail
               />
             ))}
           </div>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
 
       {/* Decorative gradient accent line at bottom */}
-      <div className={`h-1 bg-gradient-to-r ${getGradient()}`} />
+      <motion.div 
+        layoutId={`stack-card-gradient-${stack.id}`}
+        className={`h-1 bg-gradient-to-r ${getGradient()}`} 
+      />
     </motion.div>
   );
 }

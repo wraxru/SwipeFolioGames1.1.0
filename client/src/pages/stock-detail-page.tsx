@@ -7,6 +7,8 @@ import { getQueryFn } from "@/lib/queryClient";
 import { StockData, getIndustryStocks } from "@/lib/stock-data";
 import StockCard from "@/components/ui/stock-card";
 import StackCompletedModal from "@/components/stack-completed-modal";
+import { motion } from "framer-motion";
+import StackCardAnimated from "@/components/ui/stack-card-animated";
 
 export default function StockDetailPage() {
   const { stackId } = useParams<{ stackId: string }>();
@@ -88,43 +90,69 @@ export default function StockDetailPage() {
     <div className="flex flex-col min-h-screen bg-black text-white">
       {/* Header */}
       <header className="flex items-center justify-between p-4 border-b border-gray-800 bg-gradient-to-r from-gray-900 to-black">
-        <button 
+        <motion.button 
           onClick={handleBack}
           className="text-cyan-400 hover:bg-gray-800 p-2 rounded-full transition-colors"
+          whileTap={{ scale: 0.95 }}
         >
           <ArrowLeft size={20} />
-        </button>
+        </motion.button>
         <div className="flex items-center gap-2">
           <h1 className="text-xl font-bold text-green-400">Swipefolio</h1>
-          <button
+          <motion.button
             onClick={() => setUseRealTimeData(!useRealTimeData)}
             className={`ml-2 text-xs px-3 py-1 rounded-full transition-colors ${
               useRealTimeData 
                 ? 'bg-green-800 text-green-200 hover:bg-green-700' 
                 : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
             }`}
+            whileTap={{ scale: 0.95 }}
           >
             {useRealTimeData ? 'Live Data' : 'Simple View'}
-          </button>
+          </motion.button>
         </div>
-        <button className="text-green-400 hover:bg-gray-800 p-2 rounded-full transition-colors relative">
+        <motion.button 
+          className="text-green-400 hover:bg-gray-800 p-2 rounded-full transition-colors relative"
+          whileTap={{ scale: 0.95 }}
+        >
           <div className="absolute top-1 right-1 w-2 h-2 bg-green-400 rounded-full"></div>
           <BellRing size={20} />
-        </button>
+        </motion.button>
       </header>
 
       {/* Main content */}
       <div className="flex-1 relative">
+        {/* First, show the animated card transition */}
+        {stack && (
+          <div className="absolute inset-0 z-10 pointer-events-none">
+            <StackCardAnimated 
+              stack={stack}
+              imageUrl={stack.imageUrl}
+              category={stack.industry}
+              onClick={() => {}} // No operation needed since this is just for the animation
+              isDetailPage={true}
+            />
+          </div>
+        )}
+      
+        {/* Then show the actual stock card on top */}
         {stocks.length > 0 && (
-          <StockCard
-            stock={currentStock}
-            onNext={handleNextStock}
-            onPrevious={handlePreviousStock}
-            currentIndex={currentStockIndex}
-            totalCount={stocks.length}
-            nextStock={nextStock}
-            displayMode={useRealTimeData ? 'realtime' : 'simple'}
-          />
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+            className="relative z-20"
+          >
+            <StockCard
+              stock={currentStock}
+              onNext={handleNextStock}
+              onPrevious={handlePreviousStock}
+              currentIndex={currentStockIndex}
+              totalCount={stocks.length}
+              nextStock={nextStock}
+              displayMode={useRealTimeData ? 'realtime' : 'simple'}
+            />
+          </motion.div>
         )}
       </div>
 

@@ -1,5 +1,5 @@
 import { useLocation } from "wouter";
-import StackCard from "./ui/stack-card";
+import StackCardAnimated from "./ui/stack-card-animated";
 import type { Stack } from "@shared/schema";
 
 interface StacksExplorerProps {
@@ -120,7 +120,7 @@ export default function StacksExplorer({ stacks }: StacksExplorerProps) {
   return (
     <div className="grid-cols-stacks">
       {enhancedStacks.map((stack) => (
-        <StackCard
+        <StackCardAnimated
           key={stack.id}
           stack={stack}
           onClick={handleStackClick}
