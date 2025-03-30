@@ -1,6 +1,7 @@
 import { useLocation } from "wouter";
 import StackCardAnimated from "./ui/stack-card-animated";
 import type { Stack } from "@shared/schema";
+import { useState } from "react";
 
 interface StacksExplorerProps {
   stacks: Stack[];
@@ -8,9 +9,16 @@ interface StacksExplorerProps {
 
 export default function StacksExplorer({ stacks }: StacksExplorerProps) {
   const [_, setLocation] = useLocation();
+  const [clickedStackId, setClickedStackId] = useState<number | null>(null);
 
   const handleStackClick = (stackId: number) => {
-    setLocation(`/stock/${stackId}`);
+    // Mark which card was clicked before navigating
+    setClickedStackId(stackId);
+    
+    // Short delay before navigation to allow for card animation
+    setTimeout(() => {
+      setLocation(`/stock/${stackId}`);
+    }, 200); // Match this with exit animation duration
   };
 
   // Industry names and images with vibrant mobile-friendly imagery
@@ -126,6 +134,7 @@ export default function StacksExplorer({ stacks }: StacksExplorerProps) {
           onClick={handleStackClick}
           imageUrl={stack.imageUrl}
           category={stack.industry}
+          isClicked={clickedStackId === stack.id}
         />
       ))}
     </div>

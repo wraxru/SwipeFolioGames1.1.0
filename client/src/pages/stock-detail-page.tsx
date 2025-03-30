@@ -108,8 +108,17 @@ export default function StockDetailPage() {
       variants={pageVariants}
     >
       {/* Header */}
-      <header className="flex items-center justify-between p-4 border-b border-gray-800 bg-gradient-to-r from-gray-900 to-black relative">
-
+      <motion.header 
+        className="flex items-center justify-between p-4 border-b border-gray-800 bg-gradient-to-r from-gray-900 to-black relative"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ 
+          type: "spring", 
+          stiffness: 300, 
+          damping: 30,
+          delay: 0.1 
+        }}
+      >
         <motion.button 
           onClick={handleBack}
           className="text-cyan-400 hover:bg-gray-800 p-2 rounded-full transition-colors relative z-20"
@@ -117,7 +126,12 @@ export default function StockDetailPage() {
         >
           <ArrowLeft size={20} />
         </motion.button>
-        <div className="flex items-center gap-2 relative z-20">
+        <motion.div 
+          className="flex items-center gap-2 relative z-20"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.2, duration: 0.3 }}
+        >
           <h1 className="text-xl font-bold text-green-400">Swipefolio</h1>
           <motion.button
             onClick={() => setUseRealTimeData(!useRealTimeData)}
@@ -130,18 +144,38 @@ export default function StockDetailPage() {
           >
             {useRealTimeData ? 'Live Data' : 'Simple View'}
           </motion.button>
-        </div>
+        </motion.div>
         <motion.button 
           className="text-green-400 hover:bg-gray-800 p-2 rounded-full transition-colors relative z-20"
           whileTap={{ scale: 0.95 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
         >
           <div className="absolute top-1 right-1 w-2 h-2 bg-green-400 rounded-full"></div>
           <BellRing size={20} />
         </motion.button>
-      </header>
+      </motion.header>
 
       {/* Main content */}
       <div className="flex-1 relative">
+        {/* Show the initial category card before transitioning */}
+        <motion.div
+          className="absolute inset-0 z-0 flex items-center justify-center px-4 py-8"
+          initial={{ opacity: 1 }}
+          animate={{ opacity: 0 }}
+          transition={{ duration: 0.3, delay: 0.2 }}
+        >
+          <div className="w-full max-w-md mx-auto">
+            <StackCardAnimated 
+              stack={stack}
+              onClick={() => {}}
+              category={stack.industry}
+              isDetailPage={true}
+            />
+          </div>
+        </motion.div>
+        
         {/* Show the actual stock card with pop-up animation */}
         {stocks.length > 0 && (
           <motion.div
@@ -152,10 +186,10 @@ export default function StockDetailPage() {
               stiffness: 400,
               damping: 35,
               mass: 1,
-              delay: 0,  // Start immediately after the previous page exits
-              duration: 0.35  // Keep duration relatively short
+              delay: 0.25,  // Delay slightly to allow the card animation to finish
+              duration: 0.35
             }}
-            className="flex-1 relative flex flex-col items-start"
+            className="flex-1 relative flex flex-col items-start z-10"
           >
             <StockCard
               stock={currentStock}
@@ -171,20 +205,32 @@ export default function StockDetailPage() {
       </div>
 
       {/* Modern Buy/Skip Buttons */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black to-transparent z-10">
+      <motion.div 
+        className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black to-transparent z-10"
+        initial={{ opacity: 0, y: 50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ 
+          delay: 0.4, 
+          type: "spring", 
+          stiffness: 400, 
+          damping: 35 
+        }}
+      >
         <div className="flex justify-between gap-4 max-w-md mx-auto">
-          <button
+          <motion.button
             onClick={handlePreviousStock}
             className="w-1/2 py-3 rounded-xl bg-gradient-to-r from-red-600 to-red-700 text-white font-medium shadow-lg transition transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             disabled={currentStockIndex === 0}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <line x1="5" y1="12" x2="19" y2="12"></line>
               <polyline points="12 5 5 12 12 19"></polyline>
             </svg>
             Skip
-          </button>
-          <button
+          </motion.button>
+          <motion.button
             onClick={() => {
               // Open portfolio impact calculator
               const stockCardElement = document.querySelector('[data-testid="stock-card"]');
@@ -197,7 +243,9 @@ export default function StockDetailPage() {
                 handleNextStock();
               }
             }}
-            className="w-1/2 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-green-600 text-white font-medium shadow-lg transition transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2"
+            className="w-1/2 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-green-600 text-white font-medium shadow-lg flex items-center justify-center gap-2"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h6"></path>
@@ -206,9 +254,9 @@ export default function StockDetailPage() {
               <circle cx="17" cy="7" r="3"></circle>
             </svg>
             Buy
-          </button>
+          </motion.button>
         </div>
-      </div>
+      </motion.div>
 
       {/* Completed modal */}
       <StackCompletedModal

@@ -1,6 +1,6 @@
 import { TrendingUp, BarChart2, Star, Clock, ChevronLeft, ChevronRight, Heart } from "lucide-react";
 import type { Stack } from "@shared/schema";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 
 interface StackCardProps {
@@ -9,9 +9,17 @@ interface StackCardProps {
   imageUrl?: string;
   category?: string;
   isDetailPage?: boolean;
+  isClicked?: boolean;
 }
 
-export default function StackCardAnimated({ stack, onClick, imageUrl, category, isDetailPage = false }: StackCardProps) {
+export default function StackCardAnimated({ 
+  stack, 
+  onClick, 
+  imageUrl, 
+  category, 
+  isDetailPage = false,
+  isClicked = false 
+}: StackCardProps) {
   // State for swipe animation cues
   const [showSwipeCues, setShowSwipeCues] = useState(true);
   const [currentCardIndex, setCurrentCardIndex] = useState(1);
@@ -47,15 +55,24 @@ export default function StackCardAnimated({ stack, onClick, imageUrl, category, 
 
   return (
     <motion.div 
-      className="stack-card rounded-xl overflow-hidden flex flex-col shadow-lg border border-gray-200 bg-white h-[340px]"
+      className={`stack-card rounded-xl overflow-hidden flex flex-col shadow-lg border border-gray-200 bg-white h-[340px] ${isClicked ? 'z-10' : ''}`}
       onClick={() => onClick(stack.id)}
       whileHover={!isDetailPage ? { y: -5, transition: { duration: 0.2 } } : undefined}
       whileTap={!isDetailPage ? { scale: 0.98 } : undefined}
-      exit={{ 
+      initial={isDetailPage ? { scale: 1 } : undefined}
+      // Only apply exit animation to the clicked card
+      animate={isClicked ? { 
+        zIndex: 50, // Bring clicked card to front
+        transition: { duration: 0.1 }
+      } : isDetailPage ? {
+        scale: 1,
+        opacity: 1
+      } : undefined}
+      exit={isClicked ? { 
         opacity: 0, 
         scale: 0.95,  // Scale DOWN slightly on exit
         transition: { duration: 0.2 } // Make exit fast
-      }}
+      } : { opacity: isDetailPage ? 0 : 1 }} // Keep other cards visible unless in detail page
     >
       {/* Card Header with Image - Taller aspect ratio */}
       <motion.div 
