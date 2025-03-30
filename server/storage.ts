@@ -86,15 +86,27 @@ export class MemStorage implements IStorage {
   private initSampleData() {
     // Tech Industry stack
     const techStack: Omit<Stack, "id"> = {
-      title: "Tech Industry 101",
-      description: "Learn the basics of tech financials",
+      title: "Tech Giants",
+      description: "Explore leading technology companies and their market impact",
       cardCount: 10,
       estimatedMinutes: 15,
-      industry: "Technology",
-      iconName: "computer-line",
-      color: "from-primary-400 to-primary-600",
-      difficulty: "beginner",
+      industry: "Tech",
+      iconName: "cpu-line",
+      color: "from-blue-600 to-blue-400",
+      difficulty: "intermediate",
       rating: 48,
+    };
+
+    const retailStack: Omit<Stack, "id"> = {
+      title: "Consumer & Retail",
+      description: "Analyze major retail and consumer goods companies",
+      cardCount: 8,
+      estimatedMinutes: 12,
+      industry: "Retail",
+      iconName: "shopping-bag-line",
+      color: "from-orange-500 to-orange-400",
+      difficulty: "beginner",
+      rating: 45,
     };
     
     // Stock Investing stack
@@ -162,6 +174,7 @@ export class MemStorage implements IStorage {
     };
 
     this.createStack(techStack);
+    this.createStack(retailStack);
     this.createStack(stockStack);
     this.createStack(realEstateStack);
     this.createStack(cryptoStack);
