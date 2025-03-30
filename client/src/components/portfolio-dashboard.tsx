@@ -227,10 +227,28 @@ export default function PortfolioDashboard() {
         </div>
       </div>
 
-      {/* Allocation - using a frosted glass effect and iOS-style progress bar */}
-      <div className="px-4 py-3 mb-3 rounded-xl bg-gradient-to-r from-slate-50/90 to-slate-100/90 backdrop-blur-lg border border-slate-200/80 shadow-sm">
+      {/* Allocation with integrated AI promotion button - using a frosted glass effect and iOS-style progress bar */}
+      <div className="px-4 py-3 mb-3 rounded-xl bg-gradient-to-r from-slate-50/90 to-slate-100/90 backdrop-blur-lg border border-slate-200/80 shadow-sm relative overflow-hidden">
         <div className="mb-1.5 flex justify-between items-center">
-          <span className="text-sm text-slate-700 font-medium">Portfolio allocation</span>
+          <div className="flex items-center">
+            <span className="text-sm text-slate-700 font-medium">Portfolio allocation</span>
+            <motion.button
+              className="ml-2 px-3 py-0.5 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-xs font-medium text-white shadow-sm flex items-center"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => {
+                // Create a custom event to open the AI Assistant
+                const event = new CustomEvent('openAIAssistant');
+                window.dispatchEvent(event);
+              }}
+              style={{
+                boxShadow: "0 2px 8px -2px rgba(99, 102, 241, 0.3)"
+              }}
+            >
+              <Bot className="w-3.5 h-3.5 mr-1 text-white" />
+              <span>Improve with AI</span>
+            </motion.button>
+          </div>
           <span className="text-sm font-medium text-indigo-600">{allocationPercentage}%</span>
         </div>
 
@@ -238,60 +256,13 @@ export default function PortfolioDashboard() {
           value={allocationPercentage}
           className="h-2.5 mb-0.5"
         />
+        
+        {/* Subtle glow effects behind the progress bar */}
+        <div className="absolute bottom-0 left-1/4 w-16 h-16 rounded-full bg-indigo-200/10 blur-xl -z-10"></div>
+        <div className="absolute bottom-0 right-1/4 w-12 h-12 rounded-full bg-purple-200/10 blur-xl -z-10"></div>
       </div>
       
-      {/* iOS-Style AI Assistant Promotional Widget */}
-      <motion.div 
-        className="mt-3.5 mb-1 relative overflow-hidden"
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3, type: "spring", stiffness: 300, damping: 15 }}
-      >
-        {/* Light pastel gradient background with frosted glass effect */}
-        <motion.div
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          className="relative py-3.5 px-4 rounded-xl flex items-center justify-between cursor-pointer"
-          style={{
-            background: "linear-gradient(135deg, #D0EFFF 0%, #E1BEE7 100%)",
-            boxShadow: "0 8px 20px -5px rgba(0,0,0,0.1)",
-          }}
-          onClick={() => {
-            // Create a custom event to open the AI Assistant
-            const event = new CustomEvent('openAIAssistant');
-            window.dispatchEvent(event);
-          }}
-        >
-          {/* Inner elements have slight glow/shadow for depth */}
-          <div className="flex items-center">
-            <div className="mr-3 bg-white/30 w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-sm shadow-sm">
-              <Bot className="w-5 h-5 text-indigo-600" />
-            </div>
-            <div>
-              <h4 className="font-semibold text-sm text-slate-800">Unlock Your Portfolio's Potential</h4>
-              <p className="text-xs text-slate-600">Get personalized AI insights today</p>
-            </div>
-          </div>
-          
-          {/* Call-to-action with subtle glow */}
-          <div className="flex items-center">
-            <motion.div 
-              className="px-3 py-1.5 bg-indigo-500 text-white rounded-full text-xs font-medium shadow-sm"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              style={{
-                boxShadow: "0 0 10px rgba(99, 102, 241, 0.3)"
-              }}
-            >
-              Try Now
-            </motion.div>
-          </div>
-          
-          {/* Subtle background glow effect */}
-          <div className="absolute right-2 bottom-2 w-16 h-16 rounded-full bg-purple-300/20 blur-xl -z-10"></div>
-          <div className="absolute left-2 top-2 w-10 h-10 rounded-full bg-blue-300/20 blur-xl -z-10"></div>
-        </motion.div>
-      </motion.div>
+
     </motion.div>
   );
 }
