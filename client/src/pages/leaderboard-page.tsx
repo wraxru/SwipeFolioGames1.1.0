@@ -239,22 +239,10 @@ const LeaderboardPage: React.FC = () => {
         </div>
       </div>
       
-      {/* Search */}
-      <div className="px-4 mt-6">
-        <div className="relative">
-          <input
-            type="text"
-            placeholder="Search investors..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-white border border-slate-200 rounded-xl py-3 pl-10 pr-4 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
-        </div>
-      </div>
+      {/* Removed search bar to bring leaderboard closer to top */}
       
       {/* Metrics Header */}
-      <div className="px-4 mt-6">
+      <div className="px-4 mt-3">
         {activeTab === 'friends' && friendsList.length === 0 ? (
           <motion.div 
             className="bg-white rounded-xl border border-slate-200 shadow-sm p-8 flex flex-col items-center justify-center"
@@ -339,12 +327,12 @@ const LeaderboardPage: React.FC = () => {
                       )}
                     </div>
                     <div className="flex items-center overflow-hidden">
-                      <div className="w-7 h-7 rounded-full overflow-hidden border border-slate-200 flex-shrink-0 mr-1">
+                      <div className="w-9 h-9 rounded-full overflow-hidden border border-slate-200 flex-shrink-0 mr-2 shadow-sm">
                         <img src={user.avatar || "/images/default-avatar.png"} alt={user.name} className="w-full h-full object-cover" />
                       </div>
                       <div className="min-w-0">
                         <div className="flex items-center">
-                          <p className="font-medium text-xs truncate">{user.username}</p>
+                          <p className="font-medium text-sm truncate">{user.username}</p>
                           {user.isVerified && (
                             <div className="ml-1 bg-blue-500 rounded-full p-0.5 flex-shrink-0">
                               <Check className="w-2 h-2 text-white" />

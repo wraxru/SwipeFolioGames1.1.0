@@ -1,8 +1,9 @@
 import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowUp, ArrowDown, Wallet, TrendingUp, Clock, DollarSign, PieChart, Bot } from 'lucide-react';
+import { ArrowUp, ArrowDown, Wallet, TrendingUp, Clock, DollarSign, PieChart } from 'lucide-react';
 import { Progress } from './ui/progress';
 import { usePortfolio, PortfolioHolding } from '@/contexts/portfolio-context';
+import { Link } from "wouter";
 
 // Helper component for metrics with animated progress
 function MetricItem({ label, value, color }: { label: string; value: number; color: string }) {
@@ -233,22 +234,19 @@ export default function PortfolioDashboard() {
         <div className="mb-1.5 flex justify-between items-center">
           <div className="flex items-center">
             <span className="text-sm text-slate-700 font-medium">Portfolio allocation</span>
-            <motion.button
-              className="ml-2 px-3 py-0.5 rounded-full bg-indigo-500 text-xs font-medium text-white shadow-sm flex items-center"
-              whileHover={{ scale: 1.05, backgroundColor: "#4F46E5" }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => {
-                // Create a custom event to open the AI Assistant
-                const event = new CustomEvent('openAIAssistant');
-                window.dispatchEvent(event);
-              }}
-              style={{
-                boxShadow: "0 2px 8px -2px rgba(99, 102, 241, 0.3)"
-              }}
-            >
-              <Bot className="w-3.5 h-3.5 mr-1 text-white" />
-              <span>Improve with AI</span>
-            </motion.button>
+            <Link href="/portfolio/metrics">
+              <motion.button
+                className="ml-2 px-3 py-0.5 rounded-full bg-indigo-500 text-xs font-medium text-white shadow-sm flex items-center"
+                whileHover={{ scale: 1.05, backgroundColor: "#4F46E5" }}
+                whileTap={{ scale: 0.95 }}
+                style={{
+                  boxShadow: "0 2px 8px -2px rgba(99, 102, 241, 0.3)"
+                }}
+              >
+                <TrendingUp className="w-3.5 h-3.5 mr-1 text-white" />
+                <span>Boost Your Portfolio</span>
+              </motion.button>
+            </Link>
           </div>
           <span className="text-sm font-medium text-indigo-600">{allocationPercentage}%</span>
         </div>
