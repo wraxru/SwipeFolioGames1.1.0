@@ -82,11 +82,12 @@ export default function HomePage() {
             
             <motion.a 
               href="/portfolio"
-              className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-md text-xs font-medium shadow-sm"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-2.5 py-1 rounded-md text-xs font-medium shadow-sm flex items-center"
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
             >
-              Try AI
+              <span className="mr-1">✨</span>
+              <span>Try</span>
             </motion.a>
           </motion.div>
         </AnimatedContainer>

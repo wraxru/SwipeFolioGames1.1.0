@@ -19,6 +19,8 @@ export const industryAverages: Record<string, {
     threeMonthReturn: number;
     relativePerformance: number;
     rsi: number;
+    oneYearReturnAvg: number;
+    
   };
 }> = {
   "Tech": {
@@ -40,51 +42,54 @@ export const industryAverages: Record<string, {
     momentum: {
       threeMonthReturn: -13.62,
       relativePerformance: 19.0,
-      rsi: 39.5
+      rsi: 39.5,
+      oneYearReturnAvg: 18
     }
   },
   "ESG": {
     performance: {
-      revenueGrowth: 8,
-      profitMargin: 18,
-      returnOnCapital: 12
+      revenueGrowth: 7.0,
+      profitMargin: 5.0,
+      returnOnCapital: 4.0
     },
     stability: {
-      volatility: 0.9,
-      beta: 0.9,
+      volatility: 47,
+      beta: 1.5,
       dividendConsistency: "Medium"
     },
     value: {
-      peRatio: 18.0,
-      pbRatio: 2.8,
-      dividendYield: 1.5
+      peRatio: 24.0,
+      pbRatio: 3.0,
+      dividendYield: 2.0
     },
     momentum: {
-      threeMonthReturn: 3.8,
-      relativePerformance: 1.2,
-      rsi: 53
+      threeMonthReturn: -12.0,
+      relativePerformance: -10.0,
+      rsi: 45,
+      oneYearReturnAvg: 15
     }
   },
   "Healthcare": {
     performance: {
-      revenueGrowth: 15,
-      profitMargin: 20,
-      returnOnCapital: 13
+      revenueGrowth: 8.0,
+      profitMargin: 14.0,
+      returnOnCapital: 10.0
     },
     stability: {
-      volatility: 1.2,
-      beta: 1.15,
-      dividendConsistency: "Low"
+      volatility: 24.0,
+      beta: 1.0,
+      dividendConsistency: "Medium"
     },
     value: {
-      peRatio: 25.0,
+      peRatio: 37.0,
       pbRatio: 4.0,
-      dividendYield: 0.6
+      dividendYield: 1.5
     },
     momentum: {
-      threeMonthReturn: 5.0,
-      relativePerformance: 2.0,
-      rsi: 58
+      threeMonthReturn: 4.0,
+      relativePerformance: 5.0,
+      rsi: 44,
+      oneYearReturnAvg: 10
     }
   },
   "Financial Planning": {
@@ -106,7 +111,8 @@ export const industryAverages: Record<string, {
     momentum: {
       threeMonthReturn: 3.5,
       relativePerformance: 1.0,
-      rsi: 51
+      rsi: 51,
+      oneYearReturnAvg: 10
     }
   },
   "Consumer": {
@@ -128,7 +134,8 @@ export const industryAverages: Record<string, {
     momentum: {
       threeMonthReturn: 3.0,
       relativePerformance: 1.0,
-      rsi: 54
+      rsi: 54,
+      oneYearReturnAvg: 11
     }
   },
   "Real Estate": {
@@ -150,7 +157,8 @@ export const industryAverages: Record<string, {
     momentum: {
       threeMonthReturn: 2.0,
       relativePerformance: -5,
-      rsi: 49
+      rsi: 49,
+      oneYearReturnAvg: 10.6
     }
   },
   // Default values for other categories
@@ -173,7 +181,8 @@ export const industryAverages: Record<string, {
     momentum: {
       threeMonthReturn: 3.5,
       relativePerformance: 1.2,
-      rsi: 52
+      rsi: 52,
+      oneYearReturnAvg: 9
     }
   }
 };
@@ -184,173 +193,11 @@ export const getIndustryAverages = (industry: string) => {
 };
 
 // Helper functions to return ratings based on industry averages
-import { PerformanceDetails, StabilityDetails, ValueDetails, MomentumDetails } from './stock-data';
+import { PerformanceDetails, StabilityDetails, ValueDetails, MomentumDetails, StockData } from './stock-data';
+import { getAdvancedMetricScore } from './advanced-metric-scoring';
 
-// Define the functions locally for now
-// These functions are responsible for calculating the scores and comparison indicators for metrics
-function calculateCategoryScore(metricName: string, metrics: any, industryAvgs: any): {
-  score: number;  // Average score between 0-2
-  rating: string; // "Good", "Average", "Poor"
-  color: string;  // "green", "yellow", "red"
-} {
-  let metricScores: number[] = [];
-  
-  switch (metricName) {
-    case 'performance': {
-      // Revenue Growth Score
-      if (metrics.revenueGrowth > industryAvgs.revenueGrowth * 1.1) {
-        metricScores.push(2); // Good
-      } else if (metrics.revenueGrowth < industryAvgs.revenueGrowth * 0.9) {
-        metricScores.push(0); // Poor
-      } else {
-        metricScores.push(1); // Average
-      }
-      
-      // Profit Margin Score
-      if (metrics.profitMargin > industryAvgs.profitMargin * 1.1) {
-        metricScores.push(2); // Good
-      } else if (metrics.profitMargin < industryAvgs.profitMargin * 0.9) {
-        metricScores.push(0); // Poor
-      } else {
-        metricScores.push(1); // Average
-      }
-      
-      // Return on Capital Score
-      if (metrics.returnOnCapital > industryAvgs.returnOnCapital * 1.1) {
-        metricScores.push(2); // Good
-      } else if (metrics.returnOnCapital < industryAvgs.returnOnCapital * 0.9) {
-        metricScores.push(0); // Poor
-      } else {
-        metricScores.push(1); // Average
-      }
-      break;
-    }
-    
-    case 'stability': {
-      // Volatility Score (lower is better)
-      if (metrics.volatility < industryAvgs.volatility * 0.9) {
-        metricScores.push(2); // Good
-      } else if (metrics.volatility > industryAvgs.volatility * 1.1) {
-        metricScores.push(0); // Poor
-      } else {
-        metricScores.push(1); // Average
-      }
-      
-      // Beta Score (closer to 1 is better)
-      const betaDiff = Math.abs(metrics.beta - 1);
-      const avgBetaDiff = Math.abs(industryAvgs.beta - 1);
-      if (betaDiff < avgBetaDiff * 0.9) {
-        metricScores.push(2); // Good
-      } else if (betaDiff > avgBetaDiff * 1.1) {
-        metricScores.push(0); // Poor
-      } else {
-        metricScores.push(1); // Average
-      }
-      
-      // Dividend Consistency Score
-      if (metrics.dividendConsistency === "Good") {
-        metricScores.push(2); // Good
-      } else if (metrics.dividendConsistency === "Medium") {
-        metricScores.push(1); // Average
-      } else {
-        metricScores.push(0); // Poor (Low or N/A)
-      }
-      break;
-    }
-    
-    case 'value': {
-      // PE Ratio Score (lower is better)
-      if (metrics.peRatio < industryAvgs.peRatio * 0.9) {
-        metricScores.push(2); // Good
-      } else if (metrics.peRatio > industryAvgs.peRatio * 1.1) {
-        metricScores.push(0); // Poor
-      } else {
-        metricScores.push(1); // Average
-      }
-      
-      // PB Ratio Score (lower is better)
-      if (metrics.pbRatio < industryAvgs.pbRatio * 0.9) {
-        metricScores.push(2); // Good
-      } else if (metrics.pbRatio > industryAvgs.pbRatio * 1.1) {
-        metricScores.push(0); // Poor
-      } else {
-        metricScores.push(1); // Average
-      }
-      
-      // Dividend Yield Score (higher is better)
-      const divYield = typeof metrics.dividendYield === 'string' 
-        ? parseFloat(metrics.dividendYield.replace('%', '')) 
-        : metrics.dividendYield;
-      
-      if (divYield > industryAvgs.dividendYield * 1.1) {
-        metricScores.push(2); // Good
-      } else if (divYield < industryAvgs.dividendYield * 0.9) {
-        metricScores.push(0); // Poor
-      } else {
-        metricScores.push(1); // Average
-      }
-      break;
-    }
-    
-    case 'momentum': {
-      // Three Month Return Score
-      if (metrics.threeMonthReturn > industryAvgs.threeMonthReturn * 1.1) {
-        metricScores.push(2); // Good
-      } else if (metrics.threeMonthReturn < industryAvgs.threeMonthReturn * 0.9) {
-        metricScores.push(0); // Poor
-      } else {
-        metricScores.push(1); // Average
-      }
-      
-      // Relative Performance Score
-      if (metrics.relativePerformance > industryAvgs.relativePerformance * 1.1) {
-        metricScores.push(2); // Good
-      } else if (metrics.relativePerformance < industryAvgs.relativePerformance * 0.9) {
-        metricScores.push(0); // Poor
-      } else {
-        metricScores.push(1); // Average
-      }
-      
-      // RSI Score (optimal range 50-70)
-      if (metrics.rsi >= 50 && metrics.rsi <= 70) {
-        metricScores.push(2); // Good
-      } else if (metrics.rsi < 40 || metrics.rsi > 75) {
-        metricScores.push(0); // Poor
-      } else {
-        metricScores.push(1); // Average
-      }
-      break;
-    }
-    
-    default:
-      // Default to all average if unknown metric type
-      metricScores = [1, 1, 1];
-  }
-  
-  // Calculate average score
-  const avgScore = metricScores.reduce((sum, score) => sum + score, 0) / metricScores.length;
-  
-  // Determine rating based on average score
-  let rating: string;
-  let color: string;
-  
-  if (avgScore >= 1.6) {
-    rating = "Good";
-    color = "green";
-  } else if (avgScore >= 0.8) {
-    rating = "Average";
-    color = "yellow";
-  } else {
-    rating = "Poor";
-    color = "red";
-  }
-  
-  return {
-    score: avgScore,
-    rating,
-    color
-  };
-}
+// These utility functions are responsible for providing comparison indicators
+// Note: The actual metric scoring now happens in advanced-metric-scoring.ts
 
 // Get comparison status (better, similar, worse)
 function getComparisonStatus(value: number | string, industry: number | string, 
@@ -398,14 +245,92 @@ function getComparisonSymbol(value: number | string, industry: number | string,
   }
 }
 
+// This function converts the advanced 0-100 score to the category rating used in the UI
+function convertScoreToRating(advancedScore: number): {
+  score: number;  // Converted to 0-2 scale for backward compatibility
+  rating: string; // "Good", "Average", "Poor"
+  color: string;  // "green", "yellow", "red"
+} {
+  // Convert the 0-100 advanced score to a 0-2 score for backward compatibility
+  const normalizedScore = (advancedScore / 100) * 2;
+  
+  // Determine rating based on the advanced score
+  let rating: string;
+  let color: string;
+  
+  if (advancedScore >= 70) {
+    rating = "Good";
+    color = "green";
+  } else if (advancedScore >= 40) {
+    rating = "Average";
+    color = "yellow";
+  } else {
+    rating = "Poor";
+    color = "red";
+  }
+  
+  return {
+    score: normalizedScore,
+    rating,
+    color
+  };
+}
+
 // Helper to generate metric ratings based on values compared to industry averages
 export const getMetricRating = (
   metricName: 'performance' | 'stability' | 'value' | 'momentum',
   metrics: PerformanceDetails | StabilityDetails | ValueDetails | MomentumDetails,
   industryAvgs: any
 ): { value: string; color: string; explanation: string } => {
-  // Use the new scoring system to calculate category score
-  const categoryScore = calculateCategoryScore(metricName, metrics, industryAvgs);
+  // Create a temporary stock object to use with the advanced scoring system
+  const dummyStock: StockData = {
+    name: 'Temporary',
+    ticker: 'TEMP',
+    price: 100,
+    industry: 'Default',
+    change: 0,
+    rating: 50,
+    description: '',
+    chartData: [],
+    overallAnalysis: '',
+    metrics: {
+      performance: {
+        value: 'Fair',
+        color: 'yellow',
+        details: metrics as PerformanceDetails,
+        explanation: ''
+      },
+      stability: {
+        value: 'Fair',
+        color: 'yellow',
+        details: metrics as StabilityDetails,
+        explanation: ''
+      },
+      value: {
+        value: 'Fair',
+        color: 'yellow',
+        details: metrics as ValueDetails,
+        explanation: ''
+      },
+      momentum: {
+        value: 'Fair',
+        color: 'yellow',
+        details: metrics as MomentumDetails,
+        explanation: ''
+      }
+    },
+    synopsis: {
+      price: '',
+      company: '',
+      role: ''
+    }
+  };
+  
+  // Use the advanced scoring system to calculate score (0-100)
+  const advancedScore = getAdvancedMetricScore(dummyStock, metricName);
+  
+  // Convert score to traditional rating format
+  const categoryScore = convertScoreToRating(advancedScore);
   
   let explanation = "";
   

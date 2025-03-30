@@ -254,7 +254,7 @@ export default function PortfolioImpactCalculator({
                       {/* Display Stock Rating */}
                       <div className="flex items-center mr-3">
                         <span className="px-2 py-0.5 bg-blue-100 text-blue-800 rounded-md text-xs font-bold">
-                          Stock Rating: {(stock as any).qualityScore || impact.newMetrics.qualityScore.toFixed(0)}
+                          Rating: {(stock as any).qualityScore || impact.newMetrics.qualityScore.toFixed(0)}/100
                         </span>
                       </div>
                       <span className="text-sm text-slate-600 flex items-center">
@@ -519,9 +519,10 @@ export default function PortfolioImpactCalculator({
                   <div className="mt-6">
                     <div className="flex justify-between items-center mb-2">
                       <label className="text-sm font-medium text-slate-700">Invest Amount</label>
-                      <div className="text-sm font-semibold text-emerald-600 px-2 py-0.5 bg-emerald-50 border border-emerald-100 rounded-md flex items-center">
-                        <DollarSign className="h-3 w-3 mr-1" />
-                        Max available: {formatCurrency(maxInvestment)}
+                      <div className="text-sm font-semibold text-emerald-600 px-2.5 py-1 bg-emerald-50 border border-emerald-100 rounded-md flex items-center shadow-sm">
+                        <DollarSign className="h-3.5 w-3.5 mr-1.5" />
+                        <span className="mr-1">Available:</span>
+                        <span className="text-emerald-700">{formatCurrency(maxInvestment)}</span>
                       </div>
                     </div>
                     

@@ -18,7 +18,8 @@ export const marketAverages = {
   momentum: {
     threeMonthReturn: 3, // 3%
     relativePerformance: 0, // 0 (market average by definition)
-    rsi: 50 // RSI of 50 (neutral by definition)
+    rsi: 50, // RSI of 50 (neutral by definition)
+    oneYearReturnAvg: 10
   }
 };
 

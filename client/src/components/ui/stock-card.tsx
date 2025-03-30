@@ -8,7 +8,7 @@ import PortfolioImpactCalculator from "./portfolio-impact-calculator";
 import OverallAnalysisCard from "@/components/overall-analysis-card";
 import { Skeleton } from "@/components/ui/skeleton";
 import ComparativeAnalysis from "@/components/comparative-analysis";
-// AskAI component removed
+import AskAI from "./ask-ai";
 
 interface StockCardProps {
   stock: StockData;
@@ -572,29 +572,11 @@ export default function StockCard({
 
             {/* Stock Synopsis */}
             <div className="p-4 border-b border-gray-800">
-              <h3 className="text-lg font-bold text-white mb-3">Stock Synopsis</h3>
+              <h3 className="text-lg font-bold text-white mb-3">Ask AI About {stock.ticker}</h3>
 
-              <div className="bg-gray-800/50 rounded-xl border border-gray-700/50 overflow-hidden">
-                <div className="border-b border-gray-700/70">
-                  <div className="p-3">
-                    <h4 className="font-bold text-white text-sm mb-1">Price Trend</h4>
-                    <p className="text-sm text-gray-300">{stock.synopsis.price}</p>
-                  </div>
-                </div>
-
-                <div className="border-b border-gray-700/70">
-                  <div className="p-3">
-                    <h4 className="font-bold text-white text-sm mb-1">Company Overview</h4>
-                    <p className="text-sm text-gray-300">{stock.synopsis.company}</p>
-                  </div>
-                </div>
-
-                <div>
-                  <div className="p-3">
-                    <h4 className="font-bold text-white text-sm mb-1">Portfolio Role</h4>
-                    <p className="text-sm text-gray-300">{stock.synopsis.role}</p>
-                  </div>
-                </div>
+              {/* Ask AI component integrated in dark mode */}
+              <div className="rounded-xl border border-gray-700/50 overflow-hidden">
+                <AskAI stock={stock} />
               </div>
             </div>
 
