@@ -166,7 +166,9 @@ export default function PortfolioImpactCalculator({
   const handleInvest = () => {
     buyStock(stock, investmentAmount);
     setShowSuccessModal(true);
-    onInvest();
+    // Don't trigger onInvest() until after the success modal is closed
+    // This prevents advancing to the next stock while showing success for current stock
+    // onInvest will be called in handleSuccessModalClose()
     // Close the calculator immediately when showing success modal
     onClose();
   };
@@ -174,7 +176,9 @@ export default function PortfolioImpactCalculator({
   // Handle success modal close
   const handleSuccessModalClose = () => {
     setShowSuccessModal(false);
-    onClose(); // Close calculator after success modal is closed
+    // Now it's safe to call onInvest since user has seen the success modal
+    // This ensures the stock displayed in the success modal matches the purchased stock
+    onInvest();
   };
   
   // Format number for display
