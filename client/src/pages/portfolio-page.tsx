@@ -128,6 +128,28 @@ export default function PortfolioPage() {
           });
           break;
           
+        case 'general':
+          // Rank by a balanced score across all metrics for general improvement
+          rankedStocks = filteredStocks.sort((a, b) => {
+            // Calculate weighted scores across all metrics
+            const aPerformance = getAdvancedMetricScore(a, 'performance') * 0.25;
+            const aStability = getAdvancedMetricScore(a, 'stability') * 0.25;
+            const aValue = getAdvancedMetricScore(a, 'value') * 0.25;
+            const aMomentum = getAdvancedMetricScore(a, 'momentum') * 0.25;
+            
+            const bPerformance = getAdvancedMetricScore(b, 'performance') * 0.25;
+            const bStability = getAdvancedMetricScore(b, 'stability') * 0.25;
+            const bValue = getAdvancedMetricScore(b, 'value') * 0.25;
+            const bMomentum = getAdvancedMetricScore(b, 'momentum') * 0.25;
+            
+            // Calculate balanced composite score
+            const aScore = aPerformance + aStability + aValue + aMomentum;
+            const bScore = bPerformance + bStability + bValue + bMomentum;
+            
+            return bScore - aScore; // Descending order (highest first)
+          });
+          break;
+          
         default:
           throw new Error('Invalid improvement goal selected');
       }
@@ -730,7 +752,7 @@ export default function PortfolioPage() {
                   <SelectValue placeholder="Select a goal" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="balanced">All-Round Improvement</SelectItem>
+                  <SelectItem value="general">General Improvement</SelectItem>
                   <SelectItem value="roi">Projected ROI</SelectItem>
                   <SelectItem value="performance">Performance</SelectItem>
                   <SelectItem value="stability">Stability</SelectItem>
@@ -849,7 +871,7 @@ export default function PortfolioPage() {
                           Why this stock fits your goals
                         </p>
                         <p className="text-xs text-slate-600 leading-relaxed">
-                          {improvementGoal === 'balanced' && 'This stock provides a good balance of metrics, strengthening your overall portfolio quality.'}
+                          {improvementGoal === 'general' && 'This stock provides a well-rounded improvement across multiple portfolio metrics, optimizing your overall investment quality.'}
                           {improvementGoal === 'roi' && 'This stock has strong growth potential that should boost your portfolio\'s projected returns.'}
                           {improvementGoal === 'performance' && 'This stock shows excellent revenue growth and profitability metrics to enhance performance.'}
                           {improvementGoal === 'stability' && 'This stock offers lower volatility and more consistent returns to improve stability.'}

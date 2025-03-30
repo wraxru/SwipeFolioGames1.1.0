@@ -280,154 +280,65 @@ export default function PortfolioImpactCalculator({
                 <div className="mb-4">
                   {/* Title removed as it's redundant with the header */}
                   
-                  {/* Pie Chart showing industry allocation */}
-                  <div className="relative h-48 mb-4">
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <svg viewBox="0 0 100 100" width="200" height="200">
-                        {/* Background circle - lighter when empty */}
-                        <circle 
-                          cx="50" 
-                          cy="50" 
-                          r="40" 
-                          fill="none" 
-                          stroke={Object.keys(impact.industryAllocation).length === 0 ? "#f3f4f6" : "#e5e7eb"} 
-                          strokeWidth="20" 
-                        />
-                        
-                        {/* Dynamic segments - only rendered when data exists */}
-                        {Object.entries(impact.industryAllocation).length > 0 && 
-                          Object.entries(impact.industryAllocation).map(([industry, allocation], index) => {
-                            // Calculate segment parameters
-                            const colors = ["#06b6d4", "#8b5cf6", "#fbbf24", "#34d399", "#f87171"];
-                            const color = colors[index % colors.length];
-                            const segmentPct = allocation.new;
-                            const circumference = 2 * Math.PI * 40;
-                            const previousSegments = Object.entries(impact.industryAllocation)
-                              .slice(0, index)
-                              .reduce((sum, [_, alloc]) => sum + alloc.new, 0);
-                            const rotation = (previousSegments * 3.6) - 90; // -90 to start at top
-                            
-                            // Only render segments with actual percentage values
-                            return segmentPct > 0 ? (
-                              <circle 
-                                key={industry}
-                                cx="50" 
-                                cy="50" 
-                                r="40" 
-                                fill="none" 
-                                stroke={color} 
-                                strokeWidth="20"
-                                strokeDasharray={`${circumference * (segmentPct / 100)} ${circumference}`}
-                                transform={`rotate(${rotation} 50 50)`}
-                                strokeLinecap="butt"
-                              />
-                            ) : null;
-                          })
-                        }
-                        
-                        {/* Central circle */}
-                        <circle cx="50" cy="50" r="30" fill="white" />
-                        
-                        {/* Empty central circle with portfolio icon instead of quality score */}
-                        <text 
-                          x="50" 
-                          y="50" 
-                          textAnchor="middle" 
-                          fontSize="14" 
-                          fill="#64748b"
-                        >
-                          📊
-                        </text>
-                        
-                        {/* If no allocations, show empty state text instead of quality score */}
-                        {Object.entries(impact.industryAllocation).length === 0 && (
-                          <text 
-                            x="50" 
-                            y="53" 
-                            textAnchor="middle" 
-                            fontSize="8" 
-                            fill="#6b7280"
-                          >
-                            First investment
-                          </text>
-                        )}
+                  {/* Summary of Investment Impact Card */}
+                  <div className="bg-slate-50 rounded-xl p-4 mb-4 border border-slate-100">
+                    <h3 className="text-sm font-medium text-slate-700 mb-2 flex items-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1">
+                        <path d="M2 9.5V4a2 2 0 0 1 2-2h4.586a1 1 0 0 1 .707.293l10.414 10.414a1 1 0 0 1 0 1.414l-4.586 4.586a1 1 0 0 1-1.414 0L3.293 8.293A1 1 0 0 1 3 7.586V4"></path>
+                        <path d="M7 9.96 9.95 7"></path>
+                        <path d="M11 13.96 13.95 11"></path>
+                        <path d="M13 15h9v6h-9z"></path>
                       </svg>
+                      Investment Summary
+                    </h3>
+                    <div className="grid grid-cols-2 gap-y-2 gap-x-3">
+                      <div className="flex justify-between">
+                        <span className="text-xs text-slate-500">Current Price:</span>
+                        <span className="text-xs font-medium text-slate-700">${stock.price.toFixed(2)}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-xs text-slate-500">Shares:</span>
+                        <span className="text-xs font-medium text-slate-700">{shares.toFixed(4)}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-xs text-slate-500">Investment:</span>
+                        <span className="text-xs font-medium text-slate-700">${investmentAmount.toFixed(2)}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-xs text-slate-500">1-Year Projection:</span>
+                        <span className="text-xs font-medium text-green-600">${projectedReturn.toFixed(2)}</span>
+                      </div>
                     </div>
                     
-                    {/* Better positioned industry legends with improved styling */}
+                    {/* Show industry allocation changes as text instead of a chart */}
                     {Object.entries(impact.industryAllocation).length > 0 && (
-                      <div className="absolute inset-0 pointer-events-none">
-                        {Object.entries(impact.industryAllocation).map(([industry, allocation], index) => {
-                          const colors = ["#06b6d4", "#8b5cf6", "#fbbf24", "#34d399", "#f87171"];
-                          const color = colors[index % colors.length];
-                          
-                          // Calculate positions around the pie chart for better spacing
-                          let positionStyle = {};
-                          
-                          if (industry === "Real Estate") {
-                            positionStyle = {
-                              top: '10%',
-                              right: '75%',
-                            };
-                          } else if (industry === "Technology") {
-                            positionStyle = {
-                              top: '20%',
-                              left: '65%',
-                            };
-                          } else if (industry === "Healthcare") {
-                            positionStyle = {
-                              bottom: '20%',
-                              left: '65%',
-                            };
-                          } else if (industry === "Financial") {
-                            positionStyle = {
-                              bottom: '20%',
-                              right: '65%',
-                            };
-                          } else {
-                            // Position other industries in a clean layout
-                            const positions = [
-                              { top: '10%', left: '50%', transform: 'translateX(-50%)' },
-                              { bottom: '10%', left: '50%', transform: 'translateX(-50%)' },
-                              { left: '10%', top: '50%', transform: 'translateY(-50%)' },
-                              { right: '10%', top: '50%', transform: 'translateY(-50%)' },
-                            ];
-                            
-                            positionStyle = positions[index % positions.length];
-                          }
-                          
-                          // Only show legend items with actual values
-                          return allocation.new > 0 ? (
-                            <div 
-                              key={industry} 
-                              className="absolute flex items-center px-2 py-1 rounded-lg shadow-md bg-white border border-slate-200"
-                              style={{
-                                ...positionStyle,
-                                zIndex: 10,
-                                maxWidth: '120px',
-                                opacity: 0.95,
-                              }}
-                            >
-                              <div className="w-3 h-3 rounded-full mr-1.5" style={{ backgroundColor: color }}></div>
-                              <div className="flex flex-col items-start">
+                      <div className="mt-3 pt-3 border-t border-slate-200">
+                        <h4 className="text-xs font-medium text-slate-700 mb-1.5">Industry Allocation</h4>
+                        <div className="space-y-1.5">
+                          {Object.entries(impact.industryAllocation)
+                            .filter(([_, allocation]) => allocation.new > 0)
+                            .map(([industry, allocation], index) => (
+                              <div key={industry} className="flex justify-between items-center">
                                 <div className="flex items-center">
-                                  <span className="mr-1 text-xs text-slate-700 font-medium truncate">{industry}</span>
-                                  <span className="font-bold text-xs text-slate-900">{formatPercentage(allocation.new)}</span>
+                                  <div 
+                                    className="w-2 h-2 rounded-full mr-1.5" 
+                                    style={{ backgroundColor: ["#06b6d4", "#8b5cf6", "#fbbf24", "#34d399", "#f87171"][index % 5] }}
+                                  ></div>
+                                  <span className="text-xs text-slate-700">{industry}</span>
                                 </div>
-                                {/* Only show change indicator when there's a difference */}
-                                {allocation.new !== allocation.current && Math.abs(allocation.new - allocation.current) > 0.1 && (
-                                  <span className={cn(
-                                    "text-[10px] font-medium",
-                                    allocation.new > allocation.current ? "text-green-600" : "text-red-600"
-                                  )}>
-                                    {allocation.new > allocation.current ? "+" : ""}
-                                    {formatPercentage(allocation.new - allocation.current)}
-                                  </span>
-                                )}
+                                <div className="flex items-center">
+                                  <span className="text-xs font-medium text-slate-800">{allocation.new.toFixed(1)}%</span>
+                                  {allocation.new !== allocation.current && Math.abs(allocation.new - allocation.current) > 0.1 && (
+                                    <span className={`text-[10px] ml-1 ${allocation.new > allocation.current ? "text-green-600" : "text-red-600"}`}>
+                                      {allocation.new > allocation.current ? "+" : ""}
+                                      {(allocation.new - allocation.current).toFixed(1)}%
+                                    </span>
+                                  )}
+                                </div>
                               </div>
-                            </div>
-                          ) : null;
-                        })}
+                            ))
+                          }
+                        </div>
                       </div>
                     )}
                   </div>
