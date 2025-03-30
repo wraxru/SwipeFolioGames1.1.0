@@ -70,7 +70,7 @@ ${context.portfolio.metrics ? `- Quality score: ${context.portfolio.metrics.qual
     const response = await axios.post(
       'https://openrouter.ai/api/v1/chat/completions',
       {
-        model: 'anthropic/claude-3-haiku',
+        model: 'deepseek/deepseek-chat-v3-0324:free',
         messages: messages,
         max_tokens: 500,
         temperature: 0.7,
