@@ -223,6 +223,17 @@ export default function InvestorProfilePopup({ investor, onClose }: InvestorProf
     
     // Optional: Add swipe down listener for mobile
     const handleTouchStart = (e: TouchEvent) => {
+      // Don't handle touch events inside the scrollable area
+      const target = e.target as HTMLElement;
+      const scrollContainer = document.querySelector('.investor-profile-scroll-container');
+      
+      // Check if we're touching inside the scroll container and it can actually scroll
+      if (scrollContainer && scrollContainer.contains(target)) {
+        const isScrollable = scrollContainer.scrollHeight > scrollContainer.clientHeight;
+        // Allow normal scrolling behavior if the content is scrollable
+        if (isScrollable) return;
+      }
+      
       setTouchStartY(e.touches[0].clientY);
       setTouchStartX(e.touches[0].pageX);
       
@@ -234,13 +245,37 @@ export default function InvestorProfilePopup({ investor, onClose }: InvestorProf
         const deltaY = currentY - touchStartY;
         const deltaX = currentX - touchStartX;
         
-        // If primarily vertical swipe down
-        if (Math.abs(deltaY) > Math.abs(deltaX) && deltaY > 50) { 
+        // Check if we're touching inside a scrollable element
+        const target = e.target as HTMLElement;
+        let isInsideScrollContainer = false;
+        
+        if (scrollContainer && scrollContainer.contains(target)) {
+          const isScrollable = scrollContainer.scrollHeight > scrollContainer.clientHeight;
+          // If at the top of scroll and swiping down, or at the bottom and swiping up,
+          // allow popup to handle the swipe, otherwise let the content scroll
+          if (isScrollable) {
+            const isAtTop = scrollContainer.scrollTop === 0;
+            const isAtBottom = scrollContainer.scrollTop + scrollContainer.clientHeight >= scrollContainer.scrollHeight;
+            
+            // Only trigger popup close if at the top and swiping down
+            if (isAtTop && deltaY > 0) {
+              isInsideScrollContainer = false;
+            } else if (isAtBottom && deltaY < 0) {
+              isInsideScrollContainer = false;
+            } else {
+              isInsideScrollContainer = true;
+              return; // Let the container scroll normally
+            }
+          }
+        }
+        
+        // If primarily vertical swipe down and not inside scrollable content or at the top
+        if (!isInsideScrollContainer && Math.abs(deltaY) > Math.abs(deltaX) && deltaY > 70) { 
           onClose();
           document.removeEventListener('touchmove', handleTouchMove);
         } 
-        // If primarily horizontal swipe
-        else if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 30) {
+        // If primarily horizontal swipe 
+        else if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
           // Determine which direction to swipe
           if (deltaX > 0) {
             // Swipe right - previous tab
@@ -768,14 +803,20 @@ export default function InvestorProfilePopup({ investor, onClose }: InvestorProf
   // Render the popup
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div 
+        className="fixed inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+        onClick={(e) => {
+          // Only close if clicking directly on the backdrop, not when interacting with the popup content
+          if (e.target === e.currentTarget) onClose();
+        }}
+      >
         <motion.div
           ref={profileRef}
           variants={popupVariants}
           initial="hidden"
           animate="visible"
           exit="exit"
-          className="bg-white rounded-2xl shadow-xl max-w-sm w-full overflow-hidden max-h-[90vh] flex flex-col"
+          className="bg-white rounded-2xl shadow-xl max-w-sm w-full max-h-[90vh] flex flex-col"
         >
           {/* Close button */}
           <button 
@@ -790,9 +831,9 @@ export default function InvestorProfilePopup({ investor, onClose }: InvestorProf
             {/* Dynamic performance-based gradient background */}
             <div 
               className={`absolute inset-0 z-0 ${
-                investor.roi >= 15 ? 'bg-gradient-to-r from-emerald-400/90 via-teal-400/80 to-cyan-400/90' :
-                investor.roi >= 0 ? 'bg-gradient-to-r from-blue-400/80 via-cyan-400/70 to-indigo-400/80' :
-                'bg-gradient-to-r from-orange-400/80 via-red-400/70 to-rose-400/80'
+                investor.roi >= 15 ? 'bg-gradient-to-r from-emerald-500/60 via-teal-500/50 to-cyan-500/60' :
+                investor.roi >= 0 ? 'bg-gradient-to-r from-blue-500/60 via-cyan-500/50 to-indigo-500/60' :
+                'bg-gradient-to-r from-orange-500/60 via-red-500/50 to-rose-500/60'
               }`}
             >
               {/* Animated gradient overlay */}
@@ -1155,7 +1196,7 @@ export default function InvestorProfilePopup({ investor, onClose }: InvestorProf
           </div>
           
           {/* Tab content with scrolling */}
-          <div className="flex-1 overflow-y-auto p-4">
+          <div className="flex-1 overflow-y-auto p-4 investor-profile-scroll-container">
             {renderTabContent()}
           </div>
           
