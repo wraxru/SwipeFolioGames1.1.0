@@ -228,7 +228,7 @@ export default function StockCard({
     const threshold = 100;
 
     if (displayMode === 'realtime') {
-      // Remove swipe functionality completely for right swipe
+      // Right swipe (positive x) - Open portfolio impact calculator
       if (info.offset.x > threshold) {
         setSwipeDirection("right");
         // Haptic feedback if available
@@ -236,9 +236,24 @@ export default function StockCard({
           navigator.vibrate(50);
         }
         
-        // Just reset the card position without opening anything on swipe
-        cardControls.set({ x: 0, opacity: 1, scale: 1 });
-        setSwipeDirection(null);
+        // --- CHANGE: Set modal state *BEFORE* starting card animation ---
+        setModalState('calculator');
+        
+        // --- THEN, animate card back ---
+        cardControls.start({
+          x: 0,
+          opacity: 1,
+          scale: 1,
+          transition: { 
+            type: "spring", 
+            stiffness: 400, 
+            damping: 30,
+            duration: 0.4
+          }
+        });
+        
+        // Optionally delay resetting swipeDirection slightly
+        setTimeout(() => setSwipeDirection(null), 50);
       } 
       // Left swipe (negative x) - Skip to next card
       else if (info.offset.x < -threshold) {
@@ -1046,19 +1061,10 @@ export default function StockCard({
         
         {/* Ask AI Component has been removed */}
 
-        {/* Buy Button */}
+        {/* Bottom Swipe Instruction */}
         <div className="p-4 bg-white border-t border-b border-slate-100 mb-4">
-          <div className="text-center mb-2">
-            <button 
-              onClick={openPortfolioCalculator}
-              className="py-3 px-8 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-bold rounded-full shadow-lg hover:shadow-xl active:scale-95 transform transition-all duration-150"
-              data-testid="visible-buy-button"
-            >
-              Analyze Impact on Portfolio
-            </button>
-          </div>
-          <div className="text-center text-sm font-medium text-slate-600 mt-3">
-            Swipe <span className="text-red-600 font-medium">left to skip</span>
+          <div className="text-center text-sm font-medium text-slate-600 my-2">
+            Swipe <span className="text-red-600 font-medium">left to skip</span> • Swipe <span className="text-green-600 font-medium">right to invest</span>
           </div>
         </div>
 
@@ -1105,12 +1111,12 @@ export default function StockCard({
             onClick={() => setModalState('closed')} // Simple close
           />
 
-          {/* --- TEMPORARY SIMPLE TEST MODAL WITH PURE SLIDE ANIMATION --- */}
+          {/* --- TEMPORARY SIMPLE TEST MODAL --- */}
           <motion.div
             key="simple-test-modal-key" // Important: Use a unique key
-            initial={{ opacity: 0, y: "100vh" }} // Start from bottom of screen
-            animate={{ opacity: 1, y: 0, transition: { duration: 0.3, ease: 'easeOut' } }}
-            exit={{ opacity: 0, y: "100vh", transition: { duration: 0.2, ease: 'easeIn' } }}
+            initial={{ opacity: 0, scale: 0.92, y: 30 }} // Use original calculator animation props
+            animate={{ opacity: 1, scale: 1, y: 0, transition: { duration: 0.3, ease: 'easeInOut' } }}
+            exit={{ opacity: 0, scale: 0.95, y: 20, transition: { duration: 0.2, ease: 'easeInOut' } }}
             className="calculator-modal" // CRITICAL: Use the same positioning class
             style={{ // Basic visible styling
               width: '80%',
