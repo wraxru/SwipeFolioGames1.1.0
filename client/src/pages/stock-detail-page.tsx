@@ -111,19 +111,7 @@ export default function StockDetailPage() {
         </button>
       </div>
       
-      {/* View toggle button in top-right */}
-      <div className="absolute top-4 right-4 z-20">
-        <button
-          onClick={() => setUseRealTimeData(!useRealTimeData)}
-          className={`text-xs px-3 py-1.5 rounded-full transition-colors backdrop-blur-sm ${
-            useRealTimeData 
-              ? 'bg-green-800/90 text-green-200 hover:bg-green-700' 
-              : 'bg-gray-800/90 text-gray-300 hover:bg-gray-700'
-          }`}
-        >
-          {useRealTimeData ? 'Live Data' : 'Simple View'}
-        </button>
-      </div>
+      {/* Live Data button removed as requested */}
 
       {/* Main content */}
       <div className="flex-1 relative">

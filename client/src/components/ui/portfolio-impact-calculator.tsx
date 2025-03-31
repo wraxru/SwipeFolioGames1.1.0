@@ -357,7 +357,7 @@ export default function PortfolioImpactCalculator({
                         key={metric} 
                         className="p-2.5 bg-white rounded-lg border border-slate-200 shadow-sm hover:shadow-md transition-all duration-200 hover:border-sky-200"
                       >
-                        <div className="flex items-center mb-1.5">
+                        <div className="flex items-center justify-center mb-1.5">
                           <div className={`p-1 rounded-md mr-1.5 ${
                             change > 0 ? "bg-green-100 text-green-600" : 
                             change < 0 ? "bg-red-100 text-red-600" : 
@@ -387,8 +387,8 @@ export default function PortfolioImpactCalculator({
                           )}
                         </div>
                         
-                        {/* New metric value with change indicator */}
-                        <div className="flex items-center">
+                        {/* New metric value with change indicator - centered */}
+                        <div className="flex items-center justify-center">
                           <div className="text-base font-bold text-slate-900 mr-1.5">
                             {impact.newMetrics[metric as keyof typeof impact.newMetrics].toFixed(1)}
                           </div>
@@ -451,21 +451,21 @@ export default function PortfolioImpactCalculator({
                     </div>
                   </div>
                   
-                  {/* Enhanced Calculation summary */}
+                  {/* Enhanced Calculation summary - Smaller size */}
                   <div className="flex flex-col mt-5 mb-1">
-                    <div className="flex justify-center items-center gap-4 p-4 bg-slate-50 rounded-lg">
+                    <div className="flex justify-center items-center gap-3 p-3 bg-slate-50 rounded-lg">
                       <div className="text-center">
-                        <div className="text-sm font-medium text-slate-700 mb-1">You'll get</div>
-                        <div className="text-2xl font-bold text-slate-900">{shares.toFixed(4)} shares</div>
+                        <div className="text-xs font-medium text-slate-700 mb-0.5">You'll get</div>
+                        <div className="text-xl font-bold text-slate-900">{shares.toFixed(4)} shares</div>
                       </div>
                       
                       <div className="text-slate-500 flex items-center justify-center">
-                        <ArrowRight size={24} strokeWidth={2} />
+                        <ArrowRight size={20} strokeWidth={2} />
                       </div>
                       
                       <div className="text-center">
-                        <div className="text-sm font-medium text-slate-700 mb-1">Projected 1y return</div>
-                        <div className="text-2xl font-bold text-green-600">
+                        <div className="text-xs font-medium text-slate-700 mb-0.5">Projected 1y return</div>
+                        <div className="text-xl font-bold text-green-600">
                           {formatCurrency(projectedReturn)}
                         </div>
                       </div>

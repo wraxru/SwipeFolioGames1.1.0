@@ -1,7 +1,8 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Check, X, TrendingUp } from "lucide-react";
 import { StockData } from "@/lib/stock-data";
+import ReactCanvasConfetti from "react-canvas-confetti";
 
 interface PurchaseSuccessModalProps {
   isOpen: boolean;
@@ -20,6 +21,9 @@ export default function PurchaseSuccessModal({
   amount,
   projectedReturn,
 }: PurchaseSuccessModalProps) {
+  // Confetti reference and animation controls
+  const refAnimationInstance = useRef<any>(null);
+  
   // Format currency for display
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -29,11 +33,67 @@ export default function PurchaseSuccessModal({
       maximumFractionDigits: 2
     }).format(value);
   };
+  
+  // Get confetti instance
+  const getInstance = useCallback((instance: any) => {
+    refAnimationInstance.current = instance;
+  }, []);
 
-  // Body lock when modal is open
+  // Fire confetti
+  const makeShot = useCallback((particleRatio: number, opts: any) => {
+    if (refAnimationInstance.current) {
+      refAnimationInstance.current({
+        ...opts,
+        origin: { y: 0.7 },
+        particleCount: Math.floor(200 * particleRatio),
+      });
+    }
+  }, []);
+
+  // Realistic confetti effect
+  const fireConfetti = useCallback(() => {
+    makeShot(0.25, {
+      spread: 26,
+      startVelocity: 55,
+      colors: ['#26a269', '#2ec27e', '#33d17a', '#57e389', '#8ff0a4'],
+    });
+
+    makeShot(0.2, {
+      spread: 60,
+      colors: ['#f6d32d', '#f9f06b', '#ffbe6f', '#ff7800'],
+    });
+
+    makeShot(0.35, {
+      spread: 100,
+      decay: 0.91,
+      scalar: 0.8,
+      colors: ['#1c71d8', '#62a0ea', '#99c1f1', '#3584e4'],
+    });
+
+    makeShot(0.1, {
+      spread: 120,
+      startVelocity: 25,
+      decay: 0.92,
+      scalar: 1.2,
+      colors: ['#c061cb', '#dc8add', '#e29ffc', '#ad65d6'],
+    });
+
+    makeShot(0.1, {
+      spread: 120,
+      startVelocity: 45,
+      colors: ['#ed333b', '#ff7b39', '#ffbe6f', '#f66151'],
+    });
+  }, [makeShot]);
+
+  // Body lock when modal is open and trigger confetti
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
+      // Delay confetti slightly for better effect
+      const timer = setTimeout(() => {
+        fireConfetti();
+      }, 300);
+      return () => clearTimeout(timer);
     } else {
       document.body.style.overflow = '';
     }
@@ -41,12 +101,27 @@ export default function PurchaseSuccessModal({
     return () => {
       document.body.style.overflow = '';
     };
-  }, [isOpen]);
+  }, [isOpen, fireConfetti]);
 
   return (
     <AnimatePresence mode="wait" key="success-modal">
       {isOpen && (
         <div className="fixed inset-0 flex items-center justify-center z-[9999]" style={{ isolation: 'isolate' }}>
+          {/* Confetti canvas */}
+          <div className="fixed inset-0 pointer-events-none z-[55]">
+            <ReactCanvasConfetti
+              onInit={getInstance}
+              style={{
+                position: 'fixed',
+                pointerEvents: 'none',
+                width: '100%',
+                height: '100%',
+                top: 0,
+                left: 0,
+              }}
+            />
+          </div>
+        
           {/* iOS-friendly backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
@@ -58,20 +133,20 @@ export default function PurchaseSuccessModal({
             onClick={onClose}
           />
           
-          {/* Success modal with iOS-optimized animations */}
+          {/* Success modal with iOS-optimized animations and improved timing */}
           <motion.div
             initial={{ opacity: 0, scale: 0.92, y: 30 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ 
-              duration: 0.3, 
+              duration: 0.35, 
               ease: 'easeOut',
-              delay: 0.05 // slight delay to ensure backdrop renders first 
+              delay: 0.15 // Increased delay for more satisfying effect
             }}
             className="w-[80%] max-w-xs mx-auto rounded-xl overflow-hidden bg-gradient-to-b from-green-500 to-green-600 
                        shadow-2xl border border-green-400"
             style={{
-              zIndex: 51,
+              zIndex: 52,
               maxHeight: '90vh',
               overflowY: 'auto',
               boxShadow: '0 20px 60px -15px rgba(0, 0, 0, 0.6)'
