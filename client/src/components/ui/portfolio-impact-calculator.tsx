@@ -207,7 +207,7 @@ export default function PortfolioImpactCalculator({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
+              transition={{ duration: 0.2, ease: 'easeInOut' }}
               className="calculator-overlay"
               onClick={onClose}
             />
@@ -220,18 +220,15 @@ export default function PortfolioImpactCalculator({
                 scale: 1, 
                 y: 0,
                 transition: { 
-                  type: "spring", 
-                  damping: 30, 
-                  stiffness: 350,
-                  duration: 0.4,
-                  ease: [0.23, 1, 0.32, 1]
+                  duration: 0.3, 
+                  ease: 'easeInOut'
                 }
               }}
               exit={{ 
                 opacity: 0, 
                 scale: 0.95, 
                 y: 20,
-                transition: { duration: 0.25, ease: [0.32, 0, 0.67, 0] }
+                transition: { duration: 0.2, ease: 'easeInOut' }
               }}
               className="calculator-modal"
               style={{
