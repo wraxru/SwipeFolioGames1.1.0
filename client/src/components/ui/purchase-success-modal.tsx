@@ -47,26 +47,32 @@ export default function PurchaseSuccessModal({
     <AnimatePresence mode="wait" key="success-modal">
       {isOpen && (
         <div className="fixed inset-0 flex items-center justify-center z-[9999]" style={{ isolation: 'isolate' }}>
-          {/* Semi-transparent backdrop */}
+          {/* iOS-friendly backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 0.7 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="absolute inset-0 bg-black z-[1]"
+            transition={{ duration: 0.3, ease: 'easeOut' }}
+            className="fixed inset-0 bg-black"
+            style={{ zIndex: 50 }}
             onClick={onClose}
           />
           
-          {/* Success modal with green background */}
+          {/* Success modal with iOS-optimized animations */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            initial={{ opacity: 0, scale: 0.92, y: 30 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            transition={{ type: "spring", damping: 25, stiffness: 300 }}
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            transition={{ 
+              duration: 0.3, 
+              ease: 'easeOut',
+              delay: 0.05 // slight delay to ensure backdrop renders first 
+            }}
             className="w-[85%] max-w-xs rounded-xl overflow-hidden bg-gradient-to-b from-green-500 to-green-600 
-                       shadow-2xl border border-green-400 z-[2] relative"
+                       shadow-2xl border border-green-400 relative"
             style={{
-              boxShadow: '0 20px 60px -15px rgba(0, 0, 0, 0.25), 0 12px 25px -10px rgba(0, 0, 0, 0.1)'
+              zIndex: 51,
+              boxShadow: '0 20px 60px -15px rgba(0, 0, 0, 0.6)'
             }}
           >
             {/* Header with close button */}

@@ -194,17 +194,18 @@ export default function PortfolioImpactCalculator({
       <AnimatePresence mode="wait" key="calculator-modal">
         {isOpen && (
           <>
-            {/* Backdrop with blur effect */}
+            {/* Backdrop with simplified effect - removed blur for iOS compatibility */}
             <motion.div
               initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
+              animate={{ opacity: 0.7 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.2, ease: 'easeInOut' }}
-              className="calculator-overlay"
+              transition={{ duration: 0.3, ease: 'easeOut' }}
+              className="fixed inset-0 bg-black"
+              style={{ zIndex: 50 }}
               onClick={onClose}
             />
             
-            {/* Modal with enhanced animations and better centering */}
+            {/* Modal with enhanced animations and iOS-friendly rendering */}
             <motion.div
               initial={{ opacity: 0, scale: 0.92, y: 30 }}
               animate={{ 
@@ -213,18 +214,20 @@ export default function PortfolioImpactCalculator({
                 y: 0,
                 transition: { 
                   duration: 0.3, 
-                  ease: 'easeInOut'
+                  ease: 'easeOut',
+                  delay: 0.05 // slight delay to ensure backdrop renders first
                 }
               }}
               exit={{ 
                 opacity: 0, 
                 scale: 0.95, 
                 y: 20,
-                transition: { duration: 0.2, ease: 'easeInOut' }
+                transition: { duration: 0.25, ease: 'easeIn' }
               }}
-              className="calculator-modal"
+              className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-md bg-white rounded-2xl overflow-hidden"
               style={{
-                boxShadow: '0 20px 60px -15px rgba(0, 0, 0, 0.25), 0 12px 25px -10px rgba(0, 0, 0, 0.1)'
+                zIndex: 51,
+                boxShadow: '0 20px 60px -15px rgba(0, 0, 0, 0.6)'
               }}
             >
               {/* Enhanced Modern Header */}
