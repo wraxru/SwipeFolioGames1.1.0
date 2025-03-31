@@ -41,7 +41,7 @@ export default function PurchaseSuccessModal({
 
   // Fire confetti
   const makeShot = useCallback((particleRatio: number, opts: any) => {
-    if (refAnimationInstance.current) {
+    if (refAnimationInstance.current && typeof refAnimationInstance.current === 'function') {
       refAnimationInstance.current({
         ...opts,
         origin: { y: 0.7 },
@@ -108,19 +108,18 @@ export default function PurchaseSuccessModal({
       {isOpen && (
         <div className="fixed inset-0 flex items-center justify-center z-[9999]" style={{ isolation: 'isolate' }}>
           {/* Confetti canvas */}
-          <div className="fixed inset-0 pointer-events-none z-[55]">
-            <ReactCanvasConfetti
-              onInit={getInstance}
-              style={{
-                position: 'fixed',
-                pointerEvents: 'none',
-                width: '100%',
-                height: '100%',
-                top: 0,
-                left: 0,
-              }}
-            />
-          </div>
+          <ReactCanvasConfetti
+            refConfetti={getInstance}
+            style={{
+              position: 'fixed',
+              pointerEvents: 'none',
+              width: '100%',
+              height: '100%',
+              top: 0,
+              left: 0,
+              zIndex: 55
+            }}
+          />
         
           {/* iOS-friendly backdrop */}
           <motion.div
