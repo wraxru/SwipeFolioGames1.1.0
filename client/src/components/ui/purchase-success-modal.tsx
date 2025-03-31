@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Check, X, TrendingUp } from "lucide-react";
 import { StockData } from "@/lib/stock-data";
-import { createPortal } from "react-dom";
 
 interface PurchaseSuccessModalProps {
   isOpen: boolean;
@@ -44,8 +43,7 @@ export default function PurchaseSuccessModal({
     };
   }, [isOpen]);
 
-  // Create a portal to ensure the modal is not affected by parent stacking contexts
-  return createPortal(
+  return (
     <AnimatePresence mode="wait" key="success-modal">
       {isOpen && (
         <div className="fixed inset-0 flex items-center justify-center z-[9999]" style={{ isolation: 'isolate' }}>
@@ -128,7 +126,6 @@ export default function PurchaseSuccessModal({
           </motion.div>
         </div>
       )}
-    </AnimatePresence>,
-    document.body // Mount directly to the body to escape any stacking contexts
+    </AnimatePresence>
   );
 }

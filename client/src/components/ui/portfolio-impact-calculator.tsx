@@ -9,14 +9,14 @@ import PurchaseSuccessModal from "./purchase-success-modal";
 interface PortfolioImpactCalculatorProps {
   isOpen: boolean;
   onClose: () => void;
-  onInvest: () => void;
+  onPurchaseComplete: (data: { shares: number; amount: number; projectedReturn: number }) => void;
   stock: StockData;
 }
 
 export default function PortfolioImpactCalculator({
   isOpen,
   onClose,
-  onInvest,
+  onPurchaseComplete,
   stock,
 }: PortfolioImpactCalculatorProps) {
   const { cash, calculateImpact, buyStock, isLoading } = usePortfolio();
@@ -166,9 +166,9 @@ export default function PortfolioImpactCalculator({
   const handleInvest = () => {
     buyStock(stock, investmentAmount);
     setShowSuccessModal(true);
-    // Don't trigger onInvest() until after the success modal is closed
+    // Don't trigger onPurchaseComplete() until after the success modal is closed
     // This prevents advancing to the next stock while showing success for current stock
-    // onInvest will be called in handleSuccessModalClose()
+    // onPurchaseComplete will be called in handleSuccessModalClose()
     // Close the calculator immediately when showing success modal
     onClose();
   };
@@ -176,9 +176,13 @@ export default function PortfolioImpactCalculator({
   // Handle success modal close
   const handleSuccessModalClose = () => {
     setShowSuccessModal(false);
-    // Now it's safe to call onInvest since user has seen the success modal
+    // Now it's safe to call onPurchaseComplete since user has seen the success modal
     // This ensures the stock displayed in the success modal matches the purchased stock
-    onInvest();
+    onPurchaseComplete({ 
+      shares, 
+      amount: investmentAmount, 
+      projectedReturn 
+    });
   };
   
   // Format number for display

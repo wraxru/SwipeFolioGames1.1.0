@@ -1092,7 +1092,7 @@ export default function StockCard({
       <PortfolioImpactCalculator
         isOpen={isPortfolioImpactOpen}
         onClose={() => setIsPortfolioImpactOpen(false)}
-        onInvest={() => {
+        onPurchaseComplete={({ shares, amount, projectedReturn }) => {
           // Handle successful investment
           onNext(); // Move to next stock after investing
         }}
