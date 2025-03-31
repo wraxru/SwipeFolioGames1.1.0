@@ -236,10 +236,7 @@ export default function StockCard({
           navigator.vibrate(50);
         }
         
-        // --- CHANGE: Set modal state *BEFORE* starting card animation ---
-        setModalState('calculator');
-        
-        // --- THEN, animate card back ---
+        // Start spring-back animation first
         cardControls.start({
           x: 0,
           opacity: 1,
@@ -252,8 +249,12 @@ export default function StockCard({
           }
         });
         
-        // Optionally delay resetting swipeDirection slightly
-        setTimeout(() => setSwipeDirection(null), 50);
+        // THEN, after a short delay, set the modal state to 'calculator'
+        setTimeout(() => {
+          setModalState('calculator');
+        }, 150); // 150ms delay
+        
+        setSwipeDirection(null);
       } 
       // Left swipe (negative x) - Skip to next card
       else if (info.offset.x < -threshold) {
@@ -1098,44 +1099,14 @@ export default function StockCard({
         Buy
       </button>
 
-      {/* Portfolio Impact Calculator - TEMPORARY SIMPLE TEST VERSION */}
+      {/* Portfolio Impact Calculator - Unified state management */}
       {modalState === 'calculator' && (
-        <>
-          {/* Keep the original Backdrop */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2, ease: 'easeInOut' }}
-            className="calculator-overlay"
-            onClick={() => setModalState('closed')} // Simple close
-          />
-
-          {/* --- TEMPORARY SIMPLE TEST MODAL --- */}
-          <motion.div
-            key="simple-test-modal-key" // Important: Use a unique key
-            initial={{ opacity: 0, scale: 0.92, y: 30 }} // Use original calculator animation props
-            animate={{ opacity: 1, scale: 1, y: 0, transition: { duration: 0.3, ease: 'easeInOut' } }}
-            exit={{ opacity: 0, scale: 0.95, y: 20, transition: { duration: 0.2, ease: 'easeInOut' } }}
-            className="calculator-modal" // CRITICAL: Use the same positioning class
-            style={{ // Basic visible styling
-              width: '80%',
-              maxWidth: '400px',
-              height: '50vh',
-              background: 'linear-gradient(to bottom right, lightblue, lightcoral)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '20px',
-              fontWeight: 'bold',
-              color: 'black',
-              boxShadow: '0 20px 60px -15px rgba(0, 0, 0, 0.25), 0 12px 25px -10px rgba(0, 0, 0, 0.1)'
-            }}
-            onClick={() => setModalState('closed')} // Simple close on click
-          >
-            Simple Test - Does this flicker?
-          </motion.div>
-        </>
+        <PortfolioImpactCalculator
+          isOpen={true} // Controlled by mounting/unmounting via modalState
+          onClose={() => setModalState('closed')} // Directly close
+          onPurchaseComplete={handlePurchaseComplete} // Pass completion handler
+          stock={stock}
+        />
       )}
       
       {/* Purchase Success Modal - Unified state management */}
