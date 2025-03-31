@@ -232,7 +232,7 @@ export default function CompetitionTracker({ defaultExpanded = false }: { defaul
                       {userRank}
                     </div>
                     <div className="flex items-center">
-                      <div className="w-18 h-18 rounded-full overflow-hidden border border-slate-200 flex-shrink-0 mr-3 shadow-sm">
+                      <div className="w-16 h-16 rounded-full overflow-hidden border border-slate-200 flex-shrink-0 mr-3 shadow-sm">
                         <img src={userPosition.avatar || "/images/default-avatar.png"} alt={userPosition.name} className="w-full h-full object-cover" />
                       </div>
                       <div className="flex flex-col">

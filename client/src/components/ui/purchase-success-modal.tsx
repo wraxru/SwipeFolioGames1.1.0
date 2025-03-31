@@ -109,7 +109,7 @@ export default function PurchaseSuccessModal({
         <div className="fixed inset-0 flex items-center justify-center z-[9999]" style={{ isolation: 'isolate' }}>
           {/* Confetti canvas */}
           <ReactCanvasConfetti
-            ref={getInstance}
+            refConfetti={getInstance}
             style={{
               position: 'fixed',
               pointerEvents: 'none',
