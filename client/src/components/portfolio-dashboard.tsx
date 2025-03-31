@@ -234,7 +234,7 @@ export default function PortfolioDashboard() {
         <div className="mb-1.5 flex justify-between items-center">
           <div className="flex items-center">
             <span className="text-sm text-slate-700 font-medium">Portfolio allocation</span>
-            <Link href="/portfolio/metrics">
+            <Link href="/portfolio">
               <motion.button
                 className="ml-2 px-3 py-0.5 rounded-full bg-indigo-500 text-xs font-medium text-white shadow-sm flex items-center"
                 whileHover={{ scale: 1.05, backgroundColor: "#4F46E5" }}
