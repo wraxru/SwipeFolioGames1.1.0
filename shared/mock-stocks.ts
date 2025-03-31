@@ -446,9 +446,39 @@ export const techStocks = {
   }
 };
 
+// Record type for stock data
+type StockRecord = Record<string, {
+  symbol: string;
+  name: string;
+  price: number;
+  change: number;
+  changePercent: number;
+  industry: string;
+  metrics: {
+    performance: number;
+    stability: number;
+    value: number;
+    momentum: number;
+    potential: number;
+    revenueGrowth: number;
+    profitMargin: number;
+    peRatio: number;
+    pbRatio: number;
+    dividendYield: number;
+    debtToEquity: number;
+    returnOnEquity: number;
+    beta: number;
+    analystRating: number;
+  };
+  description: string;
+  predictedPrice: number;
+  returnYear: number;
+  quality: string;
+}>;
+
 // Function to get mock data for a stock symbol
 export function getMockStockData(symbol: string) {
-  const allStocks = {
+  const allStocks: StockRecord = {
     ...realEstateStocks,
     ...healthcareStocks,
     ...techStocks
