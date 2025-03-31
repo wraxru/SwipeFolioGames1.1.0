@@ -1,11 +1,11 @@
 import React from 'react';
 import { InvestorSimulatorGame } from '@/components/investor-simulator-game';
-import AppNavigation from '@/components/app-navigation';
+import { GameBackButton } from '@/components/ui/game-back-button';
 
 export default function InvestorSimulatorPage() {
   return (
-    <div>
-      <AppNavigation />
+    <div className="pb-20 pt-16">
+      <GameBackButton />
       <InvestorSimulatorGame />
     </div>
   );

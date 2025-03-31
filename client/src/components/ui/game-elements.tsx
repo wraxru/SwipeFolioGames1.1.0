@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { Timer, Ticket, Trophy, Sparkles } from 'lucide-react';
+import { Timer, Ticket, Trophy, Sparkles, LineChart, BarChart, PieChart } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import * as ConfettiModule from 'react-canvas-confetti';
 
@@ -28,29 +28,48 @@ export function GameHeader({
   };
 
   return (
-    <div className="flex flex-col mb-4 sm:mb-6">
-      <div className="flex justify-between items-center">
+    <div className="flex flex-col mb-6 sm:mb-8 mt-4">
+      <div className="flex justify-between items-center bg-white rounded-xl shadow-md p-4 sm:p-5 border border-gray-100">
         <div className="flex items-center">
-          {icon && <span className="mr-2">{icon}</span>}
-          <h1 className="text-2xl font-bold">{title}</h1>
+          {icon && (
+            <div className="mr-3 bg-gradient-to-br from-blue-500/10 to-indigo-500/10 p-3 rounded-lg">
+              <span className="text-blue-500">{icon}</span>
+            </div>
+          )}
+          <div>
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{title}</h1>
+            {description && <p className="text-gray-600 text-sm mt-1">{description}</p>}
+          </div>
         </div>
         
-        {tickets !== undefined && (
-          <div className="flex items-center bg-gradient-to-r from-amber-100 to-amber-50 rounded-full px-3 py-1 border border-amber-200 shadow-sm">
-            <Ticket className="w-4 h-4 text-amber-500 mr-1.5" />
-            <span className="font-medium text-amber-700">{tickets}</span>
-          </div>
-        )}
+        <div className="flex items-center space-x-3">
+          {timeLeft !== undefined && (
+            <div className="flex items-center bg-red-50 rounded-lg px-3 py-2 border border-red-100">
+              <Timer className="w-4 h-4 text-red-500 mr-2" />
+              <div className="font-mono text-lg font-medium text-red-600">
+                {formatTime(timeLeft)}
+              </div>
+            </div>
+          )}
+          
+          {tickets !== undefined && (
+            <div className="flex items-center bg-gradient-to-r from-amber-100 to-amber-50 rounded-lg px-3 py-2 border border-amber-200 shadow-sm">
+              <Ticket className="w-4 h-4 text-amber-500 mr-1.5" />
+              <span className="font-medium text-amber-700">{tickets}</span>
+            </div>
+          )}
+        </div>
       </div>
       
-      {timeLeft !== undefined && (
-        <div className="mt-4 flex items-center">
-          <Timer className="w-4 h-4 text-red-500 mr-2" />
-          <div className="font-mono text-lg font-medium text-red-600">
-            {formatTime(timeLeft)}
-          </div>
-        </div>
-      )}
+      {/* Progress indicator bar - subtle animation */}
+      <div className="h-1 w-full bg-gray-100 rounded-full mt-4 overflow-hidden">
+        <motion.div 
+          className="h-full bg-gradient-to-r from-blue-500 to-indigo-500"
+          initial={{ width: "0%" }}
+          animate={{ width: "100%" }}
+          transition={{ duration: 30, ease: "linear", repeat: Infinity }}
+        />
+      </div>
     </div>
   );
 }
@@ -66,12 +85,36 @@ export function GameProgress({
   const progress = (current / total) * 100;
   
   return (
-    <div className="space-y-2">
-      <div className="flex justify-between text-sm text-gray-500">
-        <span>Question {current} of {total}</span>
-        <span>{Math.round(progress)}%</span>
+    <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-5">
+      <div className="flex justify-between items-center mb-2">
+        <div className="flex items-center">
+          <div className="w-7 h-7 rounded-full bg-indigo-100 flex items-center justify-center mr-2">
+            <span className="text-sm font-bold text-indigo-700">{current}</span>
+          </div>
+          <span className="text-sm font-medium text-gray-700">
+            Question {current} of {total}
+          </span>
+        </div>
+        <div className="flex items-center bg-indigo-50 rounded-full px-3 py-1">
+          <motion.span 
+            key={progress}
+            initial={{ scale: 0.8 }}
+            animate={{ scale: 1 }}
+            className="text-sm font-bold text-indigo-700"
+          >
+            {Math.round(progress)}%
+          </motion.span>
+        </div>
       </div>
-      <Progress value={progress} className="h-2" />
+      
+      <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+        <motion.div 
+          className="h-full bg-gradient-to-r from-indigo-500 to-blue-500"
+          initial={{ width: `${(current - 1) / total * 100}%` }} 
+          animate={{ width: `${progress}%` }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+        />
+      </div>
     </div>
   );
 }
@@ -171,115 +214,193 @@ export function GameOver({
   totalQuestions?: number;
   onRestart?: () => void; 
 }) {
-  // Trigger confetti effect when component mounts
+  // Trigger confetti effect with slight delay
   React.useEffect(() => {
-    const canvas = document.createElement('canvas');
-    canvas.style.position = 'fixed';
-    canvas.style.inset = '0';
-    canvas.style.width = '100%';
-    canvas.style.height = '100%';
-    canvas.style.pointerEvents = 'none';
-    canvas.style.zIndex = '9999';
-    document.body.appendChild(canvas);
+    // Add slight delay for better user experience
+    const timer = setTimeout(() => {
+      const canvas = document.createElement('canvas');
+      canvas.style.position = 'fixed';
+      canvas.style.inset = '0';
+      canvas.style.width = '100%';
+      canvas.style.height = '100%';
+      canvas.style.pointerEvents = 'none';
+      canvas.style.zIndex = '9999';
+      document.body.appendChild(canvas);
+  
+      const createConfetti = (ConfettiModule as any).default;
+      const myConfetti = createConfetti(canvas, {
+        resize: true,
+        useWorker: true,
+      });
+  
+      // More colorful and dynamic confetti
+      myConfetti({
+        particleCount: 150,
+        spread: 90,
+        origin: { y: 0.6 },
+        colors: ['#4F46E5', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'],
+        shapes: ['circle', 'square'],
+        gravity: 0.8,
+        scalar: 1.2
+      });
+  
+      // Second burst after a delay
+      setTimeout(() => {
+        myConfetti({
+          particleCount: 80,
+          spread: 120,
+          origin: { y: 0.7, x: 0.3 },
+          colors: ['#4F46E5', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'],
+          startVelocity: 45
+        });
+      }, 700);
+  
+      // Third burst
+      setTimeout(() => {
+        myConfetti({
+          particleCount: 80,
+          spread: 120,
+          origin: { y: 0.7, x: 0.7 },
+          colors: ['#4F46E5', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'],
+          startVelocity: 45
+        });
+      }, 1200);
+  
+      // Clean up
+      return () => {
+        document.body.removeChild(canvas);
+      };
+    }, 400); // Delay the confetti slightly
 
-    const createConfetti = (ConfettiModule as any).default;
-    const myConfetti = createConfetti(canvas, {
-      resize: true,
-      useWorker: true,
-    });
-
-    myConfetti({
-      particleCount: 100,
-      spread: 70,
-      origin: { y: 0.6 }
-    });
-
-    // Clean up
-    return () => {
-      document.body.removeChild(canvas);
-    };
+    return () => clearTimeout(timer);
   }, []);
 
   // Handle the two different interfaces
   const handlePlayAgain = onPlayAgain || onRestart;
 
   return (
-    <div className="max-w-lg mx-auto text-center py-6 space-y-8">
-      <motion.div
-        initial={{ scale: 0.8, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ 
-          type: "spring",
-          stiffness: 260,
-          damping: 20,
-          delay: 0.3
-        }}
-        className="flex justify-center"
-      >
-        <div className="relative">
-          <div className="absolute inset-0 bg-gradient-to-br from-yellow-300 to-amber-500 blur-xl opacity-30 rounded-full"></div>
-          <div className="relative bg-gradient-to-br from-yellow-300 to-amber-500 p-5 rounded-full">
-            <Trophy className="w-16 h-16 text-white" />
-          </div>
-          <motion.div
-            className="absolute -top-2 -right-2"
-            animate={{ 
-              scale: [1, 1.2, 1],
-              rotate: [0, 5, 0]
-            }}
-            transition={{
-              duration: 2,
-              repeat: Infinity,
-              repeatType: "reverse"
-            }}
-          >
-            <Sparkles className="w-6 h-6 text-yellow-400" />
-          </motion.div>
-        </div>
-      </motion.div>
-
-      <div className="space-y-2">
-        <h2 className="text-2xl font-bold">Game Over!</h2>
-        
-        {message && <p className="text-gray-600">{message}</p>}
-        
-        {(correctAnswers !== undefined && totalQuestions !== undefined) && (
-          <p className="text-gray-600">You got {correctAnswers} out of {totalQuestions} correct!</p>
-        )}
-        
-        <p className="text-lg font-semibold text-indigo-600">Final Score: {score}</p>
-        
-        {tickets !== undefined && (
-          <div className="flex justify-center items-center mt-4">
-            <div className="bg-amber-100 px-4 py-2 rounded-full flex items-center">
-              <Ticket className="w-5 h-5 text-amber-500 mr-2" />
-              <span className="font-semibold text-amber-700">Tickets Earned: {tickets}</span>
+    <motion.div 
+      className="max-w-lg mx-auto py-6 space-y-8"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.4 }}
+    >
+      <div className="bg-white p-8 rounded-2xl shadow-lg border border-indigo-100 text-center">
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0, y: 20 }}
+          animate={{ scale: 1, opacity: 1, y: 0 }}
+          transition={{ 
+            type: "spring",
+            stiffness: 260,
+            damping: 20,
+            delay: 0.1
+          }}
+          className="flex justify-center"
+        >
+          <div className="relative">
+            <div className="absolute inset-0 bg-gradient-to-br from-indigo-300 to-purple-500 blur-xl opacity-30 rounded-full"></div>
+            <div className="relative bg-gradient-to-br from-indigo-500 to-purple-600 p-6 rounded-full shadow-lg">
+              <Trophy className="w-16 h-16 text-white" />
             </div>
+            <motion.div
+              className="absolute -top-3 -right-3"
+              animate={{ 
+                scale: [1, 1.2, 1],
+                rotate: [0, 10, 0, -10, 0]
+              }}
+              transition={{
+                duration: 3,
+                repeat: Infinity,
+                repeatType: "reverse"
+              }}
+            >
+              <Sparkles className="w-7 h-7 text-yellow-400" />
+            </motion.div>
           </div>
-        )}
-      </div>
-      
-      <div className="flex flex-col sm:flex-row justify-center gap-4">
-        {handlePlayAgain && (
-          <Button 
-            onClick={handlePlayAgain}
-            className="bg-gradient-to-r from-indigo-500 to-blue-500 hover:from-indigo-600 hover:to-blue-600 text-white px-8 py-2"
-          >
-            Play Again
-          </Button>
-        )}
+        </motion.div>
+
+        <motion.div 
+          className="space-y-4 mt-6"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 0.5 }}
+        >
+          <h2 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">
+            Game Complete!
+          </h2>
+          
+          {message && (
+            <p className="text-gray-600 text-lg">{message}</p>
+          )}
+          
+          {(correctAnswers !== undefined && totalQuestions !== undefined) && (
+            <div className="bg-indigo-50 p-3 rounded-lg inline-block">
+              <p className="text-indigo-700">
+                You got <span className="font-bold">{correctAnswers}</span> out of <span className="font-bold">{totalQuestions}</span> correct!
+              </p>
+            </div>
+          )}
+          
+          <div className="mt-6">
+            <motion.div
+              className="text-3xl sm:text-4xl font-bold text-indigo-600 inline-block"
+              initial={{ scale: 0.9 }}
+              animate={{ scale: 1 }}
+              transition={{ 
+                type: "spring", 
+                stiffness: 300,
+                delay: 0.5,
+                duration: 0.5
+              }}
+            >
+              {score} points
+            </motion.div>
+          </div>
+          
+          {tickets !== undefined && (
+            <motion.div 
+              className="flex justify-center items-center mt-4"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.7 }}
+            >
+              <div className="bg-gradient-to-r from-amber-100 to-amber-200 px-5 py-3 rounded-lg flex items-center shadow-md">
+                <Ticket className="w-6 h-6 text-amber-600 mr-3" />
+                <span className="font-bold text-amber-800 text-lg">
+                  +{tickets} Tickets
+                </span>
+              </div>
+            </motion.div>
+          )}
+        </motion.div>
         
-        {onReturnToHub && (
-          <Button 
-            onClick={onReturnToHub}
-            variant="outline"
-            className="px-8 py-2"
-          >
-            Return to Hub
-          </Button>
-        )}
+        <motion.div 
+          className="flex flex-col sm:flex-row justify-center gap-4 mt-8"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.9 }}
+        >
+          {handlePlayAgain && (
+            <Button 
+              onClick={handlePlayAgain}
+              className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white px-8 py-3 font-semibold text-lg rounded-xl shadow-md hover:shadow-lg transition-all"
+            >
+              Play Again
+            </Button>
+          )}
+          
+          {onReturnToHub && (
+            <Button 
+              onClick={onReturnToHub}
+              variant="outline"
+              className="px-8 py-3 text-lg font-medium hover:bg-gray-50"
+            >
+              Return to Hub
+            </Button>
+          )}
+        </motion.div>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -296,24 +417,45 @@ export function DecisionCard({
   onSelect: (id: string) => void;
 }) {
   return (
-    <Card className="p-5 sm:p-6 border-2 border-indigo-100">
-      <div className="space-y-4">
-        <h3 className="text-xl font-semibold text-indigo-900">{title}</h3>
-        <p className="text-gray-600">{description}</p>
-        
-        <div className="mt-6 space-y-3">
-          {options.map((option) => (
-            <Button
-              key={option.id}
-              onClick={() => onSelect(option.id)}
-              className="w-full justify-start text-left py-4 px-4 bg-indigo-50 hover:bg-indigo-100 text-indigo-900 font-medium border border-indigo-100 shadow-sm"
-            >
-              {option.text}
-            </Button>
-          ))}
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+    >
+      <Card className="p-6 sm:p-7 border border-indigo-100 shadow-lg rounded-xl bg-white">
+        <div className="space-y-5">
+          <div className="border-b border-indigo-100 pb-4">
+            <h3 className="text-xl sm:text-2xl font-bold text-indigo-900 mb-2">{title}</h3>
+            <p className="text-gray-600">{description}</p>
+          </div>
+          
+          <div className="pt-2 space-y-4">
+            {options.map((option, index) => (
+              <motion.div
+                key={option.id}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.1 * index, duration: 0.3 }}
+              >
+                <Button
+                  onClick={() => onSelect(option.id)}
+                  className="w-full justify-start text-left py-5 px-5 bg-gradient-to-r from-indigo-50 to-white hover:from-indigo-100 hover:to-indigo-50 text-indigo-900 font-medium border border-indigo-100 shadow-sm rounded-lg transition-all duration-200 hover:-translate-y-1 hover:shadow-md"
+                >
+                  <div>
+                    <span className="block text-base font-semibold">{option.text}</span>
+                    {option.impact && (
+                      <span className="text-xs text-indigo-600 mt-1 block opacity-80">
+                        Impact: {option.impact}
+                      </span>
+                    )}
+                  </div>
+                </Button>
+              </motion.div>
+            ))}
+          </div>
         </div>
-      </div>
-    </Card>
+      </Card>
+    </motion.div>
   );
 }
 
@@ -326,9 +468,9 @@ export function ImpactCard({
   onContinue: () => void;
 }) {
   const getChangeColor = (change: number) => {
-    if (change > 0) return 'text-green-600';
-    if (change < 0) return 'text-red-600';
-    return 'text-gray-600';
+    if (change > 0) return 'text-emerald-600 bg-emerald-50 border-emerald-100';
+    if (change < 0) return 'text-red-600 bg-red-50 border-red-100';
+    return 'text-gray-600 bg-gray-50 border-gray-100';
   };
 
   const getChangeSymbol = (change: number) => {
@@ -338,28 +480,54 @@ export function ImpactCard({
   };
 
   return (
-    <Card className="p-5 sm:p-6 border-2 border-amber-100">
-      <div className="space-y-6">
-        <h3 className="text-xl font-semibold text-amber-900">Impact on Metrics</h3>
-        
-        <div className="space-y-4">
-          {metrics.map((metric) => (
-            <div key={metric.name} className="flex justify-between items-center p-3 bg-amber-50 rounded-md">
-              <span className="font-medium">{metric.name}</span>
-              <span className={`font-bold ${getChangeColor(metric.change)}`}>
-                {getChangeSymbol(metric.change)}{metric.change}%
-              </span>
+    <motion.div
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.4 }}
+    >
+      <Card className="p-6 sm:p-7 border border-blue-100 shadow-lg rounded-xl overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-indigo-500"></div>
+        <div className="space-y-6">
+          <div className="flex items-center space-x-3">
+            <div className="p-2 bg-blue-100 rounded-full">
+              <LineChart className="w-5 h-5 text-blue-600" />
             </div>
-          ))}
+            <h3 className="text-xl font-bold text-gray-900">Impact on Metrics</h3>
+          </div>
+          
+          <div className="space-y-3">
+            {metrics.map((metric, index) => (
+              <motion.div 
+                key={metric.name}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 * index, duration: 0.3 }}
+              >
+                <div className="flex justify-between items-center p-4 rounded-lg border shadow-sm" 
+                  style={{ backgroundColor: 'white' }}>
+                  <span className="font-medium text-gray-800">{metric.name}</span>
+                  <span className={`font-bold py-1 px-3 rounded-full text-sm border ${getChangeColor(metric.change)}`}>
+                    {getChangeSymbol(metric.change)}{metric.change}%
+                  </span>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+          
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5, duration: 0.3 }}
+          >
+            <Button 
+              onClick={onContinue}
+              className="w-full py-4 mt-2 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-semibold text-lg rounded-lg shadow-md hover:shadow-lg transition-all duration-200"
+            >
+              Continue
+            </Button>
+          </motion.div>
         </div>
-        
-        <Button 
-          onClick={onContinue}
-          className="w-full py-4 mt-4 bg-amber-500 hover:bg-amber-600 text-white"
-        >
-          Continue
-        </Button>
-      </div>
-    </Card>
+      </Card>
+    </motion.div>
   );
 }
