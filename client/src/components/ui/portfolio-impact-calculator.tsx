@@ -348,8 +348,8 @@ export default function PortfolioImpactCalculator({
                     </div>
                   </div>
                   
-                  {/* Improved Metrics Grid - More compact and space efficient */}
-                  <div className="grid grid-cols-2 gap-2 mb-4">
+                  {/* Vertical Stacked Metrics - Redesigned for better readability */}
+                  <div className="space-y-3 mb-4">
                     {Object.entries(impact.impact)
                       .filter(([metric]) => ['performance', 'stability', 'value', 'momentum'].includes(metric.toLowerCase()))
                       .map(([metric, change]) => (
@@ -357,74 +357,47 @@ export default function PortfolioImpactCalculator({
                         key={metric} 
                         className="p-3 bg-white rounded-lg border border-slate-200 shadow-sm hover:shadow-md transition-all duration-200 hover:border-sky-200"
                       >
-                        <div className="flex items-center justify-between mb-2">
-                          <div className="flex items-center">
-                            <div className={`p-1 rounded-md mr-1.5 ${
-                              change > 0 ? "bg-green-100 text-green-600" : 
-                              change < 0 ? "bg-red-100 text-red-600" : 
-                              "bg-slate-100 text-slate-600"
-                            }`}>
-                              {getMetricIcon(metric, 14)}
-                            </div>
-                            <h4 className="font-semibold text-xs text-slate-900 capitalize">{metric}</h4>
-                            <button 
-                              className="ml-1 text-slate-400 hover:text-slate-600 transition-colors"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setActiveTooltip(activeTooltip === metric ? null : metric);
-                              }}
-                              aria-label={`Info about ${metric}`}
-                            >
-                              <Info size={12} />
-                            </button>
-                            {activeTooltip === metric && (
-                              <div 
-                                className="absolute z-50 bg-white p-2 rounded-lg shadow-lg border border-slate-200 text-xs text-slate-700 max-w-[180px] mt-1 left-1/2 transform -translate-x-1/2"
-                                style={{ top: '100%' }}
-                              >
-                                {(metricExplanations as any)[metric.toLowerCase()]}
-                                <div className="absolute w-2 h-2 bg-white transform rotate-45 left-1/2 -mt-5 -ml-1 border-t border-l border-slate-200"></div>
-                              </div>
-                            )}
-                          </div>
-                          
-                          <div className={`text-xs font-medium px-2 py-0.5 rounded-full ${
-                            change > 0 ? "bg-green-100 text-green-700" : 
-                            change < 0 ? "bg-red-100 text-red-700" : 
-                            "bg-slate-100 text-slate-700"
+                        <div className="flex items-center mb-2">
+                          <div className={`p-1.5 rounded-md mr-2 ${
+                            change > 0 ? "bg-green-100 text-green-600" : 
+                            change < 0 ? "bg-red-100 text-red-600" : 
+                            "bg-slate-100 text-slate-600"
                           }`}>
-                            {change > 0 ? "+" : ""}{change.toFixed(1)}
+                            {getMetricIcon(metric, 16)}
                           </div>
+                          <h4 className="font-semibold text-sm text-slate-900 capitalize">{metric}</h4>
+                          <button 
+                            className="ml-1.5 text-slate-400 hover:text-slate-600 transition-colors"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setActiveTooltip(activeTooltip === metric ? null : metric);
+                            }}
+                            aria-label={`Info about ${metric}`}
+                          >
+                            <Info size={14} />
+                          </button>
+                          {activeTooltip === metric && (
+                            <div 
+                              className="absolute z-50 bg-white p-2 rounded-lg shadow-lg border border-slate-200 text-xs text-slate-700 max-w-[180px] mt-1 left-1/2 transform -translate-x-1/2"
+                              style={{ top: '100%' }}
+                            >
+                              {(metricExplanations as any)[metric.toLowerCase()]}
+                              <div className="absolute w-2 h-2 bg-white transform rotate-45 left-1/2 -mt-5 -ml-1 border-t border-l border-slate-200"></div>
+                            </div>
+                          )}
                         </div>
                         
-                        {/* Compact Current → New format with less vertical space */}
-                        <div className="flex items-center justify-between text-sm">
-                          {/* Current value */}
-                          <div className="flex flex-col items-center">
-                            <div className="text-[10px] text-slate-500">Current</div>
-                            <div className="font-semibold bg-slate-50 px-2 py-1 rounded-md shadow-sm border border-slate-100 min-w-[40px] text-center text-slate-900">
-                              {impact.currentMetrics[metric as keyof typeof impact.currentMetrics].toFixed(1)}
-                            </div>
+                        {/* New metric value with change indicator */}
+                        <div className="flex items-center">
+                          <div className="text-lg font-bold text-slate-900 mr-2">
+                            {impact.newMetrics[metric as keyof typeof impact.newMetrics].toFixed(1)}
                           </div>
-                          
-                          {/* Arrow indicator */}
-                          <div className="text-slate-400 mx-1">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                              <path d="M5 12h14"></path>
-                              <path d="m12 5 7 7-7 7"></path>
-                            </svg>
-                          </div>
-                          
-                          {/* New value */}
-                          <div className="flex flex-col items-center">
-                            <div className="text-[10px] text-slate-500">New</div>
-                            <div className={`font-semibold px-2 py-1 rounded-md shadow-sm border min-w-[40px] text-center ${
-                              change > 0 ? "bg-green-50 border-green-100 text-green-900" : 
-                              change < 0 ? "bg-red-50 border-red-100 text-red-900" : 
-                              "bg-slate-50 border-slate-100 text-slate-900"
-                            }`}>
-                              {impact.newMetrics[metric as keyof typeof impact.newMetrics].toFixed(1)}
-                            </div>
+                          <div className={`text-sm font-medium px-2 py-0.5 rounded-full ${
+                            change > 0 ? "bg-green-100 text-green-800" : 
+                            change < 0 ? "bg-red-100 text-red-800" : 
+                            "bg-slate-100 text-slate-800"
+                          }`}>
+                            {change > 0 ? "+" : ""}{change.toFixed(1)}
                           </div>
                         </div>
                       </div>
@@ -461,7 +434,7 @@ export default function PortfolioImpactCalculator({
                           max={maxInvestment}
                           value={investmentAmount}
                           onChange={handleAmountChange}
-                          className="w-full rounded-md px-8 py-2.5 border border-slate-200 focus:border-green-300 focus:outline-none focus:ring-2 focus:ring-green-100 text-center font-medium"
+                          className="w-full rounded-md px-8 py-2.5 border border-slate-200 focus:border-green-300 focus:outline-none focus:ring-2 focus:ring-green-100 text-center font-medium text-slate-900"
                         />
                       </div>
                       
@@ -478,21 +451,23 @@ export default function PortfolioImpactCalculator({
                     </div>
                   </div>
                   
-                  {/* Calculation summary */}
-                  <div className="flex justify-between items-center gap-2 mt-4 p-3 bg-slate-50 rounded-lg">
-                    <div>
-                      <div className="text-xs text-slate-500">You'll get</div>
-                      <div className="text-base font-semibold text-slate-900">{shares.toFixed(4)} shares</div>
-                    </div>
-                    
-                    <div className="text-slate-400">
-                      <ArrowRight size={16} />
-                    </div>
-                    
-                    <div>
-                      <div className="text-xs text-slate-500">Projected 1y return</div>
-                      <div className="flex items-center text-base font-semibold text-green-600">
-                        {formatCurrency(projectedReturn)}
+                  {/* Enhanced Calculation summary */}
+                  <div className="flex flex-col mt-5 mb-1">
+                    <div className="flex justify-center items-center gap-4 p-4 bg-slate-50 rounded-lg">
+                      <div className="text-center">
+                        <div className="text-sm font-medium text-slate-700 mb-1">You'll get</div>
+                        <div className="text-xl font-bold text-slate-900">{shares.toFixed(4)} shares</div>
+                      </div>
+                      
+                      <div className="text-slate-500 flex items-center justify-center">
+                        <ArrowRight size={24} strokeWidth={2} />
+                      </div>
+                      
+                      <div className="text-center">
+                        <div className="text-sm font-medium text-slate-700 mb-1">Projected 1y return</div>
+                        <div className="text-xl font-bold text-green-600">
+                          {formatCurrency(projectedReturn)}
+                        </div>
                       </div>
                     </div>
                   </div>
