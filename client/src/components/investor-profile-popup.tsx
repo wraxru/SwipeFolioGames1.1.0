@@ -456,21 +456,48 @@ export default function InvestorProfilePopup({ investor, onClose }: InvestorProf
         );
         
       case 'portfolio':
-        // For non-premium users, show a blurred/locked view
+        // For non-premium users, show a modern premium lock screen with frosted glass effect
         if (!isPremium && investor.id !== 'current-user') {
           return (
-            <div className="relative">
-              <div className="absolute inset-0 backdrop-blur-sm bg-white/50 z-10 flex flex-col items-center justify-center rounded-xl">
-                <div className="bg-purple-100 rounded-full p-3 mb-3">
-                  <Shield className="h-6 w-6 text-purple-500" />
-                </div>
-                <h3 className="text-lg font-medium text-slate-800 mb-1">Premium Feature</h3>
-                <p className="text-sm text-slate-500 text-center mb-3 max-w-xs">
-                  Upgrade to Premium to view other investors' portfolios and learn from the best.
-                </p>
-                <button className="px-4 py-2 bg-purple-500 text-white rounded-full text-sm font-medium hover:bg-purple-600 transition-colors">
-                  Upgrade to Premium
-                </button>
+            <div className="relative h-full">
+              <div className="absolute inset-0 backdrop-blur-md bg-gradient-to-br from-purple-500/20 to-indigo-500/30 z-10 flex flex-col items-center justify-center rounded-xl border border-white/20 shadow-lg">
+                {/* Premium lock icon with animation */}
+                <motion.div 
+                  className="bg-gradient-to-br from-purple-500 to-indigo-600 rounded-full p-4 mb-4 shadow-lg border border-white/20"
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ type: "spring", duration: 0.8 }}
+                >
+                  <Shield className="h-8 w-8 text-white" />
+                </motion.div>
+                
+                {/* Premium content text */}
+                <motion.div
+                  className="text-center px-6"
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.2, duration: 0.5 }}
+                >
+                  <h3 className="text-xl font-bold text-white mb-2">Premium Content</h3>
+                  <p className="text-sm text-white/80 text-center mb-5 max-w-xs">
+                    Unlock this investor's portfolio insights and learn their secret strategies with Premium.
+                  </p>
+                  
+                  {/* Visually appealing premium button */}
+                  <motion.button 
+                    className="px-6 py-3 bg-gradient-to-r from-purple-500 to-indigo-600 text-white rounded-xl text-sm font-bold hover:shadow-lg transition-all duration-300 shadow-md relative overflow-hidden"
+                    whileHover={{ scale: 1.05, y: -2 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <span className="relative z-10 flex items-center justify-center">
+                      <Zap className="w-4 h-4 mr-1.5" />
+                      Upgrade to Premium
+                    </span>
+                    
+                    {/* Button shine effect */}
+                    <div className="absolute top-0 -inset-full h-full w-1/2 z-5 block transform -skew-x-12 bg-gradient-to-r from-transparent to-white opacity-20 animate-shine" />
+                  </motion.button>
+                </motion.div>
               </div>
               
               {/* Blurred background content */}
@@ -683,19 +710,46 @@ export default function InvestorProfilePopup({ investor, onClose }: InvestorProf
                 </div>
               </>
             ) : (
-              // For non-premium users, show a locked view
-              <div className="relative">
-                <div className="absolute inset-0 backdrop-blur-sm bg-white/50 z-10 flex flex-col items-center justify-center rounded-xl">
-                  <div className="bg-purple-100 rounded-full p-3 mb-3">
-                    <Shield className="h-6 w-6 text-purple-500" />
-                  </div>
-                  <h3 className="text-lg font-medium text-slate-800 mb-1">Premium Feature</h3>
-                  <p className="text-sm text-slate-500 text-center mb-3 max-w-xs">
-                    Upgrade to Premium to view virtual assets and properties owned by other investors.
-                  </p>
-                  <button className="px-4 py-2 bg-purple-500 text-white rounded-full text-sm font-medium hover:bg-purple-600 transition-colors">
-                    Upgrade to Premium
-                  </button>
+              // For non-premium users, show a modern premium lock screen with frosted glass effect
+              <div className="relative h-full">
+                <div className="absolute inset-0 backdrop-blur-md bg-gradient-to-br from-purple-500/20 to-indigo-500/30 z-10 flex flex-col items-center justify-center rounded-xl border border-white/20 shadow-lg">
+                  {/* Premium lock icon with animation */}
+                  <motion.div 
+                    className="bg-gradient-to-br from-purple-500 to-indigo-600 rounded-full p-4 mb-4 shadow-lg border border-white/20"
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ type: "spring", duration: 0.8 }}
+                  >
+                    <Shield className="h-8 w-8 text-white" />
+                  </motion.div>
+                  
+                  {/* Premium content text */}
+                  <motion.div
+                    className="text-center px-6"
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.2, duration: 0.5 }}
+                  >
+                    <h3 className="text-xl font-bold text-white mb-2">Premium Properties</h3>
+                    <p className="text-sm text-white/80 text-center mb-5 max-w-xs">
+                      Unlock access to view this investor's exclusive virtual properties and luxury assets.
+                    </p>
+                    
+                    {/* Visually appealing premium button */}
+                    <motion.button 
+                      className="px-6 py-3 bg-gradient-to-r from-purple-500 to-indigo-600 text-white rounded-xl text-sm font-bold hover:shadow-lg transition-all duration-300 shadow-md relative overflow-hidden"
+                      whileHover={{ scale: 1.05, y: -2 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <span className="relative z-10 flex items-center justify-center">
+                        <Zap className="w-4 h-4 mr-1.5" />
+                        Upgrade to Premium
+                      </span>
+                      
+                      {/* Button shine effect */}
+                      <div className="absolute top-0 -inset-full h-full w-1/2 z-5 block transform -skew-x-12 bg-gradient-to-r from-transparent to-white opacity-20 animate-shine" />
+                    </motion.button>
+                  </motion.div>
                 </div>
                 
                 {/* Blurred background content */}

@@ -11,7 +11,8 @@ import {
   Star,
   Check,
   UserPlus,
-  ChevronRight
+  ChevronRight,
+  Zap
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { 
@@ -20,6 +21,7 @@ import {
   LeaderboardUser
 } from "@/data/leaderboard-data";
 import { PortfolioContext } from "@/contexts/portfolio-context";
+import InvestorProfilePopup from "@/components/investor-profile-popup";
 
 const LeaderboardPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"all" | "friends">("all");
@@ -27,7 +29,20 @@ const LeaderboardPage: React.FC = () => {
   const [friendsList, setFriendsList] = useState<LeaderboardUser[]>([]);
   const [leaderboardData, setLeaderboardData] = useState<LeaderboardUser[]>([]);
   const [currentUser, setCurrentUser] = useState<LeaderboardUser | undefined>();
+  const [selectedInvestor, setSelectedInvestor] = useState<LeaderboardUser | null>(null);
+  const [showProfilePopup, setShowProfilePopup] = useState<boolean>(false);
   const portfolio = useContext(PortfolioContext);
+  
+  // Handler to open investor profile popup
+  const handleOpenProfile = (investor: LeaderboardUser) => {
+    setSelectedInvestor(investor);
+    setShowProfilePopup(true);
+  };
+  
+  // Handler to close investor profile popup
+  const handleCloseProfile = () => {
+    setShowProfilePopup(false);
+  };
   
   // Update user stats and refetch leaderboard data when portfolio changes
   useEffect(() => {
@@ -143,7 +158,9 @@ const LeaderboardPage: React.FC = () => {
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.1, duration: 0.3 }}
             >
-              <div className="bg-white rounded-2xl shadow-md p-3 transform -translate-y-6">
+              <div 
+                onClick={() => filteredData[1] && handleOpenProfile(filteredData[1])}
+                className="bg-white rounded-2xl shadow-md p-3 transform -translate-y-6 cursor-pointer hover:shadow-lg transition-all active:scale-[0.98]">
                 <div className="flex flex-col items-center">
                   {/* Rank indicator */}
                   <div className="absolute -top-2 right-3 bg-slate-400 rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold text-white shadow border border-white">
@@ -189,7 +206,9 @@ const LeaderboardPage: React.FC = () => {
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0, duration: 0.3 }}
             >
-              <div className="bg-white rounded-2xl shadow-lg p-4 transform -translate-y-10 border-[0.5px] border-yellow-100">
+              <div 
+                onClick={() => filteredData[0] && handleOpenProfile(filteredData[0])}
+                className="bg-white rounded-2xl shadow-lg p-4 transform -translate-y-10 border-[0.5px] border-yellow-100 cursor-pointer hover:shadow-xl transition-all active:scale-[0.98]">
                 {/* Trophy on top - outside the card */}
                 <div className="absolute -top-6 left-1/2 transform -translate-x-1/2">
                   <div className="relative">
@@ -252,7 +271,9 @@ const LeaderboardPage: React.FC = () => {
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.2, duration: 0.3 }}
             >
-              <div className="bg-white rounded-2xl shadow-md p-3 transform -translate-y-6">
+              <div 
+                onClick={() => filteredData[2] && handleOpenProfile(filteredData[2])}
+                className="bg-white rounded-2xl shadow-md p-3 transform -translate-y-6 cursor-pointer hover:shadow-lg transition-all active:scale-[0.98]">
                 <div className="flex flex-col items-center">
                   {/* Rank indicator */}
                   <div className="absolute -top-2 right-3 bg-amber-700 rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold text-white shadow border border-white">
@@ -387,13 +408,15 @@ const LeaderboardPage: React.FC = () => {
                   <motion.div 
                     key={user.id}
                     id={`leaderboard-user-${user.id}`}
+                    onClick={() => handleOpenProfile(user)}
                     className={`grid grid-cols-[40px_minmax(100px,1.5fr)_repeat(4,_minmax(45px,1fr))] items-center px-3 py-4 
                       ${isTopThree ? 'bg-gradient-to-r from-slate-50 to-white border-t border-slate-100' : 
                         isCurrentUser ? 'bg-blue-50/80' : 
                         isEvenRow ? 'bg-white border-t border-slate-100' : 'bg-slate-50/30 border-t border-slate-100'
                       }
                       ${isCurrentUser ? 'border-l-3 border-blue-500' : ''}
-                      hover:bg-blue-50/30 transition-colors duration-200 relative`}
+                      hover:bg-blue-50/30 transition-colors duration-200 relative
+                      cursor-pointer active:bg-blue-100/50 hover:shadow-sm`}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.05, duration: 0.2 }}
@@ -499,6 +522,14 @@ const LeaderboardPage: React.FC = () => {
           </div>
         </div>
       </div>
+      
+      {/* Investor Profile Popup */}
+      {showProfilePopup && (
+        <InvestorProfilePopup 
+          investor={selectedInvestor} 
+          onClose={handleCloseProfile} 
+        />
+      )}
     </div>
   );
 };

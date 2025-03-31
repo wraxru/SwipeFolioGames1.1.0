@@ -1,0 +1,39 @@
+Please perform a major visual overhaul on the user profile screen design (image_1acd88.jpg). The current design feels plain, the 'bubble boxes' are unappealing, and text readability needs improvement. Aim for a much cooler, modern, sleek aesthetic inspired by popular iOS apps and Gen Z design trends.
+
+Here are specific instructions:
+
+Overall Aesthetic:
+
+Replace Flat Boxes: Eliminate plain 'bubble boxes'. Instead, use modern card styles with subtle gradients, soft shadows (neumorphism), or frosted glass effects (glassmorphism) for elements like the stats bar and content sections.
+Vibrant but Clean: Use smooth, appealing gradients (like the existing header gradient, but apply similar quality elsewhere). Ensure colors enhance the design without sacrificing clarity.
+Readability is Key: Dramatically improve text contrast everywhere. Use appropriate font weights (e.g., bolder for titles/numbers, regular/medium for body) and ensure text isn't obscured by backgrounds. Consider using a highly readable, modern sans-serif font (like Inter, SF Pro, or similar).
+Header:
+
+Keep the layout: Pic left, info right.
+Enhance Typography: Use a larger, bolder font for the username (KingJames), slightly smaller for the full name. Ensure the Tier/Followers/Date line is clean and legible.
+'Quality' Score Visual: Integrate the '99 Quality' more visually – maybe as a small radial progress bar around a star icon, or a distinct small badge near the Tier.
+Quote Block:
+
+Make it pop more. Maybe add a subtle inner shadow, a stronger background gradient, or a slight transparency/blur effect on the background behind it. Ensure the quote text stands out clearly.
+Stat Cards (Replacing Boxes):
+
+Crucial: Completely redesign the ROI, Quality, Trades, Refs section. Replace the boxes with sleek cards using the modern styles mentioned in point 1 (gradients, glassmorphism, etc.).
+Visual Hierarchy: Inside each card, make the number (545.8%, 99, etc.) large and visually dominant. Use modern, clean icons (filled or duo-tone style). Keep labels ("ROI", "Quality") clear but secondary.
+'Refs' Clarity: Redesign the 'Refs' card to clearly show the main number (10482) and explain or visually integrate the +9% (e.g., small percentage change indicator).
+Tab Bar:
+
+Implement the sliding 'pill' background for the active tab. Use clean, modern, potentially filled icons that match the overall aesthetic.
+Content Sections (About, Strategy, Sectors):
+
+Typography: Apply the improved font and hierarchy here. Ensure section titles (About, etc.) are distinct, and body text is well-spaced and easy to read.
+'Strongest Sectors' Visualisation: Must be visual. Replace the plain text list. Use dynamic elements like:
+Segmented horizontal progress bars for each sector.
+Mini donut charts or radial progress bars.
+Clean cards for each sector with a background color/icon and the percentage clearly displayed. Make it look data-driven and engaging.
+Buttons (Follow/Challenge):
+
+Give them a modern facelift. Use gradients, softer shadows, or distinct primary (filled) vs. secondary (tinted/outline) styles. Add a subtle animation (like a scale pop) on tap.
+Polish & Animation:
+
+Add subtle entrance animations (e.g., fade-in, slide-up slightly) for elements as the screen loads.
+Implement smooth transitions for hover effects (slight scale, brightness change) on all interactive elements (stats cards, tabs, buttons, sector visuals)."
