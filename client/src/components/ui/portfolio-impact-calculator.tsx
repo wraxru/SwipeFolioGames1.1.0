@@ -224,9 +224,11 @@ export default function PortfolioImpactCalculator({
                 y: 20,
                 transition: { duration: 0.25, ease: 'easeIn' }
               }}
-              className="relative w-[90%] max-w-md mx-auto bg-white rounded-2xl overflow-hidden"
+              className="relative w-[85%] max-w-sm mx-auto bg-white rounded-2xl overflow-hidden"
               style={{
                 zIndex: 51,
+                maxHeight: '90vh',
+                overflowY: 'auto',
                 boxShadow: '0 20px 60px -15px rgba(0, 0, 0, 0.6)'
               }}
             >
@@ -337,7 +339,7 @@ export default function PortfolioImpactCalculator({
                                   className="w-2.5 h-2.5 rounded-full mr-1.5" 
                                   style={{ backgroundColor: color }}
                                 ></div>
-                                <span className="text-xs text-slate-700">{industry}</span>
+                                <span className="text-xs text-slate-900 font-medium">{industry}</span>
                               </div>
                             );
                           })
@@ -364,7 +366,7 @@ export default function PortfolioImpactCalculator({
                             }`}>
                               {getMetricIcon(metric, 14)}
                             </div>
-                            <h4 className="font-semibold text-xs capitalize">{metric}</h4>
+                            <h4 className="font-semibold text-xs text-slate-900 capitalize">{metric}</h4>
                             <button 
                               className="ml-1 text-slate-400 hover:text-slate-600 transition-colors"
                               onClick={(e) => {
@@ -400,7 +402,7 @@ export default function PortfolioImpactCalculator({
                           {/* Current value */}
                           <div className="flex flex-col items-center">
                             <div className="text-[10px] text-slate-500">Current</div>
-                            <div className="font-semibold bg-slate-50 px-2 py-1 rounded-md shadow-sm border border-slate-100 min-w-[40px] text-center">
+                            <div className="font-semibold bg-slate-50 px-2 py-1 rounded-md shadow-sm border border-slate-100 min-w-[40px] text-center text-slate-900">
                               {impact.currentMetrics[metric as keyof typeof impact.currentMetrics].toFixed(1)}
                             </div>
                           </div>
@@ -417,9 +419,9 @@ export default function PortfolioImpactCalculator({
                           <div className="flex flex-col items-center">
                             <div className="text-[10px] text-slate-500">New</div>
                             <div className={`font-semibold px-2 py-1 rounded-md shadow-sm border min-w-[40px] text-center ${
-                              change > 0 ? "bg-green-50 border-green-100" : 
-                              change < 0 ? "bg-red-50 border-red-100" : 
-                              "bg-slate-50 border-slate-100"
+                              change > 0 ? "bg-green-50 border-green-100 text-green-900" : 
+                              change < 0 ? "bg-red-50 border-red-100 text-red-900" : 
+                              "bg-slate-50 border-slate-100 text-slate-900"
                             }`}>
                               {impact.newMetrics[metric as keyof typeof impact.newMetrics].toFixed(1)}
                             </div>
@@ -480,7 +482,7 @@ export default function PortfolioImpactCalculator({
                   <div className="flex justify-between items-center gap-2 mt-4 p-3 bg-slate-50 rounded-lg">
                     <div>
                       <div className="text-xs text-slate-500">You'll get</div>
-                      <div className="text-base font-semibold text-slate-700">{shares.toFixed(4)} shares</div>
+                      <div className="text-base font-semibold text-slate-900">{shares.toFixed(4)} shares</div>
                     </div>
                     
                     <div className="text-slate-400">
