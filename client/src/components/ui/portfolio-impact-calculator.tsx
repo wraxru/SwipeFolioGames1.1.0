@@ -189,7 +189,7 @@ export default function PortfolioImpactCalculator({
   };
   
   return (
-    <div className="portfolio-impact-wrapper">
+    <div className="portfolio-impact-wrapper fixed inset-0 flex items-center justify-center z-[9999]" style={{ isolation: 'isolate' }}>
       {/* Calculator Modal */}
       <AnimatePresence mode="wait" key="calculator-modal">
         {isOpen && (
@@ -224,7 +224,7 @@ export default function PortfolioImpactCalculator({
                 y: 20,
                 transition: { duration: 0.25, ease: 'easeIn' }
               }}
-              className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-md bg-white rounded-2xl overflow-hidden"
+              className="relative w-[90%] max-w-md mx-auto bg-white rounded-2xl overflow-hidden"
               style={{
                 zIndex: 51,
                 boxShadow: '0 20px 60px -15px rgba(0, 0, 0, 0.6)'

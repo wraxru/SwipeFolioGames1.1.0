@@ -68,8 +68,8 @@ export default function PurchaseSuccessModal({
               ease: 'easeOut',
               delay: 0.05 // slight delay to ensure backdrop renders first 
             }}
-            className="w-[85%] max-w-xs rounded-xl overflow-hidden bg-gradient-to-b from-green-500 to-green-600 
-                       shadow-2xl border border-green-400 relative"
+            className="w-[85%] max-w-xs mx-auto rounded-xl overflow-hidden bg-gradient-to-b from-green-500 to-green-600 
+                       shadow-2xl border border-green-400"
             style={{
               zIndex: 51,
               boxShadow: '0 20px 60px -15px rgba(0, 0, 0, 0.6)'
