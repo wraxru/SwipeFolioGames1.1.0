@@ -3,12 +3,28 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   X, 
   Check, 
-  TrendingUp, 
+  TrendingUp,
+  TrendingDown,
+  Minus,
   Award, 
   Users, 
   ChevronDown,
   ArrowUpRight,
-  Shield
+  Shield,
+  Zap,
+  Flame,
+  BarChart2,
+  PieChart,
+  GitBranch,
+  Lightbulb,
+  Target,
+  Feather,
+  Clock,
+  BookOpen,
+  Rocket,
+  Briefcase,
+  Coffee,
+  DollarSign
 } from 'lucide-react';
 import { LeaderboardUser } from '@/data/leaderboard-data';
 import { Progress } from '@/components/ui/progress';
@@ -18,18 +34,161 @@ interface InvestorProfilePopupProps {
   onClose: () => void;
 }
 
-// Get investor quotes
-const investorQuotes: Record<string, string> = {
-  "KingJames": "Court domination is temporary. Portfolio domination is forever.",
-  "ValueBuffet": "I don't pick stocks. I pick businesses worth owning.",
-  "OutsiderTrading": "The best investments are boring on CNBC but exciting in your portfolio.",
-  "JulieSweetCEO": "Success isn't just measured in quarters, but in decades.",
-  "MichelleO": "When markets go low, my investments go high.",
-  "MrBeast": "I give away millions because my investments make more millions.",
-  "ElonMusk": "The market is just crowd-sourced capital allocation.",
-  "Oprah": "You get a dividend! And YOU get a dividend! EVERYBODY gets dividends!",
-  "BettiestWhite": "I've been bullish since before your grandparents were born.",
-  "Belford&Co": "The Wolf only loses when he stops hunting."
+// Investor personality data
+interface InvestorData {
+  quote: string;
+  about: string;
+  strategy: string;
+  icon: React.ReactNode;
+  gradient: string;
+  strongestSectors: {name: string; value: number; trend: 'up' | 'down' | 'neutral'}[];
+  tradeStyle: string;
+  riskTolerance: number;
+  favoriteSector: string;
+}
+
+// Get investor personalized data
+const investorData: Record<string, InvestorData> = {
+  "KingJames": {
+    quote: "Court domination is temporary. Portfolio domination is forever.",
+    about: "Just bringing the same championship mindset from the court to my portfolio—striving for greatness in everything I do.",
+    strategy: "Plays the market like the fourth quarter of a finals game—calculated risks when behind, conservative moves to protect the lead.",
+    icon: <Flame />,
+    gradient: "from-purple-500 to-blue-500",
+    strongestSectors: [
+      {name: "Consumer Discretionary", value: 78, trend: 'up'},
+      {name: "Media & Entertainment", value: 65, trend: 'up'}
+    ],
+    tradeStyle: "Momentum investor",
+    riskTolerance: 65,
+    favoriteSector: "Sports & Entertainment"
+  },
+  "ValueBuffet": {
+    quote: "I don't pick stocks. I pick businesses worth owning.",
+    about: "I still enjoy a good hamburger and cherry Coke while looking for wonderful companies at fair prices.",
+    strategy: "Patiently waiting for the market to serve up fat pitches, then betting big when the odds are overwhelmingly in my favor.",
+    icon: <BookOpen />,
+    gradient: "from-green-500 to-emerald-400",
+    strongestSectors: [
+      {name: "Financials", value: 92, trend: 'up'},
+      {name: "Consumer Staples", value: 87, trend: 'neutral'}
+    ],
+    tradeStyle: "Value investor",
+    riskTolerance: 30,
+    favoriteSector: "Insurance"
+  },
+  "OutsiderTrading": {
+    quote: "The best investments are boring on CNBC but exciting in your portfolio.",
+    about: "Just a public servant with an uncanny knack for perfectly timed stock purchases—pure coincidence, I assure you.",
+    strategy: "Somehow always managing to invest in companies right before favorable legislation passes or major government contracts are announced.",
+    icon: <GitBranch />,
+    gradient: "from-blue-400 to-indigo-400",
+    strongestSectors: [
+      {name: "Technology", value: 84, trend: 'up'},
+      {name: "Defense", value: 79, trend: 'up'}
+    ],
+    tradeStyle: "Information advantage",
+    riskTolerance: 85,
+    favoriteSector: "Government Contractors"
+  },
+  "JulieSweetCEO": {
+    quote: "Success isn't just measured in quarters, but in decades.",
+    about: "Transforming companies and portfolios with the same strategic vision—excellence isn't a goal, it's a requirement.",
+    strategy: "Identifying companies with strong fundamentals but outdated operating models, then watching them soar as they modernize.",
+    icon: <Briefcase />,
+    gradient: "from-pink-500 to-rose-400",
+    strongestSectors: [
+      {name: "Technology Services", value: 91, trend: 'up'},
+      {name: "Business Services", value: 85, trend: 'up'}
+    ],
+    tradeStyle: "Growth at reasonable price",
+    riskTolerance: 60,
+    favoriteSector: "Consulting"
+  },
+  "MichelleO": {
+    quote: "When markets go low, my investments go high.",
+    about: "When they go low with their investments, I go high—building wealth with purpose and integrity.",
+    strategy: "Investing in companies that strengthen communities while delivering the steady returns that build generational wealth.",
+    icon: <Target />,
+    gradient: "from-amber-400 to-orange-400",
+    strongestSectors: [
+      {name: "Education", value: 82, trend: 'up'},
+      {name: "Healthcare", value: 76, trend: 'up'}
+    ],
+    tradeStyle: "Socially responsible",
+    riskTolerance: 50,
+    favoriteSector: "Community Development"
+  },
+  "MrBeast": {
+    quote: "I give away millions because my investments make more millions.",
+    about: "I approach investing exactly like my videos—go big, be first, and make sure everyone's talking about it.",
+    strategy: "Looking for explosive growth opportunities that others dismiss as crazy, while backing them up with surprisingly meticulous research.",
+    icon: <Rocket />,
+    gradient: "from-red-500 to-red-400",
+    strongestSectors: [
+      {name: "Digital Media", value: 88, trend: 'up'},
+      {name: "Consumer Tech", value: 73, trend: 'up'}
+    ],
+    tradeStyle: "Growth investor",
+    riskTolerance: 90,
+    favoriteSector: "Digital Entertainment"
+  },
+  "ElonMusk": {
+    quote: "The market is just crowd-sourced capital allocation.",
+    about: "Making life multiplanetary, electrifying transportation, and occasionally moving markets with tweets—just another Tuesday.",
+    strategy: "Betting heavily on paradigm-shifting technologies that most people think are impossible until suddenly they're inevitable.",
+    icon: <Lightbulb />,
+    gradient: "from-blue-500 to-cyan-400",
+    strongestSectors: [
+      {name: "Electric Vehicles", value: 94, trend: 'up'},
+      {name: "Space Technology", value: 89, trend: 'up'}
+    ],
+    tradeStyle: "Disruptive innovation",
+    riskTolerance: 95,
+    favoriteSector: "Emerging Technologies"
+  },
+  "Oprah": {
+    quote: "You get a dividend! And YOU get a dividend! EVERYBODY gets dividends!",
+    about: "You get returns! And YOU get returns! EVERYBODY gets returns when you invest in what you truly understand.",
+    strategy: "Identifying authentic brands and untold stories that resonate deeply with consumers before they become household names.",
+    icon: <DollarSign />,
+    gradient: "from-purple-400 to-pink-400",
+    strongestSectors: [
+      {name: "Media", value: 90, trend: 'up'},
+      {name: "Consumer Brands", value: 85, trend: 'up'}
+    ],
+    tradeStyle: "Brand-focused",
+    riskTolerance: 55,
+    favoriteSector: "Media & Publishing"
+  },
+  "BettiestWhite": {
+    quote: "I've been bullish since before your grandparents were born.",
+    about: "I've been investing since before your grandparents were born, and I'll probably outlive your portfolio too.",
+    strategy: "Sticking to time-tested blue chips that have survived multiple crashes and still deliver reliable dividends decades later.",
+    icon: <Clock />,
+    gradient: "from-emerald-400 to-teal-400",
+    strongestSectors: [
+      {name: "Consumer Staples", value: 85, trend: 'neutral'},
+      {name: "Utilities", value: 80, trend: 'neutral'}
+    ],
+    tradeStyle: "Dividend investor",
+    riskTolerance: 20,
+    favoriteSector: "Blue Chip Staples"
+  },
+  "Belford&Co": {
+    quote: "The Wolf only loses when he stops hunting.",
+    about: "Finding opportunities in markets where others only see chaos. Every volatility spike is just another chance to strike.",
+    strategy: "Spotting momentum shifts early and trading aggressively when market sentiment changes direction.",
+    icon: <Zap />,
+    gradient: "from-blue-600 to-indigo-600",
+    strongestSectors: [
+      {name: "Technology", value: 75, trend: 'up'},
+      {name: "Financials", value: 82, trend: 'up'}
+    ],
+    tradeStyle: "Tactical trader",
+    riskTolerance: 75,
+    favoriteSector: "Fintech"
+  }
 };
 
 // Define the tabs for the profile
@@ -38,6 +197,9 @@ type TabType = 'overview' | 'portfolio' | 'badges' | 'properties';
 export default function InvestorProfilePopup({ investor, onClose }: InvestorProfilePopupProps) {
   const [activeTab, setActiveTab] = useState<TabType>('overview');
   const profileRef = useRef<HTMLDivElement>(null);
+  const [touchStartX, setTouchStartX] = useState(0);
+  const [touchStartY, setTouchStartY] = useState(0);
+  const [showFollowAnimation, setShowFollowAnimation] = useState(false);
   
   // Handle click outside to dismiss
   useEffect(() => {
@@ -52,12 +214,40 @@ export default function InvestorProfilePopup({ investor, onClose }: InvestorProf
     
     // Optional: Add swipe down listener for mobile
     const handleTouchStart = (e: TouchEvent) => {
-      const startY = e.touches[0].clientY;
+      setTouchStartY(e.touches[0].clientY);
+      setTouchStartX(e.touches[0].pageX);
       
       const handleTouchMove = (e: TouchEvent) => {
         const currentY = e.touches[0].clientY;
-        if (currentY - startY > 50) { // Swiped down at least 50px
+        const currentX = e.touches[0].pageX;
+        
+        // Detect swipe direction
+        const deltaY = currentY - touchStartY;
+        const deltaX = currentX - touchStartX;
+        
+        // If primarily vertical swipe down
+        if (Math.abs(deltaY) > Math.abs(deltaX) && deltaY > 50) { 
           onClose();
+          document.removeEventListener('touchmove', handleTouchMove);
+        } 
+        // If primarily horizontal swipe
+        else if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 30) {
+          // Determine which direction to swipe
+          if (deltaX > 0) {
+            // Swipe right - previous tab
+            const tabs: TabType[] = ['overview', 'portfolio', 'badges', 'properties'];
+            const currentIndex = tabs.indexOf(activeTab);
+            if (currentIndex > 0) {
+              setActiveTab(tabs[currentIndex - 1]);
+            }
+          } else {
+            // Swipe left - next tab
+            const tabs: TabType[] = ['overview', 'portfolio', 'badges', 'properties'];
+            const currentIndex = tabs.indexOf(activeTab);
+            if (currentIndex < tabs.length - 1) {
+              setActiveTab(tabs[currentIndex + 1]);
+            }
+          }
           document.removeEventListener('touchmove', handleTouchMove);
         }
       };
@@ -87,15 +277,37 @@ export default function InvestorProfilePopup({ investor, onClose }: InvestorProf
         profileRef.current.removeEventListener('touchstart', handleTouchStart);
       }
     };
-  }, [onClose]);
+  }, [onClose, activeTab, touchStartY, touchStartX]);
   
   if (!investor) return null;
+  
+  // Animation for the follow button
+  const handleFollowClick = () => {
+    setShowFollowAnimation(true);
+    if (navigator.vibrate) {
+      navigator.vibrate([15, 30, 15]); // Haptic feedback pattern
+    }
+    setTimeout(() => setShowFollowAnimation(false), 1500);
+  };
 
   // Determine if this is a premium user (for demo, use isVerified)
   const isPremium = investor.isVerified;
   
-  // Get quote for this investor
-  const quote = investorQuotes[investor.username] || "Investing is the only place where saving is spending.";
+  // Get personalized data for this investor
+  const personalData = investorData[investor.username] || {
+    quote: "Investing is the only place where saving is spending.",
+    about: "Finding unique opportunities in the market that others overlook.",
+    strategy: "Balanced approach with a focus on long-term growth and capital preservation.",
+    icon: <BarChart2 />,
+    gradient: "from-blue-500 to-indigo-500",
+    strongestSectors: [
+      {name: "Technology", value: 75, trend: 'up'},
+      {name: "Healthcare", value: 65, trend: 'up'}
+    ],
+    tradeStyle: "Balanced investor",
+    riskTolerance: 60,
+    favoriteSector: "Technology"
+  };
   
   // Calculate rank badge style
   const getBadgeStyles = (rank: number = 99) => {
@@ -156,7 +368,7 @@ export default function InvestorProfilePopup({ investor, onClose }: InvestorProf
               <p className="text-sm text-slate-600">
                 {investor.id === 'current-user'
                   ? 'Your investment journey is just beginning. Build your portfolio and climb the leaderboard!'
-                  : `${investor.username} is a ${investor.portfolioQuality > 80 ? 'top-tier' : 'skilled'} investor known for ${investor.roi > 100 ? 'exceptional' : 'solid'} returns and a strategic approach to the markets.`
+                  : personalData.about
                 }
               </p>
             </div>
@@ -164,37 +376,47 @@ export default function InvestorProfilePopup({ investor, onClose }: InvestorProf
             <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
               <h4 className="text-sm font-medium text-slate-700 mb-2">Investment Strategy</h4>
               <p className="text-sm text-slate-600">
-                {investor.portfolioQuality > 90 
-                  ? 'Masters diversification with a perfect balance of growth and value investing strategies.'
-                  : investor.portfolioQuality > 70
-                  ? 'Employs a balanced approach with a focus on quality companies and proper sector allocation.'
-                  : 'Developing a more refined approach to stock selection and portfolio construction.'
+                {investor.id === 'current-user'
+                  ? 'Developing a more refined approach to stock selection and portfolio construction as you learn more about the markets.'
+                  : personalData.strategy
                 }
               </p>
             </div>
             
             <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
               <h4 className="text-sm font-medium text-slate-700 mb-2">Strongest Sectors</h4>
-              <div className="grid grid-cols-2 gap-2">
-                <div className="bg-white p-2 rounded-lg border border-slate-200">
-                  <div className="text-xs font-medium text-slate-500">Technology</div>
-                  <div className="flex items-end justify-between">
-                    <div className="text-sm font-bold text-slate-700">
-                      {Math.min(85, 40 + Math.floor(investor.portfolioQuality / 2))}%
+              {investor.id === 'current-user' ? (
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="bg-white p-2 rounded-lg border border-slate-200">
+                    <div className="text-xs font-medium text-slate-500">Technology</div>
+                    <div className="flex items-end justify-between">
+                      <div className="text-sm font-bold text-slate-700">65%</div>
+                      <TrendingUp className="h-3 w-3 text-green-500" />
                     </div>
-                    <TrendingUp className="h-3 w-3 text-green-500" />
+                  </div>
+                  <div className="bg-white p-2 rounded-lg border border-slate-200">
+                    <div className="text-xs font-medium text-slate-500">Financials</div>
+                    <div className="flex items-end justify-between">
+                      <div className="text-sm font-bold text-slate-700">52%</div>
+                      <TrendingUp className="h-3 w-3 text-green-500" />
+                    </div>
                   </div>
                 </div>
-                <div className="bg-white p-2 rounded-lg border border-slate-200">
-                  <div className="text-xs font-medium text-slate-500">Financials</div>
-                  <div className="flex items-end justify-between">
-                    <div className="text-sm font-bold text-slate-700">
-                      {Math.min(72, 30 + Math.floor(investor.portfolioQuality / 2))}%
+              ) : (
+                <div className="grid grid-cols-2 gap-2">
+                  {personalData.strongestSectors.map((sector, index) => (
+                    <div key={index} className="bg-white p-2 rounded-lg border border-slate-200">
+                      <div className="text-xs font-medium text-slate-500">{sector.name}</div>
+                      <div className="flex items-end justify-between">
+                        <div className="text-sm font-bold text-slate-700">{sector.value}%</div>
+                        {sector.trend === 'up' && <TrendingUp className="h-3 w-3 text-green-500" />}
+                        {sector.trend === 'down' && <TrendingDown className="h-3 w-3 text-red-500" />}
+                        {sector.trend === 'neutral' && <Minus className="h-3 w-3 text-slate-500" />}
+                      </div>
                     </div>
-                    <TrendingUp className="h-3 w-3 text-green-500" />
-                  </div>
+                  ))}
                 </div>
-              </div>
+              )}
             </div>
             
             {isPremium && (
@@ -553,7 +775,7 @@ export default function InvestorProfilePopup({ investor, onClose }: InvestorProf
               <div className="mt-4 bg-white/80 backdrop-blur-sm rounded-xl p-3 border border-slate-100 shadow-sm">
                 <div className="flex">
                   <div className="text-slate-300 text-xl leading-none">"</div>
-                  <p className="text-sm text-slate-600 italic flex-1 px-1">{quote}</p>
+                  <p className="text-sm text-slate-600 italic flex-1 px-1">{personalData.quote}</p>
                   <div className="text-slate-300 text-xl leading-none self-end">"</div>
                 </div>
               </div>
