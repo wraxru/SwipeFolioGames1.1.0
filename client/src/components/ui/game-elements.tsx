@@ -10,12 +10,16 @@ import * as ConfettiModule from 'react-canvas-confetti';
 // Game Header Component
 export function GameHeader({ 
   title, 
+  description,
   tickets, 
-  timeLeft 
+  timeLeft,
+  icon 
 }: { 
-  title: string; 
+  title: string;
+  description?: string; 
   tickets?: number;
   timeLeft?: number;
+  icon?: React.ReactNode;
 }) {
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -26,7 +30,10 @@ export function GameHeader({
   return (
     <div className="flex flex-col mb-4 sm:mb-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">{title}</h1>
+        <div className="flex items-center">
+          {icon && <span className="mr-2">{icon}</span>}
+          <h1 className="text-2xl font-bold">{title}</h1>
+        </div>
         
         {tickets !== undefined && (
           <div className="flex items-center bg-gradient-to-r from-amber-100 to-amber-50 rounded-full px-3 py-1 border border-amber-200 shadow-sm">
@@ -146,14 +153,23 @@ export function GameButton({
 // Game Over Component
 export function GameOver({ 
   score, 
+  message,
+  tickets,
+  onPlayAgain,
+  onReturnToHub,
   correctAnswers,
   totalQuestions,
   onRestart 
 }: { 
   score: number; 
-  correctAnswers: number;
-  totalQuestions: number;
-  onRestart: () => void; 
+  message?: string;
+  tickets?: number;
+  onPlayAgain?: () => void;
+  onReturnToHub?: () => void;
+  // Legacy parameters for compatibility
+  correctAnswers?: number;
+  totalQuestions?: number;
+  onRestart?: () => void; 
 }) {
   // Trigger confetti effect when component mounts
   React.useEffect(() => {
@@ -184,8 +200,11 @@ export function GameOver({
     };
   }, []);
 
+  // Handle the two different interfaces
+  const handlePlayAgain = onPlayAgain || onRestart;
+
   return (
-    <div className="text-center py-6 space-y-8">
+    <div className="max-w-lg mx-auto text-center py-6 space-y-8">
       <motion.div
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
@@ -221,16 +240,45 @@ export function GameOver({
 
       <div className="space-y-2">
         <h2 className="text-2xl font-bold">Game Over!</h2>
-        <p className="text-gray-600">You got {correctAnswers} out of {totalQuestions} correct!</p>
+        
+        {message && <p className="text-gray-600">{message}</p>}
+        
+        {(correctAnswers !== undefined && totalQuestions !== undefined) && (
+          <p className="text-gray-600">You got {correctAnswers} out of {totalQuestions} correct!</p>
+        )}
+        
         <p className="text-lg font-semibold text-indigo-600">Final Score: {score}</p>
+        
+        {tickets !== undefined && (
+          <div className="flex justify-center items-center mt-4">
+            <div className="bg-amber-100 px-4 py-2 rounded-full flex items-center">
+              <Ticket className="w-5 h-5 text-amber-500 mr-2" />
+              <span className="font-semibold text-amber-700">Tickets Earned: {tickets}</span>
+            </div>
+          </div>
+        )}
       </div>
       
-      <Button 
-        onClick={onRestart}
-        className="bg-gradient-to-r from-indigo-500 to-blue-500 hover:from-indigo-600 hover:to-blue-600 text-white px-8 py-2"
-      >
-        Play Again
-      </Button>
+      <div className="flex flex-col sm:flex-row justify-center gap-4">
+        {handlePlayAgain && (
+          <Button 
+            onClick={handlePlayAgain}
+            className="bg-gradient-to-r from-indigo-500 to-blue-500 hover:from-indigo-600 hover:to-blue-600 text-white px-8 py-2"
+          >
+            Play Again
+          </Button>
+        )}
+        
+        {onReturnToHub && (
+          <Button 
+            onClick={onReturnToHub}
+            variant="outline"
+            className="px-8 py-2"
+          >
+            Return to Hub
+          </Button>
+        )}
+      </div>
     </div>
   );
 }

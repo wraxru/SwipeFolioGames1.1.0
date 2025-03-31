@@ -2,7 +2,9 @@ import React from 'react';
 import { Link } from 'wouter';
 import { motion } from 'framer-motion';
 import { Card } from '@/components/ui/card';
-import { Building2, Timer, Ticket, ArrowRight } from 'lucide-react';
+import { 
+  Building2, Timer, Ticket, ArrowRight, Globe, BookOpen, DollarSign
+} from 'lucide-react';
 
 export default function GamesHubPage() {
   const gameCards = [
@@ -19,6 +21,27 @@ export default function GamesHubPage() {
       icon: <Timer className="w-10 h-10 text-green-500" />,
       color: "from-green-500 to-green-600",
       link: "/games/time-attack"
+    },
+    {
+      title: "Market Adventure",
+      description: "Trade virtual stocks, build a portfolio, and navigate market events in this trading simulation.",
+      icon: <DollarSign className="w-10 h-10 text-emerald-500" />,
+      color: "from-emerald-500 to-emerald-600",
+      link: "/games/market-adventure"
+    },
+    {
+      title: "Macro Mastermind",
+      description: "Manage a region's economy through global events and policy decisions in this economic simulation.",
+      icon: <Globe className="w-10 h-10 text-purple-500" />,
+      color: "from-purple-500 to-purple-600", 
+      link: "/games/macro-mastermind"
+    },
+    {
+      title: "Investor Simulator",
+      description: "Follow in the footsteps of legendary investors and test your decision-making in historical scenarios.",
+      icon: <BookOpen className="w-10 h-10 text-orange-500" />,
+      color: "from-orange-500 to-orange-600",
+      link: "/games/investor-simulator"
     }
   ];
 

@@ -1,0 +1,155 @@
+ames Overview
+1. CEO Simulator
+A strategic business management game where players make decisions as a CEO in two distinct modes.
+
+Core Mechanics:
+
+Two Game Modes:
+Board Room Mode: High-stakes strategic decisions
+Normal Mode: Day-to-day operational decisions
+Resource Management
+Strategic Decision Making
+Market Analysis
+Company Performance Tracking
+Gameplay Flow:
+
+Choose game mode (Board Room or Normal)
+Analyze current company situation
+Make strategic decisions
+Monitor outcomes and adjust strategy
+Manage company resources and growth
+2. Ticket Time Attack
+A fast-paced quiz game testing knowledge about investing and financial concepts.
+
+Core Mechanics:
+
+Quick Questions
+Time-based Challenges
+Score Tracking
+Difficulty Levels
+Category-based Questions
+Gameplay Flow:
+
+Select difficulty level
+Answer questions within time limit
+Track score and progress
+Unlock new categories
+Challenge high scores
+3. Market Adventure
+A virtual trading simulation game where players build and manage their portfolio.
+
+Core Mechanics:
+
+Virtual Trading
+Portfolio Management
+Market Analysis
+Risk Assessment
+Performance Tracking
+Gameplay Flow:
+
+Start with virtual capital
+Research market opportunities
+Make trading decisions
+Monitor portfolio performance
+Adjust strategy based on market conditions
+4. Historical Investor Journey
+An educational game exploring the careers and strategies of famous investors.
+
+Core Mechanics:
+
+Historical Scenarios
+Investment Strategies
+Market Conditions
+Decision Making
+Learning Outcomes
+Gameplay Flow:
+
+Select historical investor
+Experience key moments in their career
+Make investment decisions
+Learn from outcomes
+Understand their strategies
+5. Macro Mastermind
+A strategic economic simulation game where players manage a region's economy through global events and policy decisions.
+
+Core Mechanics:
+
+Region Selection: Choose from North America, Europe, Asia, South America, or Africa
+Market Sectors: Manage 5 key sectors (Technology, Manufacturing, Services, Energy, Finance)
+Economic Indicators: Monitor GDP, Market Health, Political Stability, Interest Rates, and Trade Balance
+International Relations: Build and maintain relationships with other regions
+Event Management: Respond to global events with policy decisions
+Resource Management: Balance available funds with policy costs
+Gameplay Flow:
+
+Select a region to lead
+Monitor market sectors and economic indicators
+Respond to international events
+Implement policies to maintain stability
+Build relationships with other regions
+6. Regional Stock Market Strategist
+A stock market simulation game focused on managing market sectors in response to global political events.
+
+Core Mechanics:
+
+Market Sectors: Track performance of 5 sectors (Technology, Manufacturing, Services, Energy, Finance)
+Sector Properties:
+Performance: Current market value (40-160%)
+Volatility: Market fluctuation rate
+Trend: Market direction (-20% to +20%)
+History: Performance tracking over time
+Economic Stats:
+Market Health
+GDP
+Political Stability
+Interest Rates
+Trade Balance
+International Events:
+Trade events
+Political events
+Economic events
+Diplomatic events
+Environmental events
+Gameplay Flow:
+
+Choose a region to manage
+Monitor sector performances and trends
+Respond to international events with policy decisions
+Manage relationships with other regions
+Balance market stability with international trade
+Policy Response System:
+
+Each event offers multiple policy options
+Policies have costs and various effects:
+Domestic market impact
+International relations changes
+Political stability effects
+Economic impact (GDP, market health, trade balance)
+Sector-specific impacts
+Market Simulation:
+
+Real-time market movements
+Sector-specific volatility and trends
+Event impact calculations
+Relationship strength visualization
+Performance history tracking
+Technical Features
+Common Features Across Games:
+Interactive world map visualization
+Real-time market simulation
+Event-driven gameplay
+Policy decision system
+Economic indicator tracking
+Relationship management
+Tutorial system
+Difficulty levels
+Game speed controls
+UI Components:
+Region selection screen
+Interactive world map
+Market sector displays
+Economic indicators
+Event notifications
+Policy response cards
+Relationship visualization
+Tutorial overlays

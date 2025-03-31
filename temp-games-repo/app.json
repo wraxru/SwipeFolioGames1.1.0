@@ -1,0 +1,39 @@
+{
+  "expo": {
+    "name": "Swipefolio",
+    "slug": "swipefolio",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./generated-icon.png",
+    "splash": {
+      "image": "./generated-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#000000"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.swipefolio.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./generated-icon.png",
+        "backgroundColor": "#000000"
+      },
+      "package": "com.swipefolio.app"
+    },
+    "web": {
+      "favicon": "./generated-icon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "swipefolio"
+      }
+    }
+  }
+}
