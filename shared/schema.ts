@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean, jsonb, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, jsonb, timestamp, varchar } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -68,6 +68,13 @@ export const userDailyProgress = pgTable("user_daily_progress", {
   goalCompleted: boolean("goal_completed").notNull().default(false),
 });
 
+export const stockCache = pgTable("stock_cache", {
+  id: serial("id").primaryKey(),
+  symbol: varchar("symbol", { length: 20 }).notNull().unique(),
+  data: text("data").notNull(), // JSON string of the stock data
+  updatedAt: timestamp("updated_at").notNull().default(new Date()),
+});
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
@@ -97,6 +104,10 @@ export const insertUserDailyProgressSchema = createInsertSchema(userDailyProgres
   id: true,
 });
 
+export const insertStockCacheSchema = createInsertSchema(stockCache).omit({
+  id: true,
+});
+
 // Types
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
@@ -105,3 +116,4 @@ export type Card = typeof cards.$inferSelect;
 export type UserProgress = typeof userProgress.$inferSelect;
 export type UserBadge = typeof userBadges.$inferSelect;
 export type UserDailyProgress = typeof userDailyProgress.$inferSelect;
+export type StockCache = typeof stockCache.$inferSelect;

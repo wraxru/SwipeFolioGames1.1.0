@@ -4,6 +4,7 @@ import { storage } from "./storage";
 import { setupAuth } from "./auth";
 import axios from "axios";
 import { getAIResponse } from "./ai-service";
+import { finnhubService } from "./finnhub-service";
 export async function registerRoutes(app: Express): Promise<Server> {
   // Set up authentication routes
   setupAuth(app);
@@ -543,6 +544,80 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       return res.status(500).json(errorResponse);
+    }
+  });
+
+  // Finnhub API Endpoints
+  
+  // Get stock data (from cache if available, otherwise from API)
+  app.get("/api/stock/:symbol", async (req, res) => {
+    try {
+      const { symbol } = req.params;
+      if (!symbol) {
+        return res.status(400).json({ error: "Symbol is required" });
+      }
+      
+      // Uppercase the symbol for consistency
+      const normalizedSymbol = symbol.toUpperCase();
+      
+      console.log(`[API] Getting stock data for ${normalizedSymbol}`);
+      const stockData = await finnhubService.getStockData(normalizedSymbol);
+      
+      res.json(stockData);
+    } catch (error: any) {
+      console.error(`[API] Error getting stock data:`, error);
+      res.status(500).json({ 
+        error: "Failed to fetch stock data", 
+        message: error.message 
+      });
+    }
+  });
+  
+  // Refresh cache for a specific stock symbol
+  app.post("/api/stock/refresh-cache", async (req, res) => {
+    try {
+      const { symbols } = req.body;
+      
+      if (!symbols || !Array.isArray(symbols) || symbols.length === 0) {
+        return res.status(400).json({ error: "Array of symbols is required" });
+      }
+      
+      // Limit the number of symbols that can be refreshed at once
+      const MAX_SYMBOLS = 10;
+      const symbolsToRefresh = symbols.slice(0, MAX_SYMBOLS).map(s => s.toUpperCase());
+      
+      console.log(`[API] Refreshing cache for ${symbolsToRefresh.length} symbols: ${symbolsToRefresh.join(', ')}`);
+      const result = await finnhubService.refreshCache(symbolsToRefresh);
+      
+      res.json({
+        message: `Cache refresh completed for ${result.success.length} symbols. Failed: ${result.failures.length}`,
+        success: result.success,
+        failures: result.failures
+      });
+    } catch (error: any) {
+      console.error(`[API] Error refreshing cache:`, error);
+      res.status(500).json({ 
+        error: "Failed to refresh cache", 
+        message: error.message 
+      });
+    }
+  });
+  
+  // Clear the entire cache
+  app.post("/api/stock/clear-cache", async (req, res) => {
+    try {
+      console.log(`[API] Clearing stock cache`);
+      await finnhubService.clearCache();
+      
+      res.json({
+        message: "Cache cleared successfully"
+      });
+    } catch (error: any) {
+      console.error(`[API] Error clearing cache:`, error);
+      res.status(500).json({ 
+        error: "Failed to clear cache", 
+        message: error.message 
+      });
     }
   });
 

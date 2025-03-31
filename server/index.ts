@@ -1,6 +1,51 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { finnhubService } from "./finnhub-service";
+import cron from 'node-cron';
+
+// Common stock symbols to keep in cache
+const COMMON_SYMBOLS = [
+  // Tech stocks
+  'AAPL', 'MSFT', 'GOOGL', 'AMZN', 'META',
+  // Real Estate
+  'AVB', 'O', 'PLD', 'SPG', 'AMT',
+  // Healthcare
+  'JNJ', 'PFE', 'UNH', 'ABBV', 'SYK'
+];
+
+// Initialize stock cache with common symbols
+async function initializeStockCache() {
+  try {
+    log('Initializing stock cache for common symbols...');
+    const result = await finnhubService.refreshCache(COMMON_SYMBOLS);
+    log(`Cache initialization complete: ${result.success.length} succeeded, ${result.failures.length} failed`);
+    
+    if (result.failures.length > 0) {
+      log(`Failed to cache: ${result.failures.join(', ')}`);
+    }
+  } catch (error) {
+    log(`Error initializing stock cache: ${error}`);
+  }
+}
+
+// Set up scheduled cache updates
+function setupScheduledCacheUpdates() {
+  // Run updates every day at 1:00 AM
+  cron.schedule('0 1 * * *', async () => {
+    try {
+      log('Running scheduled stock cache update...');
+      const result = await finnhubService.refreshCache(COMMON_SYMBOLS);
+      log(`Cache update complete: ${result.success.length} succeeded, ${result.failures.length} failed`);
+      
+      if (result.failures.length > 0) {
+        log(`Failed to update: ${result.failures.join(', ')}`);
+      }
+    } catch (error) {
+      log(`Error in scheduled cache update: ${error}`);
+    }
+  });
+}
 
 const app = express();
 app.use(express.json());
@@ -66,5 +111,11 @@ app.use((req, res, next) => {
     reusePort: true,
   }, () => {
     log(`serving on port ${port}`);
+    
+    // Initialize cache for commonly used stock symbols
+    initializeStockCache();
+    
+    // Schedule periodic cache updates
+    setupScheduledCacheUpdates();
   });
 })();
