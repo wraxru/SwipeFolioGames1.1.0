@@ -1,4 +1,4 @@
-import { useState, useRef, useMemo } from "react";
+import { useState, useRef, useMemo, useCallback } from "react";
 import { StockData } from "@/lib/stock-data";
 import { getIndustryAverages } from "@/lib/industry-data";
 import { 
@@ -160,6 +160,18 @@ export default function StockCard({
 
   // State for portfolio impact calculator (real-time mode only)
   const [isPortfolioImpactOpen, setIsPortfolioImpactOpen] = useState(false);
+  const [isDebouncing, setIsDebouncing] = useState(false);
+  
+  // Debounced opener for portfolio impact - prevents flickering on iOS
+  const debouncedOpenPortfolioImpact = useCallback(() => {
+    if (isDebouncing) return; // Prevent multiple calls while debouncing
+    
+    setIsDebouncing(true);
+    setTimeout(() => {
+      setIsPortfolioImpactOpen(true);
+      setIsDebouncing(false);
+    }, 100);
+  }, [isDebouncing]);
 
   // Use static data only
   const chartData = useMemo(() => 
@@ -196,7 +208,7 @@ export default function StockCard({
 
   // Add a direct button for easier testing/accessibility (real-time mode only)
   const openPortfolioCalculator = () => {
-    setIsPortfolioImpactOpen(true);
+    debouncedOpenPortfolioImpact();
   };
   
   // Function to handle investment button click - used by the Buy button in stock detail page
@@ -216,9 +228,9 @@ export default function StockCard({
         if (navigator.vibrate) {
           navigator.vibrate(50);
         }
-        // Open portfolio calculator
-        setIsPortfolioImpactOpen(true);
-
+        // Open portfolio calculator with debouncing to prevent iOS flicker
+        debouncedOpenPortfolioImpact();
+        
         // Spring back animation
         cardControls.start({
           x: 0,
