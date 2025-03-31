@@ -228,7 +228,7 @@ export default function StockCard({
     const threshold = 100;
 
     if (displayMode === 'realtime') {
-      // Right swipe (positive x) - Open portfolio impact calculator
+      // Right swipe (positive x) - Open portfolio impact calculator with simplified animation
       if (info.offset.x > threshold) {
         setSwipeDirection("right");
         // Haptic feedback if available
@@ -236,24 +236,16 @@ export default function StockCard({
           navigator.vibrate(50);
         }
         
-        // --- CHANGE: Set modal state *BEFORE* starting card animation ---
-        setModalState('calculator');
+        // --- CHANGE: Instantly reset card position with no animation ---
+        cardControls.set({ x: 0, opacity: 1, scale: 1 });
         
-        // --- THEN, animate card back ---
-        cardControls.start({
-          x: 0,
-          opacity: 1,
-          scale: 1,
-          transition: { 
-            type: "spring", 
-            stiffness: 400, 
-            damping: 30,
-            duration: 0.4
-          }
+        // --- THEN set modal state (with requestAnimationFrame for safety) ---
+        requestAnimationFrame(() => {
+          setModalState('calculator');
         });
         
-        // Optionally delay resetting swipeDirection slightly
-        setTimeout(() => setSwipeDirection(null), 50);
+        // Reset swipe direction
+        setSwipeDirection(null);
       } 
       // Left swipe (negative x) - Skip to next card
       else if (info.offset.x < -threshold) {
@@ -1111,12 +1103,12 @@ export default function StockCard({
             onClick={() => setModalState('closed')} // Simple close
           />
 
-          {/* --- TEMPORARY SIMPLE TEST MODAL --- */}
+          {/* --- TEMPORARY SIMPLE TEST MODAL WITH PURE SLIDE ANIMATION --- */}
           <motion.div
             key="simple-test-modal-key" // Important: Use a unique key
-            initial={{ opacity: 0, scale: 0.92, y: 30 }} // Use original calculator animation props
-            animate={{ opacity: 1, scale: 1, y: 0, transition: { duration: 0.3, ease: 'easeInOut' } }}
-            exit={{ opacity: 0, scale: 0.95, y: 20, transition: { duration: 0.2, ease: 'easeInOut' } }}
+            initial={{ opacity: 0, y: "100vh" }} // Start from bottom of screen
+            animate={{ opacity: 1, y: 0, transition: { duration: 0.3, ease: 'easeOut' } }}
+            exit={{ opacity: 0, y: "100vh", transition: { duration: 0.2, ease: 'easeIn' } }}
             className="calculator-modal" // CRITICAL: Use the same positioning class
             style={{ // Basic visible styling
               width: '80%',
