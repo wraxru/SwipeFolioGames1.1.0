@@ -221,27 +221,53 @@ export default function InvestorProfilePopup({ investor, onClose }: InvestorProf
     // Add event listener
     document.addEventListener('mousedown', handleClickOutside);
     
-    // Optional: Add swipe down listener for mobile
+    // Enhanced swipe down listener for mobile with improved touch handling
     const handleTouchStart = (e: TouchEvent) => {
-      // Don't handle touch events inside the scrollable area
       const target = e.target as HTMLElement;
       const scrollContainer = document.querySelector('.investor-profile-scroll-container');
+      const header = document.querySelector('.profile-header-area');
+      const dragHandle = document.querySelector('.drag-handle');
+      
+      // Track if we're touching the header or drag handle specifically
+      const isTouchingHeader = header && (header.contains(target) || (dragHandle && dragHandle.contains(target)));
       
       // Check if we're touching inside the scroll container and it can actually scroll
       if (scrollContainer && scrollContainer.contains(target)) {
         const isScrollable = scrollContainer.scrollHeight > scrollContainer.clientHeight;
-        // Allow normal scrolling behavior if the content is scrollable
-        if (isScrollable) return;
+        
+        // If the content isn't scrollable or we're specifically on the header/drag handle, 
+        // we'll handle the swipe for dismissal
+        if (!isScrollable || isTouchingHeader) {
+          setTouchStartY(e.touches[0].clientY);
+          setTouchStartX(e.touches[0].pageX);
+          
+          // Add visual feedback for dragging if on the header
+          if (isTouchingHeader && profileRef.current) {
+            profileRef.current.classList.add('dragging-enabled');
+          }
+        } else {
+          // Just track coordinates for tab switching but don't enable close gesture
+          // unless we're at the top of the scroll container
+          setTouchStartY(e.touches[0].clientY);
+          setTouchStartX(e.touches[0].pageX);
+          return;
+        }
+      } else {
+        // Outside scroll container, track coordinates for all gestures
+        setTouchStartY(e.touches[0].clientY);
+        setTouchStartX(e.touches[0].pageX);
       }
       
-      setTouchStartY(e.touches[0].clientY);
-      setTouchStartX(e.touches[0].pageX);
-      
       const handleTouchMove = (e: TouchEvent) => {
+        // Prevent default scrolling behavior when dragging from header or drag handle
+        if (isTouchingHeader) {
+          e.preventDefault();
+        }
+        
         const currentY = e.touches[0].clientY;
         const currentX = e.touches[0].pageX;
         
-        // Detect swipe direction
+        // Detect swipe direction and distance
         const deltaY = currentY - touchStartY;
         const deltaX = currentX - touchStartX;
         
@@ -249,8 +275,9 @@ export default function InvestorProfilePopup({ investor, onClose }: InvestorProf
         const target = e.target as HTMLElement;
         let isInsideScrollContainer = false;
         
-        if (scrollContainer && scrollContainer.contains(target)) {
+        if (scrollContainer && scrollContainer.contains(target) && !isTouchingHeader) {
           const isScrollable = scrollContainer.scrollHeight > scrollContainer.clientHeight;
+          
           // If at the top of scroll and swiping down, or at the bottom and swiping up,
           // allow popup to handle the swipe, otherwise let the content scroll
           if (isScrollable) {
@@ -269,27 +296,69 @@ export default function InvestorProfilePopup({ investor, onClose }: InvestorProf
           }
         }
         
-        // If primarily vertical swipe down and not inside scrollable content or at the top
-        if (!isInsideScrollContainer && Math.abs(deltaY) > Math.abs(deltaX) && deltaY > 70) { 
-          onClose();
-          document.removeEventListener('touchmove', handleTouchMove);
+        // Apply dynamic transform for visual feedback when dragging from header or handle
+        if (isTouchingHeader && deltaY > 0 && profileRef.current) {
+          // Apply resistance to make the drag feel more natural
+          const resistedDelta = Math.pow(deltaY, 0.8);
+          profileRef.current.style.transform = `translateY(${resistedDelta}px)`;
+          profileRef.current.style.opacity = `${1 - (resistedDelta / 500)}`;
+        }
+        
+        // If primarily vertical swipe down and not inside scrollable content (or at the top)
+        // More restrictive - requires a deliberate swipe to close to prevent accidental closes
+        if ((!isInsideScrollContainer || isTouchingHeader) && 
+            Math.abs(deltaY) > Math.abs(deltaX) * 1.5 && 
+            deltaY > 100) { // Increased threshold from 70px to 100px for more deliberate action
+          if (profileRef.current) {
+            // Apply smooth closing animation
+            profileRef.current.style.transition = 'transform 0.2s ease, opacity 0.2s ease';
+            profileRef.current.style.transform = `translateY(${window.innerHeight}px)`;
+            profileRef.current.style.opacity = '0';
+            
+            // Slight delay before actually closing
+            setTimeout(() => {
+              onClose();
+              document.removeEventListener('touchmove', handleTouchMove);
+            }, 180);
+          } else {
+            onClose();
+            document.removeEventListener('touchmove', handleTouchMove);
+          }
         } 
-        // If primarily horizontal swipe 
-        else if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
+        // If primarily horizontal swipe for tab navigation
+        else if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50 && investor) {
           // Determine which direction to swipe
           if (deltaX > 0) {
             // Swipe right - previous tab
             const tabs: TabType[] = ['overview', 'portfolio', 'badges', 'properties'];
             const currentIndex = tabs.indexOf(activeTab);
             if (currentIndex > 0) {
-              setActiveTab(tabs[currentIndex - 1]);
+              // Only switch if not trying to access premium content without premium
+              const targetTab = tabs[currentIndex - 1];
+              const isPremiumTab = (targetTab === 'portfolio' || targetTab === 'properties');
+              const isRestrictedContent = isPremiumTab && !isPremium && investor.id !== 'current-user';
+              
+              if (!isRestrictedContent) {
+                setActiveTab(targetTab);
+              } else if (navigator.vibrate) {
+                navigator.vibrate([10, 30, 10]); // Haptic feedback for locked tab
+              }
             }
           } else {
             // Swipe left - next tab
             const tabs: TabType[] = ['overview', 'portfolio', 'badges', 'properties'];
             const currentIndex = tabs.indexOf(activeTab);
             if (currentIndex < tabs.length - 1) {
-              setActiveTab(tabs[currentIndex + 1]);
+              // Only switch if not trying to access premium content without premium
+              const targetTab = tabs[currentIndex + 1];
+              const isPremiumTab = (targetTab === 'portfolio' || targetTab === 'properties');
+              const isRestrictedContent = isPremiumTab && !isPremium && investor.id !== 'current-user';
+              
+              if (!isRestrictedContent) {
+                setActiveTab(targetTab);
+              } else if (navigator.vibrate) {
+                navigator.vibrate([10, 30, 10]); // Haptic feedback for locked tab
+              }
             }
           }
           document.removeEventListener('touchmove', handleTouchMove);
@@ -299,6 +368,26 @@ export default function InvestorProfilePopup({ investor, onClose }: InvestorProf
       document.addEventListener('touchmove', handleTouchMove);
       
       const handleTouchEnd = () => {
+        // Reset any transform or transition on the profile element
+        if (profileRef.current) {
+          if (!profileRef.current.style.transform.includes(`translateY(${window.innerHeight}px)`)) {
+            // Only reset if we're not in the process of closing
+            profileRef.current.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
+            profileRef.current.style.transform = '';
+            profileRef.current.style.opacity = '1';
+            
+            // Remove the transition after animation completes
+            setTimeout(() => {
+              if (profileRef.current) {
+                profileRef.current.style.transition = '';
+              }
+            }, 300);
+          }
+          
+          // Remove the dragging class
+          profileRef.current.classList.remove('dragging-enabled');
+        }
+        
         document.removeEventListener('touchmove', handleTouchMove);
         document.removeEventListener('touchend', handleTouchEnd);
       };
@@ -705,96 +794,105 @@ export default function InvestorProfilePopup({ investor, onClose }: InvestorProf
         );
         
       case 'properties':
-        return (
-          <div className="space-y-4">
-            {isPremium || investor.id === 'current-user' ? (
-              <>
-                <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
+        // For non-premium users, show a modern premium lock screen with frosted glass effect
+        if (!isPremium && investor.id !== 'current-user') {
+          return (
+            <div className="relative h-full">
+              <div className="absolute inset-0 backdrop-blur-md bg-gradient-to-br from-purple-500/20 to-indigo-500/30 z-10 flex flex-col items-center justify-center rounded-xl border border-white/20 shadow-lg">
+                {/* Premium lock icon with animation */}
+                <motion.div 
+                  className="bg-gradient-to-br from-purple-500 to-indigo-600 rounded-full p-4 mb-4 shadow-lg border border-white/20"
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ type: "spring", duration: 0.8 }}
+                >
+                  <Shield className="h-8 w-8 text-white" />
+                </motion.div>
+                
+                {/* Premium content text */}
+                <motion.div
+                  className="text-center px-6"
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.2, duration: 0.5 }}
+                >
+                  <h3 className="text-xl font-bold text-white mb-2">Premium Content</h3>
+                  <p className="text-sm text-white/80 text-center mb-5 max-w-xs">
+                    Unlock access to this investor's luxury assets and property portfolio with Premium.
+                  </p>
+                  
+                  {/* Visually appealing premium button */}
+                  <motion.button 
+                    className="px-6 py-3 bg-gradient-to-r from-purple-500 to-indigo-600 text-white rounded-xl text-sm font-bold hover:shadow-lg transition-all duration-300 shadow-md relative overflow-hidden"
+                    whileHover={{ scale: 1.05, y: -2 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <span className="relative z-10 flex items-center justify-center">
+                      <Zap className="w-4 h-4 mr-1.5" />
+                      Upgrade to Premium
+                    </span>
+                    
+                    {/* Button shine effect */}
+                    <div className="absolute top-0 -inset-full h-full w-1/2 z-5 block transform -skew-x-12 bg-gradient-to-r from-transparent to-white opacity-20 animate-shine" />
+                  </motion.button>
+                </motion.div>
+              </div>
+              
+              {/* Blurred background content */}
+              <div className="opacity-20 pointer-events-none">
+                <div className="bg-slate-50 rounded-xl p-4 border border-slate-100 mb-4">
                   <h4 className="text-sm font-medium text-slate-700 mb-3">Virtual Assets</h4>
                   <div className="space-y-3">
-                    {mockProperties.map((property, index) => (
-                      <div 
-                        key={index}
-                        className="bg-white rounded-lg border border-slate-200 overflow-hidden"
-                      >
-                        <div className="h-24 bg-slate-300 w-full"></div>
-                        <div className="p-3">
-                          <div className="flex items-center justify-between">
-                            <h5 className="text-sm font-medium text-slate-800">{property.name}</h5>
-                            <div className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">
-                              {property.value}
-                            </div>
-                          </div>
-                          <div className="text-xs text-slate-500 mt-1">Acquired {property.acquired}</div>
-                        </div>
+                    {[1, 2].map((i) => (
+                      <div key={i} className="bg-white p-3 rounded-lg border border-slate-200">
+                        <div className="h-20 bg-slate-200 rounded w-full mb-2"></div>
+                        <div className="h-4 bg-slate-200 rounded w-3/4"></div>
                       </div>
                     ))}
                   </div>
                 </div>
-                
-                <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
-                  <div className="flex items-center justify-between mb-2">
-                    <h4 className="text-sm font-medium text-slate-700">Total Asset Value</h4>
-                    <div className="px-2 py-0.5 bg-green-100 rounded-full">
-                      <span className="text-xs font-medium text-green-700">+12% this month</span>
+              </div>
+            </div>
+          );
+        }
+        
+        // For premium users or own profile
+        return (
+          <div className="space-y-4">
+            <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
+              <h4 className="text-sm font-medium text-slate-700 mb-3">Virtual Assets</h4>
+              <div className="space-y-3">
+                {mockProperties.map((property, index) => (
+                  <div 
+                    key={index}
+                    className="bg-white rounded-lg border border-slate-200 overflow-hidden"
+                  >
+                    <div className="h-24 bg-slate-300 w-full"></div>
+                    <div className="p-3">
+                      <div className="flex items-center justify-between">
+                        <h5 className="text-sm font-medium text-slate-800">{property.name}</h5>
+                        <div className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">
+                          {property.value}
+                        </div>
+                      </div>
+                      <div className="text-xs text-slate-500 mt-1">Acquired {property.acquired}</div>
                     </div>
                   </div>
-                  <div className="text-xl font-bold text-slate-800">
-                    2,100,000 FB
-                  </div>
-                </div>
-              </>
-            ) : (
-              // For non-premium users, show a modern premium lock screen with frosted glass effect
-              <div className="relative h-full">
-                <div className="absolute inset-0 backdrop-blur-md bg-gradient-to-br from-purple-500/20 to-indigo-500/30 z-10 flex flex-col items-center justify-center rounded-xl border border-white/20 shadow-lg">
-                  {/* Premium lock icon with animation */}
-                  <motion.div 
-                    className="bg-gradient-to-br from-purple-500 to-indigo-600 rounded-full p-4 mb-4 shadow-lg border border-white/20"
-                    initial={{ scale: 0.8, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ type: "spring", duration: 0.8 }}
-                  >
-                    <Shield className="h-8 w-8 text-white" />
-                  </motion.div>
-                  
-                  {/* Premium content text */}
-                  <motion.div
-                    className="text-center px-6"
-                    initial={{ y: 20, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ delay: 0.2, duration: 0.5 }}
-                  >
-                    <h3 className="text-xl font-bold text-white mb-2">Premium Properties</h3>
-                    <p className="text-sm text-white/80 text-center mb-5 max-w-xs">
-                      Unlock access to view this investor's exclusive virtual properties and luxury assets.
-                    </p>
-                    
-                    {/* Visually appealing premium button */}
-                    <motion.button 
-                      className="px-6 py-3 bg-gradient-to-r from-purple-500 to-indigo-600 text-white rounded-xl text-sm font-bold hover:shadow-lg transition-all duration-300 shadow-md relative overflow-hidden"
-                      whileHover={{ scale: 1.05, y: -2 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      <span className="relative z-10 flex items-center justify-center">
-                        <Zap className="w-4 h-4 mr-1.5" />
-                        Upgrade to Premium
-                      </span>
-                      
-                      {/* Button shine effect */}
-                      <div className="absolute top-0 -inset-full h-full w-1/2 z-5 block transform -skew-x-12 bg-gradient-to-r from-transparent to-white opacity-20 animate-shine" />
-                    </motion.button>
-                  </motion.div>
-                </div>
-                
-                {/* Blurred background content */}
-                <div className="opacity-20 pointer-events-none space-y-3">
-                  {[1, 2, 3].map(i => (
-                    <div key={i} className="h-40 bg-slate-200 rounded-xl"></div>
-                  ))}
+                ))}
+              </div>
+            </div>
+            
+            <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
+              <div className="flex items-center justify-between mb-2">
+                <h4 className="text-sm font-medium text-slate-700">Total Asset Value</h4>
+                <div className="px-2 py-0.5 bg-green-100 rounded-full">
+                  <span className="text-xs font-medium text-green-700">+12% this month</span>
                 </div>
               </div>
-            )}
+              <div className="text-xl font-bold text-slate-800">
+                2,100,000 FB
+              </div>
+            </div>
           </div>
         );
     }
@@ -806,7 +904,8 @@ export default function InvestorProfilePopup({ investor, onClose }: InvestorProf
       <div 
         className="fixed inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-center justify-center p-4"
         onClick={(e) => {
-          // Only close if clicking directly on the backdrop, not when interacting with the popup content
+          // Only close if clicking directly on the backdrop element itself, 
+          // not when interacting with the popup content or any child element
           if (e.target === e.currentTarget) onClose();
         }}
       >
@@ -827,13 +926,17 @@ export default function InvestorProfilePopup({ investor, onClose }: InvestorProf
           </button>
           
           {/* Header Section - Dynamic Animated Header */}
-          <div className="relative">
-            {/* Dynamic performance-based gradient background */}
+          <div className="relative profile-header-area">
+            {/* Drag handle bar indicator */}
+            <div className="absolute top-1 left-0 right-0 flex justify-center z-20 drag-handle">
+              <div className="w-10 h-1 bg-white/30 rounded-full"></div>
+            </div>
+            {/* Dynamic performance-based gradient background with drag handle */}
             <div 
               className={`absolute inset-0 z-0 ${
-                investor.roi >= 15 ? 'bg-gradient-to-r from-emerald-500/60 via-teal-500/50 to-cyan-500/60' :
-                investor.roi >= 0 ? 'bg-gradient-to-r from-blue-500/60 via-cyan-500/50 to-indigo-500/60' :
-                'bg-gradient-to-r from-orange-500/60 via-red-500/50 to-rose-500/60'
+                investor.roi >= 15 ? 'bg-gradient-to-r from-emerald-500/25 via-teal-500/20 to-emerald-400/25' :
+                investor.roi >= 0 ? 'bg-gradient-to-r from-blue-500/20 via-indigo-400/15 to-blue-400/20' :
+                'bg-gradient-to-r from-orange-500/20 via-amber-400/15 to-orange-400/20'
               }`}
             >
               {/* Animated gradient overlay */}
@@ -848,12 +951,12 @@ export default function InvestorProfilePopup({ investor, onClose }: InvestorProf
               ></div>
             </div>
             
-            <div className="relative z-10 p-5">
+            <div className="relative z-10 p-4">
               <div className="flex items-start">
                 {/* Animated floating avatar with enhanced visuals */}
-                <div className="relative mr-4">
+                <div className="relative mr-3">
                   <motion.div
-                    className="w-20 h-20 rounded-full overflow-hidden border-[3px] border-white shadow-lg"
+                    className="w-16 h-16 rounded-full overflow-hidden border-[3px] border-white shadow-lg"
                     initial={{ y: 0 }}
                     animate={{ y: [0, -4, 0] }}
                     transition={{ 
@@ -877,7 +980,7 @@ export default function InvestorProfilePopup({ investor, onClose }: InvestorProf
                   
                   {/* Animated rank badge with shine effect */}
                   <motion.div 
-                    className={`absolute -bottom-1 -right-1 w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-md border-2 border-white overflow-hidden
+                    className={`absolute -bottom-1 -right-1 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-md border-2 border-white overflow-hidden
                       ${rankBadge.color === 'gold' ? 'bg-gradient-to-br from-yellow-400 to-yellow-600' :
                         rankBadge.color === 'silver' ? 'bg-gradient-to-br from-slate-400 to-slate-600' :
                         rankBadge.color === 'bronze' ? 'bg-gradient-to-br from-amber-500 to-amber-700' :
@@ -1001,7 +1104,7 @@ export default function InvestorProfilePopup({ investor, onClose }: InvestorProf
               
               {/* Enhanced quote section with card-specific styling */}
               <motion.div 
-                className={`mt-4 backdrop-blur-md rounded-xl p-3.5 shadow-lg overflow-hidden relative
+                className={`mt-3 backdrop-blur-md rounded-xl p-3 shadow-lg overflow-hidden relative
                   ${personalData.gradient ? `bg-gradient-to-br ${personalData.gradient}` : 'bg-gradient-to-br from-blue-500/80 to-indigo-600/80'}
                 `}
                 initial={{ opacity: 0, y: 10 }}
@@ -1026,7 +1129,7 @@ export default function InvestorProfilePopup({ investor, onClose }: InvestorProf
               
               {/* Enhanced Stats cards with micro-charts and animations */}
               <motion.div 
-                className="grid grid-cols-4 gap-2 mt-4"
+                className="grid grid-cols-4 gap-2 mt-3"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.5 }}
@@ -1145,7 +1248,16 @@ export default function InvestorProfilePopup({ investor, onClose }: InvestorProf
                       ? 'text-blue-600' 
                       : 'text-slate-500 hover:text-slate-700'
                   }`}
-                  onClick={() => setActiveTab(tab)}
+                  onClick={() => {
+                    // For premium tabs, only allow access if user is premium or viewing their own profile
+                    if ((tab === 'portfolio' || tab === 'properties') && 
+                        !isPremium && investor.id !== 'current-user') {
+                      // Show premium lock animation instead of changing tab
+                      if (navigator.vibrate) navigator.vibrate([10, 30, 10]); // Haptic feedback for locked tab
+                    } else {
+                      setActiveTab(tab);
+                    }
+                  }}
                   whileHover={{ y: -1 }}
                   transition={{ type: "spring", stiffness: 400 }}
                 >
