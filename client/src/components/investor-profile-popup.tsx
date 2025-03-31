@@ -62,8 +62,8 @@ const investorData: Record<string, InvestorData> = {
     icon: <Flame />,
     gradient: "from-purple-500 to-blue-500",
     strongestSectors: [
-      {name: "Consumer Discretionary", value: 78, trend: 'up'},
-      {name: "Media & Entertainment", value: 65, trend: 'up'}
+      {name: "Consumer Discretionary", value: 99, trend: 'up'},
+      {name: "Media & Entertainment", value: 99, trend: 'up'}
     ],
     tradeStyle: "Momentum investor",
     riskTolerance: 65,
