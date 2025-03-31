@@ -23,6 +23,7 @@ import OverallAnalysisCard from "@/components/overall-analysis-card";
 import { Skeleton } from "@/components/ui/skeleton";
 import ComparativeAnalysis from "@/components/comparative-analysis";
 import AskAI from "./ask-ai";
+import PurchaseSuccessModal from "./purchase-success-modal";
 
 interface StockCardProps {
   stock: StockData;
@@ -158,20 +159,27 @@ export default function StockCard({
     data: any;
   } | null>(null);
 
-  // State for portfolio impact calculator (real-time mode only)
+  // Unified modal state management to prevent iOS flickering issues
   const [isPortfolioImpactOpen, setIsPortfolioImpactOpen] = useState(false);
-  const [isDebouncing, setIsDebouncing] = useState(false);
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+  const [purchaseData, setPurchaseData] = useState<{ 
+    shares: number; 
+    amount: number; 
+    projectedReturn: number 
+  } | null>(null);
   
-  // Debounced opener for portfolio impact - prevents flickering on iOS
+  // Single function for modal management using requestAnimationFrame instead of setTimeout
   const debouncedOpenPortfolioImpact = useCallback(() => {
-    if (isDebouncing) return; // Prevent multiple calls while debouncing
+    // Close success modal if it's open when opening the calculator
+    if (isSuccessModalOpen) {
+      setIsSuccessModalOpen(false);
+    }
     
-    setIsDebouncing(true);
-    setTimeout(() => {
+    // Use requestAnimationFrame for smoother transition
+    requestAnimationFrame(() => {
       setIsPortfolioImpactOpen(true);
-      setIsDebouncing(false);
-    }, 100);
-  }, [isDebouncing]);
+    });
+  }, [isSuccessModalOpen]);
 
   // Use static data only
   const chartData = useMemo(() => 
@@ -1088,16 +1096,33 @@ export default function StockCard({
         Buy
       </button>
 
-      {/* Portfolio Impact Calculator */}
+      {/* Portfolio Impact Calculator - Unified state management for modals */}
       <PortfolioImpactCalculator
         isOpen={isPortfolioImpactOpen}
         onClose={() => setIsPortfolioImpactOpen(false)}
         onPurchaseComplete={({ shares, amount, projectedReturn }) => {
-          // Handle successful investment
-          onNext(); // Move to next stock after investing
+          // Store purchase data and show success modal
+          setPurchaseData({ shares, amount, projectedReturn });
+          setIsSuccessModalOpen(true);
         }}
         stock={stock}
       />
+      
+      {/* Purchase Success Modal - Control directly from StockCard */}
+      {purchaseData && (
+        <PurchaseSuccessModal
+          isOpen={isSuccessModalOpen}
+          onClose={() => {
+            setIsSuccessModalOpen(false);
+            // Only move to next stock after success modal is closed
+            onNext();
+          }}
+          stock={stock}
+          shares={purchaseData.shares}
+          amount={purchaseData.amount}
+          projectedReturn={purchaseData.projectedReturn}
+        />
+      )}
     </div>
   );
 }

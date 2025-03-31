@@ -4,7 +4,6 @@ import { X, DollarSign, ChevronDown, ChevronUp, Info, TrendingUp, Shield, Zap, A
 import { StockData } from "@/lib/stock-data";
 import { usePortfolio } from "@/contexts/portfolio-context";
 import { cn } from "@/lib/utils";
-import PurchaseSuccessModal from "./purchase-success-modal";
 
 interface PortfolioImpactCalculatorProps {
   isOpen: boolean;
@@ -28,8 +27,7 @@ export default function PortfolioImpactCalculator({
   // State for metric info tooltips
   const [activeTooltip, setActiveTooltip] = useState<string | null>(null);
   
-  // State for purchase success modal
-  const [showSuccessModal, setShowSuccessModal] = useState<boolean>(false);
+  // No longer need internal success modal state as it's managed by parent
   
   // Metric explanations
   const metricExplanations = {
@@ -162,27 +160,18 @@ export default function PortfolioImpactCalculator({
     setInvestmentAmount(prev => Math.max(prev - 1, 1));
   };
   
-  // Handle invest action
+  // Handle invest action - simplified to call parent component's handlers
   const handleInvest = () => {
     buyStock(stock, investmentAmount);
-    setShowSuccessModal(true);
-    // Don't trigger onPurchaseComplete() until after the success modal is closed
-    // This prevents advancing to the next stock while showing success for current stock
-    // onPurchaseComplete will be called in handleSuccessModalClose()
-    // Close the calculator immediately when showing success modal
-    onClose();
-  };
-  
-  // Handle success modal close
-  const handleSuccessModalClose = () => {
-    setShowSuccessModal(false);
-    // Now it's safe to call onPurchaseComplete since user has seen the success modal
-    // This ensures the stock displayed in the success modal matches the purchased stock
+    // Call the onPurchaseComplete callback with the data
+    // The parent component will handle showing the success modal
     onPurchaseComplete({ 
       shares, 
       amount: investmentAmount, 
       projectedReturn 
     });
+    // Close the calculator immediately
+    onClose();
   };
   
   // Format number for display
@@ -531,16 +520,6 @@ export default function PortfolioImpactCalculator({
           </>
         )}
       </AnimatePresence>
-      
-      {/* Purchase Success Modal */}
-      <PurchaseSuccessModal
-        isOpen={showSuccessModal}
-        onClose={handleSuccessModalClose}
-        stock={stock}
-        shares={shares}
-        amount={investmentAmount}
-        projectedReturn={projectedReturn}
-      />
     </div>
   );
 }
