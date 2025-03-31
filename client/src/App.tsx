@@ -10,6 +10,9 @@ import OnboardingPage from "@/pages/onboarding-page";
 import StockDetailPage from "@/pages/stock-detail-page";
 import PortfolioPage from "@/pages/portfolio-page";
 import LeaderboardPage from "@/pages/leaderboard-page-new";
+import GamesHubPage from "@/pages/games-hub-page";
+import BoardRoomPage from "@/pages/board-room-page";
+import TimeAttackPage from "@/pages/time-attack-page";
 import { AuthProvider } from "@/hooks/use-auth";
 import { UserProgressProvider } from "@/contexts/user-progress-context";
 import { PortfolioProvider } from "@/contexts/portfolio-context";
@@ -29,6 +32,9 @@ function Router() {
         <Route path="/profile" component={HomePage} />
         <Route path="/onboarding" component={OnboardingPage} />
         <Route path="/auth" component={AuthPage} />
+        <Route path="/games" component={GamesHubPage} />
+        <Route path="/games/board-room" component={BoardRoomPage} />
+        <Route path="/games/time-attack" component={TimeAttackPage} />
         <Route component={NotFound} />
       </Switch>
     </PortfolioProvider>
