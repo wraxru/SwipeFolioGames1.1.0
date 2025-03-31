@@ -348,33 +348,33 @@ export default function PortfolioImpactCalculator({
                     </div>
                   </div>
                   
-                  {/* Vertical Stacked Metrics - Redesigned for better readability */}
-                  <div className="space-y-3 mb-4">
+                  {/* 2x2 Grid Metrics - Compact and readable */}
+                  <div className="grid grid-cols-2 gap-2 mb-4">
                     {Object.entries(impact.impact)
                       .filter(([metric]) => ['performance', 'stability', 'value', 'momentum'].includes(metric.toLowerCase()))
                       .map(([metric, change]) => (
                       <div 
                         key={metric} 
-                        className="p-3 bg-white rounded-lg border border-slate-200 shadow-sm hover:shadow-md transition-all duration-200 hover:border-sky-200"
+                        className="p-2.5 bg-white rounded-lg border border-slate-200 shadow-sm hover:shadow-md transition-all duration-200 hover:border-sky-200"
                       >
-                        <div className="flex items-center mb-2">
-                          <div className={`p-1.5 rounded-md mr-2 ${
+                        <div className="flex items-center mb-1.5">
+                          <div className={`p-1 rounded-md mr-1.5 ${
                             change > 0 ? "bg-green-100 text-green-600" : 
                             change < 0 ? "bg-red-100 text-red-600" : 
                             "bg-slate-100 text-slate-600"
                           }`}>
-                            {getMetricIcon(metric, 16)}
+                            {getMetricIcon(metric, 14)}
                           </div>
                           <h4 className="font-semibold text-sm text-slate-900 capitalize">{metric}</h4>
                           <button 
-                            className="ml-1.5 text-slate-400 hover:text-slate-600 transition-colors"
+                            className="ml-1 text-slate-400 hover:text-slate-600 transition-colors"
                             onClick={(e) => {
                               e.stopPropagation();
                               setActiveTooltip(activeTooltip === metric ? null : metric);
                             }}
                             aria-label={`Info about ${metric}`}
                           >
-                            <Info size={14} />
+                            <Info size={12} />
                           </button>
                           {activeTooltip === metric && (
                             <div 
@@ -389,10 +389,10 @@ export default function PortfolioImpactCalculator({
                         
                         {/* New metric value with change indicator */}
                         <div className="flex items-center">
-                          <div className="text-lg font-bold text-slate-900 mr-2">
+                          <div className="text-base font-bold text-slate-900 mr-1.5">
                             {impact.newMetrics[metric as keyof typeof impact.newMetrics].toFixed(1)}
                           </div>
-                          <div className={`text-sm font-medium px-2 py-0.5 rounded-full ${
+                          <div className={`text-xs font-medium px-1.5 py-0.5 rounded-full ${
                             change > 0 ? "bg-green-100 text-green-800" : 
                             change < 0 ? "bg-red-100 text-red-800" : 
                             "bg-slate-100 text-slate-800"
@@ -456,7 +456,7 @@ export default function PortfolioImpactCalculator({
                     <div className="flex justify-center items-center gap-4 p-4 bg-slate-50 rounded-lg">
                       <div className="text-center">
                         <div className="text-sm font-medium text-slate-700 mb-1">You'll get</div>
-                        <div className="text-xl font-bold text-slate-900">{shares.toFixed(4)} shares</div>
+                        <div className="text-2xl font-bold text-slate-900">{shares.toFixed(4)} shares</div>
                       </div>
                       
                       <div className="text-slate-500 flex items-center justify-center">
@@ -465,7 +465,7 @@ export default function PortfolioImpactCalculator({
                       
                       <div className="text-center">
                         <div className="text-sm font-medium text-slate-700 mb-1">Projected 1y return</div>
-                        <div className="text-xl font-bold text-green-600">
+                        <div className="text-2xl font-bold text-green-600">
                           {formatCurrency(projectedReturn)}
                         </div>
                       </div>
