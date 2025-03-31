@@ -581,7 +581,9 @@ export default function InvestorProfilePopup({ investor, onClose }: InvestorProf
         
       case 'portfolio':
         // For non-premium users, show a modern premium lock screen with frosted glass effect
-        if (!isPremium && investor.id !== 'current-user') {
+        if (!isPremium && investor.id !== 'current-user' && 
+            investor.username.toLowerCase() !== 'lebron james' && 
+            investor.username.toLowerCase() !== 'valuebuffet') {
           return (
             <div className="relative h-full">
               <div className="absolute inset-0 backdrop-blur-md bg-gradient-to-br from-purple-500/20 to-indigo-500/30 z-10 flex flex-col items-center justify-center rounded-xl border border-white/20 shadow-lg">
@@ -795,7 +797,9 @@ export default function InvestorProfilePopup({ investor, onClose }: InvestorProf
         
       case 'properties':
         // For non-premium users, show a modern premium lock screen with frosted glass effect
-        if (!isPremium && investor.id !== 'current-user') {
+        if (!isPremium && investor.id !== 'current-user' && 
+            investor.username.toLowerCase() !== 'lebron james' && 
+            investor.username.toLowerCase() !== 'valuebuffet') {
           return (
             <div className="relative h-full">
               <div className="absolute inset-0 backdrop-blur-md bg-gradient-to-br from-purple-500/20 to-indigo-500/30 z-10 flex flex-col items-center justify-center rounded-xl border border-white/20 shadow-lg">
@@ -934,13 +938,13 @@ export default function InvestorProfilePopup({ investor, onClose }: InvestorProf
             {/* Dynamic performance-based gradient background with drag handle */}
             <div 
               className={`absolute inset-0 z-0 ${
-                investor.roi >= 15 ? 'bg-gradient-to-r from-emerald-500/25 via-teal-500/20 to-emerald-400/25' :
-                investor.roi >= 0 ? 'bg-gradient-to-r from-blue-500/20 via-indigo-400/15 to-blue-400/20' :
-                'bg-gradient-to-r from-orange-500/20 via-amber-400/15 to-orange-400/20'
+                investor.roi >= 15 ? 'bg-gradient-to-r from-emerald-500/70 via-teal-500/65 to-emerald-400/70' :
+                investor.roi >= 0 ? 'bg-gradient-to-r from-blue-500/65 via-indigo-400/60 to-blue-400/65' :
+                'bg-gradient-to-r from-orange-500/65 via-amber-400/60 to-orange-400/65'
               }`}
             >
               {/* Animated gradient overlay */}
-              <div className="absolute inset-0 bg-white/30 mix-blend-overlay"></div>
+              <div className="absolute inset-0 bg-white/10 mix-blend-overlay"></div>
               
               {/* Animated pattern overlay */}
               <div className="absolute inset-0 opacity-30" 

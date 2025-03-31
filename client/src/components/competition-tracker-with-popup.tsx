@@ -180,10 +180,11 @@ export default function CompetitionTracker({ defaultExpanded = false }: { defaul
                         initial={{ opacity: 0, x: -5, y: 5 }}
                         animate={{ opacity: 1, x: 0, y: 0 }}
                         transition={{ duration: 0.3, delay: index * 0.1 }}
-                        className="p-2.5 rounded-lg bg-white/80 backdrop-blur-sm border border-slate-100 shadow-sm flex items-center justify-between"
+                        className="p-2.5 rounded-lg bg-white/80 backdrop-blur-sm border border-slate-100 shadow-sm flex items-center justify-between cursor-pointer hover:bg-slate-50/80 transition-colors"
                         style={{
                           boxShadow: "0 2px 10px -2px rgba(0,0,0,0.05)"
                         }}
+                        onClick={() => setSelectedInvestor(investor.originalUser || null)}
                       >
                         <div className="flex items-center">
                           <div className={`h-7 w-7 rounded-full ${color.bg} flex items-center justify-center mr-2.5 shadow-sm text-xs font-bold text-white`}>
@@ -227,11 +228,12 @@ export default function CompetitionTracker({ defaultExpanded = false }: { defaul
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.5 }}
-                  className="relative overflow-hidden rounded-xl p-3.5"
+                  className="relative overflow-hidden rounded-xl p-3.5 cursor-pointer hover:bg-slate-50/60 transition-colors"
                   style={{
                     background: "linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(249,250,251,0.9) 100%)",
                     boxShadow: "0 4px 15px -3px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.05)"
                   }}
+                  onClick={() => setSelectedInvestor(userPosition.originalUser || null)}
                 >
                   {/* Subtle background glows for iOS effect */}
                   <div className="absolute -top-6 -right-6 w-16 h-16 rounded-full bg-blue-200/30 blur-xl"></div>
@@ -268,7 +270,7 @@ export default function CompetitionTracker({ defaultExpanded = false }: { defaul
                       </div>
                       <div className="flex items-center mt-1">
                         <div className="px-2 py-0.5 bg-indigo-100/80 rounded-full border border-indigo-200/50">
-                          <span className="text-xs font-medium text-indigo-700">Quality: {userPosition.qualityScore || 0}</span>
+                          <span className="text-xs font-medium text-indigo-700">Score: {userPosition.qualityScore || 0}</span>
                         </div>
                       </div>
                     </div>
@@ -295,7 +297,8 @@ export default function CompetitionTracker({ defaultExpanded = false }: { defaul
                         initial={{ opacity: 0, y: 5 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.3 }}
-                        className="p-3 rounded-xl bg-gradient-to-r from-blue-50/80 to-indigo-50/80 backdrop-blur-sm border border-blue-100/70 shadow-sm relative overflow-hidden"
+                        className="p-3 rounded-xl bg-gradient-to-r from-blue-50/80 to-indigo-50/80 backdrop-blur-sm border border-blue-100/70 shadow-sm relative overflow-hidden cursor-pointer hover:bg-blue-50/90 transition-colors"
+                        onClick={() => setSelectedInvestor(investor.originalUser || null)}
                       >
                         {/* Subtle glow effect in background */}
                         <div className="absolute top-0 right-0 w-12 h-12 rounded-full bg-blue-200/30 blur-xl -z-10"></div>

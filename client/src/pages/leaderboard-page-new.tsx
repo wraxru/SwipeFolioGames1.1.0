@@ -128,15 +128,38 @@ const LeaderboardPage: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 pb-20">
       {/* Header - Lighter Background */}
       <div className="bg-gradient-to-r from-slate-100 to-blue-50 text-slate-800 pt-10 pb-8 px-4 rounded-b-3xl shadow-sm">
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-4">
           <Link href="/">
             <button className="flex items-center text-slate-600 hover:text-slate-800 transition-colors">
               <ArrowLeft className="w-5 h-5 mr-1" />
               <span>Back</span>
             </button>
           </Link>
-          <h1 className="text-2xl font-bold text-slate-800">Leaderboard</h1>
           <div className="w-5"></div> {/* Empty div for even spacing */}
+        </div>
+        
+        {/* iOS-Style Tab Selector - Moved to top as requested */}
+        <div className="flex justify-center mb-4">
+          <div className="bg-white/90 backdrop-blur-sm p-1 rounded-full flex shadow-sm border border-slate-200">
+            <button 
+              className={`px-5 py-2 rounded-full text-sm font-medium transition-all ${activeTab === 'all' ? 'bg-blue-500 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'}`}
+              onClick={() => setActiveTab('all')}
+            >
+              All Investors
+            </button>
+            <button 
+              className={`px-5 py-2 rounded-full text-sm font-medium transition-all ${activeTab === 'friends' ? 'bg-blue-500 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'}`}
+              onClick={() => setActiveTab('friends')}
+            >
+              Friends
+            </button>
+          </div>
+        </div>
+        
+        {/* Enhanced Leaderboard Title */}
+        <div className="text-center mb-5">
+          <h1 className="text-3xl font-bold text-slate-800 bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Leaderboard</h1>
+          <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-indigo-500 mx-auto mt-1 rounded-full"></div>
         </div>
         
         {/* iOS-Style Card Podium Layout for Top 3 */}
@@ -314,23 +337,7 @@ const LeaderboardPage: React.FC = () => {
           </div>
         </div>
         
-        {/* iOS-Style Tab Selector */}
-        <div className="flex justify-center mt-2">
-          <div className="bg-white/80 backdrop-blur-sm p-1 rounded-full flex shadow-sm">
-            <button 
-              className={`px-5 py-2 rounded-full text-sm font-medium transition-all ${activeTab === 'all' ? 'bg-blue-500 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'}`}
-              onClick={() => setActiveTab('all')}
-            >
-              All Investors
-            </button>
-            <button 
-              className={`px-5 py-2 rounded-full text-sm font-medium transition-all ${activeTab === 'friends' ? 'bg-blue-500 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'}`}
-              onClick={() => setActiveTab('friends')}
-            >
-              Friends
-            </button>
-          </div>
-        </div>
+
       </div>
       
       {/* Removed search bar to bring leaderboard closer to top */}
