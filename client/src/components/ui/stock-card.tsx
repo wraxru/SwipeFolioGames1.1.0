@@ -236,7 +236,10 @@ export default function StockCard({
           navigator.vibrate(50);
         }
         
-        // Start spring-back animation first
+        // --- CHANGE: Set modal state *BEFORE* starting card animation ---
+        setModalState('calculator');
+        
+        // --- THEN, animate card back ---
         cardControls.start({
           x: 0,
           opacity: 1,
@@ -249,12 +252,8 @@ export default function StockCard({
           }
         });
         
-        // THEN, after a short delay, set the modal state to 'calculator'
-        setTimeout(() => {
-          setModalState('calculator');
-        }, 150); // 150ms delay
-        
-        setSwipeDirection(null);
+        // Optionally delay resetting swipeDirection slightly
+        setTimeout(() => setSwipeDirection(null), 50);
       } 
       // Left swipe (negative x) - Skip to next card
       else if (info.offset.x < -threshold) {

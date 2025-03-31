@@ -204,23 +204,24 @@ export default function PortfolioImpactCalculator({
               onClick={onClose}
             />
             
-            {/* Modal with enhanced animations and better centering */}
+            {/* Modal with vertical slide animation - simpler for iOS to handle */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.92, y: 30 }}
+              initial={{ opacity: 0, y: "100vh" }} // Start off-screen bottom
               animate={{ 
                 opacity: 1, 
-                scale: 1, 
-                y: 0,
+                y: 0, 
                 transition: { 
                   duration: 0.3, 
-                  ease: 'easeInOut'
+                  ease: "easeOut" 
                 }
               }}
               exit={{ 
                 opacity: 0, 
-                scale: 0.95, 
-                y: 20,
-                transition: { duration: 0.2, ease: 'easeInOut' }
+                y: "100vh", 
+                transition: { 
+                  duration: 0.2, 
+                  ease: "easeIn" 
+                }
               }}
               className="calculator-modal"
               style={{
