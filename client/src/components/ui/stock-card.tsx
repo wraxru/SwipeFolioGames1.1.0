@@ -228,7 +228,7 @@ export default function StockCard({
     const threshold = 100;
 
     if (displayMode === 'realtime') {
-      // Right swipe (positive x) - Open portfolio impact calculator with simplified animation
+      // Remove swipe functionality completely for right swipe
       if (info.offset.x > threshold) {
         setSwipeDirection("right");
         // Haptic feedback if available
@@ -236,15 +236,8 @@ export default function StockCard({
           navigator.vibrate(50);
         }
         
-        // --- CHANGE: Instantly reset card position with no animation ---
+        // Just reset the card position without opening anything on swipe
         cardControls.set({ x: 0, opacity: 1, scale: 1 });
-        
-        // --- THEN set modal state (with requestAnimationFrame for safety) ---
-        requestAnimationFrame(() => {
-          setModalState('calculator');
-        });
-        
-        // Reset swipe direction
         setSwipeDirection(null);
       } 
       // Left swipe (negative x) - Skip to next card
@@ -1053,10 +1046,19 @@ export default function StockCard({
         
         {/* Ask AI Component has been removed */}
 
-        {/* Bottom Swipe Instruction */}
+        {/* Buy Button */}
         <div className="p-4 bg-white border-t border-b border-slate-100 mb-4">
-          <div className="text-center text-sm font-medium text-slate-600 my-2">
-            Swipe <span className="text-red-600 font-medium">left to skip</span> • Swipe <span className="text-green-600 font-medium">right to invest</span>
+          <div className="text-center mb-2">
+            <button 
+              onClick={openPortfolioCalculator}
+              className="py-3 px-8 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-bold rounded-full shadow-lg hover:shadow-xl active:scale-95 transform transition-all duration-150"
+              data-testid="visible-buy-button"
+            >
+              Analyze Impact on Portfolio
+            </button>
+          </div>
+          <div className="text-center text-sm font-medium text-slate-600 mt-3">
+            Swipe <span className="text-red-600 font-medium">left to skip</span>
           </div>
         </div>
 
