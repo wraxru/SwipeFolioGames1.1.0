@@ -1,0 +1,166 @@
+Here's a comprehensive prompt you can give to Replit AI to redesign your existing Board Room game:
+CopyI want you to redesign the existing BoardRoom game to create an immersive CEO simulation that teaches financial literacy through interactive decision-making. The current implementation is too basic and lacks engagement - we need to transform it into a premium experience where players feel like real executives making high-stakes decisions.
+
+CORE GAMEPLAY OVERHAUL:
+1. Convert the current card interface to a SWIPING interface (swipe right to accept an option, left to reject, or tap to see multiple options)
+2. Each decision should affect 2-3 specific financial metrics from this list: EPS, P/E Ratio, Debt Load, P/B Ratio, Beta, Volatility, Revenue Growth, Profit Margin, RSI, RPI, Return on Capital, Dividend Yield
+3. Each decision should also affect one of our core categories: Growth, Stability, Momentum, Value
+4. Implement animated visualizations for metric changes (charts, gauges, progress bars)
+5. Create a persistent company dashboard showing financial performance over time
+
+VISUAL DESIGN UPDATES:
+1. Replace the current minimal UI with a premium corporate aesthetic (dark mode with blue/teal accents)
+2. Add subtle animations for transitions between decisions
+3. Create visual feedback for metric changes (glowing indicators, animated charts)
+4. Add industry-specific visual elements based on the player's chosen company
+5. Implement a visually appealing company timeline that builds as decisions progress
+
+AI INTEGRATION POINTS:
+1. Use Gemini to dynamically generate personalized scenarios based on:
+   - The player's company name
+   - Their selected industry
+   - Previous decisions they've made
+   - The current stage in the narrative arc
+
+2. Each AI-generated scenario should include:
+   - A compelling business situation (1-2 paragraphs)
+   - 2-3 distinct decision options
+   - Clear impacts on specific financial metrics
+   - A financial literacy concept being taught
+
+3. Implement the AI integration using this pattern:
+```javascript
+// At the start of the game
+async function initializeGameWithAI(playerName, companyName, industry) {
+  // Generate the narrative arc and first scenario
+  const initialPrompt = `
+    Generate a business scenario for ${playerName}, CEO of ${companyName} in the ${industry} industry.
+    This is the beginning of their journey as CEO. Create a compelling situation that involves
+    early growth decisions and affects EPS, Revenue Growth, and Stability.
+    Format the response as a JSON object with: title, description, options (array with id, text, impacts),
+    and learningObjective.
+  `;
+  
+  try {
+    const aiResponse = await gemini.generateContent(initialPrompt);
+    const scenario = JSON.parse(aiResponse.response.text());
+    return processScenario(scenario);
+  } catch (error) {
+    console.error("AI generation failed:", error);
+    return fallbackScenario; // Use a pre-written scenario if AI fails
+  }
+}
+
+// For each subsequent decision
+async function generateNextScenario(gameState, currentArcStage) {
+  // Build context based on previous decisions
+  const decisionHistory = gameState.decisions.map(d => 
+    `Decision: ${d.title}, Choice: ${d.selectedOption}, Impacts: ${d.impacts.join(', ')}`
+  ).join('\n');
+  
+  const nextPrompt = `
+    The player is ${gameState.playerName}, CEO of ${gameState.companyName} in the ${gameState.industry} industry.
+    Their company currently has these metrics:
+    ${Object.entries(gameState.metrics).map(([key, value]) => `${key}: ${value}`).join(', ')}
+    
+    Previous decisions:
+    ${decisionHistory}
+    
+    Current narrative stage: ${currentArcStage}
+    
+    Generate the next business scenario that logically follows from these decisions and fits the current
+    narrative stage. The scenario should affect 2-3 of these metrics: [select appropriate metrics].
+    It should also impact the core category: [select from Growth, Stability, Momentum, Value].
+    
+    Include a relevant financial literacy concept explanation.
+    Format as JSON with: title, description, options (array with id, text, impacts), and learningObjective.
+  `;
+  
+  try {
+    const aiResponse = await gemini.generateContent(nextPrompt);
+    const scenario = JSON.parse(aiResponse.response.text());
+    return processScenario(scenario);
+  } catch (error) {
+    console.error("AI generation failed:", error);
+    return getPrewrittenScenario(currentArcStage); // Fallback to pre-written content
+  }
+}
+
+For educational content, use AI to generate tailored explanations:
+
+javascriptCopyasync function generateExplanation(metric, change, playerChoice) {
+  const prompt = `
+    Explain in 2-3 sentences why a CEO's decision to "${playerChoice}" 
+    would cause the company's ${metric} to change by ${change}%.
+    Make this explanation educational but conversational, as if a financial advisor
+    is explaining it to a new investor.
+  `;
+  
+  try {
+    const aiResponse = await gemini.generateContent(prompt);
+    return aiResponse.response.text();
+  } catch (error) {
+    return getDefaultExplanation(metric, change); // Fallback explanation
+  }
+}
+GAME STRUCTURE IMPROVEMENTS:
+
+Create a narrative arc with these 10 stages:
+
+Company Establishment
+Market Expansion
+Competitive Challenge
+Innovation Decision
+Economic Downturn
+Regulatory Issue
+Talent Management
+Acquisition Opportunity
+International Expansion
+Legacy Planning
+
+
+For each stage, design 2-3 scenarios that:
+
+Build on previous player decisions
+Affect different combinations of financial metrics
+Teach specific financial concepts
+Present meaningful trade-offs
+
+
+Add a company dashboard that:
+
+Shows historical performance on all financial metrics
+Highlights significant changes from decisions
+Provides educational tooltips explaining each metric
+Visualizes company growth over time
+
+
+
+CODE STRUCTURE:
+Please refactor the existing Board Room game using this approach:
+
+Create a modular component structure (DecisionSwiper, MetricDashboard, etc.)
+Implement proper state management for all financial metrics and game progress
+Use CSS animations and transitions for a premium feel
+Add responsive design for different screen sizes
+Implement the AI integration as described above
+
+FALLBACK MECHANISM:
+Ensure the game works even if AI generation fails by:
+
+Creating a set of pre-written scenarios for each narrative stage
+Implementing error handling around all AI calls
+Having default explanations for all financial concepts
+Designing the UI to gracefully handle missing content
+
+This redesign should transform the current basic BoardRoom game into an immersive, educational CEO experience that players will find both entertaining and informative.
+Copy
+This prompt provides a complete roadmap for redesigning your game with specific instructions on:
+1. How to implement the swiping interface
+2. Where and how to integrate Gemini AI
+3. What financial metrics to track and display
+4. How to structure the narrative progression
+5. Visual design improvements needed
+6. Fallback mechanisms for when AI isn't available
+
+The key improvements focus on creating a more dynamic, visually engaging experience while ensuring the educational financial literacy aspects are deeply integrated into the gameplay. The swiping mechanism and animated metric feedback should dramatically increase player engagement.RetryClaude can make mistakes. Please double-check responses.

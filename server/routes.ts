@@ -546,6 +546,132 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.status(500).json(errorResponse);
     }
   });
+  
+  // Board Room Game - AI scenario generation
+  app.post("/api/ai-scenario", async (req, res) => {
+    try {
+      console.log("Received AI scenario request");
+      const { prompt } = req.body;
+      
+      // Validate request body
+      if (!prompt) {
+        return res.status(400).json({ 
+          error: "INVALID_REQUEST", 
+          message: "A prompt is required" 
+        });
+      }
+      
+      // Get AI response with game context
+      const response = await getAIResponse(prompt, { 
+        gameMode: true,
+        gameRole: "CEO Simulator"
+      });
+      
+      try {
+        // Try to parse as JSON
+        const scenario = JSON.parse(response);
+        return res.json({ scenario });
+      } catch (parseError) {
+        console.error('Failed to parse AI response as JSON:', parseError);
+        
+        // If the response isn't valid JSON, return the raw response for debugging
+        return res.status(500).json({ 
+          message: 'Failed to parse AI response as JSON',
+          rawResponse: response
+        });
+      }
+    } catch (error: any) {
+      console.error("Error generating AI scenario:", error);
+      
+      interface AIErrorResponse {
+        error: string;
+        message: string;
+        details?: {
+          status?: number;
+          data?: any;
+        };
+      }
+      
+      let errorResponse: AIErrorResponse = { 
+        error: "AI service error", 
+        message: error instanceof Error ? error.message : "Unknown error occurred"
+      };
+      
+      // Add more detailed error information if available
+      if (error.response) {
+        console.error("Error response status:", error.response.status);
+        console.error("Error response data:", error.response.data);
+        
+        errorResponse = {
+          error: "AI service error", 
+          message: error instanceof Error ? error.message : "Unknown error occurred",
+          details: {
+            status: error.response.status,
+            data: error.response.data
+          }
+        };
+      }
+      
+      return res.status(500).json(errorResponse);
+    }
+  });
+  
+  // Board Room Game - AI insight/explanation generation
+  app.post("/api/ai-insight", async (req, res) => {
+    try {
+      console.log("Received AI insight request");
+      const { prompt } = req.body;
+      
+      // Validate request body
+      if (!prompt) {
+        return res.status(400).json({ 
+          error: "INVALID_REQUEST", 
+          message: "A prompt is required" 
+        });
+      }
+      
+      // Get AI response with game context
+      const explanation = await getAIResponse(prompt, { 
+        gameMode: true,
+        gameRole: "CEO Simulator"
+      });
+      
+      return res.json({ explanation });
+    } catch (error: any) {
+      console.error("Error generating AI insight:", error);
+      
+      interface AIErrorResponse {
+        error: string;
+        message: string;
+        details?: {
+          status?: number;
+          data?: any;
+        };
+      }
+      
+      let errorResponse: AIErrorResponse = { 
+        error: "AI service error", 
+        message: error instanceof Error ? error.message : "Unknown error occurred"
+      };
+      
+      // Add more detailed error information if available
+      if (error.response) {
+        console.error("Error response status:", error.response.status);
+        console.error("Error response data:", error.response.data);
+        
+        errorResponse = {
+          error: "AI service error", 
+          message: error instanceof Error ? error.message : "Unknown error occurred",
+          details: {
+            status: error.response.status,
+            data: error.response.data
+          }
+        };
+      }
+      
+      return res.status(500).json(errorResponse);
+    }
+  });
 
   // Finnhub API Endpoints
   

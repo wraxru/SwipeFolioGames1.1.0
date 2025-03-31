@@ -1,5 +1,5 @@
 import React from 'react';
-import { BoardRoomGame } from '@/components/board-room-game';
+import BoardRoomGame from '@/components/board-room-game';
 import { GameBackButton } from '@/components/ui/game-back-button';
 
 export default function BoardRoomPage() {
