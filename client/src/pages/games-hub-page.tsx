@@ -54,9 +54,11 @@ export default function GamesHubPage() {
     }
   ];
 
-  // Split games into 2x2 grid (first 4 games) and display the rest below
-  const featuredGames = gameCards.slice(0, 4);
-  const additionalGames = gameCards.slice(4);
+  // Organize games into a grid layout with 2 rows of 2 games and a centered final game
+  // First 4 games arranged in 2x2 grid
+  const gridGames = gameCards.slice(0, 4);
+  // 5th game (if exists) will be styled differently
+  const finalGame = gameCards.length > 4 ? gameCards[4] : null;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
@@ -99,14 +101,14 @@ export default function GamesHubPage() {
           </div>
         </motion.div>
 
-        {/* Featured Games 2x2 Grid */}
+        {/* Main Games 2x2 Grid */}
         <div className="mb-8">
           <h3 className="text-xl font-semibold mb-4 flex items-center">
             <Trophy className="w-5 h-5 mr-2 text-amber-500" />
-            Featured Games
+            Games
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-            {featuredGames.map((game, index) => (
+            {gridGames.map((game, index) => (
               <motion.div
                 key={game.title}
                 initial={{ opacity: 0, y: 20 }}
@@ -140,52 +142,42 @@ export default function GamesHubPage() {
               </motion.div>
             ))}
           </div>
+          
+          {/* Additional Featured Game (centered) */}
+          {finalGame && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.7, duration: 0.4 }}
+              className="mt-6 sm:w-3/4 mx-auto"
+            >
+              <Link href={finalGame.link}>
+                <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 cursor-pointer">
+                  <div className={`bg-gradient-to-r ${finalGame.color} p-5 sm:p-6 text-white relative`}>
+                    <div className="flex justify-between items-start">
+                      <div className="bg-white/20 p-3 rounded-lg">
+                        {finalGame.icon}
+                      </div>
+                      <span className="bg-white/30 text-white text-xs font-semibold px-3 py-1 rounded-full">
+                        {finalGame.category}
+                      </span>
+                    </div>
+                    <h2 className="text-xl sm:text-2xl font-bold mt-4 mb-1">{finalGame.title}</h2>
+                  </div>
+                  <div className="p-5 sm:p-6">
+                    <p className="text-gray-600 mb-4">
+                      {finalGame.description}
+                    </p>
+                    <div className="flex items-center text-blue-600 font-medium">
+                      <span>Play Now</span>
+                      <ArrowRight className="ml-2 w-4 h-4" />
+                    </div>
+                  </div>
+                </Card>
+              </Link>
+            </motion.div>
+          )}
         </div>
-        
-        {/* Additional Games */}
-        {additionalGames.length > 0 && (
-          <div>
-            <h3 className="text-xl font-semibold mb-4 flex items-center">
-              <BarChart3 className="w-5 h-5 mr-2 text-blue-500" />
-              More Games
-            </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-              {additionalGames.map((game, index) => (
-                <motion.div
-                  key={game.title}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.5 + index * 0.1, duration: 0.4 }}
-                >
-                  <Link href={game.link}>
-                    <Card className="overflow-hidden h-full hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 cursor-pointer">
-                      <div className={`bg-gradient-to-r ${game.color} p-5 sm:p-6 text-white relative`}>
-                        <div className="flex justify-between items-start">
-                          <div className="bg-white/20 p-3 rounded-lg">
-                            {game.icon}
-                          </div>
-                          <span className="bg-white/30 text-white text-xs font-semibold px-3 py-1 rounded-full">
-                            {game.category}
-                          </span>
-                        </div>
-                        <h2 className="text-xl sm:text-2xl font-bold mt-4 mb-1">{game.title}</h2>
-                      </div>
-                      <div className="p-5 sm:p-6">
-                        <p className="text-gray-600 mb-4">
-                          {game.description}
-                        </p>
-                        <div className="flex items-center text-blue-600 font-medium">
-                          <span>Play Now</span>
-                          <ArrowRight className="ml-2 w-4 h-4" />
-                        </div>
-                      </div>
-                    </Card>
-                  </Link>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
