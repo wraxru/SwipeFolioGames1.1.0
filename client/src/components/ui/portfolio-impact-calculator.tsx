@@ -170,8 +170,7 @@ export default function PortfolioImpactCalculator({
       amount: investmentAmount, 
       projectedReturn 
     });
-    // Close the calculator immediately
-    onClose();
+    // No longer directly closing - StockCard will manage state transitions
   };
   
   // Format number for display

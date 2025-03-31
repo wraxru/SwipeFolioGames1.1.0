@@ -160,26 +160,25 @@ export default function StockCard({
   } | null>(null);
 
   // Unified modal state management to prevent iOS flickering issues
-  const [isPortfolioImpactOpen, setIsPortfolioImpactOpen] = useState(false);
-  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+  const [modalState, setModalState] = useState<'closed' | 'calculator' | 'success'>('closed');
   const [purchaseData, setPurchaseData] = useState<{ 
     shares: number; 
     amount: number; 
     projectedReturn: number 
   } | null>(null);
   
-  // Single function for modal management using requestAnimationFrame instead of setTimeout
-  const debouncedOpenPortfolioImpact = useCallback(() => {
-    // Close success modal if it's open when opening the calculator
-    if (isSuccessModalOpen) {
-      setIsSuccessModalOpen(false);
-    }
-    
-    // Use requestAnimationFrame for smoother transition
-    requestAnimationFrame(() => {
-      setIsPortfolioImpactOpen(true);
-    });
-  }, [isSuccessModalOpen]);
+  // Handle purchase completion - transition from calculator to success modal
+  const handlePurchaseComplete = (data: { shares: number; amount: number; projectedReturn: number }) => {
+    setPurchaseData(data);
+    setModalState('success'); // Show success modal
+  };
+
+  // Handle success modal close - also move to next card after closing
+  const handleSuccessModalClose = () => {
+    setModalState('closed'); // Close the modal
+    setPurchaseData(null);
+    onNext(); // Trigger moving to the next card AFTER closing
+  };
 
   // Use static data only
   const chartData = useMemo(() => 
@@ -216,7 +215,7 @@ export default function StockCard({
 
   // Add a direct button for easier testing/accessibility (real-time mode only)
   const openPortfolioCalculator = () => {
-    debouncedOpenPortfolioImpact();
+    setModalState('calculator');
   };
   
   // Function to handle investment button click - used by the Buy button in stock detail page
@@ -236,10 +235,8 @@ export default function StockCard({
         if (navigator.vibrate) {
           navigator.vibrate(50);
         }
-        // Open portfolio calculator with debouncing to prevent iOS flicker
-        debouncedOpenPortfolioImpact();
         
-        // Spring back animation
+        // Start spring-back animation first
         cardControls.start({
           x: 0,
           opacity: 1,
@@ -251,6 +248,12 @@ export default function StockCard({
             duration: 0.4
           }
         });
+        
+        // THEN, after a short delay, set the modal state to 'calculator'
+        setTimeout(() => {
+          setModalState('calculator');
+        }, 150); // 150ms delay
+        
         setSwipeDirection(null);
       } 
       // Left swipe (negative x) - Skip to next card
@@ -1096,27 +1099,21 @@ export default function StockCard({
         Buy
       </button>
 
-      {/* Portfolio Impact Calculator - Unified state management for modals */}
-      <PortfolioImpactCalculator
-        isOpen={isPortfolioImpactOpen}
-        onClose={() => setIsPortfolioImpactOpen(false)}
-        onPurchaseComplete={({ shares, amount, projectedReturn }) => {
-          // Store purchase data and show success modal
-          setPurchaseData({ shares, amount, projectedReturn });
-          setIsSuccessModalOpen(true);
-        }}
-        stock={stock}
-      />
+      {/* Portfolio Impact Calculator - Unified state management */}
+      {modalState === 'calculator' && (
+        <PortfolioImpactCalculator
+          isOpen={true} // Controlled by mounting/unmounting via modalState
+          onClose={() => setModalState('closed')} // Directly close
+          onPurchaseComplete={handlePurchaseComplete} // Pass completion handler
+          stock={stock}
+        />
+      )}
       
-      {/* Purchase Success Modal - Control directly from StockCard */}
-      {purchaseData && (
+      {/* Purchase Success Modal - Unified state management */}
+      {modalState === 'success' && purchaseData && (
         <PurchaseSuccessModal
-          isOpen={isSuccessModalOpen}
-          onClose={() => {
-            setIsSuccessModalOpen(false);
-            // Only move to next stock after success modal is closed
-            onNext();
-          }}
+          isOpen={true} // Controlled by mounting/unmounting via modalState
+          onClose={handleSuccessModalClose} // Use specific close handler
           stock={stock}
           shares={purchaseData.shares}
           amount={purchaseData.amount}
