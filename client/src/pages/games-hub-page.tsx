@@ -107,7 +107,7 @@ export default function GamesHubPage() {
             <Trophy className="w-5 h-5 mr-2 text-amber-500" />
             Games
           </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+          <div className="grid grid-cols-2 gap-4 sm:gap-6">
             {gridGames.map((game, index) => (
               <motion.div
                 key={game.title}
@@ -117,24 +117,24 @@ export default function GamesHubPage() {
               >
                 <Link href={game.link}>
                   <Card className="overflow-hidden h-full hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 cursor-pointer">
-                    <div className={`bg-gradient-to-r ${game.color} p-5 sm:p-6 text-white relative`}>
+                    <div className={`bg-gradient-to-r ${game.color} p-3 sm:p-6 text-white relative`}>
                       <div className="flex justify-between items-start">
-                        <div className="bg-white/20 p-3 rounded-lg">
-                          {game.icon}
+                        <div className="bg-white/20 p-2 sm:p-3 rounded-lg">
+                          {React.cloneElement(game.icon as React.ReactElement, { className: "w-8 h-8 sm:w-12 sm:h-12" })}
                         </div>
-                        <span className="bg-white/30 text-white text-xs font-semibold px-3 py-1 rounded-full">
+                        <span className="bg-white/30 text-white text-xs font-semibold px-2 py-1 rounded-full">
                           {game.category}
                         </span>
                       </div>
-                      <h2 className="text-xl sm:text-2xl font-bold mt-4 mb-1">{game.title}</h2>
+                      <h2 className="text-lg sm:text-2xl font-bold mt-3 mb-1">{game.title}</h2>
                     </div>
-                    <div className="p-5 sm:p-6">
-                      <p className="text-gray-600 mb-4">
+                    <div className="p-3 sm:p-6">
+                      <p className="text-gray-600 mb-3 text-sm sm:text-base line-clamp-2 sm:line-clamp-none">
                         {game.description}
                       </p>
-                      <div className="flex items-center text-blue-600 font-medium">
+                      <div className="flex items-center text-blue-600 font-medium text-sm sm:text-base">
                         <span>Play Now</span>
-                        <ArrowRight className="ml-2 w-4 h-4" />
+                        <ArrowRight className="ml-1 w-3 h-3 sm:w-4 sm:h-4" />
                       </div>
                     </div>
                   </Card>
@@ -153,24 +153,24 @@ export default function GamesHubPage() {
             >
               <Link href={finalGame.link}>
                 <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 cursor-pointer">
-                  <div className={`bg-gradient-to-r ${finalGame.color} p-5 sm:p-6 text-white relative`}>
+                  <div className={`bg-gradient-to-r ${finalGame.color} p-3 sm:p-6 text-white relative`}>
                     <div className="flex justify-between items-start">
-                      <div className="bg-white/20 p-3 rounded-lg">
-                        {finalGame.icon}
+                      <div className="bg-white/20 p-2 sm:p-3 rounded-lg">
+                        {React.cloneElement(finalGame.icon as React.ReactElement, { className: "w-8 h-8 sm:w-12 sm:h-12" })}
                       </div>
-                      <span className="bg-white/30 text-white text-xs font-semibold px-3 py-1 rounded-full">
+                      <span className="bg-white/30 text-white text-xs font-semibold px-2 py-1 rounded-full">
                         {finalGame.category}
                       </span>
                     </div>
-                    <h2 className="text-xl sm:text-2xl font-bold mt-4 mb-1">{finalGame.title}</h2>
+                    <h2 className="text-lg sm:text-2xl font-bold mt-3 mb-1">{finalGame.title}</h2>
                   </div>
-                  <div className="p-5 sm:p-6">
-                    <p className="text-gray-600 mb-4">
+                  <div className="p-3 sm:p-6">
+                    <p className="text-gray-600 mb-3 text-sm sm:text-base line-clamp-2 sm:line-clamp-none">
                       {finalGame.description}
                     </p>
-                    <div className="flex items-center text-blue-600 font-medium">
+                    <div className="flex items-center text-blue-600 font-medium text-sm sm:text-base">
                       <span>Play Now</span>
-                      <ArrowRight className="ml-2 w-4 h-4" />
+                      <ArrowRight className="ml-1 w-3 h-3 sm:w-4 sm:h-4" />
                     </div>
                   </div>
                 </Card>
