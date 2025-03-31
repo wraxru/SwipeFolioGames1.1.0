@@ -1,0 +1,120 @@
+I need you to code a sleek, modern iOS-style profile popup that appears with a smooth animation when users tap on any investor's username in our tournament leaderboard. This popup is crucial for building community engagement and creating aspirational figures within our platform.
+Core Profile Elements
+The popup should display:
+
+Header Section:
+
+Profile avatar with rank badge overlay (gold for #1, silver for #2, bronze for #3, blue for others)
+Display name with a subtle verified checkmark for premium users
+Real name or username displayed in smaller text below
+Level indicator showing progression (e.g., "Level 42 • Diamond Tier")
+Member since timestamp (e.g., "Investing since Dec 2023")
+
+
+Signature Quote Section:
+
+Each investor should have a personalized quote displayed in an elegant, quotation-styled box
+Quotes should reflect their investing personality:
+
+KingJames: "Court domination is temporary. Portfolio domination is forever."
+ValueBuffet: "I don't pick stocks. I pick businesses worth owning."
+OutsiderTrading: "The best investments are boring on CNBC but exciting in your portfolio."
+Julie Sweet: "Success isn't just measured in quarters, but in decades."
+Michelle Obama: "When markets go low, my investments go high."
+Mr Beast: "I give away millions because my investments make more millions."
+Elon Musk: "The market is just crowd-sourced capital allocation."
+Oprah Winfrey: "You get a dividend! And YOU get a dividend! EVERYBODY gets dividends!"
+BettieWhite: "I've been bullish since before your grandparents were born."
+BelfordCo: "The Wolf only loses when he stops hunting."
+
+
+
+
+Key Performance Stats (displayed as a horizontal card row):
+
+ROI with percentage and directional arrow (green/red)
+Quality Score (0-100) with circular progress indicator
+Trade Count with small icon
+Referral Count with friend icon
+
+
+TabView Navigation:
+
+Overview (default tab)
+Portfolio (with premium lock icon for free users)
+Achievement Badges
+Properties (showing virtual assets purchased with FinBucks)
+
+
+
+Tab Content Details
+
+Overview Tab:
+
+Bio/About section
+Investment strategy summary
+Strongest sectors (what they excel at)
+Tournament history (wins/losses)
+FinBucks balance for premium users
+
+
+Portfolio Tab (Premium Feature):
+
+For free users: Show blurred portfolio with an elegant "Premium Feature" overlay and upgrade button
+For premium users:
+
+Interactive pie chart showing sector allocation percentages (Tech, Finance, Energy, etc.)
+Recent trades list (ticker, buy/sell, shares, date)
+Top holdings (limited to 3)
+Portfolio metrics (Beta, Sharpe ratio, etc.)
+
+
+
+
+Badges Tab:
+
+Grid display of earned achievement badges
+Progress indicators for badges in progress
+Locked/undiscovered badges shown as silhouettes
+Badge details popup on tap
+
+
+Properties Tab:
+
+Visual showcase of virtual assets purchased with FinBucks
+Property values and acquisition dates
+Special collections highlighted
+
+
+
+Design Specifications
+
+Use a clean white background with subtle light gray section dividers
+Apply smooth shadows for depth (iOS-style)
+Implement spring animations for opening/closing the popup
+Use our brand color palette with strategic accent colors:
+
+Positive returns: #4CD964 (green)
+Negative returns: #FF3B30 (red)
+Premium elements: #AF52DE (purple)
+Charts: Use colorful yet harmonious palette (#007AFF, #5AC8FA, #FF9500, etc.)
+
+
+Make the popup dismissible via:
+
+Tapping outside the popup
+Swiping down
+Tapping the X button in the corner
+
+
+Ensure responsive design that works on all device sizes
+Add subtle haptic feedback when opening/closing the popup
+
+Special Features
+
+Add a 'Follow' button for premium users to follow other investors
+Include 'Challenge' button to initiate a head-to-head tournament
+For top performers, add a subtle confetti animation when their profile opens
+Implement a 'view full profile' link that directs to a more detailed profile page
+
+Please prioritize performance and smooth animations to create a delightful user experience. This profile popup is essential for building our community engagement and creating 'investing heroes' that motivate new users."RetryClaude can make mistakes. Please double-check responses.
