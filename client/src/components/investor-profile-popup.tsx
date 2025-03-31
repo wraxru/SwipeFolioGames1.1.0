@@ -24,7 +24,13 @@ import {
   Rocket,
   Briefcase,
   Coffee,
-  DollarSign
+  DollarSign,
+  User,
+  Building2,
+  Lock,
+  Wallet,
+  CandlestickChart,
+  LineChart
 } from 'lucide-react';
 import { LeaderboardUser } from '@/data/leaderboard-data';
 import { Progress } from '@/components/ui/progress';
@@ -200,6 +206,9 @@ export default function InvestorProfilePopup({ investor, onClose }: InvestorProf
   const [touchStartX, setTouchStartX] = useState(0);
   const [touchStartY, setTouchStartY] = useState(0);
   const [showFollowAnimation, setShowFollowAnimation] = useState(false);
+  const [followers, setFollowers] = useState(Math.floor(Math.random() * 5000) + 100);
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [headingGlow, setHeadingGlow] = useState(false);
   
   // Handle click outside to dismiss
   useEffect(() => {
@@ -283,10 +292,21 @@ export default function InvestorProfilePopup({ investor, onClose }: InvestorProf
   
   // Animation for the follow button
   const handleFollowClick = () => {
+    setIsFollowing(!isFollowing);
     setShowFollowAnimation(true);
+    
+    if (isFollowing) {
+      setFollowers(prev => Math.max(0, prev - 1));
+    } else {
+      setFollowers(prev => prev + 1);
+      setHeadingGlow(true);
+      setTimeout(() => setHeadingGlow(false), 2000);
+    }
+    
     if (navigator.vibrate) {
       navigator.vibrate([15, 30, 15]); // Haptic feedback pattern
     }
+    
     setTimeout(() => setShowFollowAnimation(false), 1500);
   };
 
@@ -711,80 +731,215 @@ export default function InvestorProfilePopup({ investor, onClose }: InvestorProf
             <X className="h-4 w-4 text-slate-600" />
           </button>
           
-          {/* Header Section */}
+          {/* Header Section - Dynamic Animated Header */}
           <div className="relative">
-            {/* Profile header background with subtle gradient */}
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-50 to-indigo-50 z-0"></div>
+            {/* Dynamic performance-based gradient background */}
+            <div 
+              className={`absolute inset-0 z-0 ${
+                investor.roi >= 15 ? 'bg-gradient-to-r from-emerald-400/90 via-teal-400/80 to-cyan-400/90' :
+                investor.roi >= 0 ? 'bg-gradient-to-r from-blue-400/80 via-cyan-400/70 to-indigo-400/80' :
+                'bg-gradient-to-r from-orange-400/80 via-red-400/70 to-rose-400/80'
+              }`}
+            >
+              {/* Animated gradient overlay */}
+              <div className="absolute inset-0 bg-white/30 mix-blend-overlay"></div>
+              
+              {/* Animated pattern overlay */}
+              <div className="absolute inset-0 opacity-30" 
+                style={{
+                  backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.2' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='3'/%3E%3Ccircle cx='13' cy='13' r='3'/%3E%3C/g%3E%3C/svg%3E\")",
+                  backgroundSize: "24px 24px"
+                }}
+              ></div>
+            </div>
             
             <div className="relative z-10 p-5">
               <div className="flex items-start">
-                {/* Avatar with rank badge */}
+                {/* Animated floating avatar with enhanced visuals */}
                 <div className="relative mr-4">
-                  <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-white shadow-md">
+                  <motion.div
+                    className="w-20 h-20 rounded-full overflow-hidden border-[3px] border-white shadow-lg"
+                    initial={{ y: 0 }}
+                    animate={{ y: [0, -4, 0] }}
+                    transition={{ 
+                      repeat: Infinity, 
+                      duration: 3,
+                      ease: "easeInOut",
+                    }}
+                    style={{
+                      filter: "drop-shadow(0 4px 10px rgba(0,0,0,0.1))"
+                    }}
+                  >
                     <img 
                       src={investor.avatar || "/images/default-avatar.png"} 
                       alt={investor.username} 
                       className="w-full h-full object-cover"
                     />
-                  </div>
+                    
+                    {/* Subtle glow effect for avatar */}
+                    <div className="absolute inset-0 rounded-full bg-white/20 mix-blend-overlay"></div>
+                  </motion.div>
                   
-                  {/* Rank badge overlay */}
-                  <div 
-                    className={`absolute -bottom-1 -right-1 w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-md border-2 border-white
-                      ${rankBadge.color === 'gold' ? 'bg-gradient-to-br from-yellow-400 to-yellow-500' :
-                        rankBadge.color === 'silver' ? 'bg-gradient-to-br from-slate-400 to-slate-500' :
-                        rankBadge.color === 'bronze' ? 'bg-gradient-to-br from-amber-600 to-amber-700' :
-                        'bg-gradient-to-br from-blue-500 to-blue-600'}`
+                  {/* Animated rank badge with shine effect */}
+                  <motion.div 
+                    className={`absolute -bottom-1 -right-1 w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-md border-2 border-white overflow-hidden
+                      ${rankBadge.color === 'gold' ? 'bg-gradient-to-br from-yellow-400 to-yellow-600' :
+                        rankBadge.color === 'silver' ? 'bg-gradient-to-br from-slate-400 to-slate-600' :
+                        rankBadge.color === 'bronze' ? 'bg-gradient-to-br from-amber-500 to-amber-700' :
+                        'bg-gradient-to-br from-blue-500 to-blue-700'}`
                     }
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: 0.2, type: "spring" }}
                   >
+                    {/* Shine effect on badge */}
+                    {(investor.rank !== undefined && investor.rank <= 3) && (
+                      <motion.div 
+                        className="absolute inset-0 bg-white/60"
+                        style={{ 
+                          clipPath: "polygon(0 0, 30% 0, 70% 100%, 0% 100%)",
+                        }}
+                        initial={{ x: -40 }}
+                        animate={{ x: 60 }}
+                        transition={{ 
+                          repeat: Infinity, 
+                          duration: 1.5,
+                          repeatDelay: 3
+                        }}
+                      />
+                    )}
+                    
                     {rankBadge.label}
-                  </div>
+                  </motion.div>
                 </div>
                 
-                {/* User info */}
+                {/* Enhanced user details with animations */}
                 <div className="flex-1">
                   <div className="flex items-center">
-                    <h2 className="text-xl font-bold text-slate-800">{investor.username}</h2>
+                    <motion.h2 
+                      className={`text-xl font-bold mr-1 ${
+                        investor.roi >= 0 ? 'text-white' : 'text-white/90'
+                      } ${headingGlow ? 'text-shadow-glow' : ''}`}
+                      initial={{ opacity: 0, y: 5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.1 }}
+                    >
+                      {investor.username}
+                    </motion.h2>
+                    
+                    {/* Animated verification badge */}
                     {isPremium && (
-                      <div className="ml-1.5 bg-blue-500 rounded-full p-0.5">
+                      <motion.div 
+                        className="ml-1.5 bg-blue-500 rounded-full p-0.5 flex items-center justify-center"
+                        whileHover={{ scale: 1.2 }}
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ 
+                          type: "spring",
+                          delay: 0.3
+                        }}
+                      >
                         <Check className="w-3 h-3 text-white" />
-                      </div>
+                      </motion.div>
                     )}
                   </div>
-                  <p className="text-sm text-slate-500">{investor.name}</p>
-                  <div className="flex items-center mt-1 space-x-2">
-                    <div className="px-2 py-0.5 bg-indigo-100 rounded-full flex items-center">
+                  
+                  {investor.name && (
+                    <motion.p 
+                      className="text-sm text-white/80 font-medium"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.2 }}
+                    >
+                      {investor.name}
+                    </motion.p>
+                  )}
+                  
+                  {/* Enhanced membership info with custom styling */}
+                  <motion.div 
+                    className="flex items-center text-sm text-white/90 mt-1"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.2 }}
+                  >
+                    <span className="flex items-center">
+                      <Clock className="h-3 w-3 mr-1 inline" />
+                      <span className="text-white/80 font-medium">Member since {memberSinceFormatted}</span>
+                    </span>
+                    <span className="mx-2 text-white/60">•</span>
+                    <span className="flex items-center">
+                      <Award className="h-3 w-3 mr-1 inline" />
+                      <span className="font-semibold text-white">{investor.portfolioQuality}</span>
+                      <span className="text-white/80 ml-0.5">Quality</span>
+                    </span>
+                  </motion.div>
+                  
+                  {/* Follower count display for social element */}
+                  <motion.div 
+                    className="mt-1 text-xs text-white/80 flex items-center"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.3 }}
+                  >
+                    <Users className="h-3 w-3 mr-1" />
+                    <span className="font-medium">{followers.toLocaleString()}</span>
+                    <span className="ml-1">followers</span>
+                    
+                    {/* Advanced Investment Tier Badge */}
+                    <span className="ml-2 px-2 py-0.5 rounded-full 
+                      bg-gradient-to-r from-white/20 to-white/10 backdrop-blur-sm border border-white/20 
+                      flex items-center shadow-sm"
+                    >
                       {rankBadge.color === 'gold' ? (
-                        <span className="text-xs font-medium text-yellow-700">Diamond Tier</span>
+                        <span className="text-xs font-medium text-white">Diamond Tier</span>
                       ) : rankBadge.color === 'silver' ? (
-                        <span className="text-xs font-medium text-slate-700">Platinum Tier</span>
+                        <span className="text-xs font-medium text-white">Platinum Tier</span>
                       ) : rankBadge.color === 'bronze' ? (
-                        <span className="text-xs font-medium text-amber-700">Gold Tier</span>
+                        <span className="text-xs font-medium text-white">Gold Tier</span>
                       ) : (
-                        <span className="text-xs font-medium text-blue-700">Silver Tier</span>
+                        <span className="text-xs font-medium text-white">Silver Tier</span>
                       )}
-                    </div>
-                    <div className="text-xs text-slate-500">
-                      Investing since {memberSinceFormatted}
-                    </div>
+                    </span>
+                  </motion.div>
+                </div>
+              </div>
+              
+              {/* Enhanced quote section with card-specific styling */}
+              <motion.div 
+                className={`mt-4 backdrop-blur-md rounded-xl p-3.5 shadow-lg overflow-hidden relative
+                  ${personalData.gradient ? `bg-gradient-to-br ${personalData.gradient}` : 'bg-gradient-to-br from-blue-500/80 to-indigo-600/80'}
+                `}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+              >
+                {/* Decorative elements */}
+                <div className="absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-full transform translate-x-10 -translate-y-10"></div>
+                <div className="absolute bottom-0 left-0 w-16 h-16 bg-black/10 rounded-full transform -translate-x-8 translate-y-8"></div>
+                
+                <div className="flex relative z-10">
+                  <div className="text-white/40 text-2xl font-serif leading-none">"</div>
+                  <p className="text-sm text-white font-medium flex-1 px-1.5 leading-5">{personalData.quote}</p>
+                  <div className="text-white/40 text-2xl font-serif leading-none self-end">"</div>
+                
+                  {/* Investor icon as decorative element */}
+                  <div className="absolute right-0 bottom-0 text-white/20 opacity-40 transform translate-x-2 translate-y-2">
+                    {personalData.icon}
                   </div>
                 </div>
-              </div>
+              </motion.div>
               
-              {/* Quote section */}
-              <div className="mt-4 bg-white/80 backdrop-blur-sm rounded-xl p-3 border border-slate-100 shadow-sm">
-                <div className="flex">
-                  <div className="text-slate-300 text-xl leading-none">"</div>
-                  <p className="text-sm text-slate-600 italic flex-1 px-1">{personalData.quote}</p>
-                  <div className="text-slate-300 text-xl leading-none self-end">"</div>
-                </div>
-              </div>
-              
-              {/* Stats cards */}
-              <div className="grid grid-cols-4 gap-2 mt-4">
-                <div className="bg-white rounded-xl shadow-sm p-2 border border-slate-100">
+              {/* Enhanced Stats cards with micro-charts and animations */}
+              <motion.div 
+                className="grid grid-cols-4 gap-2 mt-4"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+              >
+                {/* ROI card with sparkline */}
+                <div className="bg-white/90 backdrop-blur-sm rounded-xl shadow-md p-2 border border-slate-100 overflow-hidden relative">
                   <div className="flex justify-between items-start mb-1">
-                    <span className="text-xs text-slate-500">ROI</span>
+                    <span className="text-xs text-slate-500 font-medium">ROI</span>
                     <TrendingUp className="h-3 w-3 text-green-500" />
                   </div>
                   <div className="flex items-baseline">
@@ -795,74 +950,152 @@ export default function InvestorProfilePopup({ investor, onClose }: InvestorProf
                       {investor.roi >= 0 ? '↑' : '↓'}
                     </span>
                   </div>
+                  {/* Simple micro sparkline */}
+                  <div className="h-1 w-full mt-1 bg-slate-100 rounded-full overflow-hidden">
+                    <div 
+                      className={`h-full ${investor.roi >= 0 ? 'bg-green-500' : 'bg-red-500'}`} 
+                      style={{width: `${Math.min(100, Math.max(20, Math.abs(investor.roi * 2)))}%`}}
+                    ></div>
+                  </div>
+                  
+                  {/* Decorative gradient corner */}
+                  <div className={`absolute -bottom-4 -right-4 w-8 h-8 rounded-full opacity-20 
+                    ${investor.roi >= 0 ? 'bg-green-500' : 'bg-red-500'}`}></div>
                 </div>
                 
-                <div className="bg-white rounded-xl shadow-sm p-2 border border-slate-100">
+                {/* Quality score with circular indicator */}
+                <div className="bg-white/90 backdrop-blur-sm rounded-xl shadow-md p-2 border border-slate-100 relative">
                   <div className="flex justify-between items-start mb-1">
-                    <span className="text-xs text-slate-500">Quality</span>
+                    <span className="text-xs text-slate-500 font-medium">Quality</span>
                     <Award className="h-3 w-3 text-blue-500" />
                   </div>
                   <div className="flex items-baseline">
                     <span className="text-sm font-bold text-slate-700">
                       {investor.portfolioQuality}
                     </span>
-                    <span className="text-[10px] text-slate-400 ml-1">/100</span>
+                  </div>
+                  {/* Circular progress */}
+                  <div className="absolute bottom-1 right-2 w-6 h-6">
+                    <svg width="24" height="24" viewBox="0 0 24 24">
+                      <circle 
+                        cx="12" cy="12" r="10" 
+                        fill="none" 
+                        stroke="#e2e8f0" 
+                        strokeWidth="2" 
+                      />
+                      <circle 
+                        cx="12" cy="12" r="10" 
+                        fill="none" 
+                        stroke="#3b82f6" 
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeDasharray={`${investor.portfolioQuality * 0.6} 100`}
+                        transform="rotate(-90 12 12)"
+                      />
+                    </svg>
                   </div>
                 </div>
                 
-                <div className="bg-white rounded-xl shadow-sm p-2 border border-slate-100">
+                {/* Trades with tiny bar chart */}
+                <div className="bg-white/90 backdrop-blur-sm rounded-xl shadow-md p-2 border border-slate-100">
                   <div className="flex justify-between items-start mb-1">
-                    <span className="text-xs text-slate-500">Trades</span>
+                    <span className="text-xs text-slate-500 font-medium">Trades</span>
                     <ArrowUpRight className="h-3 w-3 text-slate-500" />
                   </div>
                   <div className="text-sm font-bold text-slate-700">
                     {investor.trades}
                   </div>
+                  {/* Micro bar chart */}
+                  <div className="flex items-end h-2 mt-1 space-x-0.5">
+                    {[...Array(5)].map((_, i) => (
+                      <div 
+                        key={i} 
+                        className="w-1 bg-indigo-400 rounded-sm"
+                        style={{ 
+                          height: `${Math.max(20, Math.min(100, Math.random() * 100))}%`,
+                          opacity: 0.6 + (i * 0.1)
+                        }}
+                      ></div>
+                    ))}
+                  </div>
                 </div>
                 
-                <div className="bg-white rounded-xl shadow-sm p-2 border border-slate-100">
+                {/* Refs with growth indicator */}
+                <div className="bg-white/90 backdrop-blur-sm rounded-xl shadow-md p-2 border border-slate-100">
                   <div className="flex justify-between items-start mb-1">
-                    <span className="text-xs text-slate-500">Refs</span>
+                    <span className="text-xs text-slate-500 font-medium">Refs</span>
                     <Users className="h-3 w-3 text-purple-500" />
                   </div>
-                  <div className="text-sm font-bold text-slate-700">
-                    {investor.referrals}
+                  <div className="flex items-center">
+                    <span className="text-sm font-bold text-slate-700">
+                      {investor.referrals}
+                    </span>
+                    <span className="text-[10px] ml-1 px-1 py-0.5 bg-green-100 text-green-600 rounded-full font-medium">
+                      +{Math.floor(Math.random() * 15) + 1}%
+                    </span>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             </div>
           </div>
           
-          {/* Tab navigation */}
-          <div className="px-4 border-b border-slate-200">
+          {/* Modern Tab navigation with premium indicators */}
+          <div className="px-4 border-b border-slate-200 bg-white">
             <div className="flex space-x-4">
               {(["overview", "portfolio", "badges", "properties"] as const).map((tab) => (
-                <button
+                <motion.button
                   key={tab}
-                  className={`py-3 px-1 text-sm font-medium relative ${
+                  className={`py-3.5 px-2 text-sm font-medium relative ${
                     activeTab === tab 
                       ? 'text-blue-600' 
-                      : 'text-slate-500 hover:text-slate-800'
+                      : 'text-slate-500 hover:text-slate-700'
                   }`}
                   onClick={() => setActiveTab(tab)}
+                  whileHover={{ y: -1 }}
+                  transition={{ type: "spring", stiffness: 400 }}
                 >
-                  {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                  <div className="flex items-center">
+                    {/* Tab Icons */}
+                    {tab === 'overview' && <DollarSign className="w-3.5 h-3.5 mr-1.5" />}
+                    {tab === 'portfolio' && <PieChart className="w-3.5 h-3.5 mr-1.5" />}
+                    {tab === 'badges' && <Award className="w-3.5 h-3.5 mr-1.5" />}
+                    {tab === 'properties' && <Briefcase className="w-3.5 h-3.5 mr-1.5" />}
+                    
+                    {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                    
+                    {/* Premium indicator for locked tabs */}
+                    {(tab === 'portfolio' || tab === 'properties') && 
+                     !isPremium && 
+                     investor.id !== 'current-user' && (
+                      <div className="ml-1.5 flex items-center">
+                        <motion.div 
+                          className="w-3.5 h-3.5 text-purple-500"
+                          initial={{ rotate: 0 }}
+                          animate={{ rotate: 360 }}
+                          transition={{ 
+                            duration: 1.5, 
+                            repeat: Infinity, 
+                            repeatDelay: 1.5,
+                            ease: "easeInOut" 
+                          }}
+                        >
+                          <Shield className="w-full h-full" />
+                        </motion.div>
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Animated active indicator */}
                   {activeTab === tab && (
                     <motion.div 
                       layoutId="activeTab"
                       className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600 rounded-full"
+                      initial={{ opacity: 0, scaleX: 0 }}
+                      animate={{ opacity: 1, scaleX: 1 }}
+                      transition={{ duration: 0.2 }}
                     />
                   )}
-                  
-                  {/* Premium lock indicator for certain tabs */}
-                  {(tab === 'portfolio' || tab === 'properties') && 
-                   !isPremium && 
-                   investor.id !== 'current-user' && (
-                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-purple-500 rounded-full flex items-center justify-center">
-                      <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
-                    </div>
-                  )}
-                </button>
+                </motion.button>
               ))}
             </div>
           </div>
@@ -872,28 +1105,66 @@ export default function InvestorProfilePopup({ investor, onClose }: InvestorProf
             {renderTabContent()}
           </div>
           
-          {/* Action buttons */}
-          <div className="p-4 border-t border-slate-200 bg-slate-50 flex space-x-2">
+          {/* Enhanced action buttons with animation effects */}
+          <div className="p-4 border-t border-slate-100 bg-white flex space-x-3">
             {isPremium && (
-              <button 
-                className="flex-1 py-2.5 bg-purple-100 text-purple-700 rounded-xl font-medium text-sm hover:bg-purple-200 transition-colors"
+              <motion.button 
+                className="flex-1 py-2.5 bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-xl font-medium text-sm shadow-md relative overflow-hidden"
+                whileHover={{ scale: 1.02, boxShadow: "0 5px 15px rgba(0, 0, 0, 0.1)" }}
+                whileTap={{ scale: 0.98 }}
+                onClick={handleFollowClick}
               >
-                Follow
-              </button>
+                <span className="relative z-10 flex items-center justify-center">
+                  <Users className="w-4 h-4 mr-1.5" />
+                  {isFollowing ? 'Following' : 'Follow'}
+                </span>
+                
+                {/* Follow animation overlay */}
+                {showFollowAnimation && (
+                  <motion.div 
+                    className="absolute inset-0 bg-white/20"
+                    initial={{ scale: 0, opacity: 0.8, x: 0, y: 0 }}
+                    animate={{ 
+                      scale: [0, 1.5], 
+                      opacity: [0.8, 0],
+                      x: [0, 0],
+                      y: [0, 0]
+                    }}
+                    transition={{ duration: 0.8 }}
+                  />
+                )}
+                
+                {/* Button shine effect */}
+                <div className="absolute top-0 -inset-full h-full w-1/2 z-5 block transform -skew-x-12 bg-gradient-to-r from-transparent to-white opacity-20 animate-shine" />
+              </motion.button>
             )}
             
-            <button 
-              className="flex-1 py-2.5 bg-blue-500 text-white rounded-xl font-medium text-sm hover:bg-blue-600 transition-colors"
+            <motion.button 
+              className="flex-1 py-2.5 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl font-medium text-sm shadow-md relative overflow-hidden"
+              whileHover={{ scale: 1.02, boxShadow: "0 5px 15px rgba(0, 0, 0, 0.1)" }}
+              whileTap={{ scale: 0.98 }}
             >
-              Challenge
-            </button>
+              <span className="relative z-10 flex items-center justify-center">
+                <Zap className="w-4 h-4 mr-1.5" />
+                Challenge
+              </span>
+              
+              {/* Button shine effect */}
+              <div className="absolute top-0 -inset-full h-full w-1/2 z-5 block transform -skew-x-12 bg-gradient-to-r from-transparent to-white opacity-20 animate-shine" />
+            </motion.button>
             
-            <button 
-              className="flex items-center justify-center w-10 h-10 bg-slate-100 rounded-xl hover:bg-slate-200 transition-colors"
+            <motion.button 
+              className="flex items-center justify-center w-12 h-12 bg-slate-100 rounded-xl hover:bg-slate-200 relative shadow-sm"
+              whileHover={{ 
+                backgroundColor: "#f1f5f9",
+                y: -2,
+                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.05)" 
+              }}
+              whileTap={{ scale: 0.95 }}
               onClick={() => window.open(`/profile/${investor.username}`, '_blank')}
             >
               <ChevronDown className="h-5 w-5 text-slate-600 rotate-270" />
-            </button>
+            </motion.button>
           </div>
         </motion.div>
       </div>
