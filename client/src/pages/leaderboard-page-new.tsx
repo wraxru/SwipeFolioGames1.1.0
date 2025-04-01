@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useCallback, useRef } from "react";
 import { Link } from "wouter";
 import { 
   Trophy, 
@@ -14,7 +14,7 @@ import {
   ChevronRight,
   Zap
 } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, useAnimation } from "framer-motion";
 import { 
   getLeaderboardData, 
   getCurrentUserRank, 
@@ -22,6 +22,7 @@ import {
 } from "@/data/leaderboard-data";
 import { PortfolioContext } from "@/contexts/portfolio-context";
 import InvestorProfilePopup from "@/components/investor-profile-popup";
+import ConfettiCoins from "@/components/confetti-coins";
 
 const LeaderboardPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"all" | "friends">("all");
@@ -32,6 +33,8 @@ const LeaderboardPage: React.FC = () => {
   const [selectedInvestor, setSelectedInvestor] = useState<LeaderboardUser | null>(null);
   const [showProfilePopup, setShowProfilePopup] = useState<boolean>(false);
   const portfolio = useContext(PortfolioContext);
+  
+  // Confetti state is now managed in the ConfettiCoins component
   
   // Handler to open investor profile popup
   const handleOpenProfile = (investor: LeaderboardUser) => {
@@ -102,6 +105,8 @@ const LeaderboardPage: React.FC = () => {
   useEffect(() => {
     setLeaderboardData(getLeaderboardData());
     setCurrentUser(getCurrentUserRank());
+    
+    // Confetti animation is now handled by the ConfettiCoins component
   }, []);
   
   // Filter data based on search query
@@ -190,9 +195,26 @@ const LeaderboardPage: React.FC = () => {
                     2
                   </div>
                   
-                  {/* Avatar with silver frame */}
-                  <div className="relative mb-3">
-                    <div className="w-16 h-16 rounded-full overflow-hidden border-[3px] border-slate-300 bg-white">
+                  {/* Avatar with silver frame and hover rainbow effect */}
+                  <div className="relative mb-3 group">
+                    {/* Rainbow effect only visible on hover */}
+                    <motion.div 
+                      className="absolute -inset-2 rounded-full opacity-0 group-hover:opacity-70 transition-opacity duration-300"
+                      style={{
+                        background: "linear-gradient(45deg, #f5f7fa, #c3cfe2, #bdc3c7, #a1c4fd)",
+                        filter: "blur(8px)"
+                      }}
+                      animate={{
+                        rotate: [0, 360],
+                      }}
+                      transition={{
+                        duration: 8,
+                        repeat: Infinity,
+                        ease: "linear"
+                      }}
+                    />
+                    
+                    <div className="w-16 h-16 rounded-full overflow-hidden border-[3px] border-slate-300 bg-white relative z-10">
                       <img 
                         src={filteredData[1]?.avatar || "/images/default-avatar.png"} 
                         alt={filteredData[1]?.name} 
@@ -218,8 +240,8 @@ const LeaderboardPage: React.FC = () => {
                 </div>
               </div>
               
-              {/* Podium bar */}
-              <div className="h-14 bg-gradient-to-t from-slate-400 to-slate-300 rounded-lg mx-auto w-full"></div>
+              {/* Podium bar - increased height to reach leaderboard */}
+              <div className="h-24 bg-gradient-to-t from-slate-400 to-slate-300 rounded-lg mx-auto w-full shadow-inner"></div>
             </motion.div>
             
             {/* 1st Place Card */}
@@ -246,10 +268,64 @@ const LeaderboardPage: React.FC = () => {
                     1
                   </div>
                   
-                  {/* Avatar with gold glow */}
-                  <div className="relative mb-3">
-                    <div className="absolute -inset-1 bg-yellow-300/40 rounded-full blur-md"></div>
-                    <div className="w-20 h-20 rounded-full overflow-hidden border-[3px] border-yellow-400 bg-white relative">
+                  {/* Avatar with enhanced gold glow, shine effects and rainbow hover effect */}
+                  <div className="relative mb-3 group">
+                    {/* Large outer glow */}
+                    <div className="absolute -inset-2 bg-yellow-300/40 rounded-full blur-md animate-pulse"></div>
+                    {/* Brighter inner glow */}
+                    <div className="absolute -inset-1 bg-yellow-300/60 rounded-full blur-sm"></div>
+                    
+                    {/* Animated glow effect */}
+                    <motion.div 
+                      className="absolute -inset-3 bg-yellow-400/30 rounded-full blur-lg"
+                      animate={{ 
+                        scale: [1, 1.1, 1],
+                        opacity: [0.3, 0.6, 0.3]
+                      }}
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                      }}
+                    />
+                    
+                    {/* Rainbow glow effect on hover */}
+                    <motion.div 
+                      className="absolute -inset-4 rounded-full opacity-0 group-hover:opacity-70 transition-opacity duration-300 z-0"
+                      style={{
+                        background: "linear-gradient(45deg, #f59e0b, #facc15, #fbbf24, #f59e0b)",
+                        filter: "blur(8px)"
+                      }}
+                      animate={{
+                        rotate: [0, 360],
+                      }}
+                      transition={{
+                        duration: 5,
+                        repeat: Infinity,
+                        ease: "linear"
+                      }}
+                    />
+                    
+                    {/* Shine effect moving across the bubble */}
+                    <motion.div 
+                      className="absolute inset-0 bg-gradient-to-r from-transparent via-yellow-100/80 to-transparent rounded-full"
+                      animate={{
+                        x: ["-150%", "150%"]
+                      }}
+                      transition={{
+                        duration: 1.8,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                      }}
+                      style={{
+                        rotateZ: "45deg",
+                        width: "200%",
+                        left: "-50%",
+                        zIndex: 2
+                      }}
+                    />
+                    
+                    <div className="w-20 h-20 rounded-full overflow-hidden border-[3px] border-yellow-400 bg-white relative z-10">
                       <img 
                         src={filteredData[0]?.avatar || "/images/default-avatar.png"} 
                         alt={filteredData[0]?.name} 
@@ -283,8 +359,8 @@ const LeaderboardPage: React.FC = () => {
                 </div>
               </div>
               
-              {/* Podium bar - gold gradient */}
-              <div className="h-20 bg-gradient-to-t from-yellow-500 to-yellow-300 rounded-lg mx-auto w-full shadow-sm"></div>
+              {/* Podium bar - increased height gold gradient */}
+              <div className="h-32 bg-gradient-to-t from-yellow-500 to-yellow-300 rounded-lg mx-auto w-full shadow-sm"></div>
             </motion.div>
             
             {/* 3rd Place Card */}
@@ -303,9 +379,26 @@ const LeaderboardPage: React.FC = () => {
                     3
                   </div>
                   
-                  {/* Avatar with bronze frame */}
-                  <div className="relative mb-3">
-                    <div className="w-16 h-16 rounded-full overflow-hidden border-[3px] border-amber-700 bg-white">
+                  {/* Avatar with bronze frame and hover rainbow effect */}
+                  <div className="relative mb-3 group">
+                    {/* Rainbow effect only visible on hover */}
+                    <motion.div 
+                      className="absolute -inset-2 rounded-full opacity-0 group-hover:opacity-70 transition-opacity duration-300"
+                      style={{
+                        background: "linear-gradient(45deg, #af7f47, #91541e, #8c7853, #cd7f32)",
+                        filter: "blur(8px)"
+                      }}
+                      animate={{
+                        rotate: [0, 360],
+                      }}
+                      transition={{
+                        duration: 8,
+                        repeat: Infinity,
+                        ease: "linear"
+                      }}
+                    />
+                    
+                    <div className="w-16 h-16 rounded-full overflow-hidden border-[3px] border-amber-700 bg-white relative z-10">
                       <img 
                         src={filteredData[2]?.avatar || "/images/default-avatar.png"} 
                         alt={filteredData[2]?.name} 
@@ -331,8 +424,8 @@ const LeaderboardPage: React.FC = () => {
                 </div>
               </div>
               
-              {/* Podium bar */}
-              <div className="h-10 bg-gradient-to-t from-amber-800 to-amber-600 rounded-lg mx-auto w-full"></div>
+              {/* Podium bar - bronze with increased height */}
+              <div className="h-16 bg-gradient-to-t from-amber-800 to-amber-600 rounded-lg mx-auto w-full shadow-inner"></div>
             </motion.div>
           </div>
         </div>
@@ -340,10 +433,11 @@ const LeaderboardPage: React.FC = () => {
 
       </div>
       
-      {/* Removed search bar to bring leaderboard closer to top */}
+      {/* Gold coins confetti component */}
+      <ConfettiCoins fire={true} repeat={true} repeatInterval={20000} />
       
-      {/* Leaderboard Content */}
-      <div className="px-4 mt-3">
+      {/* Leaderboard Content - moved closer to podium */}
+      <div className="px-4 mt-0">
         {activeTab === 'friends' && friendsList.length === 0 ? (
           <motion.div 
             className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8 flex flex-col items-center justify-center"
