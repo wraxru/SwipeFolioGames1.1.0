@@ -178,6 +178,12 @@ export class FinnhubService {
   // Save data to cache
   async saveToCache(symbol: string, data: any): Promise<void> {
     try {
+      if (process.env.NODE_ENV === 'development') {
+        // In development mode, just log the data
+        console.log(`[Finnhub] Would cache data for ${symbol}:`, data);
+        return;
+      }
+
       // Insert or update cache
       await db.insert(stockCache)
         .values({
@@ -295,6 +301,11 @@ export class FinnhubService {
   // Clear cache
   async clearCache(): Promise<void> {
     try {
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[Finnhub] Would clear cache in development mode');
+        return;
+      }
+
       await db.delete(stockCache);
       console.log('[Finnhub] Cache cleared');
     } catch (error) {

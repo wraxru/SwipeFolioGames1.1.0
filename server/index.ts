@@ -101,15 +101,10 @@ app.use((req, res, next) => {
     serveStatic(app);
   }
 
-  // ALWAYS serve the app on port 5000
+  // ALWAYS serve the app on port 3456
   // this serves both the API and the client.
-  // It is the only port that is not firewalled.
-  const port = 5000;
-  server.listen({
-    port,
-    host: "0.0.0.0",
-    reusePort: true,
-  }, () => {
+  const port = 3456;
+  server.listen(port, () => {
     log(`serving on port ${port}`);
     
     // Initialize cache for commonly used stock symbols
@@ -119,3 +114,32 @@ app.use((req, res, next) => {
     setupScheduledCacheUpdates();
   });
 })();
+
+// Add type for minimal price updates
+interface PriceUpdate {
+  symbol: string;
+  change: number;
+  timestamp: number;
+}
+
+// Modify the stock update endpoint
+app.get('/api/stocks/updates', (req, res) => {
+  const updates: PriceUpdate[] = COMMON_SYMBOLS.map(symbol => {
+    const volatility = 0.05; // Base volatility, can be adjusted per stock
+    const changeAmount = (Math.random() - 0.5) * volatility * 2;
+    const change = Number((changeAmount * 100).toFixed(2));
+    
+    return {
+      symbol,
+      change,
+      timestamp: Date.now()
+    };
+  });
+  
+  res.json({ updates });
+});
+
+// Keep the full stock data endpoint for initial load
+app.get('/api/stocks', (req, res) => {
+  // ... existing full stock data code ...
+});

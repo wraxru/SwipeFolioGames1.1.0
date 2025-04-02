@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
@@ -8,7 +8,7 @@ import { GameHeader, GameOver } from './ui/game-elements';
 import { 
   ArrowLeft, ArrowRight, Coins, Trophy, Star, TrendingUp, TrendingDown, 
   Save, Lock, Rocket, Leaf, Heart, Database, Zap, Building2, Globe, 
-  Cpu, Landmark, Car, Cloud, Brain, Space, Atom, RefreshCcw
+  Cpu, Landmark, Car, Cloud, Brain, Space, Atom, RefreshCcw, DollarSign, Calendar, BarChart2
 } from 'lucide-react';
 
 // Interfaces
@@ -38,11 +38,41 @@ const INITIAL_MONEY = 1000;
 
 // Stock tiers
 const STOCK_TIERS = [
-  { name: "Penny Stocks", minPrice: 0.05, maxPrice: 1, requiredLevel: 1 },
-  { name: "Small Caps", minPrice: 1, maxPrice: 10, requiredLevel: 2 },
-  { name: "Mid Caps", minPrice: 10, maxPrice: 50, requiredLevel: 3 },
-  { name: "Large Caps", minPrice: 50, maxPrice: 200, requiredLevel: 5 },
-  { name: "Blue Chips", minPrice: 200, maxPrice: 1000, requiredLevel: 8 }
+  { 
+    name: "Penny Stocks", 
+    minPrice: 0.05, 
+    maxPrice: 1, 
+    requiredLevel: 1,
+    icon: <Coins className="w-4 h-4" />
+  },
+  { 
+    name: "Small Caps", 
+    minPrice: 1, 
+    maxPrice: 10, 
+    requiredLevel: 2,
+    icon: <Building2 className="w-4 h-4" />
+  },
+  { 
+    name: "Mid Caps", 
+    minPrice: 10, 
+    maxPrice: 50, 
+    requiredLevel: 3,
+    icon: <TrendingUp className="w-4 h-4" />
+  },
+  { 
+    name: "Large Caps", 
+    minPrice: 50, 
+    maxPrice: 200, 
+    requiredLevel: 5,
+    icon: <Star className="w-4 h-4" />
+  },
+  { 
+    name: "Blue Chips", 
+    minPrice: 200, 
+    maxPrice: 1000, 
+    requiredLevel: 8,
+    icon: <Trophy className="w-4 h-4" />
+  }
 ];
 
 // Initial stocks
@@ -133,6 +163,80 @@ const INITIAL_STOCKS: Stock[] = [
     description: "Renewable energy infrastructure.",
     tier: 3,
     volatility: 0.07
+  },
+  // Tier 4 - Large Caps
+  {
+    id: 401,
+    name: "QuantumAI Systems",
+    symbol: "QANT",
+    price: 75.00,
+    change: 0,
+    marketCap: 15000000000,
+    industry: "Technology",
+    description: "Leading artificial intelligence and quantum computing solutions.",
+    tier: 4,
+    volatility: 0.04
+  },
+  {
+    id: 402,
+    name: "GreenPower Global",
+    symbol: "GRPW",
+    price: 82.50,
+    change: 0,
+    marketCap: 18000000000,
+    industry: "Energy",
+    description: "Global renewable energy and sustainable infrastructure.",
+    tier: 4,
+    volatility: 0.035
+  },
+  {
+    id: 403,
+    name: "FutureAuto Motors",
+    symbol: "FAUT",
+    price: 95.00,
+    change: 0,
+    marketCap: 20000000000,
+    industry: "Automotive",
+    description: "Electric and autonomous vehicle technology leader.",
+    tier: 4,
+    volatility: 0.045
+  },
+  // Tier 5 - Blue Chips
+  {
+    id: 501,
+    name: "MegaBank Financial",
+    symbol: "MEGA",
+    price: 250.00,
+    change: 0,
+    marketCap: 150000000000,
+    industry: "Finance",
+    description: "Global financial services and investment banking leader.",
+    tier: 5,
+    volatility: 0.02
+  },
+  {
+    id: 502,
+    name: "TechGiant Corp",
+    symbol: "TGNT",
+    price: 450.00,
+    change: 0,
+    marketCap: 200000000000,
+    industry: "Technology",
+    description: "Global technology and cloud computing pioneer.",
+    tier: 5,
+    volatility: 0.025
+  },
+  {
+    id: 503,
+    name: "BioMed Innovations",
+    symbol: "BIOM",
+    price: 380.00,
+    change: 0,
+    marketCap: 180000000000,
+    industry: "Healthcare",
+    description: "Leading pharmaceutical and biotechnology research.",
+    tier: 5,
+    volatility: 0.03
   }
 ];
 
@@ -164,6 +268,29 @@ const MARKET_EVENTS: MarketEvent[] = [
   }
 ];
 
+// Add new type for price updates
+type PriceUpdate = {
+  symbol: string;
+  change: number;
+};
+
+// Add company icons mapping
+const COMPANY_ICONS: Record<string, JSX.Element> = {
+  MCRO: <Cpu className="w-6 h-6 text-blue-500" />,
+  LEAF: <Leaf className="w-6 h-6 text-emerald-500" />,
+  HLTH: <Heart className="w-6 h-6 text-rose-500" />,
+  DATA: <Database className="w-6 h-6 text-indigo-500" />,
+  ECO: <Zap className="w-6 h-6 text-yellow-500" />,
+  GTEC: <Globe className="w-6 h-6 text-cyan-500" />,
+  RNPW: <Rocket className="w-6 h-6 text-purple-500" />,
+  QANT: <Brain className="w-6 h-6 text-violet-500" />,
+  GRPW: <Zap className="w-6 h-6 text-green-500" />,
+  FAUT: <Car className="w-6 h-6 text-blue-600" />,
+  MEGA: <Landmark className="w-6 h-6 text-amber-500" />,
+  TGNT: <Cloud className="w-6 h-6 text-sky-500" />,
+  BIOM: <Atom className="w-6 h-6 text-pink-500" />
+};
+
 export function MarketAdventureGame() {
   const {
     gameState,
@@ -186,6 +313,7 @@ export function MarketAdventureGame() {
   const [gameStarted, setGameStarted] = useState(false);
   const [gameOver, setGameOver] = useState(false);
   const [dayCount, setDayCount] = useState(1);
+  const [priceUpdates, setPriceUpdates] = useState<Record<string, number>>({});
   
   // Calculate XP progress
   const xpProgress = (xp % XP_PER_LEVEL) / XP_PER_LEVEL * 100;
@@ -285,6 +413,8 @@ export function MarketAdventureGame() {
   
   // Simulate market movements
   const simulateMarketMovements = () => {
+    const updates: Record<string, number> = {};
+    
     setStocks(prevStocks => {
       return prevStocks.map(stock => {
         // Calculate random market movement
@@ -298,6 +428,9 @@ export function MarketAdventureGame() {
         // Calculate price change percentage
         const priceChange = ((newPrice - stock.price) / stock.price) * 100;
         
+        // Store the change in updates
+        updates[stock.symbol] = parseFloat(priceChange.toFixed(2));
+        
         return {
           ...stock,
           price: parseFloat(newPrice.toFixed(2)),
@@ -305,6 +438,9 @@ export function MarketAdventureGame() {
         };
       });
     });
+    
+    // Update the priceUpdates state
+    setPriceUpdates(updates);
     
     // Update portfolio value
     updatePortfolioValue();
@@ -466,196 +602,253 @@ export function MarketAdventureGame() {
     );
   };
   
-  // Component for stock
+  // Enhanced StockCard component with modern design
   const StockCard = ({ stock }: { stock: Stock }) => {
+    const isUnlocked = unlockedStocks.includes(stock.symbol);
     const owned = portfolio[stock.symbol] || 0;
+    const currentChange = priceUpdates[stock.symbol] ?? stock.change;
     
     return (
-      <Card className="mb-2">
-        <CardContent className="p-4">
-          <div className="flex justify-between items-center mb-2">
-            <div>
-              <div className="font-bold">{stock.name}</div>
-              <div className="text-sm text-gray-500">{stock.symbol} • {stock.industry}</div>
+      <div className="relative">
+        <Card className={`
+          overflow-hidden
+          ${isUnlocked ? 'bg-white hover:shadow-md' : 'bg-gray-50'}
+          border border-gray-100
+          transition-all duration-200
+          rounded-3xl
+        `}>
+          <CardHeader className="pb-2">
+            <div className="flex justify-between items-start">
+              <div className="flex items-center gap-3">
+                {/* Company Logo */}
+                <div className={`
+                  w-12 h-12 rounded-2xl flex items-center justify-center
+                  ${isUnlocked ? 'bg-gray-50' : 'bg-gray-100'}
+                `}>
+                  {COMPANY_ICONS[stock.symbol]}
+                </div>
+                <div>
+                  <CardTitle className="text-lg font-bold tracking-tight">
+                    {stock.symbol}
+                  </CardTitle>
+                  <p className="text-sm text-gray-500">{stock.name}</p>
+                </div>
+              </div>
+              {!isUnlocked && (
+                <div className="flex items-center space-x-1 text-gray-400 bg-gray-100 px-2 py-1 rounded-full">
+                  <Lock size={14} />
+                  <span className="text-xs">Level {STOCK_TIERS[stock.tier - 1].requiredLevel}</span>
+                </div>
+              )}
             </div>
-            <div className="text-right">
-              <div className="font-bold">${stock.price.toFixed(2)}</div>
-              <div className={`text-sm ${stock.change >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                {stock.change >= 0 ? '+' : ''}{stock.change.toFixed(2)}%
+          </CardHeader>
+          
+          <CardContent>
+            <div className="space-y-3">
+              <div className="flex justify-between items-center">
+                <span className="text-2xl font-bold">${stock.price.toFixed(2)}</span>
+                <div className={`
+                  flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium
+                  ${currentChange >= 0 ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}
+                `}>
+                  {currentChange >= 0 ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
+                  <span>{Math.abs(currentChange).toFixed(2)}%</span>
+                </div>
+              </div>
+              
+              {isUnlocked && (
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-2 text-sm text-gray-500">
+                    <Coins size={16} className="text-gray-400" />
+                    <span>Owned: {owned}</span>
+                  </div>
+                  <span className="text-sm font-medium">
+                    Value: ${(owned * stock.price).toFixed(2)}
+                  </span>
+                </div>
+              )}
+              
+              <div className="text-sm text-gray-500 bg-gray-50 p-3 rounded-xl">
+                {stock.description}
               </div>
             </div>
-          </div>
-          <div className="text-sm mb-2">{stock.description}</div>
-          <div className="flex justify-between items-center">
-            <div className="text-sm">
-              {owned > 0 && <span className="font-bold">You own: {owned} shares</span>}
-            </div>
-            <div className="flex space-x-2">
+          </CardContent>
+          
+          {isUnlocked && (
+            <CardFooter className="pt-2 flex justify-between gap-2">
               <Button
-                size="sm"
                 variant="outline"
+                size="lg"
+                className="w-1/2 rounded-xl"
                 onClick={() => sellStock(stock)}
                 disabled={!owned}
               >
                 Sell
               </Button>
               <Button
-                size="sm"
+                variant="default"
+                size="lg"
+                className="w-1/2 rounded-xl bg-blue-500 hover:bg-blue-600"
                 onClick={() => buyStock(stock)}
                 disabled={money < stock.price}
               >
                 Buy
               </Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  };
-  
-  // Game layout
-  if (!gameStarted) {
-    return (
-      <div className="max-w-lg mx-auto mt-6 p-4">
-        <GameHeader title="Market Adventure" description="Virtual Stock Trading Simulation" icon={<Globe className="h-6 w-6" />} />
-        <Card className="mt-6">
-          <CardContent className="p-6 text-center">
-            <h2 className="text-2xl font-bold mb-4">Market Adventure</h2>
-            <p className="mb-6">
-              Experience the thrill of stock trading! Buy low, sell high, and build your portfolio
-              in this virtual stock market simulation.
-            </p>
-            <Button size="lg" onClick={startGame}>
-              Start Game
-            </Button>
-          </CardContent>
+            </CardFooter>
+          )}
         </Card>
       </div>
     );
-  }
+  };
   
-  if (gameOver) {
-    // Calculate final portfolio value
-    const portfolioValue = Object.entries(portfolio).reduce((total, [symbol, shares]) => {
-      const stock = stocks.find(s => s.symbol === symbol);
-      if (stock) {
-        return total + (stock.price * shares);
-      }
-      return total;
-    }, 0);
-    
-    const finalScore = money + portfolioValue;
-    
-    return (
-      <GameOver
-        score={Math.floor(finalScore)}
-        message={`You completed ${dayCount} trading days and made ${totalTrades} trades!`}
-        tickets={Math.floor(finalScore / 1000)}
-        onPlayAgain={startNewGame}
-        onReturnToHub={returnToHub}
-      />
-    );
-  }
-  
+  // Enhanced game UI
   return (
-    <div className="max-w-lg mx-auto mb-20 p-4">
-      {showTutorial && renderTutorial()}
-      
-      <GameHeader 
-        title="Market Adventure" 
-        description={`Day ${dayCount}/30`} 
-        icon={<Globe className="h-6 w-6" />} 
-      />
-      
-      <div className="my-4 flex justify-between items-center">
-        <div>
-          <div className="text-sm text-gray-500">Available Cash</div>
-          <div className="text-xl font-bold">${money.toFixed(2)}</div>
-        </div>
-        
-        <div>
-          <div className="text-sm text-gray-500">Level {level}</div>
-          <Progress value={xpProgress} className="w-24 h-2" />
-        </div>
-      </div>
-      
-      {/* Market event notification */}
-      <AnimatePresence>
-        {currentEvent && (
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            className={`mb-4 p-3 rounded-lg border flex items-center space-x-2 ${
-              currentEvent.type === 'positive' ? 'bg-green-100 border-green-300' : 'bg-red-100 border-red-300'
-            }`}
-          >
-            <div className={currentEvent.color}>{currentEvent.icon}</div>
-            <div className="text-sm">{currentEvent.message}</div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-      
-      {/* Stock tier selection */}
-      <div className="mb-4 flex overflow-x-auto py-2 space-x-2">
-        {STOCK_TIERS.map((tier, index) => (
-          <Button
-            key={index}
-            variant={selectedTier === index + 1 ? "default" : "outline"}
-            size="sm"
-            onClick={() => setSelectedTier(index + 1)}
-            disabled={tier.requiredLevel > level}
-            className="whitespace-nowrap"
-          >
-            {tier.requiredLevel > level && <Lock className="h-3 w-3 mr-1" />}
-            {tier.name}
-          </Button>
-        ))}
-      </div>
-      
-      {/* Stock listings */}
-      <div className="space-y-1 mb-10">
-        {getStocksForTier().map(stock => (
-          <StockCard key={stock.id} stock={stock} />
-        ))}
-        
-        {getStocksForTier().length === 0 && (
-          <Card className="p-8 text-center">
-            <p className="text-gray-500">
-              {selectedTier && STOCK_TIERS[selectedTier - 1].requiredLevel > level
-                ? `Reach level ${STOCK_TIERS[selectedTier - 1].requiredLevel} to unlock ${STOCK_TIERS[selectedTier - 1].name}`
-                : 'No stocks available in this category'}
-            </p>
-          </Card>
-        )}
-      </div>
-      
-      {/* Portfolio summary */}
-      <div className="fixed bottom-0 left-0 right-0 border-t bg-background p-4">
-        <div className="max-w-lg mx-auto">
-          <h3 className="font-bold mb-2">Your Portfolio</h3>
-          {Object.keys(portfolio).length > 0 ? (
-            <div className="grid grid-cols-3 gap-2">
-              {Object.entries(portfolio).map(([symbol, shares]) => {
-                const stock = stocks.find(s => s.symbol === symbol);
-                if (!stock) return null;
-                
-                return (
-                  <div key={symbol} className="text-sm border rounded p-2">
-                    <div className="font-bold">{symbol}</div>
-                    <div>{shares} shares</div>
-                    <div className={stock.change >= 0 ? 'text-green-500' : 'text-red-500'}>
-                      {stock.change >= 0 ? '+' : ''}{stock.change.toFixed(2)}%
-                    </div>
-                  </div>
-                );
-              })}
+    <div className="container mx-auto px-4 max-w-4xl">
+      {!gameStarted ? (
+        <div className="flex flex-col items-center justify-center min-h-[80vh]">
+          {/* Header with tickets */}
+          <div className="w-full flex justify-between items-center mb-8 px-4">
+            <h1 className="text-xl font-semibold">Market Adventure</h1>
+            <div className="flex items-center gap-2 bg-amber-50 px-3 py-1 rounded-full">
+              <Trophy className="w-4 h-4 text-amber-500" />
+              <span className="text-amber-700 font-medium">3</span>
             </div>
-          ) : (
-            <p className="text-sm text-gray-500">You don't own any stocks yet. Start trading!</p>
-          )}
+          </div>
+
+          {/* Main content card */}
+          <div className="w-full max-w-md bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="flex flex-col items-center px-6 py-12 text-center">
+              {/* Icon */}
+              <div className="w-24 h-24 mb-8 bg-emerald-100 rounded-2xl flex items-center justify-center transform rotate-12">
+                <TrendingUp className="w-12 h-12 text-emerald-500 transform -rotate-12" />
+              </div>
+
+              {/* Title and description */}
+              <h2 className="text-2xl font-bold mb-4">Ready to start trading?</h2>
+              <p className="text-gray-600 mb-8">
+                Buy low, sell high, and build your portfolio to earn raffle tickets!
+              </p>
+
+              {/* Start button */}
+              <Button
+                size="lg"
+                onClick={startGame}
+                className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-6 rounded-xl transition-all duration-200"
+              >
+                Start Game
+              </Button>
+            </div>
+          </div>
         </div>
-      </div>
+      ) : gameOver ? (
+        <GameOver
+          score={money}
+          onRestart={startNewGame}
+          onExit={returnToHub}
+          stats={{
+            finalBalance: money,
+            totalTrades,
+            daysPlayed: dayCount,
+            level,
+          }}
+        />
+      ) : (
+        <div className="space-y-6 py-6">
+          {/* Game Header */}
+          <div className="bg-white rounded-xl shadow-md p-4 space-y-4">
+            {/* Title */}
+            <h1 className="text-2xl font-bold text-center text-gray-800 mb-4">Market Trading Adventure</h1>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <DollarSign className="w-4 h-4 text-green-500" />
+                  <p className="text-sm text-gray-500">Balance</p>
+                </div>
+                <p className="text-xl font-bold">${money.toFixed(2)}</p>
+              </div>
+              <div className="space-y-1">
+                <p className="text-sm text-gray-500">Level {level}</p>
+                <Progress value={xpProgress} className="h-2" />
+              </div>
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <Calendar className="w-4 h-4 text-blue-500" />
+                  <p className="text-sm text-gray-500">Day</p>
+                </div>
+                <p className="text-xl font-bold">{dayCount}</p>
+              </div>
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <BarChart2 className="w-4 h-4 text-purple-500" />
+                  <p className="text-sm text-gray-500">Trades</p>
+                </div>
+                <p className="text-xl font-bold">{totalTrades}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Market Event Banner */}
+          <AnimatePresence>
+            {currentEvent && (
+              <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className={`
+                  rounded-lg p-4 flex items-center justify-between
+                  ${currentEvent.type === 'positive' ? 'bg-green-50' : 'bg-red-50'}
+                `}
+              >
+                <div className="flex items-center space-x-3">
+                  <div className={`
+                    p-2 rounded-full
+                    ${currentEvent.type === 'positive' ? 'bg-green-100' : 'bg-red-100'}
+                  `}>
+                    {currentEvent.icon}
+                  </div>
+                  <p className={currentEvent.color}>{currentEvent.message}</p>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setCurrentEvent(null)}
+                >
+                  Dismiss
+                </Button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Stock Tiers */}
+          <div className="flex overflow-x-auto space-x-2 pb-2">
+            {STOCK_TIERS.map((tier, index) => (
+              <Button
+                key={tier.name}
+                variant={selectedTier === index + 1 ? "default" : "outline"}
+                size="sm"
+                onClick={() => setSelectedTier(index + 1)}
+                className="whitespace-nowrap flex items-center gap-2"
+              >
+                <span className={selectedTier === index + 1 ? "text-white" : "text-gray-500"}>
+                  {tier.icon}
+                </span>
+                {tier.name}
+              </Button>
+            ))}
+          </div>
+
+          {/* Stocks Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <AnimatePresence>
+              {stocks
+                .filter(stock => stock.tier === selectedTier)
+                .map(stock => (
+                  <StockCard key={stock.id} stock={stock} />
+                ))}
+            </AnimatePresence>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

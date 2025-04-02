@@ -7,8 +7,9 @@ import { Progress } from './ui/progress';
 import { useGameState } from '@/hooks/use-game-state';
 import { GameHeader, GameOver } from './ui/game-elements';
 import { 
-  ArrowLeft, BookOpen, Briefcase, DollarSign, Award, Zap, TrendingUp, TrendingDown, Check, X
+  ArrowLeft, BookOpen, Briefcase, DollarSign, Award, Zap, TrendingUp, TrendingDown, Check, X, Trophy
 } from 'lucide-react';
+import { Label } from './ui/label';
 
 // Game state interfaces
 interface GameState {
@@ -604,55 +605,65 @@ export function InvestorSimulatorGame() {
   // Intro screen
   const renderIntro = () => {
     return (
-      <div className="max-w-2xl mx-auto mt-6 p-4">
-        <GameHeader
-          title="Historical Investor Journey"
-          description="Learn from Investment Legends"
-          icon={<BookOpen className="h-6 w-6" />}
-        />
-        
-        <Card className="mt-6">
-          <CardHeader>
-            <CardTitle>Begin Your Investment Journey</CardTitle>
-            <CardDescription>Follow the footsteps of legendary investors</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <p>Enter the world of legendary investors and learn their strategies through historical market challenges.</p>
-            
-            <div>
-              <label htmlFor="playerName" className="block text-sm font-medium mb-2">Your Investor Name</label>
-              <Input
-                id="playerName"
-                value={playerName}
-                onChange={(e) => setPlayerName(e.target.value)}
-                placeholder="Enter your name"
-                className="w-full"
-              />
+      <div className="flex flex-col items-center justify-center min-h-[80vh]">
+        {/* Header with tickets */}
+        <div className="w-full max-w-4xl flex justify-between items-center mb-8 px-4">
+          <h1 className="text-xl font-semibold">Historical Investor Journey</h1>
+          <div className="flex items-center gap-2 bg-amber-50 px-3 py-1 rounded-full">
+            <Trophy className="w-4 h-4 text-amber-500" />
+            <span className="text-amber-700 font-medium">3</span>
+          </div>
+        </div>
+
+        {/* Main content card */}
+        <div className="w-full max-w-md bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="flex flex-col items-center px-6 py-12 text-center">
+            {/* Icon */}
+            <div className="w-24 h-24 mb-8 bg-blue-100 rounded-2xl flex items-center justify-center transform rotate-12">
+              <BookOpen className="w-12 h-12 text-blue-500 transform -rotate-12" />
             </div>
-            
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <div className="text-sm text-gray-500">Starting Capital</div>
-                <div className="font-medium">${gameState.initialCapital.toLocaleString()}</div>
+
+            {/* Title and description */}
+            <h2 className="text-2xl font-bold mb-4">Begin Your Journey</h2>
+            <p className="text-gray-600 mb-8">
+              Follow in the footsteps of legendary investors and learn their strategies
+            </p>
+
+            {/* Form fields */}
+            <div className="space-y-4 w-full">
+              <div className="space-y-2">
+                <Label htmlFor="playerName" className="text-left block">Your Investor Name</Label>
+                <Input
+                  id="playerName"
+                  placeholder="Enter your name"
+                  value={playerName}
+                  onChange={(e) => setPlayerName(e.target.value)}
+                  className="w-full"
+                />
               </div>
-              
-              <Button variant="outline" size="sm" onClick={() => setShowTutorial(true)}>
-                How to Play
+
+              <div className="flex items-center justify-between bg-gray-50 p-4 rounded-lg">
+                <div className="space-y-1">
+                  <div className="text-sm text-gray-500">Starting Capital</div>
+                  <div className="font-medium">${gameState.initialCapital.toLocaleString()}</div>
+                </div>
+                
+                <Button variant="outline" size="sm" onClick={() => setShowTutorial(true)}>
+                  How to Play
+                </Button>
+              </div>
+
+              <Button
+                size="lg"
+                onClick={startGame}
+                disabled={!playerName.trim()}
+                className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-6 rounded-xl transition-all duration-200 mt-4"
+              >
+                Begin Journey
               </Button>
             </div>
-          </CardContent>
-          <CardFooter className="flex justify-between">
-            <Button variant="outline" onClick={returnToHub}>
-              Cancel
-            </Button>
-            <Button 
-              onClick={startGame}
-              disabled={!playerName.trim()}
-            >
-              Begin Journey
-            </Button>
-          </CardFooter>
-        </Card>
+          </div>
+        </div>
       </div>
     );
   };

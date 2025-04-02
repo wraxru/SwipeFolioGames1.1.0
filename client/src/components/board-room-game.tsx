@@ -22,7 +22,7 @@ import {
 import { DecisionSwiper } from '@/components/ui/decision-swiper';
 import { MetricDashboard } from '@/components/ui/metric-dashboard';
 import { GameHeader, GameProgress } from '@/components/ui/game-elements';
-import { ArrowLeft, Info, Crown } from 'lucide-react';
+import { ArrowLeft, Info, Crown, Trophy, Loader2 } from 'lucide-react';
 import { 
   generateInitialScenario, 
   generateNextScenario,
@@ -311,51 +311,65 @@ export default function BoardRoomGame() {
     switch (phase) {
       case 'setup':
         return (
-          <div className="h-full flex flex-col">
-            <div className="space-y-4 mx-auto w-full max-w-md px-4">
-              <h2 className="text-2xl font-bold text-center">Board Room</h2>
-              <p className="text-center text-gray-500">
-                Take the helm as CEO and navigate your company through strategic decisions
-              </p>
-              
-              {error && (
-                <div className="bg-red-100 text-red-800 p-3 rounded-md text-sm">
-                  {error}
+          <div className="flex flex-col items-center justify-center min-h-[80vh]">
+            {/* Header with tickets */}
+            <div className="w-full max-w-4xl flex justify-between items-center mb-8 px-4">
+              <h1 className="text-xl font-semibold">Board Room</h1>
+              <div className="flex items-center gap-2 bg-amber-50 px-3 py-1 rounded-full">
+                <Trophy className="w-4 h-4 text-amber-500" />
+                <span className="text-amber-700 font-medium">3</span>
+              </div>
+            </div>
+
+            {/* Main content card */}
+            <div className="w-full max-w-md bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+              <div className="flex flex-col items-center px-6 py-12 text-center">
+                {/* Icon */}
+                <div className="w-24 h-24 mb-8 bg-blue-100 rounded-2xl flex items-center justify-center transform rotate-12">
+                  <Crown className="w-12 h-12 text-blue-500 transform -rotate-12" />
                 </div>
-              )}
-              
-              <Card>
-                <CardHeader>
-                  <CardTitle>Create Your Company</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
+
+                {/* Title and description */}
+                <h2 className="text-2xl font-bold mb-4">Create Your Company</h2>
+                <p className="text-gray-600 mb-8">
+                  Take the helm as CEO and navigate strategic decisions!
+                </p>
+
+                {/* Error message if any */}
+                {error && (
+                  <div className="w-full bg-red-50 text-red-600 p-3 rounded-lg mb-6 text-sm">
+                    {error}
+                  </div>
+                )}
+
+                {/* Form fields */}
+                <div className="space-y-4 w-full">
                   <div className="space-y-2">
-                    <Label htmlFor="playerName">Your Name</Label>
-                    <Input 
-                      id="playerName" 
-                      placeholder="Enter your name" 
+                    <Label htmlFor="playerName" className="text-left block">Your Name</Label>
+                    <Input
+                      id="playerName"
+                      placeholder="Enter your name"
                       value={playerName}
                       onChange={(e) => setPlayerName(e.target.value)}
+                      className="w-full"
                     />
                   </div>
-                  
+
                   <div className="space-y-2">
-                    <Label htmlFor="companyName">Company Name</Label>
-                    <Input 
-                      id="companyName" 
-                      placeholder="Enter company name" 
+                    <Label htmlFor="companyName" className="text-left block">Company Name</Label>
+                    <Input
+                      id="companyName"
+                      placeholder="Enter company name"
                       value={companyName}
                       onChange={(e) => setCompanyName(e.target.value)}
+                      className="w-full"
                     />
                   </div>
-                  
+
                   <div className="space-y-2">
-                    <Label htmlFor="industry">Industry</Label>
-                    <Select 
-                      value={selectedIndustry} 
-                      onValueChange={setSelectedIndustry}
-                    >
-                      <SelectTrigger>
+                    <Label htmlFor="industry" className="text-left block">Industry</Label>
+                    <Select value={selectedIndustry} onValueChange={setSelectedIndustry}>
+                      <SelectTrigger className="w-full">
                         <SelectValue placeholder="Select an industry" />
                       </SelectTrigger>
                       <SelectContent>
@@ -366,32 +380,30 @@ export default function BoardRoomGame() {
                         ))}
                       </SelectContent>
                     </Select>
-                    
                     {selectedIndustry && (
-                      <p className="text-sm text-gray-500 mt-1">
+                      <p className="text-sm text-gray-500 text-left mt-1">
                         {AVAILABLE_INDUSTRIES.find(i => i.id === selectedIndustry)?.description}
                       </p>
                     )}
                   </div>
-                  
-                  <Button 
-                    className="w-full" 
+
+                  <Button
+                    size="lg"
                     onClick={startGame}
                     disabled={isLoading}
+                    className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-6 rounded-xl transition-all duration-200 mt-4"
                   >
-                    {isLoading ? 'Creating...' : 'Start Your Company'}
+                    {isLoading ? (
+                      <span className="flex items-center justify-center gap-2">
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Creating...
+                      </span>
+                    ) : (
+                      'Start Your Company'
+                    )}
                   </Button>
-                </CardContent>
-              </Card>
-              
-              <Button 
-                variant="ghost" 
-                className="w-full" 
-                onClick={() => navigate('/games')}
-              >
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to Games
-              </Button>
+                </div>
+              </div>
             </div>
           </div>
         );

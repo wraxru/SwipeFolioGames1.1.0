@@ -1,11 +1,11 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { Timer, Ticket, Trophy, Sparkles, LineChart, BarChart, PieChart } from 'lucide-react';
+import { Timer, Ticket, Trophy, Sparkles, LineChart, BarChart, PieChart, TrendingUp, Users, RefreshCw, Building2, Brain, Star, Info } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import * as ConfettiModule from 'react-canvas-confetti';
+import ReactCanvasConfetti from 'react-canvas-confetti';
 
 // Game Header Component
 export function GameHeader({ 
@@ -60,98 +60,172 @@ export function GameHeader({
           )}
         </div>
       </div>
-      
-      {/* Progress indicator bar - subtle animation */}
-      <div className="h-1 w-full bg-gray-100 rounded-full mt-4 overflow-hidden">
-        <motion.div 
-          className="h-full bg-gradient-to-r from-blue-500 to-indigo-500"
-          initial={{ width: "0%" }}
-          animate={{ width: "100%" }}
-          transition={{ duration: 30, ease: "linear", repeat: Infinity }}
-        />
-      </div>
     </div>
   );
 }
 
-// Game Progress Component
-export function GameProgress({ 
-  current, 
-  total 
+// MetricIcon component to render appropriate icons for each metric type
+function MetricIcon({ metric }: { metric: string }) {
+  const iconClass = "w-8 h-8";
+  
+  // Map metrics to appropriate icons
+  switch (metric.toLowerCase()) {
+    case 'p/e ratio':
+    case 'price-to-earnings ratio (p/e)':
+    case 'price to book':
+      return <LineChart className={`${iconClass} text-indigo-500`} />;
+    
+    case 'revenue growth':
+    case 'profit margin':
+    case 'operating margin':
+      return <TrendingUp className={`${iconClass} text-emerald-500`} />;
+    
+    case 'employee revenue':
+    case 'customer satisfaction score':
+    case 'net promoter score':
+      return <Users className={`${iconClass} text-blue-500`} />;
+    
+    case 'inventory turnover':
+    case 'accounts receivable turnover':
+    case 'cash conversion cycle':
+      return <RefreshCw className={`${iconClass} text-amber-500`} />;
+    
+    case 'debt to equity':
+    case 'current ratio':
+    case 'quick ratio':
+      return <Building2 className={`${iconClass} text-purple-500`} />;
+    
+    case 'r&d as % of revenue':
+    case 'free cash flow':
+      return <Brain className={`${iconClass} text-rose-500`} />;
+    
+    default:
+      return <Star className={`${iconClass} text-gray-500`} />;
+  }
+}
+
+// Enhanced MetricCard component with visual elements
+export function MetricCard({ 
+  title,
+  value,
+  industryAverage,
+  explanation,
+  currentQuestion,
+  totalQuestions
 }: { 
-  current: number; 
-  total: number; 
+  title: string;
+  value: string | number;
+  industryAverage: string | number;
+  explanation: string;
+  currentQuestion: number;
+  totalQuestions: number;
 }) {
-  const progress = (current / total) * 100;
+  const [showExplanation, setShowExplanation] = useState(false);
+  const numericValue = typeof value === 'string' ? parseFloat(value) : value;
+  const numericAvg = typeof industryAverage === 'string' ? parseFloat(industryAverage) : industryAverage;
   
   return (
-    <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-5">
-      <div className="flex justify-between items-center mb-2">
-        <div className="flex items-center">
-          <div className="w-7 h-7 rounded-full bg-indigo-100 flex items-center justify-center mr-2">
-            <span className="text-sm font-bold text-indigo-700">{current}</span>
+    <motion.div 
+      className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+    >
+      <div className="p-6">
+        {/* Header with Progress Dots */}
+        <div className="flex justify-between items-center mb-6">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center">
+              <span className="text-base font-bold text-white">{currentQuestion}</span>
+            </div>
+            <div>
+              <h3 className="text-sm font-medium text-gray-900">{currentQuestion} out of {totalQuestions}</h3>
+            </div>
           </div>
-          <span className="text-sm font-medium text-gray-700">
-            Question {current} of {total}
-          </span>
+          <div className="flex items-center space-x-1.5">
+            {Array.from({ length: totalQuestions }).map((_, i) => (
+              <motion.div
+                key={i}
+                className={cn(
+                  "w-2 h-2 rounded-full",
+                  i + 1 === currentQuestion ? "bg-yellow-400" :
+                  i + 1 < currentQuestion ? "bg-indigo-500" : "bg-gray-200"
+                )}
+                animate={i + 1 === currentQuestion ? {
+                  scale: [1, 1.2, 1],
+                  opacity: [0.5, 1, 0.5]
+                } : {}}
+                transition={{
+                  duration: 1.5,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+              />
+            ))}
+          </div>
         </div>
-        <div className="flex items-center bg-indigo-50 rounded-full px-3 py-1">
-          <motion.span 
-            key={progress}
-            initial={{ scale: 0.8 }}
-            animate={{ scale: 1 }}
-            className="text-sm font-bold text-indigo-700"
-          >
-            {Math.round(progress)}%
-          </motion.span>
-        </div>
-      </div>
-      
-      <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-        <motion.div 
-          className="h-full bg-gradient-to-r from-indigo-500 to-blue-500"
-          initial={{ width: `${(current - 1) / total * 100}%` }} 
-          animate={{ width: `${progress}%` }}
-          transition={{ duration: 0.5, ease: "easeOut" }}
-        />
-      </div>
-    </div>
-  );
-}
 
-// Metric Card Component
-export function MetricCard({ 
-  title, 
-  value, 
-  industryAverage, 
-  explanation 
-}: { 
-  title: string; 
-  value: string | number; 
-  industryAverage: string | number;
-  explanation?: string;
-}) {
-  return (
-    <Card className="p-5 sm:p-6 border-2 border-indigo-100">
-      <div className="space-y-4">
-        <div className="flex justify-between items-center">
-          <h3 className="text-lg font-semibold text-indigo-900">{title}</h3>
-          <div className="bg-indigo-50 px-2 py-1 rounded text-sm font-medium text-indigo-700">
-            Industry: {industryAverage}
+        {/* Metric Content */}
+        <div className="space-y-6">
+          {/* Metric Title and Icon */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="p-2 bg-gray-50 rounded-lg">
+                <MetricIcon metric={title} />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-800">{title}</h3>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowExplanation(!showExplanation)}
+            >
+              <Info className="w-4 h-4" />
+            </Button>
           </div>
-        </div>
-        
-        <div className="flex justify-center">
-          <div className="text-3xl sm:text-4xl font-bold text-indigo-600">{value}</div>
-        </div>
-        
-        {explanation && (
-          <div className="mt-4 p-3 bg-indigo-50 rounded-md text-sm text-indigo-900 border border-indigo-100">
-            {explanation}
+
+          {/* Metric Values */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1">
+              <p className="text-sm text-gray-500">Company Value</p>
+              <p className="text-2xl font-bold text-gray-900">{value}</p>
+            </div>
+            <div className="space-y-1">
+              <p className="text-sm text-gray-500">Industry Average</p>
+              <p className="text-2xl font-medium text-gray-600">{industryAverage}</p>
+            </div>
           </div>
-        )}
+
+          {/* Comparison Bar */}
+          <div className="relative h-2 bg-gray-100 rounded-full overflow-hidden">
+            <motion.div 
+              className="absolute left-0 top-0 h-full bg-gray-400"
+              initial={{ width: '50%' }}
+              animate={{ 
+                width: `${Math.min(Math.max((numericValue / numericAvg) * 50, 10), 90)}%`
+              }}
+              transition={{ duration: 0.5, ease: "easeOut" }}
+            />
+          </div>
+
+          {/* Explanation */}
+          <AnimatePresence>
+            {showExplanation && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <p className="text-sm text-gray-600 bg-gray-50 p-3 rounded-lg">
+                  {explanation}
+                </p>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
-    </Card>
+    </motion.div>
   );
 }
 
@@ -198,7 +272,7 @@ export function GameOver({
   score, 
   message,
   tickets,
-  onPlayAgain,
+  onPlayAgain: handlePlayAgain,
   onReturnToHub,
   correctAnswers,
   totalQuestions,
@@ -209,32 +283,20 @@ export function GameOver({
   tickets?: number;
   onPlayAgain?: () => void;
   onReturnToHub?: () => void;
-  // Legacy parameters for compatibility
   correctAnswers?: number;
   totalQuestions?: number;
   onRestart?: () => void; 
 }) {
-  // Trigger confetti effect with slight delay
+  const [confettiInstance, setConfettiInstance] = useState<any>(null);
+
+  const getInstance = useCallback((instance: any) => {
+    setConfettiInstance(instance);
+  }, []);
+
   React.useEffect(() => {
-    // Add slight delay for better user experience
-    const timer = setTimeout(() => {
-      const canvas = document.createElement('canvas');
-      canvas.style.position = 'fixed';
-      canvas.style.inset = '0';
-      canvas.style.width = '100%';
-      canvas.style.height = '100%';
-      canvas.style.pointerEvents = 'none';
-      canvas.style.zIndex = '9999';
-      document.body.appendChild(canvas);
-  
-      const createConfetti = (ConfettiModule as any).default;
-      const myConfetti = createConfetti(canvas, {
-        resize: true,
-        useWorker: true,
-      });
-  
-      // More colorful and dynamic confetti
-      myConfetti({
+    if (confettiInstance) {
+      // First burst
+      confettiInstance({
         particleCount: 150,
         spread: 90,
         origin: { y: 0.6 },
@@ -243,10 +305,10 @@ export function GameOver({
         gravity: 0.8,
         scalar: 1.2
       });
-  
-      // Second burst after a delay
+
+      // Second burst
       setTimeout(() => {
-        myConfetti({
+        confettiInstance({
           particleCount: 80,
           spread: 120,
           origin: { y: 0.7, x: 0.3 },
@@ -254,10 +316,10 @@ export function GameOver({
           startVelocity: 45
         });
       }, 700);
-  
+
       // Third burst
       setTimeout(() => {
-        myConfetti({
+        confettiInstance({
           particleCount: 80,
           spread: 120,
           origin: { y: 0.7, x: 0.7 },
@@ -265,18 +327,8 @@ export function GameOver({
           startVelocity: 45
         });
       }, 1200);
-  
-      // Clean up
-      return () => {
-        document.body.removeChild(canvas);
-      };
-    }, 400); // Delay the confetti slightly
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  // Handle the two different interfaces
-  const handlePlayAgain = onPlayAgain || onRestart;
+    }
+  }, [confettiInstance]);
 
   return (
     <motion.div 
@@ -285,6 +337,18 @@ export function GameOver({
       animate={{ opacity: 1 }}
       transition={{ duration: 0.4 }}
     >
+      <ReactCanvasConfetti
+        refConfetti={getInstance}
+        style={{
+          position: 'fixed',
+          pointerEvents: 'none',
+          width: '100%',
+          height: '100%',
+          top: 0,
+          left: 0,
+          zIndex: 9999
+        }}
+      />
       <div className="bg-white p-8 rounded-2xl shadow-lg border border-indigo-100 text-center">
         <motion.div
           initial={{ scale: 0.8, opacity: 0, y: 20 }}
@@ -529,5 +593,31 @@ export function ImpactCard({
         </div>
       </Card>
     </motion.div>
+  );
+}
+
+// Game Progress Component
+export function GameProgress({ 
+  current, 
+  total 
+}: { 
+  current: number;
+  total: number;
+}) {
+  const progress = (current / total) * 100;
+  
+  return (
+    <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4">
+      <div className="flex justify-between items-center mb-2">
+        <div className="flex items-center space-x-2">
+          <div className="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center">
+            <span className="text-sm font-bold text-white">{current}</span>
+          </div>
+          <span className="text-sm font-medium text-gray-600">of {total}</span>
+        </div>
+        <span className="text-sm font-medium text-indigo-600">{Math.round(progress)}%</span>
+      </div>
+      <Progress value={progress} className="h-2" />
+    </div>
   );
 }

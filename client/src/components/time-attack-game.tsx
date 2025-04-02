@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card } from './ui/card';
 import { useGameState } from '@/hooks/use-game-state';
-import { GameHeader, MetricCard, GameButton, GameProgress, GameOver } from './ui/game-elements';
+import { GameHeader, MetricCard, GameButton, GameOver } from './ui/game-elements';
 import { METRIC_QUESTIONS, GAME_CONSTANTS } from '@/constants/game-data';
 import { Ticket } from 'lucide-react';
 import type { MetricQuestion } from '@/types/game';
@@ -174,15 +174,13 @@ export function TimeAttackGame() {
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
           >
-            <div className="mb-4">
-              <GameProgress current={currentQuestion + 1} total={questions.length} />
-            </div>
-            
             <MetricCard 
               title={questions[currentQuestion].metric}
               value={questions[currentQuestion].companyValue}
               industryAverage={questions[currentQuestion].industryAverage}
               explanation={questions[currentQuestion].explanation}
+              currentQuestion={currentQuestion + 1}
+              totalQuestions={questions.length}
             />
             
             <div className="grid grid-cols-2 gap-4 mt-4">
