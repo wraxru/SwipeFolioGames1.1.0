@@ -32,6 +32,7 @@ import {
 } from '@/services/board-room-ai';
 import { CompanyMetrics, EnhancedBoardRoomDecision, MetricValue } from '@/types/game';
 import { Skeleton } from '@/components/ui/skeleton';
+import { enhanceDecisionWithStory } from '@/constants/board-room-stories';
 
 // Industries available for the CEO simulator
 const AVAILABLE_INDUSTRIES = [
@@ -86,7 +87,9 @@ export default function BoardRoomGame() {
         AVAILABLE_INDUSTRIES.find(i => i.id === selectedIndustry)?.name || selectedIndustry
       );
       
-      setCurrentScenario(initialScenario);
+      // Enhance the scenario with a story
+      const enhancedScenario = enhanceDecisionWithStory(initialScenario);
+      setCurrentScenario(enhancedScenario);
       setPhase('playing');
       setIsLoading(false);
     } catch (err) {
@@ -210,7 +213,9 @@ export default function BoardRoomGame() {
       };
       
       const nextScenario = await generateNextScenario(gameState, narrativeStage);
-      setCurrentScenario(nextScenario);
+      // Enhance the next scenario with a story
+      const enhancedNextScenario = enhanceDecisionWithStory(nextScenario);
+      setCurrentScenario(enhancedNextScenario);
       setIsLoading(false);
     } catch (err) {
       console.error('Error processing decision:', err);

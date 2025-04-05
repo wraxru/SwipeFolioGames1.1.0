@@ -627,6 +627,57 @@ const TRADE_EVENTS: GameEvent[] = [
       realWorldExample: 'The 2018-2020 US-China trade war affected global supply chains.',
       keyTerms: ['Tariffs', 'Trade War', 'Economic Retaliation']
     }
+  },
+  {
+    id: 'tech_trade_war',
+    type: 'trade',
+    title: 'Tech Sector Trade Restrictions',
+    description: 'Major trading partners have announced new restrictions on technology exports and AI-related products.',
+    timestamp: 0,
+    globalImpactFactor: 0.8,
+    sectorImpacts: {
+      technology: -15,
+      manufacturing: -8,
+      services: -5,
+      finance: -3
+    },
+    policyOptions: [
+      {
+        id: 'tech_retaliation',
+        title: 'Tech Export Restrictions',
+        description: 'Impose reciprocal restrictions on technology exports.',
+        effects: {
+          technology: -10,
+          manufacturing: -5,
+          marketHealth: -8,
+          tradeBalance: -12
+        },
+        tradeImpact: {
+          tariffs: 20,
+          diplomaticPenalty: -25
+        }
+      },
+      {
+        id: 'tech_diplomacy',
+        title: 'Tech Partnership Initiative',
+        description: 'Propose a technology partnership framework to maintain trade relations.',
+        effects: {
+          technology: 5,
+          manufacturing: 3,
+          marketHealth: 4,
+          tradeBalance: 2
+        },
+        tradeImpact: {
+          diplomaticPenalty: 15
+        }
+      }
+    ],
+    timeLimit: 3,
+    educationalContent: {
+      theory: 'Technology trade restrictions can significantly impact innovation and market growth.',
+      realWorldExample: 'Recent trade tensions have affected major tech companies like Nvidia, Apple, and Tesla.',
+      keyTerms: ['Technology Export', 'AI Restrictions', 'Market Volatility']
+    }
   }
 ];
 
@@ -693,6 +744,71 @@ const GLOBAL_EVENTS: InternationalEvent[] = [
             finance: -4,
             manufacturing: -6,
             services: -8
+          }
+        }
+      }
+    ]
+  },
+  {
+    id: 'tech_market_correction',
+    sourceRegion: 'global',
+    title: 'Tech Sector Market Correction',
+    description: 'Major tech companies are experiencing significant market corrections due to trade tensions and AI competition.',
+    severity: 7,
+    type: 'economic',
+    affectedSectors: ['technology', 'finance', 'services'],
+    timeToRespond: 2,
+    impactDelay: 1,
+    potentialImpact: {
+      market: -12,
+      diplomatic: {},
+      sectors: {
+        technology: -15,
+        finance: -8,
+        services: -6,
+        manufacturing: -4
+      }
+    },
+    policyResponses: [
+      {
+        id: 'tech_support',
+        title: 'Tech Sector Support Package',
+        description: 'Implement targeted support for the technology sector',
+        cost: 150,
+        effects: {
+          domesticMarket: 8,
+          internationalRelations: {},
+          politicalStability: 3,
+          economicImpact: {
+            gdp: 4,
+            marketHealth: 6,
+            tradeBalance: -8
+          },
+          sectorImpacts: {
+            technology: 10,
+            finance: 5,
+            services: 4
+          }
+        }
+      },
+      {
+        id: 'market_reform',
+        title: 'Market Regulation Reform',
+        description: 'Implement new regulations to stabilize the tech market',
+        cost: 100,
+        effects: {
+          domesticMarket: 5,
+          internationalRelations: {},
+          politicalStability: 4,
+          economicImpact: {
+            gdp: 2,
+            marketHealth: 4,
+            tradeBalance: 2
+          },
+          sectorImpacts: {
+            technology: 6,
+            finance: 4,
+            services: 3
           }
         }
       }

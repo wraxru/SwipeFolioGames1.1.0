@@ -1,8 +1,13 @@
+// Load environment variables first
+import 'dotenv/config';
 import express, { type Request, Response, NextFunction } from "express";
+import cors from "cors";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { finnhubService } from "./finnhub-service";
 import cron from 'node-cron';
+import { initializeStorage } from "./storage";
+import * as dotenv from 'dotenv';
 
 // Common stock symbols to keep in cache
 const COMMON_SYMBOLS = [
@@ -47,6 +52,19 @@ function setupScheduledCacheUpdates() {
   });
 }
 
+// Load environment variables from .env file
+dotenv.config();
+
+// Validate required environment variables
+const requiredEnvVars = ['OPENROUTER_API_KEY', 'SESSION_SECRET'];
+const missingEnvVars = requiredEnvVars.filter(varName => !process.env[varName]);
+
+if (missingEnvVars.length > 0) {
+  console.error('Missing required environment variables:', missingEnvVars.join(', '));
+  process.exit(1);
+}
+
+// Create Express app
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));

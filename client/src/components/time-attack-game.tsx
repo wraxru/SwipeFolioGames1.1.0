@@ -4,6 +4,7 @@ import { Card } from './ui/card';
 import { useGameState } from '@/hooks/use-game-state';
 import { GameHeader, MetricCard, GameButton, GameOver } from './ui/game-elements';
 import { METRIC_QUESTIONS, GAME_CONSTANTS } from '@/constants/game-data';
+import { getMetricStory } from '@/constants/metric-stories';
 import { Ticket } from 'lucide-react';
 import type { MetricQuestion } from '@/types/game';
 
@@ -174,14 +175,21 @@ export function TimeAttackGame() {
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
           >
-            <MetricCard 
-              title={questions[currentQuestion].metric}
-              value={questions[currentQuestion].companyValue}
-              industryAverage={questions[currentQuestion].industryAverage}
-              explanation={questions[currentQuestion].explanation}
-              currentQuestion={currentQuestion + 1}
-              totalQuestions={questions.length}
-            />
+            <Card className="mb-4">
+              <div className="p-4">
+                <p className="text-sm text-gray-600 mb-4">
+                  {getMetricStory(questions[currentQuestion].metric)}
+                </p>
+                <MetricCard 
+                  title={questions[currentQuestion].metric}
+                  value={questions[currentQuestion].companyValue}
+                  industryAverage={questions[currentQuestion].industryAverage}
+                  explanation={questions[currentQuestion].explanation}
+                  currentQuestion={currentQuestion + 1}
+                  totalQuestions={questions.length}
+                />
+              </div>
+            </Card>
             
             <div className="grid grid-cols-2 gap-4 mt-4">
               <GameButton 

@@ -5,6 +5,9 @@ import { setupAuth } from "./auth";
 import axios from "axios";
 import { getAIResponse } from "./ai-service";
 import { finnhubService } from "./finnhub-service";
+import { Router } from "express";
+import { z } from "zod";
+
 export async function registerRoutes(app: Express): Promise<Server> {
   // Set up authentication routes
   setupAuth(app);
@@ -547,72 +550,111 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Schema for validating AI response
+  const AIResponseSchema = z.object({
+    id: z.string(),
+    title: z.string(),
+    description: z.string(),
+    stage: z.string(),
+    learningObjective: z.string(),
+    options: z.array(z.object({
+      id: z.string(),
+      text: z.string(),
+      impacts: z.array(z.object({
+        metric: z.string(),
+        value: z.number(),
+        category: z.enum(["Growth", "Stability", "Momentum", "Value"])
+      })),
+      explanation: z.string()
+    }))
+  });
+
+  // Fallback scenario in case of API failure
+  const FALLBACK_SCENARIO = {
+    id: "initial_funding",
+    title: "Initial Funding Strategy",
+    description: "As the new CEO, you need to decide how to secure initial funding for operations and growth. Your choice will impact the company's financial structure and future flexibility.",
+    stage: "Company Establishment",
+    learningObjective: "Understanding different funding sources and their impact on company metrics",
+    options: [
+      {
+        id: "venture_capital",
+        text: "Seek venture capital funding by selling 30% equity stake",
+        impacts: [
+          { metric: "Cash Reserves", value: 25, category: "Stability" },
+          { metric: "Ownership Control", value: -15, category: "Value" },
+          { metric: "Growth Potential", value: 20, category: "Growth" }
+        ],
+        explanation: "VC funding provides significant capital but dilutes ownership and adds pressure for rapid growth."
+      },
+      {
+        id: "bootstrapping",
+        text: "Bootstrap the company with minimal external funding",
+        impacts: [
+          { metric: "Cash Reserves", value: -5, category: "Stability" },
+          { metric: "Ownership Control", value: 30, category: "Value" },
+          { metric: "Growth Potential", value: -10, category: "Growth" }
+        ],
+        explanation: "Bootstrapping maintains control but limits scaling ability and financial flexibility."
+      }
+    ]
+  };
+
   // Board Room Game - AI scenario generation
   app.post("/api/ai-scenario", async (req, res) => {
     try {
-      console.log("Received AI scenario request");
-      const { prompt } = req.body;
-      
-      // Validate request body
-      if (!prompt) {
-        return res.status(400).json({ 
-          error: "INVALID_REQUEST", 
-          message: "A prompt is required" 
-        });
+      // Ensure API key is present
+      const apiKey = process.env.OPENROUTER_API_KEY;
+      if (!apiKey) {
+        console.error("OpenRouter API key is not configured");
+        return res.status(200).json({ scenario: FALLBACK_SCENARIO });
       }
-      
-      // Get AI response with game context
-      const response = await getAIResponse(prompt, { 
-        gameMode: true,
-        gameRole: "CEO Simulator"
-      });
+
+      const response = await axios.post(
+        "https://openrouter.ai/api/v1/chat/completions",
+        {
+          model: "deepseek/deepseek-chat-v3-0324:free",
+          messages: [
+            {
+              role: "system",
+              content: req.body.systemPrompt || "You are an AI game master for the Board Room CEO simulation game."
+            },
+            {
+              role: "user",
+              content: req.body.prompt
+            }
+          ],
+          max_tokens: 800,
+          temperature: 0.8
+        },
+        {
+          headers: {
+            "Authorization": `Bearer ${apiKey}`,
+            "HTTP-Referer": "https://swipefolio.replit.app",
+            "X-Title": "Swipefolio"
+          }
+        }
+      );
+
+      // Parse and validate the AI response
+      const aiResponse = response.data.choices[0].message.content;
+      let parsedResponse;
       
       try {
-        // Try to parse as JSON
-        const scenario = JSON.parse(response);
-        return res.json({ scenario });
+        parsedResponse = JSON.parse(aiResponse);
+        // Validate the response against our schema
+        AIResponseSchema.parse(parsedResponse);
       } catch (parseError) {
-        console.error('Failed to parse AI response as JSON:', parseError);
-        
-        // If the response isn't valid JSON, return the raw response for debugging
-        return res.status(500).json({ 
-          message: 'Failed to parse AI response as JSON',
-          rawResponse: response
-        });
+        console.error("Failed to parse or validate AI response:", parseError);
+        return res.status(200).json({ scenario: FALLBACK_SCENARIO });
       }
-    } catch (error: any) {
-      console.error("Error generating AI scenario:", error);
+
+      res.json({ scenario: parsedResponse });
+    } catch (error) {
+      console.error("AI scenario generation error:", error);
       
-      interface AIErrorResponse {
-        error: string;
-        message: string;
-        details?: {
-          status?: number;
-          data?: any;
-        };
-      }
-      
-      let errorResponse: AIErrorResponse = { 
-        error: "AI service error", 
-        message: error instanceof Error ? error.message : "Unknown error occurred"
-      };
-      
-      // Add more detailed error information if available
-      if (error.response) {
-        console.error("Error response status:", error.response.status);
-        console.error("Error response data:", error.response.data);
-        
-        errorResponse = {
-          error: "AI service error", 
-          message: error instanceof Error ? error.message : "Unknown error occurred",
-          details: {
-            status: error.response.status,
-            data: error.response.data
-          }
-        };
-      }
-      
-      return res.status(500).json(errorResponse);
+      // Return fallback scenario instead of error
+      res.status(200).json({ scenario: FALLBACK_SCENARIO });
     }
   });
   

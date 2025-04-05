@@ -67,7 +67,7 @@ interface GameState {
   difficulty: 'easy' | 'medium' | 'hard';
   tutorialCompleted: boolean;
   achievements: string[];
-  timeRemaining?: number; // For Time Attack mode
+  timeRemaining?: number;
   gameMode: 'standard' | 'timeAttack' | 'companyAnalysis' | 'marketCycle';
   timeAttackState?: TimeAttackState;
   playerStats: PlayerStats;
@@ -79,12 +79,19 @@ interface GameState {
   }[];
   lastPlayedCard?: FinancialCard;
   lastPlayedOpponentCard?: FinancialCard;
+  isPlayerTurn: boolean;
+  battlePhase: 'player-attack' | 'opponent-attack' | 'resolution' | 'end-turn';
+  battleOutcome?: {
+    playerDamage: number;
+    opponentDamage: number;
+    explanation: string;
+  };
 }
 
 interface BattleAnimationState {
   attackerCard: FinancialCard;
-  defenderCard: FinancialCard;
-  outcome: 'win' | 'lose' | 'draw';
+  defenderCard: FinancialCard | null;
+  outcome: 'win' | 'lose' | 'draw' | 'pending';
   explanation: string;
 }
 
@@ -270,6 +277,42 @@ const BattleEffect = ({ type }: { type: 'attack' | 'defend' | 'special' }) => {
   );
 };
 
+// Add the FinancialCardVisual component
+const FinancialCardVisual = ({ card }: { card: FinancialCard }) => {
+  return (
+    <div className="bg-white rounded-lg shadow-lg p-4 w-48">
+      <div className="flex items-center justify-between mb-2">
+        <span className="font-semibold text-lg">{card.name}</span>
+        <span className="flex items-center gap-1.5">
+          <TrendingUp className="w-4 h-4 text-blue-500" />
+          <span className="text-blue-600 font-bold">{card.power}</span>
+        </span>
+      </div>
+      <div className="space-y-2">
+        <div className="flex items-center gap-2">
+          {card.visual.character === 'knight' && <Briefcase className="h-6 w-6 text-blue-500" />}
+          {card.visual.character === 'sprinter' && <TrendingUp className="h-6 w-6 text-green-500" />}
+          {card.visual.character === 'seesaw' && <Scale className="h-6 w-6 text-purple-500" />}
+          {card.visual.character === 'bull' && <TrendingUp className="h-6 w-6 text-red-500" />}
+          {card.visual.character === 'bear' && <TrendingDown className="h-6 w-6 text-red-500" />}
+          {card.visual.character === 'lightning' && <AlertTriangle className="h-6 w-6 text-yellow-500" />}
+          <p className="text-sm text-gray-600">{card.visual.description}</p>
+        </div>
+        <div className="flex flex-wrap gap-1.5">
+          {card.marketConditions.map((condition) => (
+            <span 
+              key={condition}
+              className="text-xs px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100"
+            >
+              {condition}
+            </span>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const CardPlayAnimation = ({ card, isPlayer }: { card: FinancialCard; isPlayer: boolean }) => {
   return (
     <motion.div
@@ -366,105 +409,55 @@ const TimeAttackQueue = ({ cards }: { cards: FinancialCard[] }) => {
   );
 };
 
-const BattleAnimation = ({ 
-  attackerCard, 
-  defenderCard, 
-  outcome,
-  explanation 
-}: { 
-  attackerCard: FinancialCard;
-  defenderCard: FinancialCard;
-  outcome: 'win' | 'lose' | 'draw';
-  explanation: string;
-}) => {
+const BattleAnimation = ({ attackerCard, defenderCard, outcome, explanation }: BattleAnimationState) => {
+  const getCardStyle = (isAttacker: boolean) => {
+    const baseStyle = "absolute transform transition-all duration-500 ease-in-out";
+    const position = isAttacker ? "left-10" : "right-10";
+    
+    return `${baseStyle} ${position} ${
+      outcome === 'pending' ? 'scale-110' : 
+      outcome === 'win' && !isAttacker ? 'scale-75 opacity-50' :
+      outcome === 'lose' && isAttacker ? 'scale-75 opacity-50' :
+      'scale-100'
+    }`;
+  };
+
   return (
-    <motion.div
-      className="fixed inset-0 bg-black/80 flex items-center justify-center z-50"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-    >
-      <div className="w-full max-w-lg mx-4">
-        <div className="relative w-full aspect-[16/9] bg-gradient-to-b from-blue-600 to-blue-400 rounded-lg overflow-hidden">
-          {/* Battle Arena */}
-          <div className="absolute inset-0 flex flex-col justify-between p-4">
-            {/* Opponent's Side */}
-            <div className="flex justify-between items-start w-full">
-              <motion.div
-                initial={{ x: -100, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                className="bg-white/90 rounded-lg p-3 shadow-lg"
-              >
-                <h3 className="text-sm font-bold mb-1">Opponent's Card</h3>
-                <div className="flex items-center gap-2">
-                  {defenderCard.visual.character === 'knight' && <Briefcase className="h-5 w-5 text-blue-500" />}
-                  {defenderCard.visual.character === 'sprinter' && <TrendingUp className="h-5 w-5 text-green-500" />}
-                  {defenderCard.visual.character === 'seesaw' && <Scale className="h-5 w-5 text-purple-500" />}
-                  <span className="font-medium">{defenderCard.name}</span>
-                </div>
-                <div className="mt-1 text-sm">Power: {defenderCard.power}</div>
-              </motion.div>
-            </div>
-
-            {/* Battle Effects */}
-            <motion.div
-              className="absolute inset-0 flex items-center justify-center pointer-events-none"
-              initial={{ scale: 0.5, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ delay: 0.3 }}
-            >
-              <div className="text-white text-center">
-                <motion.div
-                  initial={{ y: -20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.5 }}
-                  className="text-4xl font-bold mb-2"
-                >
-                  {outcome === 'win' ? '💥 Victory!' : outcome === 'lose' ? '❌ Defeated!' : '🤝 Draw!'}
-                </motion.div>
-                <motion.div
-                  initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.7 }}
-                  className="text-lg bg-black/50 px-4 py-2 rounded-full"
-                >
-                  {explanation}
-                </motion.div>
-              </div>
-            </motion.div>
-
-            {/* Player's Side */}
-            <div className="flex justify-between items-end w-full">
-              <motion.div
-                initial={{ x: -100, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                className="bg-white/90 rounded-lg p-3 shadow-lg"
-              >
-                <h3 className="text-sm font-bold mb-1">Your Card</h3>
-                <div className="flex items-center gap-2">
-                  {attackerCard.visual.character === 'knight' && <Briefcase className="h-5 w-5 text-blue-500" />}
-                  {attackerCard.visual.character === 'sprinter' && <TrendingUp className="h-5 w-5 text-green-500" />}
-                  {attackerCard.visual.character === 'seesaw' && <Scale className="h-5 w-5 text-purple-500" />}
-                  <span className="font-medium">{attackerCard.name}</span>
-                </div>
-                <div className="mt-1 text-sm">Power: {attackerCard.power}</div>
-              </motion.div>
-            </div>
-          </div>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="relative w-full h-64 bg-gradient-to-br from-blue-900 to-purple-900 rounded-lg shadow-xl p-4">
+        {/* Attacker Card */}
+        <div className={getCardStyle(true)}>
+          <FinancialCardVisual card={attackerCard} />
         </div>
-
-        {/* Educational Insight */}
-        <motion.div
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.9 }}
-          className="mt-4 bg-white rounded-lg p-4 shadow-lg"
-        >
-          <h4 className="font-medium mb-2">💡 Learning Point</h4>
-          <p className="text-sm text-gray-700">{attackerCard.educationalText}</p>
-        </motion.div>
+        
+        {/* Defender Card (if exists) */}
+        {defenderCard && (
+          <div className={getCardStyle(false)}>
+            <FinancialCardVisual card={defenderCard} />
+          </div>
+        )}
+        
+        {/* Battle Outcome */}
+        <div className="absolute bottom-4 left-0 right-0 text-center text-white text-lg font-bold">
+          {explanation}
+        </div>
+        
+        {/* Visual Effects */}
+        {outcome !== 'pending' && (
+          <div className="absolute inset-0 pointer-events-none">
+            {outcome === 'win' && (
+              <div className="absolute inset-0 bg-green-500 opacity-20 animate-pulse" />
+            )}
+            {outcome === 'lose' && (
+              <div className="absolute inset-0 bg-red-500 opacity-20 animate-pulse" />
+            )}
+            {outcome === 'draw' && (
+              <div className="absolute inset-0 bg-yellow-500 opacity-20 animate-pulse" />
+            )}
+          </div>
+        )}
       </div>
-    </motion.div>
+    </div>
   );
 };
 
@@ -587,21 +580,18 @@ const calculateDamage = (
 };
 
 const generateBattleExplanation = (
-  attacker: FinancialCard,
-  defender: FinancialCard,
-  marketPhase: GameState['marketPhase']
+  playerCard: FinancialCard,
+  opponentCard: FinancialCard,
+  playerDamage: number,
+  opponentDamage: number
 ): string => {
-  const phaseInfo = MARKET_PHASES[marketPhase];
-  
-  if (attacker.marketConditions.some(c => 
-    (c === 'growth' && phaseInfo.powerModifiers.growth > 0) ||
-    (c === 'value' && phaseInfo.powerModifiers.value > 0) ||
-    (c === 'momentum' && phaseInfo.powerModifiers.momentum > 0)
-  )) {
-    return `${attacker.name} is particularly effective during ${marketPhase} phase!`;
+  if (playerDamage > opponentDamage) {
+    return `${playerCard.name} outperformed ${opponentCard.name} by ${playerDamage - opponentDamage} points!`;
+  } else if (playerDamage < opponentDamage) {
+    return `${opponentCard.name} outperformed ${playerCard.name} by ${opponentDamage - playerDamage} points!`;
+  } else {
+    return `${playerCard.name} and ${opponentCard.name} were evenly matched!`;
   }
-  
-  return `${attacker.name} clashes with ${defender.name}!`;
 };
 
 // Move handleCardPlay inside the FinancialCardGame component
@@ -611,10 +601,10 @@ export function FinancialCardGame() {
     turn: 1,
     playerHealth: 100,
     opponentHealth: 100,
-    playerDeck: [],
-    playerHand: [],
-    opponentDeck: [],
-    opponentHand: [],
+    playerDeck: [],  // Start with empty deck
+    playerHand: [],  // Start with empty hand
+    opponentDeck: [], // Start with empty deck
+    opponentHand: [], // Start with empty hand
     currentMarketCondition: 'bull-market',
     difficulty: 'medium',
     tutorialCompleted: false,
@@ -628,7 +618,11 @@ export function FinancialCardGame() {
     },
     marketPhase: 'early-bull',
     activeEffects: [],
-    timeAttackState: null
+    isPlayerTurn: true,
+    battlePhase: 'player-attack',
+    lastPlayedCard: null,
+    lastPlayedOpponentCard: null,
+    battleOutcome: null
   });
 
   const [showTutorial, setShowTutorial] = useState(true);
@@ -643,250 +637,260 @@ export function FinancialCardGame() {
   } | null>(null);
   const [showBattleAnimation, setShowBattleAnimation] = useState<BattleAnimationState | null>(null);
 
-  // Move handleCardPlay function definition here
-  const handleCardPlay = async (card: FinancialCard) => {
-    if (gameState.gameMode === 'timeAttack' && !gameState.timeAttackState) {
+  // Add useEffect for game initialization
+  useEffect(() => {
+    if (!showTutorial) {
+      console.log('Initializing game from useEffect'); // Debug log
+      initializeGame();
+    }
+  }, [showTutorial]);
+
+  // Update handleCardPlay function
+  const handleCardPlay = (card: FinancialCard) => {
+    console.log('Attempting to play card:', card);
+    
+    if (!gameState.isPlayerTurn || !card) {
+      console.log('Cannot play card - not player turn or invalid card');
       return;
     }
 
-    // Check if opponent has cards
-    if (gameState.opponentHand.length === 0) {
-      setGameState(prev => ({
-        ...prev,
-        opponentHealth: prev.opponentHealth - card.power, // Direct damage if no cards to defend
-        lastPlayedCard: card
-      }));
+    console.log('Playing card:', card.name);
+    
+    // Calculate initial damage
+    const playerDamage = calculateCardPower(card, gameState.marketPhase);
+    console.log('Player card power:', playerDamage);
+    
+    // Update game state with played card
+    setGameState(prev => ({
+      ...prev,
+      lastPlayedCard: card,
+      playerHand: prev.playerHand.filter(c => c.id !== card.id),
+      isPlayerTurn: false,
+      battlePhase: 'opponent-attack'
+    }));
+    
+    // Show initial battle animation
+    setShowBattleAnimation({
+      attackerCard: card,
+      defenderCard: null,
+      outcome: 'pending',
+      explanation: `${card.name} enters the battle!`
+    });
+    
+    // Trigger opponent's turn after animation
+    setTimeout(() => {
+      console.log('Triggering opponent turn');
+      setShowBattleAnimation(null);
+      handleOpponentTurn(card, playerDamage);
+    }, 1500);
+  };
+
+  const handleOpponentTurn = (playerCard: FinancialCard, playerDamage: number) => {
+    console.log('Starting opponent turn');
+    
+    // Safety check for opponent's hand
+    if (!gameState.opponentHand.length) {
+      console.log('No opponent cards, ending turn');
       handleTurnEnd();
       return;
     }
-
-    // Store the played card
-    setGameState(prev => ({
-      ...prev,
-      lastPlayedCard: card
-    }));
-
+    
+    // Select best card based on current market phase
+    const bestCard = selectBestOpponentCard();
+    if (!bestCard) {
+      console.log('No best card selected, ending turn');
+      handleTurnEnd();
+      return;
+    }
+    
+    console.log('Opponent selected card:', bestCard.name);
+    
     // Calculate battle outcome
-    const opponentCard = gameState.opponentHand[0];
-    const marketModifiers = MARKET_PHASES[gameState.marketPhase].powerModifiers;
+    const opponentDamage = calculateCardPower(bestCard, gameState.marketPhase);
+    console.log('Battle calculation:', { playerDamage, opponentDamage });
     
-    let attackerPower = card.power;
-    let defenderPower = opponentCard.power;
-    
-    // Apply market phase modifiers
-    if (card.marketConditions.includes('growth')) {
-      attackerPower += marketModifiers.growth;
-    }
-    if (card.marketConditions.includes('value')) {
-      attackerPower += marketModifiers.value;
-    }
-    if (card.marketConditions.includes('momentum')) {
-      attackerPower += marketModifiers.momentum;
-    }
-
-    // Apply opponent card modifiers
-    if (opponentCard.marketConditions.includes('growth')) {
-      defenderPower += marketModifiers.growth;
-    }
-    if (opponentCard.marketConditions.includes('value')) {
-      defenderPower += marketModifiers.value;
-    }
-    if (opponentCard.marketConditions.includes('momentum')) {
-      defenderPower += marketModifiers.momentum;
-    }
-    
-    // Apply active effects
-    gameState.activeEffects.forEach(effect => {
-      effect.effect(gameState);
-    });
-    
-    // Generate battle explanation
-    const explanation = generateBattleExplanation(card, opponentCard, gameState.marketPhase);
-    
-    // Determine outcome
-    const outcome = attackerPower > defenderPower ? 'win' : attackerPower < defenderPower ? 'lose' : 'draw';
-    
-    // Show battle animation
+    // Show opponent's card entering
     setShowBattleAnimation({
-      attackerCard: card,
-      defenderCard: opponentCard,
-      outcome,
-      explanation
+      attackerCard: bestCard,
+      defenderCard: playerCard,
+      outcome: 'pending',
+      explanation: `${bestCard.name} enters the battle!`
     });
     
-    // Update game state based on outcome
-    await new Promise(resolve => setTimeout(resolve, 2000)); // Wait for animation
-    
-    if (outcome === 'win') {
-      const damage = calculateDamage(card, opponentCard, gameState);
-      setGameState(prev => ({
-        ...prev,
-        opponentHealth: prev.opponentHealth - damage,
-        playerStats: {
-          ...prev.playerStats,
-          experience: prev.playerStats.experience + 10
-        }
-      }));
-      
-      // Update mastery
-      handleCardMastery(card);
-      
-      // Check for rank up
-      setGameState(prev => ({
-        ...prev,
-        playerStats: checkForRankUp(prev.playerStats)
-      }));
-    }
-    
-    // Check for strategic combos in Time Attack mode
-    if (gameState.gameMode === 'timeAttack' && gameState.timeAttackState) {
-      const playedCards = gameState.timeAttackState.cardsInQueue.map(c => c.id);
-      STRATEGIC_COMBOS.forEach(combo => {
-        if (!combo.completed && isSubsequence(combo.cards, playedCards)) {
-          setGameState(prev => ({
-            ...prev,
-            timeAttackState: {
-              ...prev.timeAttackState!,
-              comboMultiplier: prev.timeAttackState!.comboMultiplier + 0.5,
-              strategicCombos: prev.timeAttackState!.strategicCombos.map(sc =>
-                sc.name === combo.name ? { ...sc, completed: true } : sc
-              )
-            },
-            playerStats: {
-              ...prev.playerStats,
-              experience: prev.playerStats.experience + combo.points
-            }
-          }));
-        }
+    // After a delay, show battle resolution
+    setTimeout(() => {
+      // Update game state with battle results
+      setGameState(prev => {
+        const newPlayerHealth = Math.max(0, prev.playerHealth - opponentDamage);
+        const newOpponentHealth = Math.max(0, prev.opponentHealth - playerDamage);
+        
+        console.log('Updating health:', { 
+          oldPlayerHealth: prev.playerHealth,
+          newPlayerHealth,
+          oldOpponentHealth: prev.opponentHealth,
+          newOpponentHealth
+        });
+        
+        return {
+          ...prev,
+          lastPlayedOpponentCard: bestCard,
+          opponentHand: prev.opponentHand.filter(c => c.id !== bestCard.id),
+          playerHealth: newPlayerHealth,
+          opponentHealth: newOpponentHealth,
+          battlePhase: 'resolution'
+        };
       });
-    }
+      
+      // Show the battle resolution
+      setShowBattleAnimation({
+        attackerCard: bestCard,
+        defenderCard: playerCard,
+        outcome: opponentDamage > playerDamage ? 'win' : opponentDamage < playerDamage ? 'lose' : 'draw',
+        explanation: generateBattleExplanation(playerCard, bestCard, playerDamage, opponentDamage)
+      });
+      
+      // End turn after showing the outcome
+      setTimeout(() => {
+        console.log('Ending opponent turn');
+        setShowBattleAnimation(null);
+        handleTurnEnd();
+      }, 2000);
+    }, 1500);
+  };
+
+  const selectBestOpponentCard = (): FinancialCard | null => {
+    if (!gameState.opponentHand.length) return null;
     
-    // Handle turn end
-    handleTurnEnd();
+    return gameState.opponentHand.reduce((best, current) => {
+      const currentPower = calculateCardPower(current, gameState.marketPhase);
+      const bestPower = calculateCardPower(best, gameState.marketPhase);
+      return currentPower > bestPower ? current : best;
+    }, gameState.opponentHand[0]);
   };
 
   const handleTurnEnd = () => {
-    // Update active effects
-    setGameState(prev => ({
-      ...prev,
-      turn: prev.turn + 1,
-      activeEffects: prev.activeEffects
-        .map(effect => ({ ...effect, duration: effect.duration - 1 }))
-        .filter(effect => effect.duration > 0)
-    }));
+    console.log('Handling turn end');
     
-    // Remove played cards from hands
-    setGameState(prev => ({
-      ...prev,
-      playerHand: prev.playerHand.filter(c => c.id !== prev.lastPlayedCard?.id),
-      opponentHand: prev.opponentHand.filter(c => c.id !== prev.lastPlayedOpponentCard?.id),
-    }));
+    // Check for game over
+    if (gameState.playerHealth <= 0 || gameState.opponentHealth <= 0) {
+      console.log('Game over detected');
+      setGameOver(true);
+      return;
+    }
     
-    // Draw new cards
-    if (gameState.playerDeck.length > 0) {
-      const newPlayerCard = gameState.playerDeck[0];
-      setGameState(prev => ({
+    // Draw new cards and update turn state
+    setGameState(prev => {
+      const newPlayerCard = prev.playerDeck.length > 0 ? prev.playerDeck[0] : null;
+      const newOpponentCard = prev.opponentDeck.length > 0 ? prev.opponentDeck[0] : null;
+      
+      console.log('Drawing new cards:', { 
+        newPlayerCard: newPlayerCard?.name, 
+        newOpponentCard: newOpponentCard?.name,
+        remainingPlayerDeck: prev.playerDeck.length,
+        remainingOpponentDeck: prev.opponentDeck.length
+      });
+      
+      const newState = {
         ...prev,
-        playerDeck: prev.playerDeck.slice(1),
-        playerHand: [...prev.playerHand, newPlayerCard]
-      }));
-    }
-
-    if (gameState.opponentDeck.length > 0) {
-      const newOpponentCard = gameState.opponentDeck[0];
-      setGameState(prev => ({
-        ...prev,
-        opponentDeck: prev.opponentDeck.slice(1),
-        opponentHand: [...prev.opponentHand, newOpponentCard]
-      }));
-    }
-    
-    // Handle opponent's turn after a delay
-    setTimeout(() => {
-      handleOpponentTurn();
-    }, 1000);
-  };
-
-  const handleOpponentTurn = async () => {
-    if (gameState.opponentHand.length === 0) return;
-    
-    // Simple AI: Choose the highest power card that matches current market phase
-    const bestCard = gameState.opponentHand
-      .sort((a, b) => {
-        const aBonus = a.marketConditions.includes(gameState.marketPhase) ? 2 : 0;
-        const bBonus = b.marketConditions.includes(gameState.marketPhase) ? 2 : 0;
-        return (b.power + bBonus) - (a.power + aBonus);
-      })[0];
-    
-    // Store the opponent's played card
-    setGameState(prev => ({
-      ...prev,
-      lastPlayedOpponentCard: bestCard
-    }));
-    
-    await handleCardPlay(bestCard);
-  };
-
-  const checkForRankUp = (stats: PlayerStats): PlayerStats => {
-    const newStats = { ...stats };
-    
-    if (stats.experience >= 5000 && stats.rank !== 'Market Guru') {
-      newStats.rank = 'Market Guru';
-    } else if (stats.experience >= 2500 && stats.rank === 'Novice Investor') {
-      newStats.rank = 'Fund Manager';
-    } else if (stats.experience >= 1000 && stats.rank === 'Novice Investor') {
-      newStats.rank = 'Analyst';
-    }
-    
-    return newStats;
-  };
-
-  // Initialize game
-  const initializeGame = () => {
-    // Shuffle and deal cards
-    const shuffledDeck = [...FINANCIAL_CARDS].sort(() => Math.random() - 0.5);
-    const playerDeck = shuffledDeck.slice(0, 20);
-    const opponentDeck = shuffledDeck.slice(20, 40);
-    
-    // Draw initial hands
-    const playerHand = playerDeck.slice(0, 5);
-    const opponentHand = opponentDeck.slice(0, 5);
-    
-    // Initialize based on game mode
-    let timeAttackState = null;
-    if (gameState.gameMode === 'timeAttack') {
-      timeAttackState = {
-        timeRemaining: 60,
-        cardsInQueue: [],
-        comboMultiplier: 1,
-        strategicCombos: STRATEGIC_COMBOS.map(combo => ({
-          ...combo,
-          completed: false
-        }))
+        turn: prev.turn + 1,
+        isPlayerTurn: true,
+        battlePhase: 'player-attack',
+        lastPlayedCard: null,
+        lastPlayedOpponentCard: null,
+        playerDeck: newPlayerCard ? prev.playerDeck.slice(1) : prev.playerDeck,
+        opponentDeck: newOpponentCard ? prev.opponentDeck.slice(1) : prev.opponentDeck,
+        playerHand: newPlayerCard ? [...prev.playerHand, newPlayerCard] : prev.playerHand,
+        opponentHand: newOpponentCard ? [...prev.opponentHand, newOpponentCard] : prev.opponentHand
       };
+      
+      console.log('New game state:', {
+        turn: newState.turn,
+        isPlayerTurn: newState.isPlayerTurn,
+        playerHandSize: newState.playerHand.length,
+        opponentHandSize: newState.opponentHand.length
+      });
+      
+      return newState;
+    });
+  };
+
+  // Helper function to calculate card power
+  const calculateCardPower = (card: FinancialCard | null, marketPhase: string): number => {
+    if (!card) return 0;
+    
+    let power = card.power;
+    
+    if (card.marketConditions && card.marketConditions.includes(marketPhase)) {
+      power *= 1.5;
     }
     
-    setGameState(prev => ({
-      ...prev,
-      playerDeck: playerDeck.slice(5),
-      playerHand,
-      opponentDeck: opponentDeck.slice(5),
-      opponentHand,
-      timeAttackState
-    }));
+    return Math.round(power);
+  };
+
+  // Update initializeGame function
+  const initializeGame = () => {
+    console.log('Initializing game...'); // Debug log
     
-    // Initialize mode-specific state
-    switch (gameState.gameMode) {
-      case 'timeAttack':
-        setTimeRemaining(60);
-        break;
-      case 'companyAnalysis':
-        setSelectedCompany(COMPANY_PROFILES[Math.floor(Math.random() * COMPANY_PROFILES.length)]);
-        break;
-      case 'marketCycle':
-        setPhaseDuration(30);
-        break;
-    }
+    // Create a deep copy of all cards and shuffle them
+    const allCards = [...FINANCIAL_CARDS, ...MARKET_CONDITIONS]
+      .map(card => ({...card, id: Math.random().toString(36).substr(2, 9)})) // Ensure unique IDs
+      .sort(() => Math.random() - 0.5);
+    
+    console.log('Total cards to distribute:', allCards.length);
+    
+    // Split cards between player and opponent
+    const halfIndex = Math.floor(allCards.length / 2);
+    const playerCards = allCards.slice(0, halfIndex);
+    const opponentCards = allCards.slice(halfIndex);
+    
+    // Draw initial hands (3 cards each)
+    const initialPlayerHand = playerCards.slice(0, 3);
+    const initialOpponentHand = opponentCards.slice(0, 3);
+    
+    console.log('Initial hands:', {
+      playerHand: initialPlayerHand.map(c => c.name),
+      opponentHand: initialOpponentHand.map(c => c.name),
+      playerDeckSize: playerCards.length - 3,
+      opponentDeckSize: opponentCards.length - 3
+    });
+    
+    // Set the initial game state
+    const initialState = {
+      turn: 1,
+      playerHealth: 100,
+      opponentHealth: 100,
+      playerDeck: playerCards.slice(3),
+      playerHand: initialPlayerHand,
+      opponentDeck: opponentCards.slice(3),
+      opponentHand: initialOpponentHand,
+      currentMarketCondition: 'bull-market',
+      difficulty: 'medium',
+      tutorialCompleted: false,
+      achievements: [],
+      gameMode: 'standard',
+      playerStats: {
+        rank: 'Novice Investor',
+        experience: 0,
+        masteredCards: [],
+        completedChallenges: []
+      },
+      marketPhase: 'early-bull',
+      activeEffects: [],
+      isPlayerTurn: true,
+      battlePhase: 'player-attack',
+      lastPlayedCard: null,
+      lastPlayedOpponentCard: null
+    };
+
+    console.log('Setting initial game state:', {
+      playerHandSize: initialState.playerHand.length,
+      opponentHandSize: initialState.opponentHand.length,
+      playerDeckSize: initialState.playerDeck.length,
+      opponentDeckSize: initialState.opponentDeck.length,
+      isPlayerTurn: initialState.isPlayerTurn
+    });
+    
+    setGameState(initialState);
   };
 
   // Handle time attack mode
@@ -1203,36 +1207,10 @@ export function FinancialCardGame() {
   // Render game board
   const renderGameBoard = () => {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
-        {/* Mobile-optimized Header */}
-        <div className="bg-white/80 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-30">
-          <div className="max-w-5xl mx-auto px-3">
-            {/* Top Navigation Row */}
-            <div className="flex items-center justify-between py-2 border-b border-gray-100">
-              <motion.div whileHover={{ x: -2 }} whileTap={{ scale: 0.98 }}>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => navigate('/games-hub')}
-                  className="text-gray-600 hover:text-gray-900 -ml-2 group"
-                >
-                  <ArrowLeft className="w-4 h-4 mr-1 group-hover:-translate-x-1 transition-transform" />
-                  <span className="text-sm">Back</span>
-                </Button>
-              </motion.div>
-              <motion.div
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                className="flex items-center bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg px-3 py-1.5 shadow-sm"
-              >
-                <Trophy className="w-4 h-4 mr-1.5" />
-                <span className="text-sm font-medium">
-                  {gameState.playerStats.experience} XP
-                </span>
-              </motion.div>
-            </div>
-            
-            {/* Title Row */}
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 p-4 sm:p-6">
+        <div className="max-w-5xl mx-auto">
+          {/* Game Header */}
+          <div className="bg-white/90 backdrop-blur rounded-xl shadow-sm border border-gray-200/50 p-4 mb-4">
             <div className="py-3">
               <motion.div 
                 className="flex items-center gap-3"
@@ -1248,187 +1226,144 @@ export function FinancialCardGame() {
                     <span className="font-medium">{gameState.gameMode} Mode</span>
                     <span className="w-1.5 h-1.5 rounded-full bg-gray-300" />
                     <span>Turn {gameState.turn}</span>
+                    <span className="w-1.5 h-1.5 rounded-full bg-gray-300" />
+                    <span className={`font-semibold ${gameState.isPlayerTurn ? 'text-green-600' : 'text-red-600'}`}>
+                      {gameState.isPlayerTurn ? 'Your Turn' : "Opponent's Turn"}
+                    </span>
                   </div>
                 </div>
               </motion.div>
             </div>
           </div>
-        </div>
 
-        {/* Game Content */}
-        <div className="max-w-5xl mx-auto px-3 py-4">
-          {/* Market Phase - Enhanced */}
-          <motion.div 
-            className="bg-white/90 backdrop-blur rounded-xl shadow-sm border border-gray-200/50 p-4 mb-4"
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-          >
-            <div className="flex flex-col space-y-3">
-              <div className="flex items-center gap-2">
-                <div className="bg-blue-100 p-1.5 rounded-lg">
-                  <LineChart className="w-5 h-5 text-blue-600" />
-                </div>
-                <span className="font-semibold capitalize">{gameState.marketPhase.replace('-', ' ')}</span>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                <motion.span 
-                  className="bg-gradient-to-r from-green-500 to-green-600 text-white px-3 py-1 rounded-full text-sm shadow-sm"
-                  whileHover={{ scale: 1.05 }}
-                >
-                  Growth +2
-                </motion.span>
-                <motion.span 
-                  className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-3 py-1 rounded-full text-sm shadow-sm"
-                  whileHover={{ scale: 1.05 }}
-                >
-                  Value +0
-                </motion.span>
-                <motion.span 
-                  className="bg-gradient-to-r from-purple-500 to-purple-600 text-white px-3 py-1 rounded-full text-sm shadow-sm"
-                  whileHover={{ scale: 1.05 }}
-                >
-                  Momentum +1
-                </motion.span>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Battle Area - Enhanced */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-            {/* Player Stats */}
-            <motion.div 
-              className="bg-white/90 backdrop-blur rounded-xl shadow-sm border border-gray-200/50 p-4"
-              initial={{ x: -20, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-            >
-              <div className="flex items-center justify-between mb-3">
+          {/* Battle Area */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            {/* Player Area */}
+            <div className="bg-white/90 backdrop-blur rounded-xl shadow-sm border border-gray-200/50 p-4">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-lg font-semibold">Your Portfolio</h2>
                 <div className="flex items-center gap-2">
-                  <div className="bg-green-100 p-1.5 rounded-lg">
-                    <Users className="w-5 h-5 text-green-600" />
+                  <div className="w-24">
+                    <Progress value={gameState.playerHealth} className="h-2" />
                   </div>
-                  <div>
-                    <h2 className="font-semibold">Your Stats</h2>
-                    <p className="text-sm text-gray-600">{gameState.playerStats.rank}</p>
-                  </div>
+                  <span className="text-sm font-medium">{gameState.playerHealth}%</span>
                 </div>
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <div className="text-right">
-                        <div className="text-lg font-bold text-green-600">{gameState.playerHealth}</div>
-                        <div className="text-xs text-gray-500">HP</div>
-                      </div>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Your current health points</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
               </div>
-              <Progress 
-                value={gameState.playerHealth} 
-                max={100} 
-                className="h-2.5 bg-gray-100"
-                indicatorClassName="bg-gradient-to-r from-green-500 to-green-600"
-              />
-            </motion.div>
-
-            {/* Opponent Stats */}
-            <motion.div 
-              className="bg-white/90 backdrop-blur rounded-xl shadow-sm border border-gray-200/50 p-4"
-              initial={{ x: 20, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-            >
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <div className="bg-red-100 p-1.5 rounded-lg">
-                    <AlertTriangle className="w-5 h-5 text-red-600" />
-                  </div>
-                  <div>
-                    <h2 className="font-semibold">Opponent</h2>
-                    <p className="text-sm text-gray-600">Market Forces</p>
-                  </div>
-                </div>
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <div className="text-right">
-                        <div className="text-lg font-bold text-red-600">{gameState.opponentHealth}</div>
-                        <div className="text-xs text-gray-500">HP</div>
-                      </div>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Opponent's health points</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              </div>
-              <Progress 
-                value={gameState.opponentHealth} 
-                max={100} 
-                className="h-2.5 bg-gray-100"
-                indicatorClassName="bg-gradient-to-r from-red-500 to-red-600"
-              />
-            </motion.div>
-          </div>
-
-          {/* Player Hand - Enhanced */}
-          <motion.div
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.2 }}
-          >
-            <div className="flex items-center justify-between mb-3">
-              <h2 className="font-semibold flex items-center gap-2">
-                <CreditCard className="w-5 h-5 text-blue-600" />
-                Your Hand
-              </h2>
-              <span className="text-sm text-gray-600">{gameState.playerHand.length} cards</span>
-            </div>
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {gameState.playerHand.map((card, index) => (
-                <motion.div
-                  key={card.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  whileHover={{ y: -4, scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <Card 
-                    className="group bg-white/90 backdrop-blur hover:bg-white/95 shadow-sm hover:shadow-md transition-all border border-gray-200/50 cursor-pointer overflow-hidden"
-                    onClick={() => handleCardPlay(card)}
+              <div className="grid grid-cols-2 gap-2">
+                {gameState.playerHand.map((card, index) => (
+                  <motion.div
+                    key={card.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    onClick={() => {
+                      if (gameState.isPlayerTurn) {
+                        console.log('Card clicked:', card.name);
+                        handleCardPlay(card);
+                      } else {
+                        console.log('Not player turn - cannot play card');
+                      }
+                    }}
+                    className={`
+                      cursor-pointer 
+                      transform 
+                      transition-all 
+                      duration-200 
+                      ${gameState.isPlayerTurn ? 'hover:scale-105 hover:-translate-y-2' : 'opacity-50 cursor-not-allowed'}
+                    `}
+                    role="button"
+                    tabIndex={0}
                   >
-                    <CardHeader className="p-4 pb-2 relative">
-                      <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-blue-600/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                      <CardTitle className="flex items-center justify-between text-base">
-                        <span>{card.name}</span>
-                        <span className="flex items-center gap-1.5">
-                          <TrendingUp className="w-4 h-4 text-blue-500" />
-                          <span className="text-blue-600 font-bold">{card.power}</span>
-                        </span>
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-4 pt-2">
-                      <div className="space-y-2">
-                        <p className="text-sm text-gray-600">{card.ability.description}</p>
-                        <div className="flex flex-wrap gap-1.5">
-                          {card.marketConditions.map((condition) => (
-                            <span 
-                              key={condition}
-                              className="text-xs px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100"
-                            >
-                              {condition}
-                            </span>
-                          ))}
+                    <Card className={`
+                      group 
+                      bg-white/90 
+                      backdrop-blur 
+                      shadow-sm 
+                      border 
+                      ${gameState.isPlayerTurn ? 'border-blue-200 hover:border-blue-400' : 'border-gray-200/50'} 
+                      overflow-hidden
+                      ${gameState.isPlayerTurn ? 'hover:ring-2 hover:ring-blue-400' : ''}
+                    `}>
+                      <CardHeader className="p-4 pb-2">
+                        <CardTitle className="flex items-center justify-between text-base">
+                          <span>{card.name}</span>
+                          <span className="flex items-center gap-1.5">
+                            <TrendingUp className="w-4 h-4 text-blue-500" />
+                            <span className="text-blue-600 font-bold">{card.power}</span>
+                          </span>
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="p-4 pt-2">
+                        <div className="space-y-2">
+                          <p className="text-sm text-gray-600">{card.ability.description}</p>
+                          <div className="flex flex-wrap gap-1.5">
+                            {card.marketConditions.map((condition) => (
+                              <span 
+                                key={condition}
+                                className="text-xs px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100"
+                              >
+                                {condition}
+                              </span>
+                            ))}
+                          </div>
                         </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                ))}
+              </div>
             </div>
-          </motion.div>
+
+            {/* Opponent Area */}
+            <div className="bg-white/90 backdrop-blur rounded-xl shadow-sm border border-gray-200/50 p-4">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-lg font-semibold">Opponent's Portfolio</h2>
+                <div className="flex items-center gap-2">
+                  <div className="w-24">
+                    <Progress value={gameState.opponentHealth} className="h-2" />
+                  </div>
+                  <span className="text-sm font-medium">{gameState.opponentHealth}%</span>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                {gameState.opponentHand.map((card, index) => (
+                  <motion.div
+                    key={card.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                  >
+                    <Card className="group bg-white/90 backdrop-blur shadow-sm border border-gray-200/50 overflow-hidden">
+                      <CardHeader className="p-4 pb-2">
+                        <CardTitle className="flex items-center justify-between text-base">
+                          <span>{card.name}</span>
+                          <span className="flex items-center gap-1.5">
+                            <TrendingUp className="w-4 h-4 text-blue-500" />
+                            <span className="text-blue-600 font-bold">{card.power}</span>
+                          </span>
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="p-4 pt-2">
+                        <div className="space-y-2">
+                          <p className="text-sm text-gray-600">{card.ability.description}</p>
+                          <div className="flex flex-wrap gap-1.5">
+                            {card.marketConditions.map((condition) => (
+                              <span 
+                                key={condition}
+                                className="text-xs px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100"
+                              >
+                                {condition}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          </div>
 
           {/* Battle Animation */}
           <AnimatePresence>
